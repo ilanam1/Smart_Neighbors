@@ -1,3 +1,5 @@
+// App.js
+
 import React, { useEffect, useState } from 'react';
 import {
   SafeAreaView,
@@ -18,13 +20,10 @@ import { getSupabase } from './supabase.js';
 
 const Stack = createNativeStackNavigator();
 
-// ---------------------------------------------------------------------
-// קומפוננטת הבית למשתמש מחובר – פה יהיה "ברוך הבא" וכפתור לבקשה חדשה
-// ---------------------------------------------------------------------
+// ----- מסך הבית אחרי התחברות -----
 function HomeScreen({ navigation, route }) {
-  const { user, supabase, onSignOut } = route.params || {};
-
   const isDarkMode = useColorScheme() === 'dark';
+  const { user, supabase, onSignOut } = route.params || {};
 
   return (
     <SafeAreaView style={styles.container}>
@@ -32,7 +31,7 @@ function HomeScreen({ navigation, route }) {
       <View style={{ alignItems: 'center' }}>
         <Text style={styles.text}>Welcome {user?.email || 'user'}!</Text>
 
-        {/* כפתור מעבר למסך פרסום בקשה חדשה */}
+        {/* כפתור ליצירת בקשה חדשה */}
         <TouchableOpacity
           style={{
             marginTop: 16,
@@ -75,15 +74,13 @@ function HomeScreen({ navigation, route }) {
   );
 }
 
-// ---------------------------------------------------------------------
-// קומפוננטת App הראשית – מנהלת user + Supabase + ניווט
-// ---------------------------------------------------------------------
-function App() {
+// ----- קומפוננטת השורש -----
+export default function App() {
   const isDarkMode = useColorScheme() === 'dark';
   const [user, setUser] = useState(null);
   const supabase = getSupabase();
 
-  // מאזין לשינויים ב-Auth + טעינת session בהתחלה
+  // מאזין לשינויים ב־Auth + טעינה ראשונית של session
   useEffect(() => {
     let listener = null;
     try {
@@ -123,7 +120,7 @@ function App() {
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
       <Stack.Navigator>
 
-        {/* אם אין משתמש – מסך התחברות */}
+        {/* אם אין משתמש – מסך התחברות/הרשמה */}
         {!user ? (
           <Stack.Screen
             name="Auth"
@@ -138,7 +135,7 @@ function App() {
           </Stack.Screen>
         ) : (
           <>
-            {/* מסך הבית לאחר התחברות */}
+            {/* בית – אחרי התחברות */}
             <Stack.Screen
               name="Home"
               component={HomeScreen}
@@ -173,5 +170,3 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
 });
-
-export default App;
