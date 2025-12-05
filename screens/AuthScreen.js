@@ -7,23 +7,23 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from 'react-native';
-import { getSupabase } from './supabase.js';
+import { getSupabase } from '../DataBase/supabase.js';
 
-export default function AuthScreen({ onSignIn }) {
+export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin' }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [info, setInfo] = useState(null);
-  const [mode, setMode] = useState('signin'); // 'signin' or 'signup'
+  const [mode, setMode] = useState(initialMode);
   const [postSignUpUser, setPostSignUpUser] = useState(null);
 
   const supabase = getSupabase();
 
   function sanitizeEmailInput(e) {
     return (e || '')
-      .replace(/\uFEFF|\u00A0/g, '') // BOM, NBSP
-      .replace(/[\u200B-\u200D\u2060]/g, '') // zero-width spaces
+      .replace(/\uFEFF|\u00A0/g, '')
+      .replace(/[\u200B-\u200D\u2060]/g, '')
       .trim()
       .toLowerCase();
   }
@@ -33,9 +33,9 @@ export default function AuthScreen({ onSignIn }) {
     setLoading(true);
     try {
       if (!supabase) throw new Error('Supabase client not available');
-      // Sanitize and validate email before sending to Supabase
       const sanitized = sanitizeEmailInput(email);
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
       if (!emailRegex.test(sanitized)) {
         setError(`Email address "${email}" is invalid`);
         setLoading(false);
@@ -43,32 +43,34 @@ export default function AuthScreen({ onSignIn }) {
       }
 
       if (mode === 'signup') {
-  const { data, error } = await supabase.auth.signUp({ email: sanitized, password });
-        console.log('signUp response', { data, error });
+        const { data, error } = await supabase.auth.signUp({ email: sanitized, password });
         setInfo({ action: 'signUp', data, error: error?.message || error });
+
         if (error) {
           setError(error.message);
         } else {
           const user = data?.user || data?.session?.user || null;
 
-          // If there's no user/session returned, it's likely email confirmation is required.
           if (!user) {
             setError(null);
-            setInfo((prev) => ({ ...prev, message: 'Sign-up initiated. Check your email to confirm the account (if email confirmation is enabled).' }));
+            setInfo((prev) => ({
+              ...prev,
+              message: 'Sign-up initiated. Check your email to confirm your account.',
+            }));
             return;
           }
 
-          // Don't auto sign-in after signup; let user inspect logs then proceed manually
-          // Server trigger will create the profile row in the database. Remove client-side inserts.
           setPostSignUpUser(user);
         }
       } else {
-  const { data, error } = await supabase.auth.signInWithPassword({ email: sanitized, password });
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: sanitized,
+          password,
+        });
+
         if (error) setError(error.message);
         else {
-          setInfo({ action: 'signIn', data });
           const user = data?.user || data?.session?.user || null;
-          // Server trigger will create or ensure profile rows. Client no longer inserts/checks.
           onSignIn && onSignIn(user);
         }
       }
@@ -83,20 +85,19 @@ export default function AuthScreen({ onSignIn }) {
     setError(null);
     setLoading(true);
     try {
-      if (!supabase) throw new Error('Supabase client not available');
       const sanitized = sanitizeEmailInput(email);
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
       if (!emailRegex.test(sanitized)) {
         setError(`Email address "${email}" is invalid`);
         return;
       }
 
-      // Request a password reset email from Supabase Auth
       const { data, error } = await supabase.auth.resetPasswordForEmail(sanitized);
-      console.log('resetPasswordForEmail', { data, error });
       setInfo({ action: 'resetPassword', data, error: error?.message || error });
+
       if (error) setError(error.message);
-      else setInfo((prev) => ({ ...(prev || {}), message: 'Password reset email sent (check your inbox).' }));
+      else setInfo((prev) => ({ ...(prev || {}), message: 'Password reset email sent.' }));
     } catch (e) {
       setError(e.message || String(e));
     } finally {
@@ -128,14 +129,26 @@ export default function AuthScreen({ onSignIn }) {
         {error ? <Text style={styles.error}>{error}</Text> : null}
 
         <TouchableOpacity style={styles.button} onPress={handleAuth} disabled={loading}>
-          {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>{mode === 'signup' ? 'Sign up' : 'Sign in'}</Text>}
+          {loading ? <ActivityIndicator color="#fff" /> : (
+            <Text style={styles.buttonText}>
+              {mode === 'signup' ? 'Sign up' : 'Sign in'}
+            </Text>
+          )}
         </TouchableOpacity>
 
         {info ? (
           <View style={{ marginTop: 12 }}>
-            <Text style={{ color: '#444', fontSize: 12, lineHeight: 16 }}>{JSON.stringify(info, null, 2)}</Text>
+            <Text style={{ color: '#444', fontSize: 12, lineHeight: 16 }}>
+              {JSON.stringify(info, null, 2)}
+            </Text>
             <TouchableOpacity
-              style={{ marginTop: 8, padding: 8, backgroundColor: '#e5e7eb', borderRadius: 4, alignItems: 'center' }}
+              style={{
+                marginTop: 8,
+                padding: 8,
+                backgroundColor: '#e5e7eb',
+                borderRadius: 4,
+                alignItems: 'center',
+              }}
               onPress={() => setInfo(null)}
             >
               <Text style={{ color: '#444', fontSize: 12 }}>Clear logs</Text>
@@ -146,7 +159,7 @@ export default function AuthScreen({ onSignIn }) {
         {postSignUpUser ? (
           <View style={{ marginTop: 12, alignItems: 'center' }}>
             <Text style={{ color: '#111', marginBottom: 8, textAlign: 'center' }}>
-              Sign-up completed — review the logs above. When ready, tap below to continue into the app.
+              Sign-up completed — review the logs above. Tap below to continue.
             </Text>
             <TouchableOpacity
               style={{ backgroundColor: '#10b981', padding: 10, borderRadius: 8 }}
@@ -160,13 +173,31 @@ export default function AuthScreen({ onSignIn }) {
           </View>
         ) : null}
 
+        {/* Toggle login/signup */}
         <TouchableOpacity onPress={() => setMode(mode === 'signup' ? 'signin' : 'signup')}>
-          <Text style={styles.toggleText}>{mode === 'signup' ? 'Have an account? Sign in' : "Don't have an account? Sign up"}</Text>
+          <Text style={styles.toggleText}>
+            {mode === 'signup' ? 'Have an account? Sign in' : "Don't have an account? Sign up"}
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity onPress={handleResetPassword} disabled={loading}>
           <Text style={[styles.toggleText, { marginTop: 8 }]}>Forgot password?</Text>
         </TouchableOpacity>
+
+        {/* ✅ BACK BUTTON TO WELCOME SCREEN */}
+        <TouchableOpacity
+          onPress={() => navigation.navigate('Welcome')}
+          style={{
+            marginTop: 18,
+            padding: 10,
+            backgroundColor: '#e5e7eb',
+            borderRadius: 8,
+            alignItems: 'center',
+          }}
+        >
+          <Text style={{ color: '#111', fontWeight: '600' }}> ←Back </Text>
+        </TouchableOpacity>
+
       </View>
     </View>
   );
