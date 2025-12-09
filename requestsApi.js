@@ -1,7 +1,9 @@
 // requestsApi.js
 // פונקציות גישה ל-Supabase עבור טבלת requests
 
-import supabase from './supabase';
+import { getSupabase } from './DataBase/supabase';
+
+const supabase = getSupabase();
 
 
 /**

@@ -12,7 +12,7 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
-import { createRequest } from './requestsApi'; // ודא שהקובץ requestsApi.js קיים כמו שכתבנו
+import { createRequest } from '../requestsApi'; // ודא שהקובץ requestsApi.js קיים כמו שכתבנו
 
 // רשימות קבועות לקטגוריה ולדחיפות
 const CATEGORIES = [
@@ -77,21 +77,20 @@ export default function CreateRequestScreen({ navigation }) {
 
       console.log('New request created:', newRequest);
 
-      Alert.alert('הצלחה', 'הבקשה פורסמה לשכנים בהצלחה!', [
-        {
-          text: 'אוקיי',
-          onPress: () => {
-            // ניקוי הטופס
-            setTitle('');
-            setDescription('');
-
-            // אם יש ניווט – נחזור אחורה למסך הקודם (אופציונלי)
-            if (navigation && navigation.goBack) {
-              navigation.goBack();
-            }
-          },
+    Alert.alert('הצלחה', 'הבקשה פורסמה לשכנים בהצלחה!', [
+      {
+        text: 'אוקיי',
+        onPress: () => {
+          // ניקוי הטופס
+          setTitle('');
+          setDescription('');
+          setCategory('ITEM_LOAN');
+          setUrgency('MEDIUM');
+          // נשארים באותו מסך – לא עושים goBack
         },
-      ]);
+      },
+    ]);
+
     } catch (err) {
       console.error(err);
       Alert.alert('שגיאה', err.message || 'אירעה שגיאה בפרסום הבקשה.');

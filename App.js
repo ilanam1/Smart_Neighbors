@@ -1,113 +1,102 @@
+// App.js
 import React, { useEffect, useState } from 'react';
-import {
-  SafeAreaView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-  TouchableOpacity,
-} from 'react-native';
-
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
+import WelcomeScreen from './screens/WelcomeScreen';
 import LoginScreen from './screens/LoginScreen';
 import SignupScreen from './screens/SignupScreen';
-import WelcomeScreen from './screens/WelcomeScreen';
-import { getSupabase } from './DataBase/supabase.js';
+import HomeScreen from './screens/HomeScreen';
+import CreateRequestScreen from './screens/CreateRequestScreen';
+import ReportDisturbanceScreen from './screens/ReportDisturbanceScreen';
+import BuildingUpdatesScreen from './screens/BuildingUpdatesScreen';
+import PayFeesScreen from './screens/PayFeesScreen';
+
+import { getSupabase } from './DataBase/supabase';
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-  const isDarkMode = useColorScheme() === 'dark';
   const [user, setUser] = useState(null);
   const supabase = getSupabase();
 
-  // AUTH LISTENER
   useEffect(() => {
-    let listener = null;
+    let subscription = null;
+
+    (async () => {
+      try {
+        const { data } = await supabase.auth.getSession();
+        setUser(data?.session?.user ?? null);
+      } catch (e) {
+        console.log('getSession failed', e);
+      }
+    })();
 
     try {
-      if (supabase?.auth?.onAuthStateChange) {
-        listener = supabase.auth.onAuthStateChange((event, session) => {
-          setUser(session?.user || null);
-        });
-      }
-
-      (async () => {
-        try {
-          const { data } = await supabase.auth.getSession();
-          setUser(data?.session?.user ?? null);
-        } catch (e) {
-          console.log('getSession failed', e);
-        }
-      })();
+      const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+        setUser(session?.user ?? null);
+      });
+      subscription = data?.subscription || null;
     } catch (e) {
       console.log('auth listener failed', e);
     }
 
     return () => {
       try {
-        listener?.unsubscribe?.();
+        subscription?.unsubscribe?.();
       } catch {}
     };
   }, [supabase]);
 
-  // IF USER LOGGED IN
-  if (user) {
-    return (
-      <SafeAreaView style={styles.container}>
-        <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-        <View style={{ alignItems: 'center' }}>
-          <Text style={styles.text}>Welcome {user.email}!</Text>
-
-          <TouchableOpacity
-            style={{
-              marginTop: 16,
-              backgroundColor: '#ef4444',
-              padding: 10,
-              borderRadius: 8,
-            }}
-            onPress={async () => {
-              try {
-                await supabase.auth.signOut();
-                setUser(null);
-              } catch (e) {
-                console.error('Sign out error', e);
-              }
-            }}
-          >
-            <Text style={{ color: '#fff' }}>Sign out</Text>
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
-    );
-  }
-
-  // IF NOT LOGGED IN
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Welcome" component={WelcomeScreen} />
-        <Stack.Screen name="Login">
-          {(props) => <LoginScreen {...props} onSignIn={(u) => setUser(u)} />}
-        </Stack.Screen>
-        <Stack.Screen name="Signup">
-          {(props) => <SignupScreen {...props} onSignIn={(u) => setUser(u)} />}
-        </Stack.Screen>
-      </Stack.Navigator>
+      {user ? (
+        // --------- המשתמש מחובר ---------
+        <Stack.Navigator>
+          <Stack.Screen
+            name="Home"
+            options={{ title: 'Smart Neighbors', headerShown: false }}
+          >
+            {props => <HomeScreen {...props} user={user} />}
+          </Stack.Screen>
+
+          <Stack.Screen
+            name="CreateRequest"
+            component={CreateRequestScreen}
+            options={{ title: 'יצירת בקשה חדשה' }}
+          />
+
+          <Stack.Screen
+            name="ReportDisturbance"
+            component={ReportDisturbanceScreen}
+            options={{ title: 'דיווח על רעש / מטרד' }}
+          />
+
+          <Stack.Screen
+            name="BuildingUpdates"
+            component={BuildingUpdatesScreen}
+            options={{ title: 'עדכוני הבניין – סיכום שבועי' }}
+          />
+
+
+           <Stack.Screen
+            name="PayFees"
+            component={PayFeesScreen}
+            options={{ title: 'תשלום מיסי ועד' }}
+          />
+        </Stack.Navigator>
+      ) : (
+        // --------- המשתמש לא מחובר ---------
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="Welcome" component={WelcomeScreen} />
+          <Stack.Screen name="Login">
+            {props => <LoginScreen {...props} onSignIn={setUser} />}
+          </Stack.Screen>
+          <Stack.Screen name="Signup">
+            {props => <SignupScreen {...props} onSignIn={setUser} />}
+          </Stack.Screen>
+        </Stack.Navigator>
+      )}
     </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  text: {
-    fontSize: 18,
-  },
-});

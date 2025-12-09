@@ -1,3 +1,4 @@
+// babel.config.js – גרסה נכונה ל-React Native 0.82
 module.exports = {
-  presets: ['module:@react-native/babel-preset'],
+  presets: ['@react-native/babel-preset'],
 };
