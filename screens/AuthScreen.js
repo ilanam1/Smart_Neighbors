@@ -7,7 +7,20 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from 'react-native';
+import { launchImageLibrary } from 'react-native-image-picker';
 import { getSupabase } from '../DataBase/supabase.js';
+import RNFS from "react-native-fs";
+import { decode as atob } from "base-64";
+
+async function getRealPath(uri) {
+  if (uri.startsWith("content://")) {
+    const stat = await RNFS.stat(uri);
+    return stat.path;
+  }
+  return uri;
+}
+
+
 
 export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin' }) {
   const [email, setEmail] = useState('');
@@ -30,6 +43,9 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
   const [mode, setMode] = useState(initialMode);
   const [postSignUpUser, setPostSignUpUser] = useState(null);
 
+  const [photo, setPhoto] = useState(null);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+
   const supabase = getSupabase();
 
   function sanitizeEmailInput(e) {
@@ -39,6 +55,42 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
       .trim()
       .toLowerCase();
   }
+    async function handlePickPhoto() {
+    setError(null);
+
+    try {
+     const result = await launchImageLibrary({
+     mediaType: 'photo',
+     includeBase64: true,   
+     maxWidth: 512,
+     maxHeight: 512,
+     quality: 0.8,
+ });
+
+      if (result.didCancel) {
+        return;
+      }
+
+      if (result.errorCode) {
+        console.log('Image picker error:', result.errorMessage);
+        setError(result.errorMessage || 'Could not select image');
+        return;
+      }
+
+      const asset = result.assets && result.assets[0];
+      if (!asset) {
+        setError('No image selected');
+        return;
+      }
+
+      setPhoto(asset); // { uri, fileName, type, ... }
+      console.log("📸 PICKED PHOTO:", asset);
+    } catch (e) {
+      console.log('handlePickPhoto error', e);
+      setError(e.message || String(e));
+    }
+  }
+
 
   async function handleAuth() {
     setError(null);
@@ -97,9 +149,61 @@ if (mode === 'signup') {
     }));
     return;
   }
+let uploadedPhotoUrl = null;
+
+if (photo?.uri) {
+  try {
+    setUploadingPhoto(true);
+
+    const fileExt =
+      (photo.fileName && photo.fileName.split(".").pop()) || "jpg";
+
+    const fileName = `${user.id}-${Date.now()}.${fileExt}`;
+    const filePath = `avatars/${fileName}`;
+
+    console.log("📤 Uploading:", filePath);
+
+    let uploadUri = photo.uri;
+if (uploadUri.startsWith("file://")) {
+  uploadUri = uploadUri.replace("file://", "");
+}
+
+    // ⚠️ THIS IS THE CORRECT WAY TO GET IMAGE BINARY IN REACT NATIVE
+     // --- FIXED UPLOAD BLOCK USING RNFS + BINARY ---
+    const realPath = await getRealPath(photo.uri);
+    const base64File = await RNFS.readFile(realPath, "base64");
+
+    const binary = Uint8Array.from(atob(base64File), c => c.charCodeAt(0));
+
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from("profile-photos")
+      .upload(filePath, binary, {
+        contentType: photo.type || "image/jpeg",
+        upsert: true,
+      });
+
+
+    if (uploadError) {
+      console.log("❌ Upload error:", uploadError);
+    } else {
+      const { data: publicData } = supabase.storage
+        .from("profile-photos")
+        .getPublicUrl(filePath);
+
+      uploadedPhotoUrl = publicData.publicUrl;
+      console.log("✅ Uploaded photo URL:", uploadedPhotoUrl);
+    }
+  } catch (err) {
+    console.log("❌ Upload exception:", err);
+  } finally {
+    setUploadingPhoto(false);
+  }
+}
+
+
 
   // DEBUG CHECK
-  console.log("PROFILE DATA SENDING:", {
+ console.log("PROFILE DATA SENDING:", {
     auth_uid: user.id,
     email: sanitized,
     first_name: firstName,
@@ -110,26 +214,31 @@ if (mode === 'signup') {
     id_number: idNumber,
     date_of_birth: dob,
     is_house_committee: isCommittee,
+    photo_url: uploadedPhotoUrl,
   });
+    // Build payload
+  const profilePayload = {
+    auth_uid: user.id,
+    email: sanitized,
+    first_name: firstName,
+    last_name: lastName,
+    phone: phone,
+    zip_code: zip,
+    address: address,
+    id_number: idNumber,
+    date_of_birth: dob,
+    is_house_committee: isCommittee,
+  };
+
+  
+if (uploadedPhotoUrl) {
+  profilePayload.photo_url = uploadedPhotoUrl;
+}
 
   // INSERT OR UPDATE PROFILE
-  const { error: profileError } = await supabase
-    .from('profiles')
-    .upsert(
-      {
-        auth_uid: user.id,
-        email: sanitized,
-        first_name: firstName,
-        last_name: lastName,
-        phone: phone,
-        zip_code: zip,
-        address: address,
-        id_number: idNumber,
-        date_of_birth: dob,
-        is_house_committee: isCommittee,
-      },
-      { onConflict: "auth_uid" }
-    );
+ const { error: profileError } = await supabase
+  .from('profiles')
+  .upsert(profilePayload, { onConflict: "auth_uid" });
 
   if (profileError) {
     console.log("FULL PROFILE ERROR:", profileError);
@@ -141,6 +250,7 @@ if (mode === 'signup') {
   setPostSignUpUser(user);
   return;
 }
+
 
       // -------------------- SIGN IN --------------------
       else {
@@ -215,6 +325,19 @@ if (mode === 'signup') {
                 {isCommittee ? '☑ House Committee' : '☐ House Committee'}
               </Text>
             </TouchableOpacity>
+
+                <TouchableOpacity style={styles.photoButton} onPress={handlePickPhoto}>
+                 <Text style={styles.photoButtonText}>
+                 {photo ? 'Change profile photo' : 'Choose profile photo'}
+                 </Text>
+                </TouchableOpacity>
+                     
+                 {photo && (
+                  <Text style={{ fontSize: 12, color: '#6b7280', marginTop: 4 }}>
+                   Selected: {photo.fileName || photo.uri}
+                  </Text>
+    )}
+
           </>
         )}
 
@@ -291,6 +414,7 @@ if (mode === 'signup') {
   );
 }
 
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -332,4 +456,16 @@ const styles = StyleSheet.create({
   buttonText: { color: '#fff', fontWeight: '600' },
   toggleText: { color: '#6b7280', marginTop: 12, textAlign: 'center' },
   error: { color: '#b00020', marginTop: 8, textAlign: 'center' },
+
+   photoButton: {
+    marginTop: 10,
+    padding: 12,
+    borderRadius: 8,
+    backgroundColor: '#e5e7eb',
+    alignItems: 'center',
+  },
+  photoButtonText: {
+    color: '#374151',
+    fontWeight: '600',
+  },
 });

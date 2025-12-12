@@ -1,14 +1,15 @@
 // screens/HomeScreen.js
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
-} from 'react-native';
-import { getSupabase } from '../DataBase/supabase';
-import { getRecentBuildingUpdates } from '../buildingUpdatesApi';
+  Image,
+} from "react-native";
+import { getSupabase } from "../DataBase/supabase";
+import { getRecentBuildingUpdates } from "../buildingUpdatesApi";
 
 export default function HomeScreen({ navigation, user }) {
   const [updates, setUpdates] = useState([]);
@@ -16,84 +17,130 @@ export default function HomeScreen({ navigation, user }) {
   const [updatesError, setUpdatesError] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
 
+  const [profile, setProfile] = useState(null);
+  const [profileLoading, setProfileLoading] = useState(false);
+  const [profileError, setProfileError] = useState(null);
+
   const supabase = getSupabase();
 
   async function handleSignOut() {
     try {
       await supabase.auth.signOut();
-      // App.js כבר יטפל במעבר למסכי התחברות
     } catch (e) {
-      console.error('Sign out error:', e);
+      console.error("Sign out error:", e);
     }
   }
 
-
-
-  // טעינת עדכונים מהשרת
+  // ===== LOAD BUILDING UPDATES =====
   useEffect(() => {
-    let isMounted = true;
+    let mounted = true;
 
     async function loadUpdates() {
       try {
         setLoadingUpdates(true);
-        setUpdatesError(null);
-
         const data = await getRecentBuildingUpdates(20);
-        if (isMounted) {
+        if (mounted) {
           setUpdates(data);
           setCurrentIndex(0);
         }
       } catch (err) {
-        console.error(err);
-        if (isMounted) {
-          setUpdatesError(err.message || 'שגיאה בטעינת העדכונים');
-        }
+        if (mounted) setUpdatesError(err.message);
       } finally {
-        if (isMounted) {
-          setLoadingUpdates(false);
-        }
+        if (mounted) setLoadingUpdates(false);
       }
     }
 
     loadUpdates();
-
-    return () => {
-      isMounted = false;
-    };
+    return () => (mounted = false);
   }, []);
 
-  // "מסך רץ" – כל 4 שניות מחליפים עדכון
+  // ===== LOAD USER PROFILE =====
   useEffect(() => {
-    if (!updates || updates.length === 0) return;
+    if (!user?.id) return;
+    let mounted = true;
 
-    const intervalId = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % updates.length);
-    }, 4000);
+    async function loadProfile() {
+      try {
+        setProfileLoading(true);
 
-    return () => clearInterval(intervalId);
-  }, [updates]);
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("first_name, last_name, email, photo_url")
+          .eq("auth_uid", user.id)
+          .maybeSingle();
 
-  const currentUpdate = updates.length > 0 ? updates[currentIndex] : null;
+        if (error) throw error;
 
-  function getShortBody(update) {
-    if (!update?.body) return '';
-    const maxLen = 90;
-    return update.body.length > maxLen
-      ? update.body.slice(0, maxLen) + '...'
-      : update.body;
+        if (mounted) setProfile(data);
+      } catch (e) {
+        if (mounted) setProfileError(e.message);
+      } finally {
+        if (mounted) setProfileLoading(false);
+      }
+    }
+
+    loadProfile();
+    return () => (mounted = false);
+  }, [user?.id]);
+
+  // ===== INITIALS HELPER =====
+  function getInitials() {
+    const first = profile?.first_name || "";
+    const last = profile?.last_name || "";
+    if (first || last) return `${first[0] || ""}${last[0] || ""}`.toUpperCase();
+
+    const email = profile?.email || user?.email || "";
+    return email.charAt(0).toUpperCase();
   }
 
+  // ===== ROTATING TICKER =====
+  useEffect(() => {
+    if (!updates.length) return;
+
+    const id = setInterval(() => {
+      setCurrentIndex((i) => (i + 1) % updates.length);
+    }, 4000);
+
+    return () => clearInterval(id);
+  }, [updates]);
+
+  const currentUpdate = updates.length ? updates[currentIndex] : null;
+
+  function shortenText(text) {
+    if (!text) return "";
+    return text.length > 90 ? text.slice(0, 90) + "..." : text;
+  }
+
+  // ===== RENDER =====
   return (
-    <View style={styles.container}>
-      {/* כותרת עליונה */}
-      <View style={styles.header}>
-        <Text style={styles.appTitle}>Smart Neighbors</Text>
-        <Text style={styles.welcomeText}>
-          שלום {user?.email || 'שכן/ה'} 👋
-        </Text>
+    <View style={styles.screen}>
+      
+      {/* HEADER WITH AVATAR */}
+      <View style={styles.headerRow}>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.appTitle}>Smart Neighbors</Text>
+          <Text style={styles.welcomeText}>
+            שלום {profile?.first_name || user?.email || "שכן/ה"} 👋
+          </Text>
+        </View>
+
+        <TouchableOpacity style={styles.avatarWrapper}>
+          {profileLoading ? (
+            <ActivityIndicator size="small" />
+          ) : profile?.photo_url ? (
+            <Image
+              source={{ uri: profile.photo_url }}
+              style={styles.avatarImage}
+            />
+          ) : (
+            <View style={styles.avatarPlaceholder}>
+              <Text style={styles.avatarInitials}>{getInitials()}</Text>
+            </View>
+          )}
+        </TouchableOpacity>
       </View>
 
-      {/* מסך רץ של עדכוני בניין */}
+      {/* TICKER */}
       <View style={styles.tickerContainer}>
         <Text style={styles.tickerLabel}>עדכוני הבניין:</Text>
 
@@ -101,57 +148,59 @@ export default function HomeScreen({ navigation, user }) {
           <ActivityIndicator size="small" color="#4f46e5" />
         ) : updatesError ? (
           <Text style={styles.tickerError}>{updatesError}</Text>
-        ) : updates.length === 0 ? (
-          <Text style={styles.tickerEmpty}>כרגע אין עדכונים לבניין.</Text>
+        ) : !currentUpdate ? (
+          <Text style={styles.tickerEmpty}>כרגע אין עדכונים.</Text>
         ) : (
           <TouchableOpacity
-            onPress={() => navigation.navigate('BuildingUpdates')}
+            onPress={() => navigation.navigate("BuildingUpdates")}
             activeOpacity={0.8}
           >
             <Text style={styles.tickerTitle}>
               {currentUpdate.title}
-              {currentUpdate.is_important ? ' ⚠️' : ''}
+              {currentUpdate.is_important ? " ⚠️" : ""}
             </Text>
-            <Text style={styles.tickerBody}>{getShortBody(currentUpdate)}</Text>
+            <Text style={styles.tickerBody}>
+              {shortenText(currentUpdate.body)}
+            </Text>
             <Text style={styles.tickerHint}>הקשה לפתיחת כל העדכונים</Text>
           </TouchableOpacity>
         )}
       </View>
 
-      {/* כפתורים מרכזיים – פיצ'רים ראשיים */}
+      {/* MAIN BUTTONS */}
       <View style={styles.buttonsRow}>
         <TouchableOpacity
           style={styles.featureButton}
-          onPress={() => navigation.navigate('CreateRequest')}
+          onPress={() => navigation.navigate("CreateRequest")}
         >
           <Text style={styles.featureText}>יצירת בקשה חדשה</Text>
         </TouchableOpacity>
 
-
-          <TouchableOpacity
+        <TouchableOpacity
           style={styles.featureButton}
-          onPress={() => navigation.navigate('ReportDisturbance')}
+          onPress={() => navigation.navigate("ReportDisturbance")}
         >
           <Text style={styles.featureText}>דיווח על מטרד/רעש</Text>
         </TouchableOpacity>
 
-
-          <TouchableOpacity
+        <TouchableOpacity
           style={styles.featureButton}
-          onPress={() => navigation.navigate('PayFees')}
+          onPress={() => navigation.navigate("PayFees")}
         >
           <Text style={styles.featureText}>תשלום מיסי ועד</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.featureButtonSecondary}
-          onPress={() => navigation.navigate('BuildingUpdates')}
+          onPress={() => navigation.navigate("BuildingUpdates")}
         >
-          <Text style={styles.featureTextSecondary}>סיכום שבועי / כל העדכונים</Text>
+          <Text style={styles.featureTextSecondary}>
+            סיכום שבועי / כל העדכונים
+          </Text>
         </TouchableOpacity>
       </View>
 
-      {/* כפתור התנתקות בתחתית */}
+      {/* LOGOUT BUTTON */}
       <TouchableOpacity style={styles.logoutButton} onPress={handleSignOut}>
         <Text style={styles.logoutText}>התנתקות</Text>
       </TouchableOpacity>
@@ -160,94 +209,120 @@ export default function HomeScreen({ navigation, user }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
+  screen: {
     flex: 1,
-    paddingTop: 40,
-    paddingHorizontal: 16,
-    backgroundColor: '#f7f7fb',
+    backgroundColor: "#f9fafb",
+    padding: 16,
+    paddingTop: 60,
   },
-  header: {
-    marginBottom: 16,
+
+  /* HEADER + AVATAR */
+  headerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 20,
   },
+
   appTitle: {
-    fontSize: 24,
-    fontWeight: '700',
+    fontSize: 26,
+    fontWeight: "700",
+    color: "#111827",
   },
+
   welcomeText: {
+    fontSize: 16,
+    color: "#374151",
     marginTop: 4,
-    fontSize: 15,
-    color: '#4b5563',
   },
+
+  avatarWrapper: { padding: 4 },
+  avatarImage: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+  },
+  avatarPlaceholder: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: "#d1d5db",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  avatarInitials: {
+    fontWeight: "700",
+    color: "#374151",
+  },
+
+  /* TICKER */
   tickerContainer: {
-    padding: 12,
+    backgroundColor: "#e0e7ff",
+    padding: 14,
     borderRadius: 10,
-    backgroundColor: '#e0e7ff',
     marginBottom: 20,
   },
   tickerLabel: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#4338ca',
-    marginBottom: 4,
+    fontWeight: "700",
+    marginBottom: 6,
+    color: "#1e3a8a",
+    fontSize: 15,
   },
   tickerTitle: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: '#111827',
+    fontWeight: "700",
+    fontSize: 16,
   },
   tickerBody: {
-    fontSize: 13,
-    color: '#111827',
+    fontSize: 14,
+    color: "#374151",
     marginTop: 2,
   },
   tickerHint: {
-    fontSize: 11,
-    color: '#4b5563',
-    marginTop: 4,
-    textAlign: 'left',
+    marginTop: 6,
+    fontSize: 12,
+    color: "#6b7280",
   },
-  tickerEmpty: {
-    fontSize: 13,
-    color: '#6b7280',
-  },
-  tickerError: {
-    fontSize: 13,
-    color: '#b91c1c',
-  },
+  tickerEmpty: { color: "#6b7280" },
+  tickerError: { color: "red" },
+
+  /* MAIN BUTTONS */
   buttonsRow: {
     marginTop: 10,
-    gap: 12,
+    gap: 14,
   },
   featureButton: {
-    backgroundColor: '#4f46e5',
-    paddingVertical: 12,
+    backgroundColor: "#4f46e5",
+    paddingVertical: 14,
     borderRadius: 10,
-    alignItems: 'center',
+    alignItems: "center",
   },
   featureText: {
-    color: '#fff',
-    fontWeight: '600',
+    color: "white",
+    fontWeight: "600",
+    fontSize: 16,
   },
   featureButtonSecondary: {
-    backgroundColor: '#e5e7eb',
-    paddingVertical: 10,
+    backgroundColor: "#e5e7eb",
+    paddingVertical: 14,
     borderRadius: 10,
-    alignItems: 'center',
+    alignItems: "center",
   },
   featureTextSecondary: {
-    color: '#111827',
-    fontWeight: '600',
+    color: "#374151",
+    fontWeight: "600",
+    fontSize: 16,
   },
+
+  /* LOGOUT BUTTON */
   logoutButton: {
-    marginTop: 'auto',
-    marginBottom: 24,
-    backgroundColor: '#ef4444',
-    paddingVertical: 10,
-    borderRadius: 8,
-    alignItems: 'center',
+    marginTop: 30,
+    backgroundColor: "#ef4444",
+    paddingVertical: 14,
+    borderRadius: 10,
+    alignItems: "center",
   },
   logoutText: {
-    color: '#fff',
-    fontWeight: '600',
+    color: "white",
+    fontWeight: "700",
+    fontSize: 16,
   },
 });
