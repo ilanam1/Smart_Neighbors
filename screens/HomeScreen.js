@@ -20,6 +20,7 @@ export default function HomeScreen({ navigation, user }) {
   const [profile, setProfile] = useState(null);
   const [profileLoading, setProfileLoading] = useState(false);
   const [profileError, setProfileError] = useState(null);
+  const [isCommittee, setIsCommittee] = useState(false);
 
   const supabase = getSupabase();
 
@@ -30,7 +31,7 @@ export default function HomeScreen({ navigation, user }) {
       console.error("Sign out error:", e);
     }
   }
-
+/*
   // ===== LOAD BUILDING UPDATES =====
   useEffect(() => {
     let mounted = true;
@@ -38,7 +39,7 @@ export default function HomeScreen({ navigation, user }) {
     async function loadUpdates() {
       try {
         setLoadingUpdates(true);
-        const data = await getRecentBuildingUpdates(20);
+        const data = await getWeeklyBuildingUpdates();
         if (mounted) {
           setUpdates(data);
           setCurrentIndex(0);
@@ -54,6 +55,10 @@ export default function HomeScreen({ navigation, user }) {
     return () => (mounted = false);
   }, []);
 
+
+*/
+
+
   // ===== LOAD USER PROFILE =====
   useEffect(() => {
     if (!user?.id) return;
@@ -64,14 +69,24 @@ export default function HomeScreen({ navigation, user }) {
         setProfileLoading(true);
 
         const { data, error } = await supabase
-          .from("profiles")
-          .select("first_name, last_name, email, photo_url")
-          .eq("auth_uid", user.id)
-          .maybeSingle();
+        .from("profiles")
+        .select("first_name, last_name, email, photo_url, is_house_committee,committee_payment_link")
+        .eq("auth_uid", user.id)
+        .maybeSingle();
 
         if (error) throw error;
 
-        if (mounted) setProfile(data);
+        if (mounted) {
+          setProfile(data);
+          const isC = !!data?.is_house_committee;
+          setIsCommittee(isC);
+
+          // אם הוא ועד בית ואין לו עדיין קישור – נשלח אותו למסך ההגדרה
+          if (isC && !data?.committee_payment_link) {
+            navigation.navigate('CommitteePaymentSetup');
+          }
+        }
+          
       } catch (e) {
         if (mounted) setProfileError(e.message);
       } finally {
@@ -140,7 +155,7 @@ export default function HomeScreen({ navigation, user }) {
         </TouchableOpacity>
       </View>
 
-      {/* TICKER */}
+{/* 
       <View style={styles.tickerContainer}>
         <Text style={styles.tickerLabel}>עדכוני הבניין:</Text>
 
@@ -166,7 +181,7 @@ export default function HomeScreen({ navigation, user }) {
           </TouchableOpacity>
         )}
       </View>
-
+*/}
       {/* MAIN BUTTONS */}
       <View style={styles.buttonsRow}>
         <TouchableOpacity
@@ -198,7 +213,49 @@ export default function HomeScreen({ navigation, user }) {
             סיכום שבועי / כל העדכונים
           </Text>
         </TouchableOpacity>
+
+
+
+          <TouchableOpacity
+            style={styles.featureButtonSecondary}
+            onPress={() => navigation.navigate("PublicRequests")}
+          >
+            <Text style={styles.featureTextSecondary}>
+              צפייה בבקשות מהשכנים
+            </Text>
+          </TouchableOpacity>
       </View>
+
+      {/* אזור מיוחד לוועד הבית */}
+      {isCommittee && (
+        <View style={styles.committeeSection}>
+          <Text style={styles.committeeTitle}>אזור ועד הבית</Text>
+
+          <TouchableOpacity
+            style={styles.featureButton}
+            onPress={() => navigation.navigate("CommitteeRequests")}
+          >
+            <Text style={styles.featureText}>צפייה בכל בקשות הדיירים</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.featureButton}
+            onPress={() => navigation.navigate("CommitteeDisturbances")}
+          >
+            <Text style={styles.featureText}>צפייה בכל דיווחי המטרדים</Text>
+          </TouchableOpacity>
+
+         <TouchableOpacity
+            style={styles.featureButtonSecondary}
+            onPress={() => navigation.navigate("BuildingUpdates", { isCommittee: true })}
+          >
+            <Text style={styles.featureTextSecondary}>
+              ניהול ויצירת עדכוני בניין
+            </Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
 
       {/* LOGOUT BUTTON */}
       <TouchableOpacity style={styles.logoutButton} onPress={handleSignOut}>
@@ -325,4 +382,22 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     fontSize: 16,
   },
+
+
+  committeeSection: {
+  marginTop: 24,
+  padding: 16,
+  borderRadius: 10,
+  backgroundColor: '#fff7ed',
+  borderWidth: 1,
+  borderColor: '#fed7aa',
+  gap: 10,
+},
+committeeTitle: {
+  fontSize: 18,
+  fontWeight: '700',
+  color: '#c2410c',
+  marginBottom: 8,
+},
+
 });

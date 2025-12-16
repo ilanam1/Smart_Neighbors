@@ -5,7 +5,6 @@ import { getSupabase } from './DataBase/supabase';
 
 const supabase = getSupabase();
 
-
 /**
  * יצירת בקשה חדשה עבור המשתמש המחובר
  * @param {Object} payload
@@ -14,8 +13,16 @@ const supabase = getSupabase();
  * @param {string} payload.category     - קטגוריה: 'ITEM_LOAN' | 'PHYSICAL_HELP' | 'INFO' | 'OTHER'
  * @param {string} payload.urgency      - דחיפות: 'LOW' | 'MEDIUM' | 'HIGH'
  * @param {string | null} payload.expiresAt - תאריך תפוגה בפורמט ISO (אופציונלי)
+ * @param {boolean} payload.isCommitteeOnly - האם הבקשה מיועדת רק לוועד הבית
  */
-export async function createRequest({ title, description, category, urgency, expiresAt = null }) {
+export async function createRequest({
+  title,
+  description,
+  category,
+  urgency,
+  expiresAt = null,
+  isCommitteeOnly = false,
+}) {
   // 1. להביא את המשתמש המחובר מה-Auth של Supabase
   const {
     data: { user },
@@ -42,6 +49,7 @@ export async function createRequest({ title, description, category, urgency, exp
         category,
         urgency,
         expires_at: expiresAt, // יכול להיות null
+        is_committee_only: isCommitteeOnly,
       },
     ])
     .select()
@@ -56,7 +64,7 @@ export async function createRequest({ title, description, category, urgency, exp
 }
 
 /**
- * קבלת רשימת בקשות פתוחות (אפשר כרגע כלליות, נרחיב לפי בניין/שכונה בהמשך)
+ * קבלת רשימת בקשות פתוחות (לשימוש כללי או ע"י ועד הבית)
  */
 export async function getOpenRequests() {
   const { data, error } = await supabase
@@ -74,10 +82,31 @@ export async function getOpenRequests() {
 }
 
 /**
+ * קבלת רשימת בקשות שפתוחות לכל הדיירים (לא רק לוועד)
+ */
+export async function getPublicRequests() {
+  const { data, error } = await supabase
+    .from('requests')
+    .select('*')
+    .eq('status', 'OPEN')
+    .eq('is_committee_only', false)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching public requests:', error.message);
+    throw new Error('שגיאה בשליפת הבקשות הפתוחות לדיירים');
+  }
+
+  return data;
+}
+
+/**
  * עריכת בקשה קיימת (שייכת למשתמש המחובר)
  */
-export async function updateRequest(id, { title, description, category, urgency, expiresAt }) {
-  // אופציונלי: לוודא שהמשתמש המחובר הוא בעל הבקשה (אפשר להוסיף בדיקת auth_user_id בשרת)
+export async function updateRequest(
+  id,
+  { title, description, category, urgency, expiresAt, isCommitteeOnly }
+) {
   const updateFields = {};
 
   if (title !== undefined) updateFields.title = title;
@@ -85,6 +114,8 @@ export async function updateRequest(id, { title, description, category, urgency,
   if (category !== undefined) updateFields.category = category;
   if (urgency !== undefined) updateFields.urgency = urgency;
   if (expiresAt !== undefined) updateFields.expires_at = expiresAt;
+  if (isCommitteeOnly !== undefined)
+    updateFields.is_committee_only = isCommitteeOnly;
 
   const { data, error } = await supabase
     .from('requests')

@@ -55,56 +55,66 @@ export default function PayFeesScreen() {
   }
 
   async function handlePay() {
-    if (!selectedCommittee) {
-      Alert.alert('שגיאה', 'לא נבחר חבר ועד לתשלום.');
-      return;
-    }
-    if (!selectedCommittee.committee_payment_link) {
-      Alert.alert('שגיאה', 'לחבר הוועד שנבחר אין קישור תשלום מוגדר.');
-      return;
-    }
-
-    try {
-      setLoading(true);
-
-      // 1) יוצרים רשומת תשלום ב-Supabase
-      const payment = await createHouseFeePayment({
-        committeeAuthUserId: selectedCommittee.auth_uid,
-        amount,
-        monthYear,
-      });
-
-      setLastPaymentId(payment.id);
-
-      // 2) פותחים את דף התשלום האמיתי בדפדפן (Stripe/Bit/PayBox וכו')
-      const url = selectedCommittee.committee_payment_link;
-
-      const supported = await Linking.canOpenURL(url);
-      if (!supported) {
-        Alert.alert(
-          'שגיאה',
-          'לא ניתן לפתוח את קישור התשלום במכשיר זה. אנא בדוק את ההגדרות או פנה לוועד.'
-        );
-        return;
-      }
-
-      Alert.alert(
-        'מעבר לתשלום',
-        'נפתח דף תשלום מאובטח. לאחר סיום התשלום, חזור לאפליקציה כדי לסמן ששילמת.',
-        [
-          {
-            text: 'המשך',
-            onPress: () => Linking.openURL(url),
-          },
-        ]
-      );
-    } catch (err) {
-      console.error(err);
-      Alert.alert('שגיאה', err.message || 'שגיאה בהתחלת התשלום.');
-    } finally {
-      setLoading(false);
-    }
+  if (!selectedCommittee) {
+    Alert.alert('שגיאה', 'לא נבחר חבר ועד לתשלום.');
+    return;
   }
+
+  let url = selectedCommittee.committee_payment_link || '';
+
+  // 1. ניקוי רווחים ותווים מיותרים
+  url = url.trim();
+
+  if (!url) {
+    Alert.alert('שגיאה', 'לחבר הוועד שנבחר אין קישור תשלום מוגדר.');
+    return;
+  }
+
+  // 2. אם אין פרוטוקול – נוסיף https://
+  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+    url = 'https://' + url;
+  }
+
+  try {
+    setLoading(true);
+
+    // יצירת רשומת תשלום בבסיס הנתונים
+    const payment = await createHouseFeePayment({
+      committeeAuthUserId: selectedCommittee.auth_uid,
+      amount,
+      monthYear,
+    });
+
+    setLastPaymentId(payment.id);
+
+    console.log('PAY URL =', url);
+
+    // 3. עבור http/https אפשר פשוט לפתוח – אם יש בעיה, נתפוס ב-catch
+    Alert.alert(
+      'מעבר לתשלום',
+      'נפתח דף תשלום מאובטח. לאחר סיום התשלום, חזור לאפליקציה כדי לסמן ששילמת.',
+      [
+        {
+          text: 'המשך',
+          onPress: async () => {
+            try {
+              await Linking.openURL(url);
+            } catch (e) {
+              console.log('openURL error', e);
+              Alert.alert('שגיאה', 'לא ניתן לפתוח את קישור התשלום.');
+            }
+          },
+        },
+      ]
+    );
+  } catch (err) {
+    console.error(err);
+    Alert.alert('שגיאה', err.message || 'שגיאה בהתחלת התשלום.');
+  } finally {
+    setLoading(false);
+  }
+}
+
 
   async function handleMarkAsPaid() {
     if (!lastPaymentId) {
