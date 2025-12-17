@@ -6,7 +6,7 @@ import { getSupabase } from './DataBase/supabase';
 const supabase = getSupabase();
 
 /**
- * יצירת עדכון חדש לבניין (מיועד בעתיד לוועד בית / מנהל)
+ * יצירת עדכון חדש לבניין (מיועד לוועד בית / מנהל)
  */
 export async function createBuildingUpdate({
   title,
@@ -29,6 +29,20 @@ export async function createBuildingUpdate({
     throw new Error('אין משתמש מחובר – רק משתמש מחובר יכול לפרסם עדכון.');
   }
 
+  // לנסות להביא פרטים מהפרופיל (שם פרטי + משפחה)
+  let creatorName = null;
+
+  const { data: profile, error: profileError } = await supabase
+    .from('profiles')
+    .select('first_name, last_name')
+    .eq('auth_uid', user.id)
+    .maybeSingle();
+
+  if (!profileError && profile) {
+    const fullName = `${profile.first_name || ''} ${profile.last_name || ''}`.trim();
+    creatorName = fullName || null;
+  }
+
   const { data, error } = await supabase
     .from('building_updates')
     .insert([
@@ -38,6 +52,8 @@ export async function createBuildingUpdate({
         body,
         category,
         is_important: isImportant,
+        creator_name: creatorName,
+        creator_email: user.email ?? null,
       },
     ])
     .select()
@@ -52,7 +68,7 @@ export async function createBuildingUpdate({
 }
 
 /**
- * קבלת X העדכונים האחרונים (למסך הבית / מסך רץ)
+ * קבלת X העדכונים האחרונים (לטיקר במסך הבית וכו')
  */
 export async function getRecentBuildingUpdates(limit = 20) {
   const { data, error } = await supabase
@@ -73,7 +89,6 @@ export async function getRecentBuildingUpdates(limit = 20) {
  * קבלת עדכונים משבעת הימים האחרונים (סיכום שבועי)
  */
 export async function getWeeklyBuildingUpdates() {
-  // חישוב תאריך של 7 ימים אחורה בצד הלקוח
   const now = new Date();
   const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 

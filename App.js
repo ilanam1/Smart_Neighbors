@@ -1,4 +1,4 @@
-// App.js
+
 import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -11,6 +11,11 @@ import CreateRequestScreen from './screens/CreateRequestScreen';
 import ReportDisturbanceScreen from './screens/ReportDisturbanceScreen';
 import BuildingUpdatesScreen from './screens/BuildingUpdatesScreen';
 import PayFeesScreen from './screens/PayFeesScreen';
+import CommitteeRequestsScreen from './screens/CommitteeRequestsScreen';
+import CommitteeDisturbancesScreen from './screens/CommitteeDisturbancesScreen';
+import CommitteePaymentSetupScreen from './screens/CommitteePaymentSetupScreen';
+import PublicRequestsScreen from './screens/PublicRequestsScreen';
+import ProfilePageScreen from './screens/ProfilePageScreen'; 
 
 import { getSupabase } from './DataBase/supabase';
 
@@ -60,6 +65,13 @@ export default function App() {
             {props => <HomeScreen {...props} user={user} />}
           </Stack.Screen>
 
+          {/*  PROFILE SCREEN */}
+          <Stack.Screen
+            name="ProfilePageScreen"
+            component={ProfilePageScreen}
+            options={{ title: 'הפרופיל שלי' }}
+          />
+
           <Stack.Screen
             name="CreateRequest"
             component={CreateRequestScreen}
@@ -78,11 +90,32 @@ export default function App() {
             options={{ title: 'עדכוני הבניין – סיכום שבועי' }}
           />
 
-
-           <Stack.Screen
+          <Stack.Screen
             name="PayFees"
             component={PayFeesScreen}
             options={{ title: 'תשלום מיסי ועד' }}
+          />
+
+          <Stack.Screen
+            name="CommitteeRequests"
+            component={CommitteeRequestsScreen}
+          />
+
+          <Stack.Screen
+            name="CommitteeDisturbances"
+            component={CommitteeDisturbancesScreen}
+          />
+
+          <Stack.Screen
+            name="CommitteePaymentSetup"
+            component={CommitteePaymentSetupScreen}
+            options={{ title: 'הגדרת קישור תשלום' }}
+          />
+
+          <Stack.Screen
+            name="PublicRequests"
+            component={PublicRequestsScreen}
+            options={{ title: 'בקשות מהשכנים' }}
           />
         </Stack.Navigator>
       ) : (

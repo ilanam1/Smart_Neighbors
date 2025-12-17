@@ -1,5 +1,4 @@
 // CreateRequestScreen.js
-// מסך לפרסום בקשה חדשה לשכנים
 
 import React, { useState } from 'react';
 import {
@@ -12,9 +11,8 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
-import { createRequest } from '../requestsApi'; // ודא שהקובץ requestsApi.js קיים כמו שכתבנו
+import { createRequest } from '../requestsApi';
 
-// רשימות קבועות לקטגוריה ולדחיפות
 const CATEGORIES = [
   { key: 'ITEM_LOAN', label: 'השאלת ציוד' },
   { key: 'PHYSICAL_HELP', label: 'עזרה פיזית' },
@@ -28,24 +26,26 @@ const URGENCIES = [
   { key: 'HIGH', label: 'גבוהה' },
 ];
 
-const DEFAULT_EXPIRE_HOURS = 24; // כמה שעות עד תפוגה אוטומטית
+const DEFAULT_EXPIRE_HOURS = 24;
 
 export default function CreateRequestScreen({ navigation }) {
-  // state לשדות הטופס
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('ITEM_LOAN');
   const [urgency, setUrgency] = useState('MEDIUM');
   const [loading, setLoading] = useState(false);
 
-  // פונקציה לעדכון expires_at (כרגע אוטומטי – 24 שעות קדימה)
+  // NEW: למי הבקשה מופיעה? 'ALL' או 'COMMITTEE'
+  const [visibility, setVisibility] = useState('ALL'); // 'ALL' | 'COMMITTEE'
+
   const computeExpiresAt = () => {
     const now = new Date();
-    const expires = new Date(now.getTime() + DEFAULT_EXPIRE_HOURS * 60 * 60 * 1000);
+    const expires = new Date(
+      now.getTime() + DEFAULT_EXPIRE_HOURS * 60 * 60 * 1000
+    );
     return expires.toISOString();
   };
 
-  // ולידציה בסיסית לשדות
   const validate = () => {
     if (!title.trim()) {
       Alert.alert('שגיאה', 'נא למלא כותרת לבקשה.');
@@ -58,14 +58,14 @@ export default function CreateRequestScreen({ navigation }) {
     return true;
   };
 
-  // שליחת הבקשה ל-Supabase
   const handleSubmit = async () => {
     if (!validate()) return;
 
     try {
       setLoading(true);
-
       const expiresAt = computeExpiresAt();
+
+      const isCommitteeOnly = visibility === 'COMMITTEE';
 
       const newRequest = await createRequest({
         title: title.trim(),
@@ -73,24 +73,23 @@ export default function CreateRequestScreen({ navigation }) {
         category,
         urgency,
         expiresAt,
+        isCommitteeOnly,
       });
 
       console.log('New request created:', newRequest);
 
-    Alert.alert('הצלחה', 'הבקשה פורסמה לשכנים בהצלחה!', [
-      {
-        text: 'אוקיי',
-        onPress: () => {
-          // ניקוי הטופס
-          setTitle('');
-          setDescription('');
-          setCategory('ITEM_LOAN');
-          setUrgency('MEDIUM');
-          // נשארים באותו מסך – לא עושים goBack
+      Alert.alert('הצלחה', 'הבקשה פורסמה בהצלחה!', [
+        {
+          text: 'אוקיי',
+          onPress: () => {
+            setTitle('');
+            setDescription('');
+            setCategory('ITEM_LOAN');
+            setUrgency('MEDIUM');
+            setVisibility('ALL');
+          },
         },
-      },
-    ]);
-
+      ]);
     } catch (err) {
       console.error(err);
       Alert.alert('שגיאה', err.message || 'אירעה שגיאה בפרסום הבקשה.');
@@ -171,6 +170,44 @@ export default function CreateRequestScreen({ navigation }) {
         ))}
       </View>
 
+      {/* NEW: למי הבקשה מופיעה */}
+      <Text style={styles.label}>למי הבקשה תופיע?</Text>
+      <View style={styles.chipsRow}>
+        <TouchableOpacity
+          style={[
+            styles.chip,
+            visibility === 'ALL' && styles.chipSelected,
+          ]}
+          onPress={() => setVisibility('ALL')}
+        >
+          <Text
+            style={[
+              styles.chipText,
+              visibility === 'ALL' && styles.chipTextSelected,
+            ]}
+          >
+            לכל הדיירים
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[
+            styles.chip,
+            visibility === 'COMMITTEE' && styles.chipSelected,
+          ]}
+          onPress={() => setVisibility('COMMITTEE')}
+        >
+          <Text
+            style={[
+              styles.chipText,
+              visibility === 'COMMITTEE' && styles.chipTextSelected,
+            ]}
+          >
+            רק לוועד הבית
+          </Text>
+        </TouchableOpacity>
+      </View>
+
       {/* כפתור שליחה */}
       <TouchableOpacity
         style={[styles.button, loading && styles.buttonDisabled]}
@@ -184,7 +221,6 @@ export default function CreateRequestScreen({ navigation }) {
         )}
       </TouchableOpacity>
 
-      {/* הערה קטנה על תפוגה */}
       <Text style={styles.note}>
         הבקשה תיסגר אוטומטית לאחר {DEFAULT_EXPIRE_HOURS} שעות אם לא תטופל.
       </Text>
@@ -192,6 +228,7 @@ export default function CreateRequestScreen({ navigation }) {
   );
 }
 
+// styles – כמו שהיו אצלך, לא חייב לשנות
 const styles = StyleSheet.create({
   container: {
     padding: 16,
