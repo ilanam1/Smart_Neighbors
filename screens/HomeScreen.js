@@ -1,4 +1,3 @@
-// screens/HomeScreen.js
 import React, { useEffect, useState } from "react";
 import {
   View,
@@ -9,12 +8,32 @@ import {
   Image,
   ScrollView,
   SafeAreaView,
+  Platform,
+  StatusBar,
+  Dimensions,
 } from "react-native";
+import { 
+  Bell, 
+  MessageSquarePlus, 
+  AlertTriangle, 
+  CreditCard, 
+  Settings, 
+  LogOut, 
+  ChevronLeft,
+  ShieldCheck,
+  Plus,
+  ArrowUpRight,
+  User,
+  Zap,
+  LayoutDashboard
+} from 'lucide-react-native';
 import { getSupabase } from "../DataBase/supabase";
 import { getRecentBuildingUpdates } from "../buildingUpdatesApi";
-import { Platform, StatusBar } from "react-native";
+
+const { width } = Dimensions.get('window');
 
 export default function HomeScreen({ navigation, user }) {
+  // ===== STATE =====
   const [updates, setUpdates] = useState([]);
   const [loadingUpdates, setLoadingUpdates] = useState(false);
   const [updatesError, setUpdatesError] = useState(null);
@@ -22,7 +41,6 @@ export default function HomeScreen({ navigation, user }) {
 
   const [profile, setProfile] = useState(null);
   const [profileLoading, setProfileLoading] = useState(false);
-  const [profileError, setProfileError] = useState(null);
   const [isCommittee, setIsCommittee] = useState(false);
 
   const supabase = getSupabase();
@@ -38,7 +56,6 @@ export default function HomeScreen({ navigation, user }) {
   // ===== LOAD BUILDING UPDATES =====
   useEffect(() => {
     let mounted = true;
-
     async function loadUpdates() {
       try {
         setLoadingUpdates(true);
@@ -53,7 +70,6 @@ export default function HomeScreen({ navigation, user }) {
         if (mounted) setLoadingUpdates(false);
       }
     }
-
     loadUpdates();
     return () => (mounted = false);
   }, []);
@@ -62,292 +78,546 @@ export default function HomeScreen({ navigation, user }) {
   useEffect(() => {
     if (!user?.id) return;
     let mounted = true;
-
     async function loadProfile() {
       try {
         setProfileLoading(true);
-
         const { data, error } = await supabase
           .from("profiles")
-          .select(
-            "first_name, last_name, email, photo_url, is_house_committee, committee_payment_link"
-          )
+          .select("first_name, last_name, email, photo_url, is_house_committee, committee_payment_link")
           .eq("auth_uid", user.id)
           .maybeSingle();
 
         if (error) throw error;
-
         if (mounted) {
           setProfile(data);
           const isC = !!data?.is_house_committee;
           setIsCommittee(isC);
-
           if (isC && !data?.committee_payment_link) {
             navigation.navigate("CommitteePaymentSetup");
           }
         }
       } catch (e) {
-        if (mounted) setProfileError(e.message);
+        console.error(e.message);
       } finally {
         if (mounted) setProfileLoading(false);
       }
     }
-
     loadProfile();
     return () => (mounted = false);
   }, [user?.id]);
 
-  function getInitials() {
-    const first = profile?.first_name || "";
-    const last = profile?.last_name || "";
-    if (first || last) return `${first[0] || ""}${last[0] || ""}`.toUpperCase();
-    return (profile?.email || user?.email || "").charAt(0).toUpperCase();
-  }
-
+  // ===== TICKER LOGIC =====
   useEffect(() => {
     if (!updates.length) return;
     const id = setInterval(() => {
       setCurrentIndex((i) => (i + 1) % updates.length);
-    }, 4000);
+    }, 5000);
     return () => clearInterval(id);
   }, [updates]);
 
   const currentUpdate = updates.length ? updates[currentIndex] : null;
 
-  function shortenText(text) {
-    if (!text) return "";
-    return text.length > 90 ? text.slice(0, 90) + "..." : text;
+  function getInitials() {
+    const first = profile?.first_name || "";
+    const last = profile?.last_name || "";
+    if (first || last) return `${first[0] || ""}${last[0] || ""}`.toUpperCase();
+    return (profile?.email || user?.email || "U").charAt(0).toUpperCase();
   }
 
-  // ===== RENDER =====
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <ScrollView
-        contentContainerStyle={styles.screen}
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="light-content" />
+      
+      {/* Background Decor (Simulated) */}
+      <View style={styles.bgGlowTop} />
+      <View style={styles.bgGlowBottom} />
+
+      <ScrollView 
+        contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
         {/* HEADER */}
-        <View style={styles.headerRow}>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.appTitle}>Smart Neighbors</Text>
-            <Text style={styles.welcomeText}>
-              שלום {profile?.first_name || user?.email || "שכן/ה"} 👋
-            </Text>
+        <View style={styles.header}>
+          <View style={styles.userInfo}>
+            <TouchableOpacity 
+              style={styles.avatarContainer}
+              onPress={() => navigation.navigate("ProfilePageScreen")}
+            >
+              {profileLoading ? (
+                <ActivityIndicator size="small" color="#10b981" />
+              ) : profile?.photo_url ? (
+                <Image source={{ uri: profile.photo_url }} style={styles.avatar} />
+              ) : (
+                <Text style={styles.avatarText}>{getInitials()}</Text>
+              )}
+            </TouchableOpacity>
+            <View style={styles.userTextWrapper}>
+              <Text style={styles.welcomeText}>שלום, {profile?.first_name || "שכן/ה"} 👋</Text>
+           
+            </View>
           </View>
 
-          <TouchableOpacity
-            style={styles.avatarWrapper}
-            onPress={() => navigation.navigate("ProfilePageScreen")}
-          >
-            {profileLoading ? (
-              <ActivityIndicator size="small" />
-            ) : profile?.photo_url ? (
-              <Image
-                source={{ uri: profile.photo_url }}
-                style={styles.avatarImage}
-              />
-            ) : (
-              <View style={styles.avatarPlaceholder}>
-                <Text style={styles.avatarInitials}>{getInitials()}</Text>
-              </View>
-            )}
-          </TouchableOpacity>
+          <View style={styles.headerActions}>
+            <TouchableOpacity style={styles.iconBtn}>
+              <Settings size={20} color="#94a3b8" />
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.iconBtn, styles.logoutBtn]} onPress={handleSignOut}>
+              <LogOut size={20} color="#fb7185" />
+            </TouchableOpacity>
+          </View>
         </View>
 
-        {/* TICKER */}
-        <View style={styles.tickerContainer}>
-          <Text style={styles.tickerLabel}>עדכוני הבניין:</Text>
+        {/* HERO UPDATES CARD */}
+        <TouchableOpacity 
+          style={styles.heroCard}
+          onPress={() => navigation.navigate("BuildingUpdates")}
+          activeOpacity={0.9}
+        >
+          <View style={styles.heroTagRow}>
+            <View style={styles.heroTag}>
+              <Text style={styles.heroTagText}>לוח מודעות</Text>
+            </View>
+            <Text style={styles.heroTimeText}>חדש</Text>
+          </View>
 
           {loadingUpdates ? (
-            <ActivityIndicator size="small" color="#4f46e5" />
-          ) : updatesError ? (
-            <Text style={styles.tickerError}>{updatesError}</Text>
+            <ActivityIndicator color="white" style={{ marginVertical: 10 }} />
           ) : !currentUpdate ? (
-            <Text style={styles.tickerEmpty}>כרגע אין עדכונים.</Text>
+            <Text style={styles.heroTitle}>אין עדכונים חדשים</Text>
           ) : (
-            <TouchableOpacity
-              onPress={() => navigation.navigate("BuildingUpdates")}
-              activeOpacity={0.8}
-            >
-              <Text style={styles.tickerTitle}>
-                {currentUpdate.title}
-                {currentUpdate.is_important ? " ⚠️" : ""}
+            <>
+              <Text style={styles.heroTitle}>
+                {currentUpdate.title} {currentUpdate.is_important ? "🚨" : ""}
               </Text>
-              <Text style={styles.tickerBody}>
-                {shortenText(currentUpdate.body)}
+              <Text style={styles.heroBody} numberOfLines={2}>
+                {currentUpdate.body}
               </Text>
-              <Text style={styles.tickerHint}>
-                הקשה לפתיחת כל העדכונים
-              </Text>
-            </TouchableOpacity>
+            </>
           )}
-        </View>
 
-        {/* MAIN BUTTONS */}
-        <View style={styles.buttonsRow}>
-          <TouchableOpacity
-            style={styles.featureButton}
+          <View style={styles.heroFooter}>
+            <Text style={styles.heroFooterText}>לכל העדכונים</Text>
+            <ArrowUpRight size={14} color="white" />
+          </View>
+          
+          <Bell style={styles.heroBgIcon} size={100} color="rgba(255,255,255,0.1)" />
+        </TouchableOpacity>
+
+        {/* BENTO GRID */}
+        <View style={styles.grid}>
+          {/* Create Request - Full Width */}
+          <TouchableOpacity 
+            style={styles.fullBox}
             onPress={() => navigation.navigate("CreateRequest")}
           >
-            <Text style={styles.featureText}>יצירת בקשה חדשה</Text>
+            <View style={styles.boxRow}>
+              <View style={[styles.boxIconContainer, { backgroundColor: '#10b981' }]}>
+                <MessageSquarePlus size={24} color="#0f172a" />
+              </View>
+              <View style={styles.boxTextContent}>
+                <Text style={styles.boxTitle}>יצירת בקשה חדשה</Text>
+                <Text style={styles.boxSub}>דיווח על תיקון או תחזוקה</Text>
+              </View>
+              <Plus size={20} color="#10b981" />
+            </View>
           </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.featureButton}
-            onPress={() => navigation.navigate("ReportDisturbance")}
-          >
-            <Text style={styles.featureText}>דיווח על מטרד/רעש</Text>
-          </TouchableOpacity>
+          {/* Square Boxes Row */}
+          <View style={styles.row}>
+            <TouchableOpacity 
+              style={[styles.squareBox, { backgroundColor: 'rgba(37, 99, 235, 0.15)', borderColor: 'rgba(37, 99, 235, 0.3)' }]}
+              onPress={() => navigation.navigate("PayFees")}
+            >
+              <View style={[styles.squareIcon, { backgroundColor: '#2563eb' }]}>
+                <CreditCard size={20} color="white" />
+              </View>
+              <View>
+                <Text style={styles.boxTitle}>תשלומים</Text>
+                <Text style={styles.boxSubSmall}>מיסי ועד וחשבונות</Text>
+              </View>
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.featureButton}
-            onPress={() => navigation.navigate("PayFees")}
-          >
-            <Text style={styles.featureText}>תשלום מיסי ועד</Text>
-          </TouchableOpacity>
+            <TouchableOpacity 
+              style={[styles.squareBox, { backgroundColor: 'rgba(225, 29, 72, 0.15)', borderColor: 'rgba(225, 29, 72, 0.3)' }]}
+              onPress={() => navigation.navigate("ReportDisturbance")}
+            >
+              <View style={[styles.squareIcon, { backgroundColor: '#e11d48' }]}>
+                <AlertTriangle size={20} color="white" />
+              </View>
+              <View>
+                <Text style={styles.boxTitle}>דיווח מטרד</Text>
+                <Text style={styles.boxSubSmall}>רעש, חניה או הפרעה</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
 
-          <TouchableOpacity
-            style={styles.featureButtonSecondary}
-            onPress={() => navigation.navigate("BuildingUpdates")}
-          >
-            <Text style={styles.featureTextSecondary}>
-              סיכום שבועי / כל העדכונים
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.featureButtonSecondary}
+          {/* Neighbors Feed - Full Width */}
+          <TouchableOpacity 
+            style={styles.fullBox}
             onPress={() => navigation.navigate("PublicRequests")}
           >
-            <Text style={styles.featureTextSecondary}>
-              צפייה בבקשות מהשכנים
-            </Text>
+            <View style={styles.boxRow}>
+              <View style={styles.avatarOverlap}>
+                <View style={styles.miniAvatar}><User size={12} color="#94a3b8"/></View>
+                <View style={[styles.miniAvatar, { right: -10 }]}><User size={12} color="#94a3b8"/></View>
+              </View>
+              <View style={[styles.boxTextContent, { marginRight: 20 }]}>
+                <Text style={styles.boxTitle}>הלוח הציבורי</Text>
+                <Text style={styles.boxSub}>מה השכנים מבקשים כרגע</Text>
+              </View>
+              <ChevronLeft size={20} color="#64748b" />
+            </View>
           </TouchableOpacity>
         </View>
 
-        {/* COMMITTEE */}
+        {/* COMMITTEE SECTION */}
         {isCommittee && (
-          <View style={styles.committeeSection}>
-            <Text style={styles.committeeTitle}>אזור ועד הבית</Text>
+          <View style={styles.committeeContainer}>
+            <View style={styles.committeeHeader}>
+              <View style={styles.committeeIconBg}>
+                <ShieldCheck size={18} color="#10b981" />
+              </View>
+              <Text style={styles.committeeTitle}>ניהול ועד הבית</Text>
+            </View>
 
-            <TouchableOpacity
-              style={styles.featureButton}
-              onPress={() => navigation.navigate("CommitteeRequests")}
+            <TouchableOpacity 
+              style={styles.committeeMainBtn}
+              onPress={() => navigation.navigate("BuildingUpdates", { isCommittee: true })}
             >
-              <Text style={styles.featureText}>
-                צפייה בכל בקשות הדיירים
-              </Text>
+              <Text style={styles.committeeMainBtnText}>ניהול ויצירת עדכוני בניין</Text>
+              <Zap size={16} color="#0f172a" />
             </TouchableOpacity>
 
-            <TouchableOpacity
-              style={styles.featureButton}
-              onPress={() => navigation.navigate("CommitteeDisturbances")}
-            >
-              <Text style={styles.featureText}>
-                צפייה בכל דיווחי המטרדים
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.featureButtonSecondary}
-              onPress={() =>
-                navigation.navigate("BuildingUpdates", { isCommittee: true })
-              }
-            >
-              <Text style={styles.featureTextSecondary}>
-                ניהול ויצירת עדכוני בניין
-              </Text>
-            </TouchableOpacity>
+            <View style={styles.row}>
+              <TouchableOpacity 
+                style={styles.committeeSubBtn}
+                onPress={() => navigation.navigate("CommitteeRequests")}
+              >
+                <Text style={styles.committeeStatNum}>8</Text>
+                <Text style={styles.committeeStatLabel}>בקשות דיירים</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={styles.committeeSubBtn}
+                onPress={() => navigation.navigate("CommitteeDisturbances")}
+              >
+                <Text style={[styles.committeeStatNum, { color: '#fb7185' }]}>2</Text>
+                <Text style={styles.committeeStatLabel}>דיווחי מטרדים</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         )}
 
-        {/* LOGOUT */}
-        <TouchableOpacity style={styles.logoutButton} onPress={handleSignOut}>
-          <Text style={styles.logoutText}>התנתקות</Text>
-        </TouchableOpacity>
+     
+       
       </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flexGrow: 1,
-    backgroundColor: "#f9fafb",
-    padding: 16,
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight + 8 : 16,
+  container: {
+    flex: 1,
+    backgroundColor: "#0F172A",
   },
-  headerRow: {
-    flexDirection: "row",
+  scrollContent: {
+    padding: 24,
+    paddingTop: Platform.OS === 'android' ? 40 : 20,
+  },
+  bgGlowTop: {
+    position: 'absolute',
+    top: -100,
+    right: -100,
+    width: 300,
+    height: 300,
+    borderRadius: 150,
+    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+    zIndex: 0,
+  },
+  bgGlowBottom: {
+    position: 'absolute',
+    bottom: -50,
+    left: -50,
+    width: 250,
+    height: 250,
+    borderRadius: 125,
+    backgroundColor: 'rgba(37, 99, 235, 0.1)',
+    zIndex: 0,
+  },
+  header: {
+    flexDirection: "row-reverse", // RTL Support
+    justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: 32,
   },
-  appTitle: { fontSize: 26, fontWeight: "700", color: "#111827" },
-  welcomeText: { fontSize: 16, color: "#374151", marginTop: 4 },
-  avatarWrapper: { padding: 4 },
-  avatarImage: { width: 56, height: 56, borderRadius: 28 },
-  avatarPlaceholder: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: "#d1d5db",
-    justifyContent: "center",
+  userInfo: {
+    flexDirection: "row-reverse",
     alignItems: "center",
+    gap: 12,
   },
-  avatarInitials: { fontWeight: "700", color: "#374151", fontSize: 18 },
-  tickerContainer: {
-    backgroundColor: "#e0e7ff",
-    padding: 14,
-    borderRadius: 10,
-    marginBottom: 20,
+  avatarContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    borderWidth: 2,
+    borderColor: 'rgba(16, 185, 129, 0.3)',
+    backgroundColor: '#1e293b',
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
   },
-  tickerLabel: { fontWeight: "700", marginBottom: 6, color: "#1e3a8a" },
-  tickerTitle: { fontWeight: "700" },
-  tickerBody: { color: "#374151" },
-  tickerHint: { fontSize: 12, color: "#6b7280" },
-  tickerEmpty: { color: "#6b7280" },
-  tickerError: { color: "red" },
-  buttonsRow: { marginTop: 10, gap: 14 },
-  featureButton: {
-    backgroundColor: "#4f46e5",
-    paddingVertical: 14,
-    borderRadius: 10,
-    alignItems: "center",
+  avatar: {
+    width: '100%',
+    height: '100%',
   },
-  featureText: { color: "white", fontWeight: "600", fontSize: 16 },
-  featureButtonSecondary: {
-    backgroundColor: "#e5e7eb",
-    paddingVertical: 14,
-    borderRadius: 10,
-    alignItems: "center",
+  avatarText: {
+    color: '#10b981',
+    fontWeight: 'bold',
   },
-  featureTextSecondary: {
-    color: "#374151",
-    fontWeight: "600",
-    fontSize: 16,
+  userTextWrapper: {
+    alignItems: 'flex-end',
   },
-  logoutButton: {
-    marginTop: 30,
-    marginBottom: 20,
-    backgroundColor: "#ef4444",
-    paddingVertical: 14,
-    borderRadius: 10,
-    alignItems: "center",
-  },
-  logoutText: { color: "white", fontWeight: "700", fontSize: 16 },
-  committeeSection: {
-    marginTop: 24,
-    padding: 16,
-    borderRadius: 10,
-    backgroundColor: "#fff7ed",
-    borderWidth: 1,
-    borderColor: "#fed7aa",
-    gap: 10,
-  },
-  committeeTitle: {
+  welcomeText: {
+    color: '#f8fafc',
     fontSize: 18,
-    fontWeight: "700",
-    color: "#c2410c",
+    fontWeight: 'bold',
+  },
+  subText: {
+    color: '#94a3b8',
+    fontSize: 10,
+  },
+  headerActions: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  iconBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: 'rgba(30, 41, 59, 0.5)',
+    borderWidth: 1,
+    borderColor: '#334155',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  logoutBtn: {
+    borderColor: 'rgba(251, 113, 133, 0.2)',
+  },
+  heroCard: {
+    backgroundColor: '#059669', // Emerald 600
+    borderRadius: 32,
+    padding: 24,
+    marginBottom: 24,
+    overflow: 'hidden',
+    elevation: 10,
+    shadowColor: '#064e3b',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.3,
+    shadowRadius: 20,
+  },
+  heroTagRow: {
+    flexDirection: 'row-reverse',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  heroTag: {
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 20,
+  },
+  heroTagText: {
+    color: 'white',
+    fontSize: 10,
+    fontWeight: 'bold',
+  },
+  heroTimeText: {
+    color: 'rgba(255, 255, 255, 0.6)',
+    fontSize: 10,
+  },
+  heroTitle: {
+    color: 'white',
+    fontSize: 24,
+    fontWeight: '900',
+    textAlign: 'right',
     marginBottom: 8,
   },
+  heroBody: {
+    color: 'rgba(255, 255, 255, 0.9)',
+    fontSize: 14,
+    textAlign: 'right',
+    lineHeight: 20,
+  },
+  heroFooter: {
+    flexDirection: 'row-reverse',
+    alignItems: 'center',
+    gap: 6,
+    marginTop: 20,
+  },
+  heroFooterText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  heroBgIcon: {
+    position: 'absolute',
+    bottom: -20,
+    left: -20,
+    transform: [{ rotate: '15deg' }],
+  },
+  grid: {
+    gap: 16,
+  },
+  fullBox: {
+    backgroundColor: 'rgba(30, 41, 59, 0.4)',
+    borderWidth: 1,
+    borderColor: 'rgba(51, 65, 85, 0.5)',
+    borderRadius: 32,
+    padding: 20,
+  },
+  boxRow: {
+    flexDirection: 'row-reverse',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  boxIconContainer: {
+    width: 56,
+    height: 56,
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  boxTextContent: {
+    flex: 1,
+    alignItems: 'flex-end',
+    marginRight: 16,
+  },
+  boxTitle: {
+    color: '#f8fafc',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  boxSub: {
+    color: '#94a3b8',
+    fontSize: 12,
+  },
+  row: {
+    flexDirection: 'row-reverse',
+    gap: 16,
+  },
+  squareBox: {
+    flex: 1,
+    aspectRatio: 1,
+    borderRadius: 32,
+    padding: 20,
+    borderWidth: 1,
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+  },
+  squareIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  boxSubSmall: {
+    color: 'rgba(248, 250, 252, 0.5)',
+    fontSize: 10,
+    textAlign: 'right',
+  },
+  avatarOverlap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  miniAvatar: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#334155',
+    borderWidth: 2,
+    borderColor: '#0f172a',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  committeeContainer: {
+    marginTop: 32,
+    padding: 24,
+    backgroundColor: 'rgba(15, 23, 42, 0.6)',
+    borderRadius: 40,
+    borderWidth: 1,
+    borderColor: 'rgba(16, 185, 129, 0.2)',
+  },
+  committeeHeader: {
+    flexDirection: 'row-reverse',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 20,
+  },
+  committeeIconBg: {
+    width: 32,
+    height: 32,
+    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  committeeTitle: {
+    color: '#10b981',
+    fontSize: 20,
+    fontWeight: '900',
+  },
+  committeeMainBtn: {
+    backgroundColor: '#10b981',
+    flexDirection: 'row-reverse',
+    justifyContent: 'space-between',
+    padding: 16,
+    borderRadius: 16,
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  committeeMainBtnText: {
+    color: '#0f172a',
+    fontWeight: '900',
+    fontSize: 14,
+  },
+  committeeSubBtn: {
+    flex: 1,
+    backgroundColor: 'rgba(30, 41, 59, 0.8)',
+    borderWidth: 1,
+    borderColor: '#334155',
+    padding: 16,
+    borderRadius: 20,
+    alignItems: 'center',
+  },
+  committeeStatNum: {
+    color: '#10b981',
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  committeeStatLabel: {
+    color: '#94a3b8',
+    fontSize: 10,
+    fontWeight: 'bold',
+  },
+  footer: {
+    marginTop: 40,
+    marginBottom: 20,
+    alignItems: 'center',
+  },
+  footerBadge: {
+    flexDirection: 'row-reverse',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: 'rgba(30, 41, 59, 0.3)',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(51, 65, 85, 0.5)',
+  },
+  footerText: {
+    color: '#64748b',
+    fontSize: 10,
+  }
 });
