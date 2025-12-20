@@ -16,6 +16,8 @@ import CommitteeDisturbancesScreen from './screens/CommitteeDisturbancesScreen';
 import CommitteePaymentSetupScreen from './screens/CommitteePaymentSetupScreen';
 import PublicRequestsScreen from './screens/PublicRequestsScreen';
 import ProfilePageScreen from './screens/ProfilePageScreen'; 
+import BuildingDocumentsScreen from "./screens/BuildingDocumentsScreen";
+import BuildingRulesScreen from "./screens/BuildingRulesScreen"; 
 
 import { getSupabase } from './DataBase/supabase';
 
@@ -116,6 +118,20 @@ export default function App() {
             name="PublicRequests"
             component={PublicRequestsScreen}
             options={{ title: 'בקשות מהשכנים' }}
+          />
+
+
+          <Stack.Screen
+            name="BuildingDocuments"
+            component={BuildingDocumentsScreen}
+            options={{ headerShown: false }} // אם אתה מעצב את ה-header לבד
+          />
+
+
+          <Stack.Screen
+            name="BuildingRules"
+            component={BuildingRulesScreen}
+            options={{ headerShown: false }}
           />
         </Stack.Navigator>
       ) : (

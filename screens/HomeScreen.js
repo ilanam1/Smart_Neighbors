@@ -25,13 +25,14 @@ import {
   ArrowUpRight,
   User,
   Zap,
-  LayoutDashboard
+  LayoutDashboard,
+  FileText, 
 } from 'lucide-react-native';
 import { getSupabase } from "../DataBase/supabase";
 import { getRecentBuildingUpdates } from "../buildingUpdatesApi";
-
 const { width } = Dimensions.get('window');
-
+const SPACING = 16;
+const RADIUS = 24;
 export default function HomeScreen({ navigation, user }) {
   // ===== STATE =====
   const [updates, setUpdates] = useState([]);
@@ -45,6 +46,8 @@ export default function HomeScreen({ navigation, user }) {
 
   const supabase = getSupabase();
 
+
+  
   async function handleSignOut() {
     try {
       await supabase.auth.signOut();
@@ -268,6 +271,57 @@ export default function HomeScreen({ navigation, user }) {
               <ChevronLeft size={20} color="#64748b" />
             </View>
           </TouchableOpacity>
+
+          {/* כרטיס מסמכי בניין - גישה לכל הדיירים */}
+          <TouchableOpacity
+            style={styles.fullBox}
+            onPress={() =>
+              navigation.navigate("BuildingDocuments", {
+                user,
+                isCommittee,
+                buildingId: profile?.building_id,   // חשוב! אותו בניין של המשתמש
+              })
+            }
+          >
+            <View style={styles.boxRow}>
+              <View style={styles.boxIconContainer}>
+                {/* אפשר להשתמש באייקון FileText אם תייבא אותו גם פה */}
+                <FileText size={24} color="#e5e7eb" />              </View>
+              <View style={styles.boxTextContent}>
+                <Text style={styles.boxTitle}>מסמכי בניין</Text>
+                <Text style={styles.boxSub}>צפייה בתקנון ומסמכים רשמיים</Text>
+              </View>
+            </View>
+          </TouchableOpacity>
+
+
+
+          {!isCommittee && (
+            <TouchableOpacity
+              style={styles.fullBox}
+              onPress={() =>
+                navigation.navigate("BuildingRules", {
+                  user,
+                  isCommittee,
+                })
+              }
+            >
+              <View style={styles.boxRow}>
+                <View style={[styles.boxIconContainer, { backgroundColor: "#38bdf8" }]}>
+                  <FileText size={24} color="#0f172a" />
+                </View>
+
+                <View style={styles.boxTextContent}>
+                  <Text style={styles.boxTitle}>חוקי ונהלי הבניין</Text>
+                  <Text style={styles.boxSub}>צפייה בנהלים של ועד הבית</Text>
+                </View>
+
+                <ChevronLeft size={20} color="#64748b" />
+              </View>
+            </TouchableOpacity>
+          )}
+
+
         </View>
 
         {/* COMMITTEE SECTION */}
@@ -288,7 +342,7 @@ export default function HomeScreen({ navigation, user }) {
               <Zap size={16} color="#0f172a" />
             </TouchableOpacity>
 
-            <View style={styles.row}>
+            
               <TouchableOpacity 
                 style={styles.committeeSubBtn}
                 onPress={() => navigation.navigate("CommitteeRequests")}
@@ -303,12 +357,43 @@ export default function HomeScreen({ navigation, user }) {
                 <Text style={[styles.committeeStatNum, { color: '#fb7185' }]}>2</Text>
                 <Text style={styles.committeeStatLabel}>דיווחי מטרדים</Text>
               </TouchableOpacity>
-            </View>
-          </View>
-        )}
 
-     
-       
+
+
+              {/* כפתור חדש למסמכי בניין */}
+              <TouchableOpacity
+                style={[styles.committeeMainBtn, { marginTop: 8, backgroundColor: "#0ea5e9" }]}
+                onPress={() =>
+                  navigation.navigate("BuildingDocuments", {
+                    user,
+                    isCommittee: true,
+                    buildingId: profile?.building_id || null, // אם אין – יישאר null וזה עדיין יעבוד
+                  })
+                }
+              >
+                <Text style={[styles.committeeMainBtnText, { color: "#0f172a" }]}>
+                  ניהול מסמכי בניין
+                </Text>
+                <FileText size={16} color="#0f172a" />
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.committeeMainBtn}
+                onPress={() =>
+                  navigation.navigate("BuildingRules", {
+                    user,
+                    isCommittee,
+                  })
+                }
+              >
+                <Text style={styles.committeeMainBtnText}>עריכת נהלים וחוקי שימוש</Text>
+                <FileText size={16} color="#0f172a" />
+              </TouchableOpacity>
+            
+
+            </View>
+          
+        )} 
       </ScrollView>
     </SafeAreaView>
   );
@@ -320,8 +405,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#0F172A",
   },
   scrollContent: {
-    padding: 24,
-    paddingTop: Platform.OS === 'android' ? 40 : 20,
+    paddingHorizontal: SPACING,
+    paddingTop: Platform.OS === "android" ? (StatusBar.currentHeight || 12) + 12 : 12,
+    paddingBottom: 28,
   },
   bgGlowTop: {
     position: 'absolute',
@@ -344,10 +430,10 @@ const styles = StyleSheet.create({
     zIndex: 0,
   },
   header: {
-    flexDirection: "row-reverse", // RTL Support
+    flexDirection: "row-reverse",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 32,
+    marginBottom: SPACING,
   },
   userInfo: {
     flexDirection: "row-reverse",
@@ -404,9 +490,9 @@ const styles = StyleSheet.create({
   },
   heroCard: {
     backgroundColor: '#059669', // Emerald 600
-    borderRadius: 32,
-    padding: 24,
-    marginBottom: 24,
+    borderRadius: RADIUS,
+    padding: SPACING,
+    marginBottom: SPACING,
     overflow: 'hidden',
     elevation: 10,
     shadowColor: '#064e3b',
@@ -437,8 +523,8 @@ const styles = StyleSheet.create({
   },
   heroTitle: {
     color: 'white',
-    fontSize: 24,
-    fontWeight: '900',
+    fontSize: 22,
+    fontWeight: '800',
     textAlign: 'right',
     marginBottom: 8,
   },
@@ -472,8 +558,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(30, 41, 59, 0.4)',
     borderWidth: 1,
     borderColor: 'rgba(51, 65, 85, 0.5)',
-    borderRadius: 32,
-    padding: 20,
+    borderRadius: RADIUS,
+    padding: SPACING,
   },
   boxRow: {
     flexDirection: 'row-reverse',
@@ -486,6 +572,9 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: 'rgba(148, 163, 184, 0.12)', // חדש
+    borderWidth: 1,
+    borderColor: 'rgba(148, 163, 184, 0.18)',     // חדש
   },
   boxTextContent: {
     flex: 1,
@@ -494,8 +583,8 @@ const styles = StyleSheet.create({
   },
   boxTitle: {
     color: '#f8fafc',
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontSize: 15,
+    fontWeight: '700',
   },
   boxSub: {
     color: '#94a3b8',
@@ -508,8 +597,8 @@ const styles = StyleSheet.create({
   squareBox: {
     flex: 1,
     aspectRatio: 1,
-    borderRadius: 32,
-    padding: 20,
+    borderRadius: RADIUS,
+    padding: SPACING,
     borderWidth: 1,
     justifyContent: 'space-between',
     alignItems: 'flex-end',
@@ -541,12 +630,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   committeeContainer: {
-    marginTop: 32,
-    padding: 24,
-    backgroundColor: 'rgba(15, 23, 42, 0.6)',
-    borderRadius: 40,
+    marginTop: SPACING,
+    padding: SPACING,
+    backgroundColor: 'rgba(30, 41, 59, 0.35)',   // יותר כמו שאר הכרטיסים
+    borderRadius: RADIUS,
     borderWidth: 1,
-    borderColor: 'rgba(16, 185, 129, 0.2)',
+    borderColor: 'rgba(51, 65, 85, 0.6)',
   },
   committeeHeader: {
     flexDirection: 'row-reverse',
@@ -564,8 +653,8 @@ const styles = StyleSheet.create({
   },
   committeeTitle: {
     color: '#10b981',
-    fontSize: 20,
-    fontWeight: '900',
+    fontSize: 18,
+    fontWeight: '800',
   },
   committeeMainBtn: {
     backgroundColor: '#10b981',
