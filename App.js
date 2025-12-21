@@ -20,6 +20,7 @@ import BuildingDocumentsScreen from "./screens/BuildingDocumentsScreen";
 import BuildingRulesScreen from "./screens/BuildingRulesScreen"; 
 
 import { getSupabase } from './DataBase/supabase';
+import CommitteeProvidersScreen from './screens/CommitteeProvidersScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -131,6 +132,13 @@ export default function App() {
           <Stack.Screen
             name="BuildingRules"
             component={BuildingRulesScreen}
+            options={{ headerShown: false }}
+          />
+
+
+            <Stack.Screen
+            name="CommitteeProviders"
+            component={CommitteeProvidersScreen}
             options={{ headerShown: false }}
           />
         </Stack.Navigator>

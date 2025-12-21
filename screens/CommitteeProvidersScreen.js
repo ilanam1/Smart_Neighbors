@@ -1,0 +1,422 @@
+// screens/CommitteeProvidersScreen.js
+import React, { useEffect, useMemo, useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  TextInput,
+  ActivityIndicator,
+  Alert,
+  Modal,
+  Switch,
+  SafeAreaView,
+  StatusBar,
+  Platform,
+} from "react-native";
+import {
+  listProviders,
+  createProvider,
+  updateProvider,
+  deleteProvider,
+} from "../serviceProvidersApi";
+
+const CATEGORIES = [
+  { key: "PLUMBER", label: "אינסטלטור" },
+  { key: "ELECTRICIAN", label: "חשמלאי" },
+  { key: "CLEANING", label: "ניקיון" },
+  { key: "GENERAL", label: "כללי" },
+];
+
+export default function CommitteeProvidersScreen() {
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  // modal
+  const [open, setOpen] = useState(false);
+  const [editing, setEditing] = useState(null);
+
+  // form
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [category, setCategory] = useState("GENERAL");
+  const [notes, setNotes] = useState("");
+  const [isActive, setIsActive] = useState(true);
+
+  const categoryLabel = useMemo(() => {
+    return CATEGORIES.find((c) => c.key === category)?.label || category;
+  }, [category]);
+
+  const resetForm = () => {
+    setEditing(null);
+    setName("");
+    setPhone("");
+    setEmail("");
+    setCategory("GENERAL");
+    setNotes("");
+    setIsActive(true);
+  };
+
+  const load = async () => {
+    try {
+      setLoading(true);
+      const data = await listProviders({ onlyActive: false });
+      setItems(data || []);
+    } catch (e) {
+      Alert.alert("שגיאה", e.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    load();
+  }, []);
+
+  const openCreate = () => {
+    resetForm();
+    setOpen(true);
+  };
+
+  const openEdit = (p) => {
+    setEditing(p);
+    setName(p.name || "");
+    setPhone(p.phone || "");
+    setEmail(p.email || "");
+    setCategory(p.category || "GENERAL");
+    setNotes(p.notes || "");
+    setIsActive(!!p.is_active);
+    setOpen(true);
+  };
+
+  const handleSave = async () => {
+    if (!name.trim()) {
+      Alert.alert("שגיאה", "שם ספק הוא חובה");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      if (editing) {
+        await updateProvider(editing.id, {
+          name: name.trim(),
+          phone: phone.trim() || null,
+          email: email.trim() || null,
+          category,
+          notes: notes.trim() || null,
+          is_active: isActive,
+        });
+      } else {
+        await createProvider({
+          name: name.trim(),
+          phone: phone.trim() || null,
+          email: email.trim() || null,
+          category,
+          notes: notes.trim() || null,
+        });
+      }
+
+      setOpen(false);
+      resetForm();
+      await load();
+    } catch (e) {
+      Alert.alert("שגיאה", e.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = (p) => {
+    Alert.alert("מחיקה", `למחוק את "${p.name}"?`, [
+      { text: "ביטול", style: "cancel" },
+      {
+        text: "מחק",
+        style: "destructive",
+        onPress: async () => {
+          try {
+            setLoading(true);
+            await deleteProvider(p.id);
+            await load();
+          } catch (e) {
+            Alert.alert("שגיאה", e.message);
+          } finally {
+            setLoading(false);
+          }
+        },
+      },
+    ]);
+  };
+
+  return (
+    <SafeAreaView style={styles.safe}>
+      {/* כדי שהכותרת לא תיכנס מתחת לסטטוס-בר באנדרואיד */}
+      <View style={styles.container}>
+        <View style={styles.headerRow}>
+          <Text style={styles.header}>ניהול ספקים</Text>
+
+          <TouchableOpacity
+            style={styles.primaryBtn}
+            onPress={openCreate}
+            activeOpacity={0.85}
+            hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+          >
+            <Text style={styles.primaryBtnText}>+ ספק חדש</Text>
+          </TouchableOpacity>
+        </View>
+
+        {loading && <ActivityIndicator style={{ marginTop: 12 }} />}
+
+        {!loading && items.length === 0 ? (
+          <Text style={styles.empty}>אין ספקים עדיין. הוסף ספק חדש.</Text>
+        ) : (
+          <FlatList
+            data={items}
+            keyExtractor={(item) => String(item.id)}
+            contentContainerStyle={{ paddingVertical: 12, paddingBottom: 24 }}
+            renderItem={({ item }) => (
+              <View style={styles.card}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.title}>{item.name}</Text>
+
+                  <Text style={styles.meta}>
+                    קטגוריה:{" "}
+                    {CATEGORIES.find((c) => c.key === item.category)?.label ||
+                      item.category}
+                  </Text>
+
+                  {!!item.phone && <Text style={styles.meta}>טלפון: {item.phone}</Text>}
+                  {!!item.email && <Text style={styles.meta}>מייל: {item.email}</Text>}
+
+                  <Text style={[styles.meta, { marginTop: 6 }]}>
+                    סטטוס: {item.is_active ? "פעיל" : "לא פעיל"}
+                  </Text>
+                </View>
+
+                <View style={styles.actionsCol}>
+                  <TouchableOpacity
+                    style={styles.smallBtn}
+                    onPress={() => openEdit(item)}
+                    activeOpacity={0.85}
+                  >
+                    <Text style={styles.smallBtnText}>עריכה</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={[styles.smallBtn, styles.dangerBtn]}
+                    onPress={() => handleDelete(item)}
+                    activeOpacity={0.85}
+                  >
+                    <Text style={styles.smallBtnText}>מחק</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )}
+          />
+        )}
+
+        <Modal visible={open} animationType="slide" transparent>
+          <View style={styles.modalBackdrop}>
+            <View style={styles.modalCard}>
+              <Text style={styles.modalTitle}>
+                {editing ? "עריכת ספק" : "יצירת ספק חדש"}
+              </Text>
+
+              <Text style={styles.label}>שם *</Text>
+              <TextInput
+                style={styles.input}
+                value={name}
+                onChangeText={setName}
+                placeholder="לדוגמה: יוסי אינסטלציה"
+                placeholderTextColor="#9ca3af"
+              />
+
+              <Text style={styles.label}>קטגוריה</Text>
+              <View style={styles.rowWrap}>
+                {CATEGORIES.map((c) => (
+                  <TouchableOpacity
+                    key={c.key}
+                    onPress={() => setCategory(c.key)}
+                    style={[
+                      styles.chip,
+                      category === c.key && styles.chipSelected,
+                    ]}
+                    activeOpacity={0.85}
+                  >
+                    <Text
+                      style={[
+                        styles.chipText,
+                        category === c.key && styles.chipTextSelected,
+                      ]}
+                    >
+                      {c.label}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              <Text style={styles.label}>טלפון</Text>
+              <TextInput
+                style={styles.input}
+                value={phone}
+                onChangeText={setPhone}
+                keyboardType="phone-pad"
+                placeholder="05X-XXXXXXX"
+                placeholderTextColor="#9ca3af"
+              />
+
+              <Text style={styles.label}>מייל</Text>
+              <TextInput
+                style={styles.input}
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                placeholder="name@example.com"
+                placeholderTextColor="#9ca3af"
+              />
+
+              <Text style={styles.label}>הערות</Text>
+              <TextInput
+                style={[styles.input, { height: 80 }]}
+                value={notes}
+                onChangeText={setNotes}
+                multiline
+                placeholder="שעות פעילות, מחירון, הערות..."
+                placeholderTextColor="#9ca3af"
+              />
+
+              {editing && (
+                <View style={styles.switchRow}>
+                  <Text style={styles.label}>פעיל</Text>
+                  <Switch value={isActive} onValueChange={setIsActive} />
+                </View>
+              )}
+
+              <View style={styles.modalBtnsRow}>
+                <TouchableOpacity
+                  style={styles.secondaryBtn}
+                  onPress={() => {
+                    setOpen(false);
+                    resetForm();
+                  }}
+                  disabled={loading}
+                  activeOpacity={0.85}
+                >
+                  <Text style={styles.secondaryBtnText}>ביטול</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.primaryBtn}
+                  onPress={handleSave}
+                  disabled={loading}
+                  activeOpacity={0.85}
+                >
+                  <Text style={styles.primaryBtnText}>
+                    {editing ? "שמור" : "צור"}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              <Text style={styles.hint}>
+                קטגוריה נועדה כדי שבמסך המטרדים נציע ספקים רלוונטיים מהר. ({categoryLabel})
+              </Text>
+            </View>
+          </View>
+        </Modal>
+      </View>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  safe: {
+    flex: 1,
+    backgroundColor: "#f6f7fb",
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+  },
+  container: { flex: 1, padding: 16, backgroundColor: "#f6f7fb" },
+
+  headerRow: {
+    flexDirection: "row-reverse",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
+    zIndex: 10,
+  },
+  header: { fontSize: 20, fontWeight: "800" },
+
+  empty: { marginTop: 16, textAlign: "center", color: "#6b7280" },
+
+  card: {
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: "#e5e7eb",
+    flexDirection: "row-reverse",
+    gap: 10,
+  },
+  title: { fontSize: 16, fontWeight: "800", textAlign: "right" },
+  meta: { fontSize: 13, color: "#374151", textAlign: "right", marginTop: 3 },
+
+  actionsCol: { justifyContent: "center", gap: 8 },
+  smallBtn: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    backgroundColor: "#111827",
+    borderRadius: 10,
+  },
+  dangerBtn: { backgroundColor: "#b91c1c" },
+  smallBtnText: { color: "white", fontWeight: "700" },
+
+  primaryBtn: {
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    backgroundColor: "#2563eb",
+    borderRadius: 12,
+  },
+  primaryBtnText: { color: "white", fontWeight: "800" },
+
+  secondaryBtn: {
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    backgroundColor: "#e5e7eb",
+    borderRadius: 12,
+  },
+  secondaryBtnText: { color: "#111827", fontWeight: "800" },
+
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.35)",
+    justifyContent: "center",
+    padding: 16,
+  },
+  modalCard: { backgroundColor: "white", borderRadius: 16, padding: 14 },
+  modalTitle: { fontSize: 18, fontWeight: "900", textAlign: "right", marginBottom: 10 },
+
+  label: { fontSize: 13, fontWeight: "700", textAlign: "right", marginTop: 10, marginBottom: 6 },
+  input: {
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "#e5e7eb",
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    textAlign: "right",
+  },
+
+  rowWrap: { flexDirection: "row-reverse", flexWrap: "wrap", gap: 8 },
+  chip: { borderWidth: 1, borderColor: "#9ca3af", paddingVertical: 6, paddingHorizontal: 10, borderRadius: 18 },
+  chipSelected: { backgroundColor: "#2563eb", borderColor: "#2563eb" },
+  chipText: { color: "#111827", fontWeight: "700" },
+  chipTextSelected: { color: "white" },
+
+  switchRow: { flexDirection: "row-reverse", justifyContent: "space-between", alignItems: "center", marginTop: 12 },
+
+  modalBtnsRow: { flexDirection: "row-reverse", gap: 10, marginTop: 14, justifyContent: "flex-start" },
+  hint: { marginTop: 10, fontSize: 12, color: "#6b7280", textAlign: "right" },
+});

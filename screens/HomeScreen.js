@@ -389,6 +389,20 @@ export default function HomeScreen({ navigation, user }) {
                 <Text style={styles.committeeMainBtnText}>עריכת נהלים וחוקי שימוש</Text>
                 <FileText size={16} color="#0f172a" />
               </TouchableOpacity>
+
+
+               <TouchableOpacity
+                style={styles.committeeMainBtn}
+                onPress={() =>
+                  navigation.navigate("CommitteeProviders", {
+                    user,
+                    isCommittee,
+                  })
+                }
+              >
+                <Text style={styles.committeeMainBtnText}>בחירת ספקים</Text>
+                <FileText size={16} color="#0f172a" />
+              </TouchableOpacity>
             
 
             </View>
