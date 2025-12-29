@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-
 import WelcomeScreen from './screens/WelcomeScreen';
 import LoginScreen from './screens/LoginScreen';
 import SignupScreen from './screens/SignupScreen';
@@ -15,12 +14,13 @@ import CommitteeRequestsScreen from './screens/CommitteeRequestsScreen';
 import CommitteeDisturbancesScreen from './screens/CommitteeDisturbancesScreen';
 import CommitteePaymentSetupScreen from './screens/CommitteePaymentSetupScreen';
 import PublicRequestsScreen from './screens/PublicRequestsScreen';
-import ProfilePageScreen from './screens/ProfilePageScreen'; 
+import ProfilePageScreen from './screens/ProfilePageScreen';
 import BuildingDocumentsScreen from "./screens/BuildingDocumentsScreen";
-import BuildingRulesScreen from "./screens/BuildingRulesScreen"; 
-
+import BuildingRulesScreen from "./screens/BuildingRulesScreen";
 import { getSupabase } from './DataBase/supabase';
 import CommitteeProvidersScreen from './screens/CommitteeProvidersScreen';
+import AdminScreen from './screens/AdminScreen';
+import DeleteUserScreen from './screens/DeleteUserScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -52,13 +52,13 @@ export default function App() {
     return () => {
       try {
         subscription?.unsubscribe?.();
-      } catch {}
+      } catch { }
     };
   }, [supabase]);
 
   return (
     <NavigationContainer>
-      {user ? (
+      {user && user.role !== 'admin' ? (
         // --------- המשתמש מחובר ---------
         <Stack.Navigator>
           <Stack.Screen
@@ -136,11 +136,19 @@ export default function App() {
           />
 
 
-            <Stack.Screen
+          <Stack.Screen
             name="CommitteeProviders"
             component={CommitteeProvidersScreen}
             options={{ headerShown: false }}
           />
+        </Stack.Navigator>
+      ) : user?.role === 'admin' ? (
+        // --------- ADMIN ---------
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="AdminDashboard">
+            {props => <AdminScreen {...props} user={user} onSignOut={() => setUser(null)} />}
+          </Stack.Screen>
+          <Stack.Screen name="DeleteUsers" component={DeleteUserScreen} />
         </Stack.Navigator>
       ) : (
         // --------- המשתמש לא מחובר ---------
