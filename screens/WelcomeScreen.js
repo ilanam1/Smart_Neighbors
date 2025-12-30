@@ -145,7 +145,7 @@ export default function WelcomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000000',
+    backgroundColor: '#0F172A', // Slate 900
   },
   contentContainer: {
     flex: 1,

@@ -343,16 +343,16 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
         {/* EXTRA FIELDS – SIGNUP ONLY */}
         {mode === 'signup' && (
           <>
-            <TextInput placeholder="First Name" value={firstName} onChangeText={setFirstName} style={styles.input} />
-            <TextInput placeholder="Last Name" value={lastName} onChangeText={setLastName} style={styles.input} />
-            <TextInput placeholder="Phone Number" value={phone} onChangeText={setPhone} keyboardType="phone-pad" style={styles.input} />
-            <TextInput placeholder="Zip / Postal Code" value={zip} onChangeText={setZip} style={styles.input} />
-            <TextInput placeholder="Address" value={address} onChangeText={setAddress} style={styles.input} />
-            <TextInput placeholder="ID Number" value={idNumber} onChangeText={setIdNumber} style={styles.input} />
-            <TextInput placeholder="Date of Birth (YYYY-MM-DD)" value={dob} onChangeText={setDob} style={styles.input} />
+            <TextInput placeholderTextColor="#FFFFFF" placeholder="First Name" value={firstName} onChangeText={setFirstName} style={styles.input} />
+            <TextInput placeholderTextColor="#FFFFFF" placeholder="Last Name" value={lastName} onChangeText={setLastName} style={styles.input} />
+            <TextInput placeholderTextColor="#FFFFFF" placeholder="Phone Number" value={phone} onChangeText={setPhone} keyboardType="phone-pad" style={styles.input} />
+            <TextInput placeholderTextColor="#FFFFFF" placeholder="Zip / Postal Code" value={zip} onChangeText={setZip} style={styles.input} />
+            <TextInput placeholderTextColor="#FFFFFF" placeholder="Address" value={address} onChangeText={setAddress} style={styles.input} />
+            <TextInput placeholderTextColor="#FFFFFF" placeholder="ID Number" value={idNumber} onChangeText={setIdNumber} style={styles.input} />
+            <TextInput placeholderTextColor="#FFFFFF" placeholder="Date of Birth (YYYY-MM-DD)" value={dob} onChangeText={setDob} style={styles.input} />
 
             <TouchableOpacity onPress={() => setIsCommittee(!isCommittee)} style={{ marginTop: 10 }}>
-              <Text style={{ fontSize: 16 }}>
+              <Text style={{ fontSize: 16, color: '#e2e8f0' }}>
                 {isCommittee ? '☑ House Committee' : '☐ House Committee'}
               </Text>
             </TouchableOpacity>
@@ -375,6 +375,7 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
         {/* COMMON EMAIL + PASSWORD */}
         {/* COMMON EMAIL + PASSWORD */}
         <TextInput
+          placeholderTextColor="#FFFFFF"
           placeholder="Email or Admin Number"
           value={email}
           onChangeText={setEmail}
@@ -382,10 +383,10 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
           keyboardType="default"
           autoCapitalize="none"
         />
-        <TextInput placeholder="Password" value={password} onChangeText={setPassword} style={styles.input} secureTextEntry />
+        <TextInput placeholderTextColor="#FFFFFF" placeholder="Password" value={password} onChangeText={setPassword} style={styles.input} secureTextEntry />
 
         {mode === 'signup' && (
-          <TextInput placeholder="Confirm Password" value={confirmPassword} onChangeText={setConfirmPassword} style={styles.input} secureTextEntry />
+          <TextInput placeholderTextColor="#FFFFFF" placeholder="Confirm Password" value={confirmPassword} onChangeText={setConfirmPassword} style={styles.input} secureTextEntry />
         )}
 
         {error ? <Text style={styles.error}>{error}</Text> : null}
@@ -459,31 +460,36 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f7f7fb',
+    backgroundColor: '#0F172A',
   },
   card: {
     width: '90%',
     maxWidth: 420,
     padding: 22,
-    backgroundColor: '#fff',
+    backgroundColor: '#1e293b',
     borderRadius: 12,
     shadowColor: '#000',
-    shadowOpacity: 0.05,
+    shadowOpacity: 0.2,
     shadowRadius: 10,
     elevation: 3,
+    borderWidth: 1,
+    borderColor: '#334155',
   },
   title: {
     fontSize: 22,
     fontWeight: '600',
     marginBottom: 12,
     textAlign: 'center',
+    color: '#f8fafc',
   },
   input: {
     borderWidth: 1,
-    borderColor: '#e6e6ef',
+    borderColor: '#334155',
     padding: 12,
     borderRadius: 8,
     marginTop: 10,
+    backgroundColor: '#0f172a',
+    color: '#f8fafc',
   },
   button: {
     backgroundColor: '#4f46e5',
@@ -493,18 +499,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonText: { color: '#fff', fontWeight: '600' },
-  toggleText: { color: '#6b7280', marginTop: 12, textAlign: 'center' },
-  error: { color: '#b00020', marginTop: 8, textAlign: 'center' },
+  toggleText: { color: '#9ca3af', marginTop: 12, textAlign: 'center' },
+  error: { color: '#f87171', marginTop: 8, textAlign: 'center' },
 
   photoButton: {
     marginTop: 10,
     padding: 12,
     borderRadius: 8,
-    backgroundColor: '#e5e7eb',
+    backgroundColor: '#334155',
     alignItems: 'center',
   },
   photoButtonText: {
-    color: '#374151',
+    color: '#f8fafc',
     fontWeight: '600',
   },
 });

@@ -55,65 +55,65 @@ export default function PayFeesScreen() {
   }
 
   async function handlePay() {
-  if (!selectedCommittee) {
-    Alert.alert('שגיאה', 'לא נבחר חבר ועד לתשלום.');
-    return;
-  }
+    if (!selectedCommittee) {
+      Alert.alert('שגיאה', 'לא נבחר חבר ועד לתשלום.');
+      return;
+    }
 
-  let url = selectedCommittee.committee_payment_link || '';
+    let url = selectedCommittee.committee_payment_link || '';
 
-  // 1. ניקוי רווחים ותווים מיותרים
-  url = url.trim();
+    // 1. ניקוי רווחים ותווים מיותרים
+    url = url.trim();
 
-  if (!url) {
-    Alert.alert('שגיאה', 'לחבר הוועד שנבחר אין קישור תשלום מוגדר.');
-    return;
-  }
+    if (!url) {
+      Alert.alert('שגיאה', 'לחבר הוועד שנבחר אין קישור תשלום מוגדר.');
+      return;
+    }
 
-  // 2. אם אין פרוטוקול – נוסיף https://
-  if (!url.startsWith('http://') && !url.startsWith('https://')) {
-    url = 'https://' + url;
-  }
+    // 2. אם אין פרוטוקול – נוסיף https://
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+      url = 'https://' + url;
+    }
 
-  try {
-    setLoading(true);
+    try {
+      setLoading(true);
 
-    // יצירת רשומת תשלום בבסיס הנתונים
-    const payment = await createHouseFeePayment({
-      committeeAuthUserId: selectedCommittee.auth_uid,
-      amount,
-      monthYear,
-    });
+      // יצירת רשומת תשלום בבסיס הנתונים
+      const payment = await createHouseFeePayment({
+        committeeAuthUserId: selectedCommittee.auth_uid,
+        amount,
+        monthYear,
+      });
 
-    setLastPaymentId(payment.id);
+      setLastPaymentId(payment.id);
 
-    console.log('PAY URL =', url);
+      console.log('PAY URL =', url);
 
-    // 3. עבור http/https אפשר פשוט לפתוח – אם יש בעיה, נתפוס ב-catch
-    Alert.alert(
-      'מעבר לתשלום',
-      'נפתח דף תשלום מאובטח. לאחר סיום התשלום, חזור לאפליקציה כדי לסמן ששילמת.',
-      [
-        {
-          text: 'המשך',
-          onPress: async () => {
-            try {
-              await Linking.openURL(url);
-            } catch (e) {
-              console.log('openURL error', e);
-              Alert.alert('שגיאה', 'לא ניתן לפתוח את קישור התשלום.');
-            }
+      // 3. עבור http/https אפשר פשוט לפתוח – אם יש בעיה, נתפוס ב-catch
+      Alert.alert(
+        'מעבר לתשלום',
+        'נפתח דף תשלום מאובטח. לאחר סיום התשלום, חזור לאפליקציה כדי לסמן ששילמת.',
+        [
+          {
+            text: 'המשך',
+            onPress: async () => {
+              try {
+                await Linking.openURL(url);
+              } catch (e) {
+                console.log('openURL error', e);
+                Alert.alert('שגיאה', 'לא ניתן לפתוח את קישור התשלום.');
+              }
+            },
           },
-        },
-      ]
-    );
-  } catch (err) {
-    console.error(err);
-    Alert.alert('שגיאה', err.message || 'שגיאה בהתחלת התשלום.');
-  } finally {
-    setLoading(false);
+        ]
+      );
+    } catch (err) {
+      console.error(err);
+      Alert.alert('שגיאה', err.message || 'שגיאה בהתחלת התשלום.');
+    } finally {
+      setLoading(false);
+    }
   }
-}
 
 
   async function handleMarkAsPaid() {
@@ -161,9 +161,8 @@ export default function PayFeesScreen() {
             const isSelected =
               selectedCommittee &&
               selectedCommittee.auth_uid === member.auth_uid;
-            const name = `${member.first_name || ''} ${
-              member.last_name || ''
-            }`.trim() || 'חבר ועד';
+            const name = `${member.first_name || ''} ${member.last_name || ''
+              }`.trim() || 'חבר ועד';
 
             return (
               <TouchableOpacity
@@ -214,29 +213,31 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: '#f7f7fb',
+    backgroundColor: '#0F172A',
   },
   header: {
     fontSize: 22,
     fontWeight: '700',
     marginBottom: 16,
     textAlign: 'right',
+    color: '#f8fafc',
   },
   label: {
     fontSize: 14,
     fontWeight: '600',
     marginTop: 12,
     textAlign: 'right',
+    color: '#e2e8f0',
   },
   value: {
     fontSize: 16,
     marginTop: 4,
     textAlign: 'right',
-    color: '#111827',
+    color: '#f1f5f9',
   },
   warningText: {
     marginTop: 8,
-    color: '#b91c1c',
+    color: '#f87171',
     fontSize: 13,
     textAlign: 'right',
   },
@@ -251,7 +252,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#9ca3af',
+    borderColor: '#4b5563',
     marginVertical: 4,
   },
   committeeItemSelected: {
@@ -260,7 +261,7 @@ const styles = StyleSheet.create({
   },
   committeeText: {
     fontSize: 13,
-    color: '#111827',
+    color: '#e5e7eb',
   },
   committeeTextSelected: {
     color: '#fff',
@@ -285,10 +286,10 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 10,
     alignItems: 'center',
-    backgroundColor: '#e5e7eb',
+    backgroundColor: '#334155',
   },
   markPaidText: {
-    color: '#111827',
+    color: '#f1f5f9',
     fontWeight: '600',
   },
 });

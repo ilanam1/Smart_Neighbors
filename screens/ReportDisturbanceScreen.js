@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     paddingBottom: 32,
-    backgroundColor: '#f8f8f8',
+    backgroundColor: '#0F172A',
     flexGrow: 1,
   },
   header: {
@@ -176,6 +176,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 16,
     textAlign: 'right',
+    color: '#f8fafc',
   },
   label: {
     fontSize: 14,
@@ -183,15 +184,17 @@ const styles = StyleSheet.create({
     marginBottom: 6,
     marginTop: 12,
     textAlign: 'right',
+    color: '#e2e8f0',
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: '#334155',
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 8,
     fontSize: 14,
-    backgroundColor: '#fff',
+    backgroundColor: '#1e293b',
+    color: '#f8fafc',
     textAlign: 'right',
   },
   textArea: {
@@ -207,7 +210,7 @@ const styles = StyleSheet.create({
   chip: {
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#999',
+    borderColor: '#475569',
     paddingHorizontal: 10,
     paddingVertical: 6,
     marginVertical: 4,
@@ -218,7 +221,7 @@ const styles = StyleSheet.create({
   },
   chipText: {
     fontSize: 13,
-    color: '#333',
+    color: '#cbd5e1',
   },
   chipTextSelected: {
     color: '#fff',

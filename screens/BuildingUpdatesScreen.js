@@ -110,6 +110,7 @@ export default function BuildingUpdatesScreen({ route }) {
           <TextInput
             style={styles.input}
             placeholder="לדוגמה: עבודות במעלית ביום ראשון"
+            placeholderTextColor="#94a3b8"
             value={title}
             onChangeText={setTitle}
           />
@@ -118,6 +119,7 @@ export default function BuildingUpdatesScreen({ route }) {
           <TextInput
             style={[styles.input, styles.textArea]}
             placeholder="תאר בקצרה את העדכון, זמנים, השפעות על הדיירים וכו'..."
+            placeholderTextColor="#94a3b8"
             value={body}
             onChangeText={setBody}
             multiline
@@ -161,8 +163,8 @@ export default function BuildingUpdatesScreen({ route }) {
                 {u.category === 'MAINTENANCE'
                   ? 'תחזוקה'
                   : u.category === 'ALERT'
-                  ? 'התראה'
-                  : 'כללי'}
+                    ? 'התראה'
+                    : 'כללי'}
                 {u.is_important ? '  •  חשוב' : ''}
               </Text>
             </View>
@@ -188,29 +190,30 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: '#f7f7fb',
+    backgroundColor: '#0F172A',
   },
   title: {
     fontSize: 20,
     fontWeight: '700',
     marginBottom: 12,
     textAlign: 'right',
+    color: '#f8fafc',
   },
 
   adminBox: {
-    backgroundColor: '#eef2ff',
+    backgroundColor: '#1e293b',
     padding: 12,
     borderRadius: 12,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#c7d2fe',
+    borderColor: '#334155',
   },
   adminTitle: {
     fontSize: 16,
     fontWeight: '700',
     marginBottom: 8,
     textAlign: 'right',
-    color: '#1e3a8a',
+    color: '#38bdf8',
   },
   label: {
     fontSize: 13,
@@ -218,15 +221,17 @@ const styles = StyleSheet.create({
     marginTop: 8,
     marginBottom: 4,
     textAlign: 'right',
+    color: '#e2e8f0',
   },
   input: {
     borderWidth: 1,
-    borderColor: '#d1d5db',
+    borderColor: '#334155',
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 8,
-    backgroundColor: '#fff',
+    backgroundColor: '#0f172a',
     textAlign: 'right',
+    color: '#FFFFFF',
   },
   textArea: {
     minHeight: 80,
@@ -240,7 +245,7 @@ const styles = StyleSheet.create({
   },
   switchLabel: {
     fontSize: 13,
-    color: '#111827',
+    color: '#e2e8f0',
   },
   button: {
     marginTop: 12,
@@ -261,14 +266,16 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: '#1e293b',
     borderRadius: 10,
     padding: 12,
     marginBottom: 10,
     shadowColor: '#000',
-    shadowOpacity: 0.05,
+    shadowOpacity: 0.2,
     shadowRadius: 6,
     elevation: 2,
+    borderWidth: 1,
+    borderColor: '#334155',
   },
   cardHeader: {
     flexDirection: 'row-reverse',
@@ -282,10 +289,11 @@ const styles = StyleSheet.create({
     textAlign: 'right',
     flex: 1,
     marginLeft: 8,
+    color: '#f8fafc',
   },
   cardCategory: {
     fontSize: 12,
-    color: '#6b7280',
+    color: '#94a3b8',
     textAlign: 'left',
   },
   cardBody: {
@@ -293,6 +301,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
     marginBottom: 8,
     textAlign: 'right',
+    color: '#e2e8f0',
   },
   footerRow: {
     flexDirection: 'row-reverse',
@@ -301,20 +310,20 @@ const styles = StyleSheet.create({
   },
   cardDate: {
     fontSize: 11,
-    color: '#9ca3af',
+    color: '#64748b',
     textAlign: 'left',
   },
   cardAuthor: {
     fontSize: 11,
-    color: '#374151',
+    color: '#94a3b8',
     textAlign: 'right',
   },
   error: {
-    color: '#b91c1c',
+    color: '#f87171',
     marginBottom: 8,
   },
   empty: {
-    color: '#6b7280',
+    color: '#64748b',
     marginTop: 12,
     textAlign: 'center',
   },

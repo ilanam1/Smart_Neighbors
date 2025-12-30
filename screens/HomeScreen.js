@@ -12,13 +12,13 @@ import {
   StatusBar,
   Dimensions,
 } from "react-native";
-import { 
-  Bell, 
-  MessageSquarePlus, 
-  AlertTriangle, 
-  CreditCard, 
-  Settings, 
-  LogOut, 
+import {
+  Bell,
+  MessageSquarePlus,
+  AlertTriangle,
+  CreditCard,
+  Settings,
+  LogOut,
   ChevronLeft,
   ShieldCheck,
   Plus,
@@ -26,7 +26,7 @@ import {
   User,
   Zap,
   LayoutDashboard,
-  FileText, 
+  FileText,
 } from 'lucide-react-native';
 import { getSupabase } from "../DataBase/supabase";
 import { getRecentBuildingUpdates } from "../buildingUpdatesApi";
@@ -47,7 +47,7 @@ export default function HomeScreen({ navigation, user }) {
   const supabase = getSupabase();
 
 
-  
+
   async function handleSignOut() {
     try {
       await supabase.auth.signOut();
@@ -130,19 +130,19 @@ export default function HomeScreen({ navigation, user }) {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" />
-      
+
       {/* Background Decor (Simulated) */}
       <View style={styles.bgGlowTop} />
       <View style={styles.bgGlowBottom} />
 
-      <ScrollView 
+      <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
         {/* HEADER */}
         <View style={styles.header}>
           <View style={styles.userInfo}>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.avatarContainer}
               onPress={() => navigation.navigate("ProfilePageScreen")}
             >
@@ -156,7 +156,7 @@ export default function HomeScreen({ navigation, user }) {
             </TouchableOpacity>
             <View style={styles.userTextWrapper}>
               <Text style={styles.welcomeText}>שלום, {profile?.first_name || "שכן/ה"} 👋</Text>
-           
+
             </View>
           </View>
 
@@ -171,7 +171,7 @@ export default function HomeScreen({ navigation, user }) {
         </View>
 
         {/* HERO UPDATES CARD */}
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.heroCard}
           onPress={() => navigation.navigate("BuildingUpdates")}
           activeOpacity={0.9}
@@ -202,14 +202,14 @@ export default function HomeScreen({ navigation, user }) {
             <Text style={styles.heroFooterText}>לכל העדכונים</Text>
             <ArrowUpRight size={14} color="white" />
           </View>
-          
+
           <Bell style={styles.heroBgIcon} size={100} color="rgba(255,255,255,0.1)" />
         </TouchableOpacity>
 
         {/* BENTO GRID */}
         <View style={styles.grid}>
           {/* Create Request - Full Width */}
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.fullBox}
             onPress={() => navigation.navigate("CreateRequest")}
           >
@@ -227,7 +227,7 @@ export default function HomeScreen({ navigation, user }) {
 
           {/* Square Boxes Row */}
           <View style={styles.row}>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={[styles.squareBox, { backgroundColor: 'rgba(37, 99, 235, 0.15)', borderColor: 'rgba(37, 99, 235, 0.3)' }]}
               onPress={() => navigation.navigate("PayFees")}
             >
@@ -240,7 +240,7 @@ export default function HomeScreen({ navigation, user }) {
               </View>
             </TouchableOpacity>
 
-            <TouchableOpacity 
+            <TouchableOpacity
               style={[styles.squareBox, { backgroundColor: 'rgba(225, 29, 72, 0.15)', borderColor: 'rgba(225, 29, 72, 0.3)' }]}
               onPress={() => navigation.navigate("ReportDisturbance")}
             >
@@ -255,14 +255,14 @@ export default function HomeScreen({ navigation, user }) {
           </View>
 
           {/* Neighbors Feed - Full Width */}
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.fullBox}
             onPress={() => navigation.navigate("PublicRequests")}
           >
             <View style={styles.boxRow}>
               <View style={styles.avatarOverlap}>
-                <View style={styles.miniAvatar}><User size={12} color="#94a3b8"/></View>
-                <View style={[styles.miniAvatar, { right: -10 }]}><User size={12} color="#94a3b8"/></View>
+                <View style={styles.miniAvatar}><User size={12} color="#94a3b8" /></View>
+                <View style={[styles.miniAvatar, { right: -10 }]}><User size={12} color="#94a3b8" /></View>
               </View>
               <View style={[styles.boxTextContent, { marginRight: 20 }]}>
                 <Text style={styles.boxTitle}>הלוח הציבורי</Text>
@@ -334,7 +334,7 @@ export default function HomeScreen({ navigation, user }) {
               <Text style={styles.committeeTitle}>ניהול ועד הבית</Text>
             </View>
 
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.committeeMainBtn}
               onPress={() => navigation.navigate("BuildingUpdates", { isCommittee: true })}
             >
@@ -342,72 +342,57 @@ export default function HomeScreen({ navigation, user }) {
               <Zap size={16} color="#0f172a" />
             </TouchableOpacity>
 
-            
-              <TouchableOpacity 
-                style={styles.committeeSubBtn}
-                onPress={() => navigation.navigate("CommitteeRequests")}
-              >
-                <Text style={styles.committeeStatNum}>8</Text>
-                <Text style={styles.committeeStatLabel}>בקשות דיירים</Text>
-              </TouchableOpacity>
-              <TouchableOpacity 
-                style={styles.committeeSubBtn}
-                onPress={() => navigation.navigate("CommitteeDisturbances")}
-              >
-                <Text style={[styles.committeeStatNum, { color: '#fb7185' }]}>2</Text>
-                <Text style={styles.committeeStatLabel}>דיווחי מטרדים</Text>
-              </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.committeeSubBtn}
+              onPress={() => navigation.navigate("CommitteeRequests")}
+            >
+              <Text style={styles.committeeStatNum}>8</Text>
+              <Text style={styles.committeeStatLabel}>בקשות דיירים</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.committeeSubBtn, { marginTop: 12 }]}
+              onPress={() => navigation.navigate("CommitteeDisturbances")}
+            >
+              <Text style={[styles.committeeStatNum, { color: '#fb7185' }]}>2</Text>
+              <Text style={styles.committeeStatLabel}>דיווחי מטרדים</Text>
+            </TouchableOpacity>
 
 
 
-              {/* כפתור חדש למסמכי בניין */}
-              <TouchableOpacity
-                style={[styles.committeeMainBtn, { marginTop: 8, backgroundColor: "#0ea5e9" }]}
-                onPress={() =>
-                  navigation.navigate("BuildingDocuments", {
-                    user,
-                    isCommittee: true,
-                    buildingId: profile?.building_id || null, // אם אין – יישאר null וזה עדיין יעבוד
-                  })
-                }
-              >
-                <Text style={[styles.committeeMainBtnText, { color: "#0f172a" }]}>
-                  ניהול מסמכי בניין
-                </Text>
-                <FileText size={16} color="#0f172a" />
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={styles.committeeMainBtn}
-                onPress={() =>
-                  navigation.navigate("BuildingRules", {
-                    user,
-                    isCommittee,
-                  })
-                }
-              >
-                <Text style={styles.committeeMainBtnText}>עריכת נהלים וחוקי שימוש</Text>
-                <FileText size={16} color="#0f172a" />
-              </TouchableOpacity>
 
 
-               <TouchableOpacity
-                style={styles.committeeMainBtn}
-                onPress={() =>
-                  navigation.navigate("CommitteeProviders", {
-                    user,
-                    isCommittee,
-                  })
-                }
-              >
-                <Text style={styles.committeeMainBtnText}>בחירת ספקים</Text>
-                <FileText size={16} color="#0f172a" />
-              </TouchableOpacity>
-            
+            <TouchableOpacity
+              style={[styles.committeeMainBtn, { marginTop: 12 }]}
+              onPress={() =>
+                navigation.navigate("BuildingRules", {
+                  user,
+                  isCommittee,
+                })
+              }
+            >
+              <Text style={styles.committeeMainBtnText}>עריכת נהלים וחוקי שימוש</Text>
+              <FileText size={16} color="#0f172a" />
+            </TouchableOpacity>
 
-            </View>
-          
-        )} 
+
+            <TouchableOpacity
+              style={styles.committeeMainBtn}
+              onPress={() =>
+                navigation.navigate("CommitteeProviders", {
+                  user,
+                  isCommittee,
+                })
+              }
+            >
+              <Text style={styles.committeeMainBtnText}>בחירת ספקים</Text>
+              <FileText size={16} color="#0f172a" />
+            </TouchableOpacity>
+
+
+          </View>
+
+        )}
       </ScrollView>
     </SafeAreaView>
   );

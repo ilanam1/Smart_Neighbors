@@ -167,7 +167,7 @@ export default function CommitteeDisturbancesScreen() {
     return <Text style={styles.empty}>אין עדיין דיווחי מטרדים.</Text>;
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={styles.container}>
       <FlatList
         contentContainerStyle={styles.list}
         data={items}
@@ -227,7 +227,7 @@ export default function CommitteeDisturbancesScreen() {
                       style={[styles.smallBtn, styles.secondaryBtn]}
                       onPress={() => openOrderModal(item)}
                     >
-                      <Text style={[styles.smallBtnText, { color: "#111827" }]}>
+                      <Text style={[styles.smallBtnText, { color: "#f8fafc" }]}>
                         הזמנה חדשה
                       </Text>
                     </TouchableOpacity>
@@ -299,20 +299,24 @@ export default function CommitteeDisturbancesScreen() {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#0F172A",
+  },
   list: { padding: 16 },
   card: {
-    backgroundColor: "#fff",
+    backgroundColor: "#1e293b",
     padding: 12,
     borderRadius: 10,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: "#e5e7eb",
+    borderColor: "#334155",
   },
-  title: { fontWeight: "700", fontSize: 16, textAlign: "right" },
-  body: { marginTop: 4, color: "#374151", textAlign: "right" },
-  meta: { marginTop: 6, fontSize: 12, color: "#6b7280", textAlign: "right" },
+  title: { fontWeight: "700", fontSize: 16, textAlign: "right", color: "#f8fafc" },
+  body: { marginTop: 4, color: "#e2e8f0", textAlign: "right" },
+  meta: { marginTop: 6, fontSize: 12, color: "#94a3b8", textAlign: "right" },
 
-  divider: { height: 1, backgroundColor: "#e5e7eb", marginVertical: 10 },
+  divider: { height: 1, backgroundColor: "#334155", marginVertical: 10 },
 
   primaryBtn: {
     backgroundColor: "#2563eb",
@@ -323,43 +327,47 @@ const styles = StyleSheet.create({
   primaryBtnText: { color: "white", fontWeight: "800" },
 
   assignmentBox: { gap: 6 },
-  assignmentText: { textAlign: "right", color: "#111827", fontWeight: "700" },
+  assignmentText: { textAlign: "right", color: "#f8fafc", fontWeight: "700" },
   statusRow: { flexDirection: "row-reverse", flexWrap: "wrap", gap: 8, marginTop: 6 },
 
   smallBtn: {
-    backgroundColor: "#111827",
+    backgroundColor: "#0f172a",
     paddingVertical: 8,
     paddingHorizontal: 12,
     borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#334155",
   },
-  secondaryBtn: { backgroundColor: "#e5e7eb" },
-  dangerBtn: { backgroundColor: "#b91c1c" },
+  secondaryBtn: { backgroundColor: "#334155" },
+  dangerBtn: { backgroundColor: "#b91c1c", borderColor: "#b91c1c" },
   smallBtnText: { color: "white", fontWeight: "800" },
 
-  error: { marginTop: 20, textAlign: "center", color: "red" },
-  empty: { marginTop: 20, textAlign: "center", color: "#6b7280" },
+  error: { marginTop: 20, textAlign: "center", color: "#f87171" },
+  empty: { marginTop: 20, textAlign: "center", color: "#94a3b8" },
 
-  modalBackdrop: { flex: 1, backgroundColor: "rgba(0,0,0,0.35)", justifyContent: "center", padding: 16 },
-  modalCard: { backgroundColor: "white", borderRadius: 16, padding: 14 },
-  modalTitle: { fontSize: 18, fontWeight: "900", textAlign: "right" },
-  modalSub: { marginTop: 6, color: "#6b7280", textAlign: "right" },
+  modalBackdrop: { flex: 1, backgroundColor: "rgba(0,0,0,0.7)", justifyContent: "center", padding: 16 },
+  modalCard: { backgroundColor: "#1e293b", borderRadius: 16, padding: 14, borderWidth: 1, borderColor: "#334155" },
+  modalTitle: { fontSize: 18, fontWeight: "900", textAlign: "right", color: "#f8fafc" },
+  modalSub: { marginTop: 6, color: "#94a3b8", textAlign: "right" },
 
-  label: { marginTop: 12, marginBottom: 6, textAlign: "right", fontWeight: "800" },
+  label: { marginTop: 12, marginBottom: 6, textAlign: "right", fontWeight: "800", color: "#e2e8f0" },
   input: {
     borderWidth: 1,
-    borderColor: "#e5e7eb",
+    borderColor: "#334155",
     borderRadius: 10,
     padding: 10,
     textAlign: "right",
+    backgroundColor: "#0f172a",
+    color: "#f8fafc",
   },
 
   providersWrap: { flexDirection: "row-reverse", flexWrap: "wrap", gap: 8 },
-  providerChip: { borderWidth: 1, borderColor: "#9ca3af", paddingVertical: 6, paddingHorizontal: 10, borderRadius: 18 },
+  providerChip: { borderWidth: 1, borderColor: "#475569", paddingVertical: 6, paddingHorizontal: 10, borderRadius: 18 },
   providerChipSelected: { backgroundColor: "#2563eb", borderColor: "#2563eb" },
-  providerChipText: { fontWeight: "800", color: "#111827" },
+  providerChipText: { fontWeight: "800", color: "#e2e8f0" },
   providerChipTextSelected: { color: "white" },
 
   modalBtnsRow: { flexDirection: "row-reverse", gap: 10, marginTop: 14 },
-  secondaryModalBtn: { backgroundColor: "#e5e7eb", paddingVertical: 10, paddingHorizontal: 14, borderRadius: 10 },
-  secondaryModalBtnText: { fontWeight: "900", color: "#111827" },
+  secondaryModalBtn: { backgroundColor: "#334155", paddingVertical: 10, paddingHorizontal: 14, borderRadius: 10 },
+  secondaryModalBtnText: { fontWeight: "900", color: "#f8fafc" },
 });

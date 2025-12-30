@@ -111,6 +111,7 @@ export default function CommitteePaymentSetupScreen({ navigation }) {
         value={link}
         onChangeText={setLink}
         placeholder="https://..."
+        placeholderTextColor="#94a3b8"
         autoCapitalize="none"
       />
 
@@ -132,32 +133,35 @@ export default function CommitteePaymentSetupScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  center: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#0F172A' },
   container: {
     flex: 1,
     padding: 16,
     paddingTop: 40,
-    backgroundColor: '#f9fafb',
+    backgroundColor: '#0F172A',
   },
   title: {
     fontSize: 22,
     fontWeight: '700',
     marginBottom: 12,
+    color: '#f8fafc',
   },
   helper: {
     fontSize: 14,
-    color: '#4b5563',
+    color: '#94a3b8',
     marginBottom: 16,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: '#334155',
     borderRadius: 8,
     padding: 12,
     marginBottom: 10,
+    backgroundColor: '#1e293b',
+    color: '#FFFFFF',
   },
   error: {
-    color: '#b91c1c',
+    color: '#f87171',
     marginBottom: 10,
   },
   button: {

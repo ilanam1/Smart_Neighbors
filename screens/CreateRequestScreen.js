@@ -106,6 +106,7 @@ export default function CreateRequestScreen({ navigation }) {
       <Text style={styles.label}>כותרת הבקשה *</Text>
       <TextInput
         style={styles.input}
+        placeholderTextColor="#FFFFFF"
         placeholder="לדוגמה: מי יכול להשאיל לי מקדחה?"
         value={title}
         onChangeText={setTitle}
@@ -115,6 +116,7 @@ export default function CreateRequestScreen({ navigation }) {
       <Text style={styles.label}>תיאור מפורט *</Text>
       <TextInput
         style={[styles.input, styles.textArea]}
+        placeholderTextColor="#FFFFFF"
         placeholder="תאר בקצרה מה אתה צריך, מתי, ואם יש פרטים חשובים..."
         value={description}
         onChangeText={setDescription}
@@ -233,7 +235,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     paddingBottom: 32,
-    backgroundColor: '#f8f8f8',
+    backgroundColor: '#0F172A',
     flexGrow: 1,
   },
   header: {
@@ -241,6 +243,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 16,
     textAlign: 'right',
+    color: '#f8fafc',
   },
   label: {
     fontSize: 14,
@@ -248,15 +251,17 @@ const styles = StyleSheet.create({
     marginBottom: 6,
     marginTop: 12,
     textAlign: 'right',
+    color: '#e2e8f0',
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: '#334155',
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 8,
     fontSize: 14,
-    backgroundColor: '#fff',
+    backgroundColor: '#1e293b',
+    color: '#f8fafc',
     textAlign: 'right',
   },
   textArea: {
@@ -272,7 +277,7 @@ const styles = StyleSheet.create({
   chip: {
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#999',
+    borderColor: '#475569',
     paddingHorizontal: 10,
     paddingVertical: 6,
     marginVertical: 4,
@@ -283,7 +288,7 @@ const styles = StyleSheet.create({
   },
   chipText: {
     fontSize: 13,
-    color: '#333',
+    color: '#e2e8f0',
   },
   chipTextSelected: {
     color: '#fff',
@@ -305,7 +310,7 @@ const styles = StyleSheet.create({
   },
   note: {
     fontSize: 12,
-    color: '#777',
+    color: '#94a3b8',
     marginTop: 10,
     textAlign: 'right',
   },

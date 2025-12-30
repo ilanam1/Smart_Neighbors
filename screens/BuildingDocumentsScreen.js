@@ -214,11 +214,11 @@ export default function BuildingDocumentsScreen({ route }) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#020617",
+    backgroundColor: "#0F172A",
   },
   container: {
     flex: 1,
-    backgroundColor: "#020617",
+    backgroundColor: "#0F172A",
     paddingHorizontal: 16,
     paddingTop: 8,
   },
@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   title: {
-    color: "#e5e7eb",
+    color: "#f8fafc",
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 8,
@@ -263,12 +263,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   errorText: {
-    color: "#f97373",
+    color: "#f87171",
     marginTop: 20,
     textAlign: "center",
   },
   emptyText: {
-    color: "#64748b",
+    color: "#94a3b8",
     marginTop: 20,
     textAlign: "center",
   },
@@ -276,12 +276,12 @@ const styles = StyleSheet.create({
     flexDirection: "row-reverse",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "#020617",
+    backgroundColor: "#1e293b",
     borderRadius: 16,
     padding: 14,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: "#1e293b",
+    borderColor: "#334155",
   },
   docLeft: {
     flexDirection: "row-reverse",

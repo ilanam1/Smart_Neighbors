@@ -127,7 +127,7 @@ export default function DeleteUserScreen({ navigation, route }) {
             {/* Header */}
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                    <ArrowLeft size={24} color="#111827" />
+                    <ArrowLeft size={24} color="#f9fafb" />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Manage Users</Text>
                 <View style={{ width: 24 }} />
@@ -165,7 +165,7 @@ export default function DeleteUserScreen({ navigation, route }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f9fafb',
+        backgroundColor: '#0F172A',
     },
     header: {
         flexDirection: 'row',
@@ -174,14 +174,14 @@ const styles = StyleSheet.create({
         paddingTop: 60,
         paddingBottom: 20,
         paddingHorizontal: 20,
-        backgroundColor: '#fff',
+        backgroundColor: '#0F172A',
         borderBottomWidth: 1,
-        borderBottomColor: '#f3f4f6',
+        borderBottomColor: '#1e293b',
     },
     headerTitle: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: '#111827',
+        color: '#f9fafb',
     },
     backButton: {
         padding: 8,
@@ -190,12 +190,12 @@ const styles = StyleSheet.create({
     searchContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#fff',
+        backgroundColor: '#1e293b',
         margin: 16,
         paddingHorizontal: 12,
         borderRadius: 8,
         borderWidth: 1,
-        borderColor: '#e5e7eb',
+        borderColor: '#374151',
         height: 48,
     },
     searchIcon: {
@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
     searchInput: {
         flex: 1,
         fontSize: 16,
-        color: '#111827',
+        color: '#f9fafb',
     },
     listContent: {
         paddingHorizontal: 16,
@@ -213,14 +213,14 @@ const styles = StyleSheet.create({
     userCard: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#fff',
+        backgroundColor: '#1e293b',
         padding: 16,
         borderRadius: 12,
         marginBottom: 12,
         shadowColor: '#000',
-        shadowOpacity: 0.05,
-        shadowRadius: 2,
-        elevation: 1,
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+        elevation: 2,
     },
     userInfo: {
         flex: 1,
@@ -228,17 +228,17 @@ const styles = StyleSheet.create({
     userName: {
         fontSize: 16,
         fontWeight: '600',
-        color: '#1f2937',
+        color: '#f9fafb',
         marginBottom: 4,
     },
     userEmail: {
         fontSize: 14,
-        color: '#6b7280',
+        color: '#9ca3af',
         marginBottom: 2,
     },
     userDetail: {
         fontSize: 12,
-        color: '#9ca3af',
+        color: '#6b7280',
     },
     deleteButton: {
         padding: 10,

@@ -48,36 +48,42 @@ export default function PublicRequestsScreen() {
     );
 
   return (
-    <FlatList
-      contentContainerStyle={styles.list}
-      data={requests}
-      keyExtractor={(item) => String(item.id)}
-      renderItem={({ item }) => (
-        <View style={styles.card}>
-          <Text style={styles.title}>{item.title}</Text>
-          <Text style={styles.body}>{item.description}</Text>
-          <Text style={styles.meta}>
-            דחיפות: {item.urgency} | קטגוריה: {item.category}
-          </Text>
-        </View>
-      )}
-    />
+    <View style={styles.container}>
+      <FlatList
+        contentContainerStyle={styles.list}
+        data={requests}
+        keyExtractor={(item) => String(item.id)}
+        renderItem={({ item }) => (
+          <View style={styles.card}>
+            <Text style={styles.title}>{item.title}</Text>
+            <Text style={styles.body}>{item.description}</Text>
+            <Text style={styles.meta}>
+              דחיפות: {item.urgency} | קטגוריה: {item.category}
+            </Text>
+          </View>
+        )}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#0F172A',
+  },
   list: { padding: 16 },
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: '#1e293b',
     padding: 12,
     borderRadius: 10,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: '#334155',
   },
-  title: { fontWeight: '700', fontSize: 16 },
-  body: { marginTop: 4, color: '#374151' },
-  meta: { marginTop: 6, fontSize: 12, color: '#6b7280' },
-  error: { marginTop: 20, textAlign: 'center', color: 'red' },
-  empty: { marginTop: 20, textAlign: 'center', color: '#6b7280' },
+  title: { fontWeight: '700', fontSize: 16, color: '#f8fafc' },
+  body: { marginTop: 4, color: '#e2e8f0' },
+  meta: { marginTop: 6, fontSize: 12, color: '#94a3b8' },
+  error: { marginTop: 20, textAlign: 'center', color: '#f87171' },
+  empty: { marginTop: 20, textAlign: 'center', color: '#94a3b8' },
 });

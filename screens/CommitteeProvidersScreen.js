@@ -15,6 +15,8 @@ import {
   StatusBar,
   Platform,
 } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { ArrowRight } from "lucide-react-native";
 import {
   listProviders,
   createProvider,
@@ -30,6 +32,7 @@ const CATEGORIES = [
 ];
 
 export default function CommitteeProvidersScreen() {
+  const navigation = useNavigation();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -155,7 +158,12 @@ export default function CommitteeProvidersScreen() {
       {/* כדי שהכותרת לא תיכנס מתחת לסטטוס-בר באנדרואיד */}
       <View style={styles.container}>
         <View style={styles.headerRow}>
-          <Text style={styles.header}>ניהול ספקים</Text>
+          <View style={{ flexDirection: "row-reverse", alignItems: "center", gap: 8 }}>
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <ArrowRight size={24} color="#f8fafc" />
+            </TouchableOpacity>
+            <Text style={styles.header}>ניהול ספקים</Text>
+          </View>
 
           <TouchableOpacity
             style={styles.primaryBtn}
@@ -334,10 +342,10 @@ export default function CommitteeProvidersScreen() {
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: "#f6f7fb",
+    backgroundColor: "#0F172A",
     paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
-  container: { flex: 1, padding: 16, backgroundColor: "#f6f7fb" },
+  container: { flex: 1, padding: 16, backgroundColor: "#0F172A" },
 
   headerRow: {
     flexDirection: "row-reverse",
@@ -346,31 +354,33 @@ const styles = StyleSheet.create({
     gap: 12,
     zIndex: 10,
   },
-  header: { fontSize: 20, fontWeight: "800" },
+  header: { fontSize: 20, fontWeight: "800", color: "#f8fafc" },
 
-  empty: { marginTop: 16, textAlign: "center", color: "#6b7280" },
+  empty: { marginTop: 16, textAlign: "center", color: "#94a3b8" },
 
   card: {
-    backgroundColor: "#fff",
+    backgroundColor: "#1e293b",
     borderRadius: 12,
     padding: 12,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: "#e5e7eb",
+    borderColor: "#334155",
     flexDirection: "row-reverse",
     gap: 10,
   },
-  title: { fontSize: 16, fontWeight: "800", textAlign: "right" },
-  meta: { fontSize: 13, color: "#374151", textAlign: "right", marginTop: 3 },
+  title: { fontSize: 16, fontWeight: "800", textAlign: "right", color: "#f8fafc" },
+  meta: { fontSize: 13, color: "#e2e8f0", textAlign: "right", marginTop: 3 },
 
   actionsCol: { justifyContent: "center", gap: 8 },
   smallBtn: {
     paddingVertical: 8,
     paddingHorizontal: 12,
-    backgroundColor: "#111827",
+    backgroundColor: "#0f172a",
     borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#334155",
   },
-  dangerBtn: { backgroundColor: "#b91c1c" },
+  dangerBtn: { backgroundColor: "#b91c1c", borderColor: "#b91c1c" },
   smallBtnText: { color: "white", fontWeight: "700" },
 
   primaryBtn: {
@@ -384,39 +394,40 @@ const styles = StyleSheet.create({
   secondaryBtn: {
     paddingVertical: 10,
     paddingHorizontal: 14,
-    backgroundColor: "#e5e7eb",
+    backgroundColor: "#334155",
     borderRadius: 12,
   },
-  secondaryBtnText: { color: "#111827", fontWeight: "800" },
+  secondaryBtnText: { color: "#f8fafc", fontWeight: "800" },
 
   modalBackdrop: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.35)",
+    backgroundColor: "rgba(0,0,0,0.7)",
     justifyContent: "center",
     padding: 16,
   },
-  modalCard: { backgroundColor: "white", borderRadius: 16, padding: 14 },
-  modalTitle: { fontSize: 18, fontWeight: "900", textAlign: "right", marginBottom: 10 },
+  modalCard: { backgroundColor: "#1e293b", borderRadius: 16, padding: 14, borderWidth: 1, borderColor: "#334155" },
+  modalTitle: { fontSize: 18, fontWeight: "900", textAlign: "right", marginBottom: 10, color: "#f8fafc" },
 
-  label: { fontSize: 13, fontWeight: "700", textAlign: "right", marginTop: 10, marginBottom: 6 },
+  label: { fontSize: 13, fontWeight: "700", textAlign: "right", marginTop: 10, marginBottom: 6, color: "#e2e8f0" },
   input: {
-    backgroundColor: "#fff",
+    backgroundColor: "#0f172a",
     borderWidth: 1,
-    borderColor: "#e5e7eb",
+    borderColor: "#334155",
     borderRadius: 10,
     paddingHorizontal: 10,
     paddingVertical: 8,
     textAlign: "right",
+    color: "#f8fafc",
   },
 
   rowWrap: { flexDirection: "row-reverse", flexWrap: "wrap", gap: 8 },
-  chip: { borderWidth: 1, borderColor: "#9ca3af", paddingVertical: 6, paddingHorizontal: 10, borderRadius: 18 },
+  chip: { borderWidth: 1, borderColor: "#475569", paddingVertical: 6, paddingHorizontal: 10, borderRadius: 18 },
   chipSelected: { backgroundColor: "#2563eb", borderColor: "#2563eb" },
-  chipText: { color: "#111827", fontWeight: "700" },
+  chipText: { color: "#e2e8f0", fontWeight: "700" },
   chipTextSelected: { color: "white" },
 
   switchRow: { flexDirection: "row-reverse", justifyContent: "space-between", alignItems: "center", marginTop: 12 },
 
   modalBtnsRow: { flexDirection: "row-reverse", gap: 10, marginTop: 14, justifyContent: "flex-start" },
-  hint: { marginTop: 10, fontSize: 12, color: "#6b7280", textAlign: "right" },
+  hint: { marginTop: 10, fontSize: 12, color: "#94a3b8", textAlign: "right" },
 });

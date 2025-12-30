@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
   screen: {
     flexGrow: 1,
     padding: 24,
-    backgroundColor: "#020617", // dark background
+    backgroundColor: "#0F172A", // dark background
   },
 
   center: {

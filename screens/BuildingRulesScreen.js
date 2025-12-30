@@ -9,6 +9,8 @@ import {
   ActivityIndicator,
   TextInput,
   ScrollView,
+  Platform,
+  StatusBar,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { ShieldCheck, Save, ArrowRight } from "lucide-react-native";
@@ -182,9 +184,9 @@ export default function BuildingRulesScreen({ route }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#020617",
+    backgroundColor: "#0F172A",
     paddingHorizontal: 16,
-    paddingTop: 16,
+    paddingTop: Platform.OS === "android" ? (StatusBar.currentHeight || 24) + 16 : 48,
   },
   header: {
     flexDirection: "row-reverse",
@@ -212,31 +214,31 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   title: {
-    color: "#e5e7eb",
+    color: "#f8fafc",
     fontSize: 20,
     fontWeight: "bold",
   },
   updatedText: {
-    color: "#64748b",
+    color: "#94a3b8",
     fontSize: 11,
     textAlign: "right",
     marginBottom: 8,
   },
   errorText: {
-    color: "#f97373",
+    color: "#f87171",
     marginBottom: 8,
     textAlign: "right",
   },
   infoBox: {
     padding: 12,
     borderRadius: 12,
-    backgroundColor: "rgba(15,23,42,0.9)",
+    backgroundColor: "#1e293b",
     borderWidth: 1,
-    borderColor: "#1e293b",
+    borderColor: "#334155",
     marginBottom: 10,
   },
   infoText: {
-    color: "#cbd5f5",
+    color: "#e2e8f0",
     fontSize: 12,
     textAlign: "right",
     lineHeight: 18,
@@ -256,8 +258,8 @@ const styles = StyleSheet.create({
     flex: 1,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: "#1e293b",
-    backgroundColor: "#020617",
+    borderColor: "#334155",
+    backgroundColor: "#0f172a",
   },
   textArea: {
     minHeight: 180,

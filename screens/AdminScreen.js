@@ -52,26 +52,23 @@ export default function AdminScreen({ user, onSignOut, navigation }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f3f4f6',
+        backgroundColor: '#0F172A',
     },
     header: {
-        backgroundColor: '#ffffff',
+        backgroundColor: '#0F172A',
         paddingTop: 60,
         paddingBottom: 20,
         paddingHorizontal: 20,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 3,
+        borderBottomWidth: 1,
+        borderBottomColor: '#1e293b',
     },
     headerTitle: {
         fontSize: 24,
         fontWeight: 'bold',
-        color: '#1f2937',
+        color: '#f8fafc',
     },
     logoutButton: {
         padding: 8,
@@ -80,30 +77,32 @@ const styles = StyleSheet.create({
         padding: 20,
     },
     card: {
-        backgroundColor: '#ffffff',
+        backgroundColor: '#1e293b',
         borderRadius: 12,
         padding: 20,
         marginBottom: 20,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.05,
-        shadowRadius: 2,
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
         elevation: 2,
+        borderWidth: 1,
+        borderColor: '#334155',
     },
     welcomeText: {
         fontSize: 20,
         fontWeight: '600',
-        color: '#111827',
+        color: '#f8fafc',
         marginBottom: 8,
     },
     subText: {
         fontSize: 16,
-        color: '#4b5563',
+        color: '#94a3b8',
         marginBottom: 4,
     },
     infoText: {
         fontSize: 14,
-        color: '#6b7280',
+        color: '#64748b',
         fontFamily: 'monospace'
     },
     placeholderContainer: {
@@ -123,15 +122,17 @@ const styles = StyleSheet.create({
         gap: 16
     },
     actionCard: {
-        backgroundColor: '#fff',
+        backgroundColor: '#1e293b',
         width: '47%',
         padding: 16,
         borderRadius: 12,
         alignItems: 'center',
         shadowColor: '#000',
-        shadowOpacity: 0.05,
-        shadowRadius: 2,
-        elevation: 1
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+        elevation: 2,
+        borderWidth: 1,
+        borderColor: '#334155',
     },
     iconCircle: {
         width: 48,
@@ -144,13 +145,13 @@ const styles = StyleSheet.create({
     actionTitle: {
         fontSize: 16,
         fontWeight: '600',
-        color: '#1f2937',
+        color: '#f8fafc',
         marginBottom: 4,
         textAlign: 'center'
     },
     actionDesc: {
         fontSize: 12,
-        color: '#6b7280',
+        color: '#94a3b8',
         textAlign: 'center'
     }
 });
