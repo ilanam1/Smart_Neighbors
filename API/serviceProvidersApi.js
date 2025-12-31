@@ -1,5 +1,5 @@
 // serviceProvidersApi.js
-import { getSupabase } from "./DataBase/supabase";
+import { getSupabase } from "../DataBase/supabase";
 
 export async function listProviders({ onlyActive = true } = {}) {
   const supabase = getSupabase();

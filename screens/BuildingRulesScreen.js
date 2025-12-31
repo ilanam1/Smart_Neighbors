@@ -15,7 +15,7 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { ShieldCheck, Save, ArrowRight } from "lucide-react-native";
 
-import { getBuildingRules, saveBuildingRules } from "../buildingRulesApi";
+import { getBuildingRules, saveBuildingRules } from "../API/buildingRulesApi";
 
 export default function BuildingRulesScreen({ route }) {
   const navigation = useNavigation();

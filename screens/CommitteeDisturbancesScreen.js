@@ -11,12 +11,12 @@ import {
   Alert,
 } from "react-native";
 import { getSupabase } from "../DataBase/supabase";
-import { listProviders } from "../serviceProvidersApi";
+import { listProviders } from "../API/serviceProvidersApi";
 import {
   getAssignmentsForReport,
   createAssignment,
   updateAssignmentStatus,
-} from "../disturbanceAssignmentsApi";
+} from "../API/disturbanceAssignmentsApi";
 
 const STATUS_LABEL = {
   REQUESTED: "הוזמן",

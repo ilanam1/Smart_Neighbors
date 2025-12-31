@@ -10,7 +10,7 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
-import { createDisturbanceReport } from '../disturbancesApi';
+import { createDisturbanceReport } from '../API/disturbancesApi';
 
 // סוגי מטרד
 const TYPES = [
@@ -136,17 +136,21 @@ export default function ReportDisturbanceScreen() {
       <TextInput
         style={[styles.input, styles.textArea]}
         placeholder="לדוגמה: מוזיקה חזקה מאוד מהבניין ממול אחרי 23:00..."
+        placeholderTextColor="#94a3b8"
         value={description}
         onChangeText={setDescription}
         multiline
+        textAlign="right"
       />
 
       <Text style={styles.label}>מיקום (אופציונלי)</Text>
       <TextInput
         style={styles.input}
         placeholder="לדוגמה: רחוב הרצל 10, ליד הכניסה האחורית"
+        placeholderTextColor="#94a3b8"
         value={location}
         onChangeText={setLocation}
+        textAlign="right"
       />
 
       <TouchableOpacity
@@ -194,7 +198,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     fontSize: 14,
     backgroundColor: '#1e293b',
-    color: '#f8fafc',
+    color: '#FFFFFF',
     textAlign: 'right',
   },
   textArea: {

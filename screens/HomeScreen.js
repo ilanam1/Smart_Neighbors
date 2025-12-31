@@ -7,11 +7,11 @@ import {
   ActivityIndicator,
   Image,
   ScrollView,
-  SafeAreaView,
   Platform,
   StatusBar,
   Dimensions,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import {
   Bell,
   MessageSquarePlus,
@@ -29,7 +29,7 @@ import {
   FileText,
 } from 'lucide-react-native';
 import { getSupabase } from "../DataBase/supabase";
-import { getRecentBuildingUpdates } from "../buildingUpdatesApi";
+import { getRecentBuildingUpdates } from "../API/buildingUpdatesApi";
 const { width } = Dimensions.get('window');
 const SPACING = 16;
 const RADIUS = 24;
@@ -285,8 +285,8 @@ export default function HomeScreen({ navigation, user }) {
           >
             <View style={styles.boxRow}>
               <View style={styles.boxIconContainer}>
-                {/* אפשר להשתמש באייקון FileText אם תייבא אותו גם פה */}
-                <FileText size={24} color="#e5e7eb" />              </View>
+                <FileText size={24} color="#e5e7eb" />
+              </View>
               <View style={styles.boxTextContent}>
                 <Text style={styles.boxTitle}>מסמכי בניין</Text>
                 <Text style={styles.boxSub}>צפייה בתקנון ומסמכים רשמיים</Text>

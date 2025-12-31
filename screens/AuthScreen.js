@@ -123,7 +123,7 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
           .single();
 
         if (error || !data) {
-          setError('Invalid admin credentials');
+          setError('Invalid credentials');
           return;
         }
 
@@ -376,7 +376,7 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
         {/* COMMON EMAIL + PASSWORD */}
         <TextInput
           placeholderTextColor="#FFFFFF"
-          placeholder="Email or Admin Number"
+          placeholder="Email Address"
           value={email}
           onChangeText={setEmail}
           style={styles.input}

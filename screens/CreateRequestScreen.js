@@ -11,7 +11,7 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
-import { createRequest } from '../requestsApi';
+import { createRequest } from '../API/requestsApi';
 
 const CATEGORIES = [
   { key: 'ITEM_LOAN', label: 'השאלת ציוד' },

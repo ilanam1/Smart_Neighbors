@@ -1,7 +1,7 @@
 // buildingRulesApi.js
 // API לניהול נהלי שימוש כלליים במערכת
 
-import { getSupabase } from "./DataBase/supabase";
+import { getSupabase } from "../DataBase/supabase";
 
 /**
  * שליפת הנהלים האחרונים שנשמרו.

@@ -6,7 +6,7 @@ import {
   FlatList,
   StyleSheet,
 } from 'react-native';
-import { getPublicRequests } from '../requestsApi';
+import { getPublicRequests } from '../API/requestsApi';
 
 export default function PublicRequestsScreen() {
   const [requests, setRequests] = useState([]);

@@ -19,7 +19,7 @@ import {
   getBuildingDocuments,
   uploadBuildingDocument,
   deleteBuildingDocument,
-} from "../buildingDocumentsApi";
+} from "../API/buildingDocumentsApi";
 
 import { FileText, Upload, Trash2 } from "lucide-react-native";
 import { getSupabase } from "../DataBase/supabase";
@@ -69,11 +69,11 @@ export default function BuildingDocumentsScreen({ route }) {
       Alert.alert("שגיאה", "לא ניתן לפתוח את המסמך");
     }
   }
-
   async function handleUpload() {
     try {
       const [res] = await pick({
         type: [types.allFiles],
+        mode: 'open',
       });
 
       if (!res) {
@@ -96,6 +96,9 @@ export default function BuildingDocumentsScreen({ route }) {
       Alert.alert("הצלחה", "המסמך הועלה בהצלחה");
       loadDocs();
     } catch (e) {
+      if (e.code === 'DOCUMENT_PICKER_CANCELED') {
+        return;
+      }
       console.error(e);
       Alert.alert("שגיאה", "הייתה בעיה בהעלאת המסמך");
     } finally {

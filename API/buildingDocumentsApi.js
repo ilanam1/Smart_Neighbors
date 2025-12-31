@@ -1,7 +1,7 @@
 // buildingDocumentsApi.js
 // API לניהול מסמכי בניין (טבלה + storage)
 
-import { getSupabase } from "./DataBase/supabase";
+import { getSupabase } from "../DataBase/supabase";
 
 /**
  * שליפת כל המסמכים של בניין.

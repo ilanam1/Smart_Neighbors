@@ -1,7 +1,7 @@
 // buildingUpdatesApi.js
 // פונקציות גישה לטבלת building_updates ב-Supabase
 
-import { getSupabase } from './DataBase/supabase';
+import { getSupabase } from '../DataBase/supabase';
 
 const supabase = getSupabase();
 

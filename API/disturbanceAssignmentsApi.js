@@ -1,5 +1,5 @@
 // disturbanceAssignmentsApi.js
-import { getSupabase } from "./DataBase/supabase";
+import { getSupabase } from "../DataBase/supabase";
 
 export async function getAssignmentsForReport(reportId) {
   const supabase = getSupabase();

@@ -1,7 +1,7 @@
 // paymentsApi.js
 // פונקציות עבודה עם תשלומי ועד הבית
 
-import { getSupabase } from './DataBase/supabase';
+import { getSupabase } from '../DataBase/supabase';
 
 export async function getCommitteeMembers() {
   const supabase = getSupabase();

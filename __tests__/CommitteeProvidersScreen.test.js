@@ -57,7 +57,7 @@ describe("CommitteeProvidersScreen", () => {
   test("יצירת ספק: ולידציה — בלי שם מציג Alert ולא קורא ל-API", async () => {
     listProviders.mockResolvedValueOnce([]);
 
-    const alertSpy = jest.spyOn(Alert, "alert").mockImplementation(() => {});
+    const alertSpy = jest.spyOn(Alert, "alert").mockImplementation(() => { });
     const { getByText } = render(<CommitteeProvidersScreen />);
 
     await waitFor(() => {

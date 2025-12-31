@@ -15,7 +15,7 @@ import {
   getCommitteeMembers,
   createHouseFeePayment,
   markPaymentAsPaid,
-} from '../paymentsApi';
+} from '../API/paymentsApi';
 
 export default function PayFeesScreen() {
   // אפשר לשנות את הסכום הדיפולטי לפי החלטה שלך

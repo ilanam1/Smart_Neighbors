@@ -14,7 +14,7 @@ import {
 import {
   getWeeklyBuildingUpdates,
   createBuildingUpdate,
-} from '../buildingUpdatesApi';
+} from '../API/buildingUpdatesApi';
 
 export default function BuildingUpdatesScreen({ route }) {
   const isCommittee = route?.params?.isCommittee === true;
@@ -113,6 +113,8 @@ export default function BuildingUpdatesScreen({ route }) {
             placeholderTextColor="#94a3b8"
             value={title}
             onChangeText={setTitle}
+            writingDirection="rtl"
+            textAlign="right"
           />
 
           <Text style={styles.label}>תוכן העדכון *</Text>
@@ -123,6 +125,8 @@ export default function BuildingUpdatesScreen({ route }) {
             value={body}
             onChangeText={setBody}
             multiline
+            writingDirection="rtl"
+            textAlign="right"
           />
 
           <View style={styles.switchRow}>

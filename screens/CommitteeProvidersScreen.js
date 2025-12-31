@@ -11,10 +11,8 @@ import {
   Alert,
   Modal,
   Switch,
-  SafeAreaView,
-  StatusBar,
-  Platform,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import { ArrowRight } from "lucide-react-native";
 import {
@@ -22,7 +20,7 @@ import {
   createProvider,
   updateProvider,
   deleteProvider,
-} from "../serviceProvidersApi";
+} from "../API/serviceProvidersApi";
 
 const CATEGORIES = [
   { key: "PLUMBER", label: "אינסטלטור" },
@@ -343,7 +341,6 @@ const styles = StyleSheet.create({
   safe: {
     flex: 1,
     backgroundColor: "#0F172A",
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
   container: { flex: 1, padding: 16, backgroundColor: "#0F172A" },
 

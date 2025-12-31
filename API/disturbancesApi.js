@@ -1,7 +1,7 @@
 // disturbancesApi.js
 // פונקציות גישה ל-Supabase עבור דיווחי מטרד
 
-import { getSupabase } from './DataBase/supabase';
+import { getSupabase } from '../DataBase/supabase';
 const supabase = getSupabase();
 
 /**
