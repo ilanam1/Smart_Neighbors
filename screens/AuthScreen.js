@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
+  Modal,
+  FlatList,
 } from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { getSupabase } from '../DataBase/supabase.js';
@@ -37,6 +39,10 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
   const [dob, setDob] = useState('');
   const [isCommittee, setIsCommittee] = useState(false);
 
+  const [buildings, setBuildings] = useState([]);
+  const [selectedBuildingId, setSelectedBuildingId] = useState(null);
+  const [showBuildingModal, setShowBuildingModal] = useState(false);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [info, setInfo] = useState(null);
@@ -47,6 +53,15 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
 
   const supabase = getSupabase();
+
+  useEffect(() => {
+    async function fetchBuildings() {
+      const { data, error } = await supabase.from('buildings').select('*');
+      if (data) setBuildings(data);
+      if (error) console.log('Error fetching buildings', error);
+    }
+    fetchBuildings();
+  }, [supabase]);
 
   function sanitizeEmailInput(e) {
     return (e || '')
@@ -150,6 +165,7 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
       if (mode === 'signup') {
 
         // REQUIRED FIELD VALIDATION BEFORE SIGNUP
+        if (!selectedBuildingId) return setError("Please select your building");
         if (!firstName.trim()) return setError("First name is required");
         if (!lastName.trim()) return setError("Last name is required");
         if (!phone.trim()) return setError("Phone number is required");
@@ -259,6 +275,7 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
           id_number: idNumber,
           date_of_birth: dob,
           is_house_committee: isCommittee,
+          building_id: selectedBuildingId,
         };
 
 
@@ -350,6 +367,18 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
             <TextInput placeholderTextColor="#FFFFFF" placeholder="Address" value={address} onChangeText={setAddress} style={styles.input} />
             <TextInput placeholderTextColor="#FFFFFF" placeholder="ID Number" value={idNumber} onChangeText={setIdNumber} style={styles.input} />
             <TextInput placeholderTextColor="#FFFFFF" placeholder="Date of Birth (YYYY-MM-DD)" value={dob} onChangeText={setDob} style={styles.input} />
+
+            {/* BUILDING SELECTION */}
+            <TouchableOpacity 
+              style={[styles.input, { justifyContent: 'center' }]} 
+              onPress={() => setShowBuildingModal(true)}
+            >
+              <Text style={{ color: selectedBuildingId ? '#f8fafc' : '#9ca3af' }}>
+                {selectedBuildingId 
+                  ? buildings.find(b => b.id === selectedBuildingId)?.name || 'Selected'
+                  : 'Select Building'}
+              </Text>
+            </TouchableOpacity>
 
             <TouchableOpacity onPress={() => setIsCommittee(!isCommittee)} style={{ marginTop: 10 }}>
               <Text style={{ fontSize: 16, color: '#e2e8f0' }}>
@@ -450,6 +479,36 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
         </TouchableOpacity>
 
       </View>
+
+      <Modal visible={showBuildingModal} transparent animationType="slide">
+        <View style={styles.modalBg}>
+          <View style={styles.modalContent}>
+            <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 12, color: '#111' }}>Select Building</Text>
+            <FlatList
+              data={buildings}
+              keyExtractor={item => item.id}
+              renderItem={({ item }) => (
+                <TouchableOpacity 
+                  style={styles.modalItem}
+                  onPress={() => {
+                    setSelectedBuildingId(item.id);
+                    setShowBuildingModal(false);
+                  }}
+                >
+                  <Text style={{ color: '#111', fontSize: 16 }}>{item.name} - {item.address}</Text>
+                </TouchableOpacity>
+              )}
+            />
+            <TouchableOpacity 
+              style={{ marginTop: 12, padding: 10, alignItems: 'center' }} 
+              onPress={() => setShowBuildingModal(false)}
+            >
+              <Text style={{ color: '#ef4444', fontWeight: 'bold' }}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
     </View>
   );
 }
@@ -512,5 +571,22 @@ const styles = StyleSheet.create({
   photoButtonText: {
     color: '#f8fafc',
     fontWeight: '600',
+  },
+  modalBg: {
+    flex: 1, 
+    justifyContent: 'center', 
+    backgroundColor: 'rgba(0,0,0,0.5)'
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    margin: 20,
+    padding: 20,
+    borderRadius: 8,
+    maxHeight: '70%',
+  },
+  modalItem: {
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e5e7eb',
   },
 });
