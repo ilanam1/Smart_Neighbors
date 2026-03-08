@@ -10,8 +10,8 @@ import {
   FlatList,
   Alert,
   Linking,
+  SafeAreaView,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 import { pick, types } from "@react-native-documents/picker";
 

@@ -9,6 +9,8 @@ import {
   Modal,
   FlatList,
   Platform,
+  ScrollView,
+  KeyboardAvoidingView,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { launchImageLibrary } from 'react-native-image-picker';
@@ -172,35 +174,32 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
         if (!firstName.trim()) return setError("First name is required");
         if (!lastName.trim()) return setError("Last name is required");
         if (!phone.trim()) return setError("Phone number is required");
+        if (!zip.trim()) return setError("Zip code is required");
         if (!address.trim()) return setError("Address is required");
         if (!idNumber.trim()) return setError("ID number is required");
-        if (!zip.trim()) return setError("Zip code is required");
-        
+        if (!dob) return setError("Date of birth is required");
+
         // PHONE NUMBER VALIDATION (Exactly 10 digits, numbers only)
-        const digitsOnlyPhone = phone.replace(/\D/g, ''); // strip non-digits if any
-        if (digitsOnlyPhone.length !== 10) {
-          return setError("Invalid phone number.");
+        if (!/^\d{10}$/.test(phone.trim())) {
+          return setError("Invalid phone number");
         }
 
         // ID NUMBER VALIDATION (Exactly 9 digits, numbers only)
         if (!/^\d{9}$/.test(idNumber.trim())) {
-          return setError("Invalid ID number.");
+          return setError("Invalid ID number");
         }
 
         // ZIP CODE VALIDATION (Exactly 7 digits, numbers only)
         if (!/^\d{7}$/.test(zip.trim())) {
-          return setError("Invalid zip code.");
+          return setError("Invalid zip code");
         }
 
-        // PASSWORD VALIDATION (At least 8 chars, 1 uppercase, not all numbers)
+        // PASSWORD VALIDATION (At least 8 chars, 1 uppercase)
         if (password.length < 8) {
-          return setError("Password must be at least 8 characters long.");
+          return setError("Password must be at least 8 characters long");
         }
         if (!/[A-Z]/.test(password)) {
-          return setError("Password must contain at least one uppercase letter.");
-        }
-        if (/^\d+$/.test(password)) {
-          return setError("Password cannot be composed solely of numbers.");
+          return setError("Password must contain at least one uppercase letter");
         }
 
         // Format Date of Birth for Supabase (YYYY-MM-DD)
@@ -383,13 +382,23 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.card}>
-        <Text style={styles.title}>
-          {mode === 'signup' ? 'Create account' : 'Welcome back'}
-        </Text>
+    <>
+      <KeyboardAvoidingView 
+        style={styles.container} 
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
+        <ScrollView 
+          contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center', paddingVertical: 40 }}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          style={{ width: '100%' }}
+        >
+          <View style={styles.card}>
+            <Text style={styles.title}>
+              {mode === 'signup' ? 'Create account' : 'Welcome back'}
+            </Text>
 
-            {/* EXTRA FIELDS – SIGNUP ONLY */}
+        {/* EXTRA FIELDS – SIGNUP ONLY */}
         {mode === 'signup' && (
           <>
             <TextInput placeholderTextColor="#FFFFFF" placeholder="First Name *" value={firstName} onChangeText={setFirstName} style={styles.input} />
@@ -413,7 +422,7 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
               <DateTimePicker
                 value={dob}
                 mode="date"
-                display="default"
+                display="spinner"
                 onChange={(event, selectedDate) => {
                   setShowDatePicker(Platform.OS === 'ios');
                   if (selectedDate) setDob(selectedDate);
@@ -422,14 +431,14 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
             )}
 
             {/* BUILDING SELECTION */}
-            <TouchableOpacity 
-              style={[styles.input, { justifyContent: 'center' }]} 
+            <TouchableOpacity
+              style={[styles.input, { justifyContent: 'center' }]}
               onPress={() => setShowBuildingModal(true)}
             >
               <Text style={{ color: selectedBuildingId ? '#f8fafc' : '#9ca3af' }}>
-                {selectedBuildingId 
+                {selectedBuildingId
                   ? buildings.find(b => b.id === selectedBuildingId)?.name || 'Selected'
-                  : 'Select Building'}
+                  : 'Select Building *'}
               </Text>
             </TouchableOpacity>
 
@@ -441,7 +450,7 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
 
             <TouchableOpacity style={styles.photoButton} onPress={handlePickPhoto}>
               <Text style={styles.photoButtonText}>
-                {photo ? 'Change profile photo' : 'Choose profile photo'}
+                {photo ? 'Change profile photo' : 'Choose profile photo (Optional)'}
               </Text>
             </TouchableOpacity>
 
@@ -532,8 +541,10 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
         </TouchableOpacity>
 
       </View>
+    </ScrollView>
+  </KeyboardAvoidingView>
 
-      <Modal visible={showBuildingModal} transparent animationType="slide">
+  <Modal visible={showBuildingModal} transparent animationType="slide">
         <View style={styles.modalBg}>
           <View style={styles.modalContent}>
             <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 12, color: '#111' }}>Select Building</Text>
@@ -541,7 +552,7 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
               data={buildings}
               keyExtractor={item => item.id}
               renderItem={({ item }) => (
-                <TouchableOpacity 
+                <TouchableOpacity
                   style={styles.modalItem}
                   onPress={() => {
                     setSelectedBuildingId(item.id);
@@ -552,8 +563,8 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
                 </TouchableOpacity>
               )}
             />
-            <TouchableOpacity 
-              style={{ marginTop: 12, padding: 10, alignItems: 'center' }} 
+            <TouchableOpacity
+              style={{ marginTop: 12, padding: 10, alignItems: 'center' }}
               onPress={() => setShowBuildingModal(false)}
             >
               <Text style={{ color: '#ef4444', fontWeight: 'bold' }}>Close</Text>
@@ -562,7 +573,7 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
         </View>
       </Modal>
 
-    </View>
+    </>
   );
 }
 
@@ -626,8 +637,8 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   modalBg: {
-    flex: 1, 
-    justifyContent: 'center', 
+    flex: 1,
+    justifyContent: 'center',
     backgroundColor: 'rgba(0,0,0,0.5)'
   },
   modalContent: {
