@@ -8,7 +8,9 @@ import {
   ActivityIndicator,
   Modal,
   FlatList,
+  Platform,
 } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { getSupabase } from '../DataBase/supabase.js';
 import RNFS from "react-native-fs";
@@ -36,7 +38,8 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
   const [zip, setZip] = useState('');
   const [address, setAddress] = useState('');
   const [idNumber, setIdNumber] = useState('');
-  const [dob, setDob] = useState('');
+  const [dob, setDob] = useState(new Date(2000, 0, 1));
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const [isCommittee, setIsCommittee] = useState(false);
 
   const [buildings, setBuildings] = useState([]);
@@ -169,10 +172,39 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
         if (!firstName.trim()) return setError("First name is required");
         if (!lastName.trim()) return setError("Last name is required");
         if (!phone.trim()) return setError("Phone number is required");
-        if (!zip.trim()) return setError("Zip code is required");
         if (!address.trim()) return setError("Address is required");
         if (!idNumber.trim()) return setError("ID number is required");
-        if (!dob.trim()) return setError("Date of birth is required");
+        if (!zip.trim()) return setError("Zip code is required");
+        
+        // PHONE NUMBER VALIDATION (Exactly 10 digits, numbers only)
+        const digitsOnlyPhone = phone.replace(/\D/g, ''); // strip non-digits if any
+        if (digitsOnlyPhone.length !== 10) {
+          return setError("Invalid phone number.");
+        }
+
+        // ID NUMBER VALIDATION (Exactly 9 digits, numbers only)
+        if (!/^\d{9}$/.test(idNumber.trim())) {
+          return setError("Invalid ID number.");
+        }
+
+        // ZIP CODE VALIDATION (Exactly 7 digits, numbers only)
+        if (!/^\d{7}$/.test(zip.trim())) {
+          return setError("Invalid zip code.");
+        }
+
+        // PASSWORD VALIDATION (At least 8 chars, 1 uppercase, not all numbers)
+        if (password.length < 8) {
+          return setError("Password must be at least 8 characters long.");
+        }
+        if (!/[A-Z]/.test(password)) {
+          return setError("Password must contain at least one uppercase letter.");
+        }
+        if (/^\d+$/.test(password)) {
+          return setError("Password cannot be composed solely of numbers.");
+        }
+
+        // Format Date of Birth for Supabase (YYYY-MM-DD)
+        const formattedDob = dob.toISOString().split('T')[0];
 
         // CREATE AUTH USER
         const { data, error } = await supabase.auth.signUp({
@@ -273,7 +305,7 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
           zip_code: zip,
           address: address,
           id_number: idNumber,
-          date_of_birth: dob,
+          date_of_birth: formattedDob,
           is_house_committee: isCommittee,
           building_id: selectedBuildingId,
         };
@@ -357,16 +389,37 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
           {mode === 'signup' ? 'Create account' : 'Welcome back'}
         </Text>
 
-        {/* EXTRA FIELDS – SIGNUP ONLY */}
+            {/* EXTRA FIELDS – SIGNUP ONLY */}
         {mode === 'signup' && (
           <>
-            <TextInput placeholderTextColor="#FFFFFF" placeholder="First Name" value={firstName} onChangeText={setFirstName} style={styles.input} />
-            <TextInput placeholderTextColor="#FFFFFF" placeholder="Last Name" value={lastName} onChangeText={setLastName} style={styles.input} />
-            <TextInput placeholderTextColor="#FFFFFF" placeholder="Phone Number" value={phone} onChangeText={setPhone} keyboardType="phone-pad" style={styles.input} />
-            <TextInput placeholderTextColor="#FFFFFF" placeholder="Zip / Postal Code" value={zip} onChangeText={setZip} style={styles.input} />
-            <TextInput placeholderTextColor="#FFFFFF" placeholder="Address" value={address} onChangeText={setAddress} style={styles.input} />
-            <TextInput placeholderTextColor="#FFFFFF" placeholder="ID Number" value={idNumber} onChangeText={setIdNumber} style={styles.input} />
-            <TextInput placeholderTextColor="#FFFFFF" placeholder="Date of Birth (YYYY-MM-DD)" value={dob} onChangeText={setDob} style={styles.input} />
+            <TextInput placeholderTextColor="#FFFFFF" placeholder="First Name *" value={firstName} onChangeText={setFirstName} style={styles.input} />
+            <TextInput placeholderTextColor="#FFFFFF" placeholder="Last Name *" value={lastName} onChangeText={setLastName} style={styles.input} />
+            <TextInput placeholderTextColor="#FFFFFF" placeholder="Phone Number (10 Digits) *" value={phone} onChangeText={setPhone} keyboardType="phone-pad" style={styles.input} />
+            <TextInput placeholderTextColor="#FFFFFF" placeholder="Zip / Postal Code (7 Digits) *" value={zip} onChangeText={setZip} keyboardType="number-pad" style={styles.input} />
+            <TextInput placeholderTextColor="#FFFFFF" placeholder="Address *" value={address} onChangeText={setAddress} style={styles.input} />
+            <TextInput placeholderTextColor="#FFFFFF" placeholder="ID Number (9 Digits) *" value={idNumber} onChangeText={setIdNumber} keyboardType="number-pad" style={styles.input} />
+            
+            {/* DATE PICKER */}
+            <TouchableOpacity 
+              style={[styles.input, { justifyContent: 'center' }]} 
+              onPress={() => setShowDatePicker(true)}
+            >
+              <Text style={{ color: '#f8fafc' }}>
+                Date of Birth *: {dob.toISOString().split('T')[0]}
+              </Text>
+            </TouchableOpacity>
+
+            {showDatePicker && (
+              <DateTimePicker
+                value={dob}
+                mode="date"
+                display="default"
+                onChange={(event, selectedDate) => {
+                  setShowDatePicker(Platform.OS === 'ios');
+                  if (selectedDate) setDob(selectedDate);
+                }}
+              />
+            )}
 
             {/* BUILDING SELECTION */}
             <TouchableOpacity 

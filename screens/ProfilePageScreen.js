@@ -7,9 +7,9 @@ import {
   ActivityIndicator,
   Image,
   ScrollView,
-  SafeAreaView,
   TouchableOpacity,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { getSupabase } from "../DataBase/supabase";
 
 export default function ProfilePageScreen({ navigation }) {
