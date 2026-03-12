@@ -20,8 +20,7 @@ import { getBuildingRules, saveBuildingRules } from "../API/buildingRulesApi";
 export default function BuildingRulesScreen({ route }) {
   const navigation = useNavigation();
 
-  // מגיע מהניווט
-  const { user, isCommittee } = route.params || {};
+  const { isCommittee } = route.params || {};
 
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
@@ -29,7 +28,6 @@ export default function BuildingRulesScreen({ route }) {
   const [error, setError] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(null);
 
-  // שליפה ראשונית של הנהלים
   async function loadRules() {
     try {
       setLoading(true);
@@ -45,10 +43,12 @@ export default function BuildingRulesScreen({ route }) {
 
       if (data?.updated_at) {
         setLastUpdated(new Date(data.updated_at));
+      } else {
+        setLastUpdated(null);
       }
     } catch (e) {
       console.error("loadRules error:", e);
-      setError("שגיאה בטעינת הנהלים");
+      setError(e.message || "שגיאה בטעינת חוקי הבניין");
     } finally {
       setLoading(false);
     }
@@ -60,14 +60,11 @@ export default function BuildingRulesScreen({ route }) {
 
   async function handleSave() {
     try {
-      if (!user?.id) return;
-
       setSaving(true);
       setError(null);
 
       const data = await saveBuildingRules({
         content,
-        userId: user.id,
       });
 
       if (data?.updated_at) {
@@ -75,7 +72,7 @@ export default function BuildingRulesScreen({ route }) {
       }
     } catch (e) {
       console.error("save rules error:", e);
-      setError("שגיאה בשמירת הנהלים");
+      setError(e.message || "שגיאה בשמירת חוקי הבניין");
     } finally {
       setSaving(false);
     }
@@ -83,7 +80,6 @@ export default function BuildingRulesScreen({ route }) {
 
   return (
     <View style={styles.container}>
-      {/* כותרת + חזרה */}
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
@@ -95,7 +91,7 @@ export default function BuildingRulesScreen({ route }) {
 
         <View style={styles.titleWrapper}>
           <ShieldCheck size={22} color="#22c55e" />
-          <Text style={styles.title}>נהלי שימוש במערכת</Text>
+          <Text style={styles.title}>חוקי הבניין</Text>
         </View>
       </View>
 
@@ -122,17 +118,17 @@ export default function BuildingRulesScreen({ route }) {
         <>
           <View style={styles.infoBox}>
             <Text style={styles.infoText}>
-              כאן ועד הבית יכול לרכז את כל הנהלים וחוקי השימוש במערכת
-              עבור הדיירים:{"\n"}
-              שימוש בלוח הבקשות, דיווח על מטרדים, התנהלות בקהילה ועוד.
+              כאן ועד הבית יכול לרכז את כל חוקי הבניין והנהלים עבור הדיירים:
+              {"\n"}
+              שימוש בשטחים משותפים, שעות שקט, שימוש במערכת, דיווחי מטרדים ועוד.
             </Text>
           </View>
 
           <View style={styles.editorWrapper}>
             <Text style={styles.label}>
               {isCommittee
-                ? "עריכת נהלים (יוצגו לכל המשתמשים):"
-                : "נהלי שימוש שהוגדרו על ידי ועד הבית:"}
+                ? "עריכת חוקי הבניין:"
+                : "חוקי הבניין שהוגדרו על ידי ועד הבית:"}
             </Text>
 
             <ScrollView
@@ -151,8 +147,8 @@ export default function BuildingRulesScreen({ route }) {
                 textAlignVertical="top"
                 placeholder={
                   isCommittee
-                    ? "לדוגמה:\n1. אין לפרסם תוכן פוגעני.\n2. אין לפרסם מודעות מסחריות.\n3. שימוש בלוח המערכת מיועד רק לצרכי הבניין..."
-                    : "טרם הוגדרו נהלי שימוש במערכת."
+                    ? "לדוגמה:\n1. אין להרעיש אחרי 23:00.\n2. אין להשאיר אשפה בשטחים המשותפים.\n3. דיווחים במערכת מיועדים לצרכי הבניין בלבד."
+                    : "טרם הוגדרו חוקי בניין."
                 }
                 placeholderTextColor="#64748b"
               />
@@ -170,7 +166,7 @@ export default function BuildingRulesScreen({ route }) {
               ) : (
                 <>
                   <Save size={18} color="#0f172a" />
-                  <Text style={styles.saveText}>שמירת נהלים</Text>
+                  <Text style={styles.saveText}>שמירת חוקים</Text>
                 </>
               )}
             </TouchableOpacity>
@@ -186,7 +182,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#0F172A",
     paddingHorizontal: 16,
-    paddingTop: Platform.OS === "android" ? (StatusBar.currentHeight || 24) + 16 : 48,
+    paddingTop:
+      Platform.OS === "android"
+        ? (StatusBar.currentHeight || 24) + 16
+        : 48,
   },
   header: {
     flexDirection: "row-reverse",

@@ -10,8 +10,8 @@ import {
   TextInput,
   Alert,
 } from "react-native";
-import { getSupabase } from "../DataBase/supabase";
 import { listProviders } from "../API/serviceProvidersApi";
+import { getBuildingDisturbanceReports } from "../API/disturbancesApi";
 import {
   getAssignmentsForReport,
   createAssignment,
@@ -32,34 +32,24 @@ export default function CommitteeDisturbancesScreen() {
 
   const [providers, setProviders] = useState([]);
 
-  // modal להזמנה
   const [open, setOpen] = useState(false);
   const [selectedReport, setSelectedReport] = useState(null);
   const [selectedProviderId, setSelectedProviderId] = useState(null);
   const [note, setNote] = useState("");
 
-  // cache להזמנה אחרונה לכל report
-  const [lastAssignments, setLastAssignments] = useState({}); // reportId -> assignment object
-
-  const supabase = getSupabase();
+  const [lastAssignments, setLastAssignments] = useState({});
 
   const loadReports = async () => {
-    const { data, error } = await supabase
-      .from("disturbance_reports")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    if (error) throw error;
+    const data = await getBuildingDisturbanceReports();
     setItems(data || []);
   };
 
   const loadProviders = async () => {
     const data = await listProviders({ onlyActive: true });
-    setProviders(data);
+    setProviders(data || []);
   };
 
   const loadLastAssignmentFor = async (reportId) => {
-    // נביא את ההזמנה האחרונה (אם קיימת)
     const data = await getAssignmentsForReport(reportId);
     const last = data?.[0] || null;
     setLastAssignments((prev) => ({ ...prev, [reportId]: last }));
@@ -71,7 +61,8 @@ export default function CommitteeDisturbancesScreen() {
     try {
       await Promise.all([loadReports(), loadProviders()]);
     } catch (e) {
-      setError(e.message);
+      console.error(e);
+      setError(e.message || "שגיאה בטעינת נתוני המטרדים");
     } finally {
       setLoading(false);
     }
@@ -83,18 +74,20 @@ export default function CommitteeDisturbancesScreen() {
       if (!mounted) return;
       await loadAll();
     })();
-    return () => (mounted = false);
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   useEffect(() => {
-    // לאחר טעינת דיווחים: נטען הזמנה אחרונה לכל אחד (בקטן, לא מושלם אבל עובד)
     (async () => {
       for (const r of items) {
-        if (r?.id) await loadLastAssignmentFor(r.id);
+        if (r?.id) {
+          await loadLastAssignmentFor(r.id);
+        }
       }
     })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [items.length]);
+  }, [items]);
 
   const openOrderModal = (report) => {
     setSelectedReport(report);
@@ -105,6 +98,7 @@ export default function CommitteeDisturbancesScreen() {
 
   const handleCreateOrder = async () => {
     if (!selectedReport?.id) return;
+
     if (!selectedProviderId) {
       Alert.alert("שגיאה", "בחר ספק");
       return;
@@ -112,6 +106,7 @@ export default function CommitteeDisturbancesScreen() {
 
     try {
       setLoading(true);
+
       await createAssignment({
         reportId: selectedReport.id,
         providerId: selectedProviderId,
@@ -122,7 +117,8 @@ export default function CommitteeDisturbancesScreen() {
       await loadLastAssignmentFor(selectedReport.id);
       Alert.alert("הצלחה", "הספק הוזמן בהצלחה");
     } catch (e) {
-      Alert.alert("שגיאה", e.message);
+      console.error(e);
+      Alert.alert("שגיאה", e.message || "אירעה שגיאה בהזמנת ספק");
     } finally {
       setLoading(false);
     }
@@ -137,14 +133,14 @@ export default function CommitteeDisturbancesScreen() {
       });
       await loadLastAssignmentFor(reportId);
     } catch (e) {
-      Alert.alert("שגיאה", e.message);
+      console.error(e);
+      Alert.alert("שגיאה", e.message || "אירעה שגיאה בעדכון הסטטוס");
     } finally {
       setLoading(false);
     }
   };
 
   const renderReportTitle = (item) => {
-    // אצלך יש description/type/severity/location. אם יש title/address זה גם יתפס.
     return item.title || (item.type ? `מטרד: ${item.type}` : "דיווח מטרד");
   };
 
@@ -161,10 +157,11 @@ export default function CommitteeDisturbancesScreen() {
     return map;
   }, [providers]);
 
-  if (loading) return <ActivityIndicator style={{ marginTop: 20 }} />;
+  if (loading) return <ActivityIndicator style={{ marginTop: 20 }} color="#38bdf8" />;
   if (error) return <Text style={styles.error}>שגיאה: {error}</Text>;
-  if (!items.length)
-    return <Text style={styles.empty}>אין עדיין דיווחי מטרדים.</Text>;
+  if (!items.length) {
+    return <Text style={styles.empty}>אין עדיין דיווחי מטרדים בבניין שלך.</Text>;
+  }
 
   return (
     <View style={styles.container}>
@@ -174,7 +171,9 @@ export default function CommitteeDisturbancesScreen() {
         keyExtractor={(item) => String(item.id)}
         renderItem={({ item }) => {
           const last = lastAssignments[item.id] || null;
-          const provider = last?.service_providers || (last?.provider_id ? providerNameById[last.provider_id] : null);
+          const provider =
+            last?.service_providers ||
+            (last?.provider_id ? providerNameById[last.provider_id] : null);
 
           return (
             <View style={styles.card}>
@@ -194,8 +193,7 @@ export default function CommitteeDisturbancesScreen() {
               ) : (
                 <View style={styles.assignmentBox}>
                   <Text style={styles.assignmentText}>
-                    ספק: {provider?.name || "לא ידוע"}{" "}
-                    {provider?.phone ? `· ${provider.phone}` : ""}
+                    ספק: {provider?.name || "לא ידוע"} {provider?.phone ? `· ${provider.phone}` : ""}
                   </Text>
                   <Text style={styles.assignmentText}>
                     סטטוס: {STATUS_LABEL[last.status] || last.status}
@@ -239,7 +237,6 @@ export default function CommitteeDisturbancesScreen() {
         }}
       />
 
-      {/* Modal הזמנת ספק */}
       <Modal visible={open} transparent animationType="slide">
         <View style={styles.modalBackdrop}>
           <View style={styles.modalCard}>
@@ -257,9 +254,17 @@ export default function CommitteeDisturbancesScreen() {
                   <TouchableOpacity
                     key={p.id}
                     onPress={() => setSelectedProviderId(p.id)}
-                    style={[styles.providerChip, selected && styles.providerChipSelected]}
+                    style={[
+                      styles.providerChip,
+                      selected && styles.providerChipSelected,
+                    ]}
                   >
-                    <Text style={[styles.providerChipText, selected && styles.providerChipTextSelected]}>
+                    <Text
+                      style={[
+                        styles.providerChipText,
+                        selected && styles.providerChipTextSelected,
+                      ]}
+                    >
                       {p.name} ({p.category})
                     </Text>
                   </TouchableOpacity>
@@ -278,7 +283,7 @@ export default function CommitteeDisturbancesScreen() {
 
             <View style={styles.modalBtnsRow}>
               <TouchableOpacity
-                style={[styles.secondaryModalBtn]}
+                style={styles.secondaryModalBtn}
                 onPress={() => setOpen(false)}
               >
                 <Text style={styles.secondaryModalBtnText}>ביטול</Text>
@@ -345,12 +350,29 @@ const styles = StyleSheet.create({
   error: { marginTop: 20, textAlign: "center", color: "#f87171" },
   empty: { marginTop: 20, textAlign: "center", color: "#94a3b8" },
 
-  modalBackdrop: { flex: 1, backgroundColor: "rgba(0,0,0,0.7)", justifyContent: "center", padding: 16 },
-  modalCard: { backgroundColor: "#1e293b", borderRadius: 16, padding: 14, borderWidth: 1, borderColor: "#334155" },
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.7)",
+    justifyContent: "center",
+    padding: 16,
+  },
+  modalCard: {
+    backgroundColor: "#1e293b",
+    borderRadius: 16,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: "#334155",
+  },
   modalTitle: { fontSize: 18, fontWeight: "900", textAlign: "right", color: "#f8fafc" },
   modalSub: { marginTop: 6, color: "#94a3b8", textAlign: "right" },
 
-  label: { marginTop: 12, marginBottom: 6, textAlign: "right", fontWeight: "800", color: "#e2e8f0" },
+  label: {
+    marginTop: 12,
+    marginBottom: 6,
+    textAlign: "right",
+    fontWeight: "800",
+    color: "#e2e8f0",
+  },
   input: {
     borderWidth: 1,
     borderColor: "#334155",
@@ -362,12 +384,23 @@ const styles = StyleSheet.create({
   },
 
   providersWrap: { flexDirection: "row-reverse", flexWrap: "wrap", gap: 8 },
-  providerChip: { borderWidth: 1, borderColor: "#475569", paddingVertical: 6, paddingHorizontal: 10, borderRadius: 18 },
+  providerChip: {
+    borderWidth: 1,
+    borderColor: "#475569",
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 18,
+  },
   providerChipSelected: { backgroundColor: "#2563eb", borderColor: "#2563eb" },
   providerChipText: { fontWeight: "800", color: "#e2e8f0" },
   providerChipTextSelected: { color: "white" },
 
   modalBtnsRow: { flexDirection: "row-reverse", gap: 10, marginTop: 14 },
-  secondaryModalBtn: { backgroundColor: "#334155", paddingVertical: 10, paddingHorizontal: 14, borderRadius: 10 },
+  secondaryModalBtn: {
+    backgroundColor: "#334155",
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderRadius: 10,
+  },
   secondaryModalBtnText: { fontWeight: "900", color: "#f8fafc" },
 });

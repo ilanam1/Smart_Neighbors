@@ -12,7 +12,7 @@ import {
   ScrollView,
   KeyboardAvoidingView,
 } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
+//import DateTimePicker from '@react-native-community/datetimepicker';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { getSupabase } from '../DataBase/supabase.js';
 import RNFS from "react-native-fs";
@@ -41,7 +41,14 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
   const [address, setAddress] = useState('');
   const [idNumber, setIdNumber] = useState('');
   const [dob, setDob] = useState(new Date(2000, 0, 1));
-  const [showDatePicker, setShowDatePicker] = useState(false);
+//const [showDatePicker, setShowDatePicker] = useState(false);
+  const [birthDay, setBirthDay] = useState('');
+  const [birthMonth, setBirthMonth] = useState('');
+  const [birthYear, setBirthYear] = useState('');
+
+
+
+
   const [isCommittee, setIsCommittee] = useState(false);
 
   const [buildings, setBuildings] = useState([]);
@@ -177,7 +184,10 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
         if (!zip.trim()) return setError("Zip code is required");
         if (!address.trim()) return setError("Address is required");
         if (!idNumber.trim()) return setError("ID number is required");
-        if (!dob) return setError("Date of birth is required");
+        //if (!dob) return setError("Date of birth is required");
+        if (!birthDay.trim() || !birthMonth.trim() || !birthYear.trim()) {
+            return setError("Date of birth is required");
+}
 
         // PHONE NUMBER VALIDATION (Exactly 10 digits, numbers only)
         if (!/^\d{10}$/.test(phone.trim())) {
@@ -203,7 +213,30 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
         }
 
         // Format Date of Birth for Supabase (YYYY-MM-DD)
-        const formattedDob = dob.toISOString().split('T')[0];
+        const day = parseInt(birthDay, 10);
+const month = parseInt(birthMonth, 10);
+const year = parseInt(birthYear, 10);
+
+if (
+  isNaN(day) || isNaN(month) || isNaN(year) ||
+  day < 1 || day > 31 ||
+  month < 1 || month > 12 ||
+  year < 1900 || year > new Date().getFullYear()
+) {
+  return setError("Invalid date of birth");
+}
+
+const dobDate = new Date(year, month - 1, day);
+
+if (
+  dobDate.getFullYear() !== year ||
+  dobDate.getMonth() !== month - 1 ||
+  dobDate.getDate() !== day
+) {
+  return setError("Invalid date of birth");
+}
+
+const formattedDob = dobDate.toISOString().split('T')[0];
 
         // CREATE AUTH USER
         const { data, error } = await supabase.auth.signUp({
@@ -290,7 +323,7 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
           zip_code: zip,
           address: address,
           id_number: idNumber,
-          date_of_birth: dob,
+          date_of_birth: formattedDob,
           is_house_committee: isCommittee,
           photo_url: uploadedPhotoUrl,
         });
@@ -409,26 +442,35 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
             <TextInput placeholderTextColor="#FFFFFF" placeholder="ID Number (9 Digits) *" value={idNumber} onChangeText={setIdNumber} keyboardType="number-pad" style={styles.input} />
             
             {/* DATE PICKER */}
-            <TouchableOpacity 
-              style={[styles.input, { justifyContent: 'center' }]} 
-              onPress={() => setShowDatePicker(true)}
-            >
-              <Text style={{ color: '#f8fafc' }}>
-                Date of Birth *: {dob.toISOString().split('T')[0]}
-              </Text>
-            </TouchableOpacity>
-
-            {showDatePicker && (
-              <DateTimePicker
-                value={dob}
-                mode="date"
-                display="spinner"
-                onChange={(event, selectedDate) => {
-                  setShowDatePicker(Platform.OS === 'ios');
-                  if (selectedDate) setDob(selectedDate);
-                }}
-              />
-            )}
+<View style={{ flexDirection: 'row', gap: 8, marginTop: 10 }}>
+  <TextInput
+    placeholderTextColor="#FFFFFF"
+    placeholder="DD"
+    value={birthDay}
+    onChangeText={setBirthDay}
+    keyboardType="number-pad"
+    maxLength={2}
+    style={[styles.input, { flex: 1, marginTop: 0 }]}
+  />
+  <TextInput
+    placeholderTextColor="#FFFFFF"
+    placeholder="MM"
+    value={birthMonth}
+    onChangeText={setBirthMonth}
+    keyboardType="number-pad"
+    maxLength={2}
+    style={[styles.input, { flex: 1, marginTop: 0 }]}
+  />
+  <TextInput
+    placeholderTextColor="#FFFFFF"
+    placeholder="YYYY"
+    value={birthYear}
+    onChangeText={setBirthYear}
+    keyboardType="number-pad"
+    maxLength={4}
+    style={[styles.input, { flex: 2, marginTop: 0 }]}
+  />
+</View>
 
             {/* BUILDING SELECTION */}
             <TouchableOpacity
