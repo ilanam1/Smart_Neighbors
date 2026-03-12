@@ -22,6 +22,12 @@ import { getSupabase } from './DataBase/supabase';
 import CommitteeProvidersScreen from './screens/CommitteeProvidersScreen';
 import AdminScreen from './screens/AdminScreen';
 import DeleteUserScreen from './screens/DeleteUserScreen';
+import EquipmentCategoriesScreen from './screens/EquipmentCategoriesScreen';
+import EquipmentListScreen from './screens/EquipmentListScreen';
+import AddEquipmentScreen from './screens/AddEquipmentScreen';
+import EquipmentDetailsScreen from './screens/EquipmentDetailsScreen';
+import RequestLoanScreen from './screens/RequestLoanScreen';
+import IncomingLoanRequestsScreen from './screens/IncomingLoanRequestsScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -143,6 +149,47 @@ export default function App() {
               component={CommitteeProvidersScreen}
               options={{ headerShown: false }}
             />
+
+
+
+            <Stack.Screen 
+              name="EquipmentCategories" 
+              component={EquipmentCategoriesScreen} 
+            />
+
+
+            <Stack.Screen 
+            name="EquipmentList" 
+            component={EquipmentListScreen} 
+            />
+
+
+
+            <Stack.Screen 
+            name="AddEquipment" 
+            component={AddEquipmentScreen} 
+            />
+
+
+            <Stack.Screen 
+            name="EquipmentDetails" 
+            component={EquipmentDetailsScreen} 
+            />
+
+
+            <Stack.Screen 
+            name="RequestLoan" 
+            component={RequestLoanScreen} 
+            />
+
+
+            <Stack.Screen
+            name="IncomingLoanRequests"
+            component={IncomingLoanRequestsScreen}
+            options={{ title: 'בקשות השאלה שקיבלתי' }}
+            />
+
+
           </Stack.Navigator>
         ) : user?.role === 'admin' ? (
           // --------- ADMIN ---------

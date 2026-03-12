@@ -27,6 +27,8 @@ import {
   Zap,
   LayoutDashboard,
   FileText,
+  Package,
+  Inbox,
 } from 'lucide-react-native';
 import { getSupabase } from "../DataBase/supabase";
 import { getRecentBuildingUpdates } from "../API/buildingUpdatesApi";
@@ -86,8 +88,7 @@ export default function HomeScreen({ navigation, user }) {
         setProfileLoading(true);
         const { data, error } = await supabase
           .from("profiles")
-          .select("first_name, last_name, email, photo_url, is_house_committee, committee_payment_link")
-          .eq("auth_uid", user.id)
+          .select("first_name, last_name, email, photo_url, is_house_committee, committee_payment_link, building_id")          .eq("auth_uid", user.id)
           .maybeSingle();
 
         if (error) throw error;
@@ -222,6 +223,62 @@ export default function HomeScreen({ navigation, user }) {
                 <Text style={styles.boxSub}>דיווח על תיקון או תחזוקה</Text>
               </View>
               <Plus size={20} color="#10b981" />
+            </View>
+          </TouchableOpacity>
+
+
+          <TouchableOpacity
+            style={styles.fullBox}
+            onPress={() =>
+              navigation.navigate("EquipmentCategories", {
+                user,
+                buildingId: profile?.building_id,
+              })
+            }
+          >
+            <View style={styles.boxRow}>
+              <View style={[styles.boxIconContainer, { backgroundColor: "rgba(245, 158, 11, 0.15)", borderColor: "rgba(245, 158, 11, 0.25)" }]}>
+                <Package size={24} color="#f59e0b" />
+              </View>
+
+              <View style={styles.boxTextContent}>
+                <Text style={styles.boxTitle}>השאלת ציוד</Text>
+                <Text style={styles.boxSub}>השאלת או הצעת ציוד לשכנים בבניין</Text>
+              </View>
+
+              <ChevronLeft size={20} color="#64748b" />
+            </View>
+          </TouchableOpacity>
+
+
+          <TouchableOpacity
+            style={styles.fullBox}
+            onPress={() =>
+              navigation.navigate("IncomingLoanRequests", {
+                user,
+                buildingId: profile?.building_id,
+              })
+            }
+          >
+            <View style={styles.boxRow}>
+              <View
+                style={[
+                  styles.boxIconContainer,
+                  {
+                    backgroundColor: "rgba(59, 130, 246, 0.15)",
+                    borderColor: "rgba(59, 130, 246, 0.25)",
+                  },
+                ]}
+              >
+                <Inbox size={24} color="#60a5fa" />
+              </View>
+
+              <View style={styles.boxTextContent}>
+                <Text style={styles.boxTitle}>בקשות השאלה שקיבלתי</Text>
+                <Text style={styles.boxSub}>אישור או דחייה של בקשות על הציוד שלך</Text>
+              </View>
+
+              <ChevronLeft size={20} color="#64748b" />
             </View>
           </TouchableOpacity>
 
