@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, StatusBar } from 'react-native';
+import Svg, { Defs, RadialGradient, Stop, Rect } from 'react-native-svg';
 import { getBuildingResidents, getOrCreatePrivateChat } from '../API/chatApi';
 
 export default function SelectUserForChatScreen({ navigation, route }) {
@@ -42,6 +43,7 @@ export default function SelectUserForChatScreen({ navigation, route }) {
                 navigation.navigate('ChatRoom', {
                     conversationId: chat.id,
                     chatName: titleStr || otherUser.email,
+                    isGroup: false,
                     user: user
                 });
             }, 100);
@@ -73,6 +75,44 @@ export default function SelectUserForChatScreen({ navigation, route }) {
 
     return (
         <View style={styles.container}>
+            <StatusBar barStyle="light-content" backgroundColor="#000000" />
+            
+            {/* Background Glows */}
+            <View style={StyleSheet.absoluteFill}>
+                <Svg height="100%" width="100%">
+                <Defs>
+                    <RadialGradient
+                    id="topGlow"
+                    cx="100%"
+                    cy="0%"
+                    rx="60%"
+                    ry="40%"
+                    fx="100%"
+                    fy="0%"
+                    gradientUnits="userSpaceOnUse"
+                    >
+                    <Stop offset="0" stopColor="#ff0080" stopOpacity="0.3" />
+                    <Stop offset="1" stopColor="#000000" stopOpacity="0" />
+                    </RadialGradient>
+                    <RadialGradient
+                    id="bottomGlow"
+                    cx="0%"
+                    cy="100%"
+                    rx="60%"
+                    ry="40%"
+                    fx="0%"
+                    fy="100%"
+                    gradientUnits="userSpaceOnUse"
+                    >
+                    <Stop offset="0" stopColor="#00f2ff" stopOpacity="0.25" />
+                    <Stop offset="1" stopColor="#000000" stopOpacity="0" />
+                    </RadialGradient>
+                </Defs>
+                <Rect x="0" y="0" width="100%" height="100%" fill="url(#topGlow)" />
+                <Rect x="0" y="0" width="100%" height="100%" fill="url(#bottomGlow)" />
+                </Svg>
+            </View>
+
             <Text style={styles.title}>בחר שכן לשיחה</Text>
             
             {loading ? (
@@ -100,14 +140,14 @@ export default function SelectUserForChatScreen({ navigation, route }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F7F9FC',
+        backgroundColor: '#0F172A',
     },
     title: {
         fontSize: 22,
         fontWeight: 'bold',
         textAlign: 'center',
         marginVertical: 20,
-        color: '#333',
+        color: '#f8fafc',
     },
     list: {
         paddingHorizontal: 16,
@@ -115,28 +155,27 @@ const styles = StyleSheet.create({
     userCard: {
         flexDirection: 'row-reverse',
         padding: 15,
-        backgroundColor: '#FFF',
+        backgroundColor: 'rgba(30, 41, 59, 0.7)',
+        borderWidth: 1,
+        borderColor: 'rgba(51, 65, 85, 0.5)',
         borderRadius: 12,
         marginBottom: 10,
         alignItems: 'center',
-        elevation: 2,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.1,
-        shadowRadius: 3,
     },
     avatarPlaceholder: {
         width: 46,
         height: 46,
         borderRadius: 23,
-        backgroundColor: '#E1BEE7',
+        backgroundColor: 'rgba(148, 163, 184, 0.12)',
+        borderWidth: 1,
+        borderColor: 'rgba(148, 163, 184, 0.18)',
         alignItems: 'center',
         justifyContent: 'center',
         marginLeft: 15,
     },
     avatarText: {
         fontSize: 20,
-        color: '#6A1B9A',
+        color: '#10b981',
         fontWeight: 'bold',
     },
     userInfo: {
@@ -146,16 +185,16 @@ const styles = StyleSheet.create({
     userName: {
         fontSize: 16,
         fontWeight: 'bold',
-        color: '#333',
+        color: '#f8fafc',
     },
     userEmail: {
         fontSize: 13,
-        color: '#777',
+        color: '#94a3b8',
         marginTop: 2,
     },
     emptyText: {
         textAlign: 'center',
-        color: '#888',
+        color: '#94a3b8',
         marginTop: 40,
         fontSize: 16,
     },

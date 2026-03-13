@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, StatusBar } from 'react-native';
+import Svg, { Defs, RadialGradient, Stop, Rect } from 'react-native-svg';
 import { useFocusEffect } from '@react-navigation/native';
 import { getUserConversations, getBuildingGroupChat } from '../API/chatApi';
 
@@ -24,7 +25,18 @@ export default function ChatListScreen({ navigation, route }) {
             
             // Then fetch all conversations
             const convos = await getUserConversations(user.id);
-            setConversations(convos);
+            
+            // Sort conversations: group chat first, then by updated_at (newest first)
+            const sortedConvos = convos.sort((a, b) => {
+                if (a.is_group && !b.is_group) return -1;
+                if (!a.is_group && b.is_group) return 1;
+                
+                const dateA = new Date(a.updated_at || a.created_at);
+                const dateB = new Date(b.updated_at || b.created_at);
+                return dateB - dateA; // Descending
+            });
+            
+            setConversations(sortedConvos);
         } catch (error) {
             console.error('Error fetching chats:', error);
             alert('שגיאה בטעינת השיחות');
@@ -50,6 +62,7 @@ export default function ChatListScreen({ navigation, route }) {
         navigation.navigate('ChatRoom', { 
             conversationId: chat.id, 
             chatName: chatName,
+            isGroup: chat.is_group,
             user: user 
         });
     };
@@ -85,6 +98,44 @@ export default function ChatListScreen({ navigation, route }) {
 
     return (
         <View style={styles.container}>
+            <StatusBar barStyle="light-content" backgroundColor="#000000" />
+            
+            {/* Background Glows */}
+            <View style={StyleSheet.absoluteFill}>
+                <Svg height="100%" width="100%">
+                <Defs>
+                    <RadialGradient
+                    id="topGlow"
+                    cx="100%"
+                    cy="0%"
+                    rx="60%"
+                    ry="40%"
+                    fx="100%"
+                    fy="0%"
+                    gradientUnits="userSpaceOnUse"
+                    >
+                    <Stop offset="0" stopColor="#ff0080" stopOpacity="0.3" />
+                    <Stop offset="1" stopColor="#000000" stopOpacity="0" />
+                    </RadialGradient>
+                    <RadialGradient
+                    id="bottomGlow"
+                    cx="0%"
+                    cy="100%"
+                    rx="60%"
+                    ry="40%"
+                    fx="0%"
+                    fy="100%"
+                    gradientUnits="userSpaceOnUse"
+                    >
+                    <Stop offset="0" stopColor="#00f2ff" stopOpacity="0.25" />
+                    <Stop offset="1" stopColor="#000000" stopOpacity="0" />
+                    </RadialGradient>
+                </Defs>
+                <Rect x="0" y="0" width="100%" height="100%" fill="url(#topGlow)" />
+                <Rect x="0" y="0" width="100%" height="100%" fill="url(#bottomGlow)" />
+                </Svg>
+            </View>
+
             <Text style={styles.headerTitle}>הודעות וצ'אטים</Text>
             
             {loading ? (
@@ -112,12 +163,12 @@ export default function ChatListScreen({ navigation, route }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F7F9FC',
+        backgroundColor: '#0F172A',
     },
     headerTitle: {
         fontSize: 24,
         fontWeight: 'bold',
-        color: '#333',
+        color: '#f8fafc',
         textAlign: 'center',
         marginVertical: 20,
     },
@@ -127,22 +178,21 @@ const styles = StyleSheet.create({
     },
     chatCard: {
         flexDirection: 'row-reverse',
-        backgroundColor: '#FFF',
+        backgroundColor: 'rgba(30, 41, 59, 0.7)',
+        borderWidth: 1,
+        borderColor: 'rgba(51, 65, 85, 0.5)',
         padding: 15,
         borderRadius: 12,
         marginBottom: 10,
         alignItems: 'center',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
-        shadowRadius: 5,
-        elevation: 2,
     },
     chatIconPlaceholder: {
         width: 50,
         height: 50,
         borderRadius: 25,
-        backgroundColor: '#E3F2FD',
+        backgroundColor: 'rgba(148, 163, 184, 0.12)',
+        borderWidth: 1,
+        borderColor: 'rgba(148, 163, 184, 0.18)',
         alignItems: 'center',
         justifyContent: 'center',
         marginLeft: 15,
@@ -157,16 +207,16 @@ const styles = StyleSheet.create({
     chatTitle: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: '#333',
+        color: '#f8fafc',
         marginBottom: 4,
     },
     chatSubtitle: {
         fontSize: 14,
-        color: '#666',
+        color: '#94a3b8',
     },
     emptyText: {
         textAlign: 'center',
-        color: '#888',
+        color: '#94a3b8',
         marginTop: 50,
         fontSize: 16,
     },
@@ -177,13 +227,13 @@ const styles = StyleSheet.create({
         width: 60,
         height: 60,
         borderRadius: 30,
-        backgroundColor: '#007BFF',
+        backgroundColor: '#ff0080',
         alignItems: 'center',
         justifyContent: 'center',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 5,
+        shadowColor: '#ff0080',
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.4,
+        shadowRadius: 10,
         elevation: 5,
     },
     fabIcon: {

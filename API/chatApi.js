@@ -202,9 +202,11 @@ export const getMessages = async (conversationId) => {
                 content,
                 created_at,
                 sender_id,
+                reactions,
                 profiles (
                    first_name,
-                   last_name
+                   last_name,
+                   auth_uid
                 )
             `)
             .eq('conversation_id', conversationId)
@@ -244,6 +246,69 @@ export const sendMessage = async (conversationId, senderId, content) => {
         return data;
     } catch (error) {
         console.error('Error sending message:', error);
+        throw error;
+    }
+};
+
+// =====================
+// Toggle Message Reaction
+// =====================
+export const toggleMessageReaction = async (messageId, emoji, userId) => {
+    try {
+        const supabase = getSupabase();
+        const profileId = await resolveProfileId(userId);
+
+        // Fetch current reactions
+        const { data: message, error: fetchError } = await supabase
+            .from('messages')
+            .select('reactions')
+            .eq('id', messageId)
+            .single();
+
+        if (fetchError) throw fetchError;
+
+        let reactions = message.reactions || {};
+
+        // Toggle logic: If the same emoji exists for this user, remove it. Otherwise, set it.
+        if (reactions[profileId] === emoji) {
+            delete reactions[profileId];
+        } else {
+            reactions[profileId] = emoji;
+        }
+
+        const { data, error: updateError } = await supabase
+            .from('messages')
+            .update({ reactions: reactions })
+            .eq('id', messageId)
+            .select()
+            .single();
+
+        if (updateError) throw updateError;
+        return data;
+    } catch (error) {
+        console.error('Error toggling reaction:', error);
+        throw error;
+    }
+};
+
+// =====================
+// Edit Message
+// =====================
+export const editMessage = async (messageId, newContent) => {
+    try {
+        const supabase = getSupabase();
+        
+        const { data, error } = await supabase
+            .from('messages')
+            .update({ content: newContent })
+            .eq('id', messageId)
+            .select()
+            .single();
+            
+        if (error) throw error;
+        return data;
+    } catch (error) {
+        console.error('Error editing message:', error);
         throw error;
     }
 };
