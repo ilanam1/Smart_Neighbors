@@ -28,6 +28,9 @@ import AddEquipmentScreen from './screens/AddEquipmentScreen';
 import EquipmentDetailsScreen from './screens/EquipmentDetailsScreen';
 import RequestLoanScreen from './screens/RequestLoanScreen';
 import IncomingLoanRequestsScreen from './screens/IncomingLoanRequestsScreen';
+import ChatListScreen from './screens/ChatListScreen';
+import ChatRoomScreen from './screens/ChatRoomScreen';
+import SelectUserForChatScreen from './screens/SelectUserForChatScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -189,6 +192,23 @@ export default function App() {
             options={{ title: 'בקשות השאלה שקיבלתי' }}
             />
 
+            <Stack.Screen
+              name="ChatList"
+              component={ChatListScreen}
+              options={{ title: 'צ\'אטים' }}
+            />
+
+            <Stack.Screen
+              name="ChatRoom"
+              component={ChatRoomScreen}
+              options={{ title: 'שיחה' }}
+            />
+
+            <Stack.Screen
+              name="SelectUserForChat"
+              component={SelectUserForChatScreen}
+              options={{ title: 'בחר שכן' }}
+            />
 
           </Stack.Navigator>
         ) : user?.role === 'admin' ? (

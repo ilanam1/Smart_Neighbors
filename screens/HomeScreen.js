@@ -29,6 +29,7 @@ import {
   FileText,
   Package,
   Inbox,
+  MessageCircle
 } from 'lucide-react-native';
 import { getSupabase } from "../DataBase/supabase";
 import { getRecentBuildingUpdates } from "../API/buildingUpdatesApi";
@@ -244,6 +245,27 @@ export default function HomeScreen({ navigation, user }) {
               <View style={styles.boxTextContent}>
                 <Text style={styles.boxTitle}>השאלת ציוד</Text>
                 <Text style={styles.boxSub}>השאלת או הצעת ציוד לשכנים בבניין</Text>
+              </View>
+
+              <ChevronLeft size={20} color="#64748b" />
+            </View>
+          </TouchableOpacity>
+
+          {/* Messages / Chat - Full Width */}
+          <TouchableOpacity
+            style={styles.fullBox}
+            onPress={() => 
+                navigation.navigate("ChatList", { user: { ...user, building_id: profile?.building_id } })
+            }
+          >
+            <View style={styles.boxRow}>
+              <View style={[styles.boxIconContainer, { backgroundColor: 'rgba(139, 92, 246, 0.15)', borderColor: 'rgba(139, 92, 246, 0.25)' }]}>
+                <MessageCircle size={24} color="#8b5cf6" />
+              </View>
+
+              <View style={styles.boxTextContent}>
+                <Text style={styles.boxTitle}>הודעות בניין ושיחות פרטיות</Text>
+                <Text style={styles.boxSub}>שליחת הודעות לשכנים ולקבוצת הבניין</Text>
               </View>
 
               <ChevronLeft size={20} color="#64748b" />
