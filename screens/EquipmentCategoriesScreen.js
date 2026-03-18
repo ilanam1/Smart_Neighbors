@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   View,
   Text,
@@ -9,28 +9,42 @@ import {
   Image,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Plus, ChevronLeft, Package } from "lucide-react-native";
+import { Plus, ChevronLeft, Package, Sparkles } from "lucide-react-native";
 import { getEquipmentCategories } from "../API/equipmentCategoriesApi";
+import { getRecommendedEquipmentCategories } from "../API/equipmentLoansApi";
 
 export default function EquipmentCategoriesScreen({ navigation, route }) {
   const { buildingId, user } = route.params || {};
 
   const [categories, setCategories] = useState([]);
+  const [recommendedCategories, setRecommendedCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
     let mounted = true;
 
-    async function loadCategories() {
+    async function loadCategoriesData() {
       try {
         setLoading(true);
         setError("");
-        const data = await getEquipmentCategories();
-        if (mounted) {
-          setCategories(data || []);
-        }
+
+        const [allCategories, recommended] = await Promise.all([
+          getEquipmentCategories(),
+          getRecommendedEquipmentCategories({
+            buildingId,
+            borrowerId: user?.id,
+            minBorrowCount: 3,
+          }),
+        ]);
+
+        if (!mounted) return;
+
+        setCategories(allCategories || []);
+        setRecommendedCategories(recommended || []);
       } catch (err) {
+        console.error("Equipment categories load error:", err);
+
         if (mounted) {
           setError("אירעה שגיאה בטעינת הקטגוריות");
         }
@@ -41,26 +55,37 @@ export default function EquipmentCategoriesScreen({ navigation, route }) {
       }
     }
 
-    loadCategories();
+    loadCategoriesData();
 
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [buildingId, user?.id]);
 
-  function renderCategory({ item }) {
+  const recommendedIds = useMemo(() => {
+    return new Set((recommendedCategories || []).map((item) => item.id));
+  }, [recommendedCategories]);
+
+  const regularCategories = useMemo(() => {
+    return (categories || []).filter((category) => !recommendedIds.has(category.id));
+  }, [categories, recommendedIds]);
+
+  function handleCategoryPress(item) {
+    navigation.navigate("EquipmentList", {
+      buildingId,
+      user,
+      categoryId: item.id,
+      categoryName: item.name,
+    });
+  }
+
+  function renderCategoryCard(item, isRecommended = false) {
     return (
       <TouchableOpacity
-        style={styles.card}
+        key={item.id}
+        style={[styles.card, isRecommended && styles.recommendedCard]}
         activeOpacity={0.9}
-        onPress={() =>
-          navigation.navigate("EquipmentList", {
-            buildingId,
-            user,
-            categoryId: item.id,
-            categoryName: item.name,
-          })
-        }
+        onPress={() => handleCategoryPress(item)}
       >
         {item.image_url ? (
           <Image source={{ uri: item.image_url }} style={styles.cardImage} />
@@ -76,12 +101,53 @@ export default function EquipmentCategoriesScreen({ navigation, route }) {
             <Text style={styles.cardTitle}>{item.name}</Text>
           </View>
 
+          {isRecommended && (
+            <View style={styles.recommendBadge}>
+              <Sparkles size={14} color="#0f172a" />
+              <Text style={styles.recommendBadgeText}>
+                מומלץ עבורך{item.borrowCount ? ` · ${item.borrowCount} השאלות` : ""}
+              </Text>
+            </View>
+          )}
+
           <Text style={styles.cardDescription} numberOfLines={2}>
             {item.description || "ציוד זמין להשאלה בקטגוריה זו"}
           </Text>
         </View>
       </TouchableOpacity>
     );
+  }
+
+  function renderListHeader() {
+    return (
+      <View>
+        {recommendedCategories.length > 0 && (
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>מומלץ עבורך</Text>
+              <Text style={styles.sectionSubTitle}>
+                קטגוריות שבהן השתמשת מספר פעמים בעבר
+              </Text>
+            </View>
+
+            {recommendedCategories.map((item) => renderCategoryCard(item, true))}
+          </View>
+        )}
+
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>כל הקטגוריות</Text>
+            <Text style={styles.sectionSubTitle}>
+              בחר קטגוריה לצפייה בציוד הזמין בבניין
+            </Text>
+          </View>
+        </View>
+      </View>
+    );
+  }
+
+  function renderCategory({ item }) {
+    return renderCategoryCard(item, false);
   }
 
   return (
@@ -110,9 +176,10 @@ export default function EquipmentCategoriesScreen({ navigation, route }) {
         <Text style={styles.errorText}>{error}</Text>
       ) : (
         <FlatList
-          data={categories}
+          data={regularCategories}
           keyExtractor={(item) => item.id}
           renderItem={renderCategory}
+          ListHeaderComponent={renderListHeader}
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
         />
@@ -161,6 +228,24 @@ const styles = StyleSheet.create({
   listContent: {
     paddingBottom: 30,
   },
+  section: {
+    marginBottom: 8,
+  },
+  sectionHeader: {
+    marginBottom: 12,
+    alignItems: "flex-end",
+  },
+  sectionTitle: {
+    color: "#f8fafc",
+    fontSize: 20,
+    fontWeight: "800",
+  },
+  sectionSubTitle: {
+    color: "#94a3b8",
+    fontSize: 12,
+    marginTop: 4,
+    textAlign: "right",
+  },
   card: {
     backgroundColor: "rgba(30, 41, 59, 0.55)",
     borderWidth: 1,
@@ -168,6 +253,10 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     overflow: "hidden",
     marginBottom: 16,
+  },
+  recommendedCard: {
+    borderColor: "rgba(16, 185, 129, 0.6)",
+    backgroundColor: "rgba(16, 185, 129, 0.08)",
   },
   cardImage: {
     width: "100%",
@@ -195,6 +284,21 @@ const styles = StyleSheet.create({
   cardTitle: {
     color: "#f8fafc",
     fontSize: 18,
+    fontWeight: "800",
+  },
+  recommendBadge: {
+    flexDirection: "row-reverse",
+    alignItems: "center",
+    gap: 6,
+    backgroundColor: "#10b981",
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 12,
+    marginBottom: 10,
+  },
+  recommendBadgeText: {
+    color: "#0f172a",
+    fontSize: 12,
     fontWeight: "800",
   },
   cardDescription: {

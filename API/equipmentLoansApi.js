@@ -257,3 +257,72 @@ export async function cancelLoanRequest(loanId) {
 
   return data;
 }
+
+
+/**
+ * שליפת קטגוריות מומלצות למשתמש לפי היסטוריית השאלות שלו
+ * כלל עסקי:
+ * - נספר רק השאלות בסטטוס approved / returned
+ * - רק עבור אותו בניין
+ * - רק קטגוריות עם minBorrowCount ומעלה ייחשבו כמומלצות
+ */
+export async function getRecommendedEquipmentCategories({
+  buildingId,
+  borrowerId,
+  minBorrowCount = 3,
+}) {
+  const supabase = getSupabase();
+
+  const { data, error } = await supabase
+    .from("equipment_loans")
+    .select(`
+      id,
+      status,
+      building_equipment (
+        category_id,
+        equipment_categories (
+          id,
+          name,
+          description,
+          image_url,
+          created_at
+        )
+      )
+    `)
+    .eq("building_id", buildingId)
+    .eq("borrower_id", borrowerId)
+    .in("status", ["approved", "returned"]);
+
+  if (error) {
+    console.error("Error fetching recommended equipment categories:", error);
+    throw error;
+  }
+
+  const categoryMap = {};
+
+  (data || []).forEach((loan) => {
+    const equipment = loan.building_equipment;
+    const category = equipment?.equipment_categories;
+
+    if (!equipment?.category_id || !category?.id) {
+      return;
+    }
+
+    if (!categoryMap[category.id]) {
+      categoryMap[category.id] = {
+        id: category.id,
+        name: category.name,
+        description: category.description,
+        image_url: category.image_url,
+        created_at: category.created_at,
+        borrowCount: 0,
+      };
+    }
+
+    categoryMap[category.id].borrowCount += 1;
+  });
+
+  return Object.values(categoryMap)
+    .filter((category) => category.borrowCount >= minBorrowCount)
+    .sort((a, b) => b.borrowCount - a.borrowCount);
+}
