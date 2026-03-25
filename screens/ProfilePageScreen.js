@@ -41,6 +41,7 @@ export default function ProfilePageScreen({ navigation }) {
             address,
             zip_code,
             date_of_birth,
+            id_number,
             photo_url,
             is_house_committee,
             committee_payment_link
@@ -113,10 +114,11 @@ export default function ProfilePageScreen({ navigation }) {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>פרטים אישיים</Text>
 
+          <ProfileRow label="תעודת זהות" value={profile?.id_number || "—"} />
           <ProfileRow label="טלפון" value={profile?.phone || "—"} />
           <ProfileRow
             label="תאריך לידה"
-            value={profile?.date_of_birth || "—"}
+            value={profile?.date_of_birth ? profile.date_of_birth.split('-').reverse().join('/') : "—"}
           />
         </View>
 
@@ -133,10 +135,11 @@ export default function ProfilePageScreen({ navigation }) {
           <Text style={styles.sectionTitle}>אבטחה</Text>
 
           <TouchableOpacity
-            style={styles.actionButton}
-            onPress={() => navigation.navigate("ChangePassword")}
+            style={styles.securityRow}
+            onPress={() => navigation.navigate("VerifyEmail")}
           >
-            <Text style={styles.actionButtonText}>שינוי סיסמה</Text>
+            <Text style={styles.securityRowText}>שינוי סיסמה</Text>
+            <Text style={styles.securityRowArrow}>{"<"}</Text>
           </TouchableOpacity>
         </View>
 
@@ -244,11 +247,12 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     marginBottom: 12,
     color: "#f9fafb",
+    textAlign: "right",
   },
 
   /* ---------- PROFILE ROWS ---------- */
   row: {
-    flexDirection: "row",
+    flexDirection: "row-reverse",
     justifyContent: "space-between",
     paddingVertical: 12,
     borderBottomWidth: 1,
@@ -257,25 +261,32 @@ const styles = StyleSheet.create({
   rowLabel: {
     color: "#9ca3af",
     fontWeight: "500",
+    textAlign: "right",
   },
   rowValue: {
     color: "#f9fafb",
     maxWidth: "60%",
-    textAlign: "right",
+    textAlign: "left",
   },
 
-  /* ---------- ACTION BUTTON ---------- */
-  actionButton: {
-    marginTop: 12,
-    backgroundColor: "#4f46e5",
-    paddingVertical: 14,
-    borderRadius: 12,
+  /* ---------- SECURITY ROW ---------- */
+  securityRow: {
+    flexDirection: "row-reverse",
+    justifyContent: "space-between",
     alignItems: "center",
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: "#1f2937",
+    marginTop: 4,
   },
-  actionButtonText: {
-    color: "white",
-    fontWeight: "700",
+  securityRowText: {
+    color: "#9ca3af",
+    fontWeight: "500",
+  },
+  securityRowArrow: {
+    color: "#6b7280",
     fontSize: 16,
+    fontWeight: "700",
   },
 
   /* ---------- GRID (HOME STYLE) ---------- */

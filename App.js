@@ -16,6 +16,8 @@ import CommitteeDisturbancesScreen from './screens/CommitteeDisturbancesScreen';
 import CommitteePaymentSetupScreen from './screens/CommitteePaymentSetupScreen';
 import PublicRequestsScreen from './screens/PublicRequestsScreen';
 import ProfilePageScreen from './screens/ProfilePageScreen';
+import VerifyEmailScreen from './screens/VerifyEmailScreen';
+import ChangePasswordScreen from './screens/ChangePasswordScreen';
 import BuildingDocumentsScreen from "./screens/BuildingDocumentsScreen";
 import BuildingRulesScreen from "./screens/BuildingRulesScreen";
 import { getSupabase } from './DataBase/supabase';
@@ -84,6 +86,18 @@ export default function App() {
               name="ProfilePageScreen"
               component={ProfilePageScreen}
               options={{ title: 'הפרופיל שלי' }}
+            />
+
+            <Stack.Screen
+              name="VerifyEmail"
+              component={VerifyEmailScreen}
+              options={{ title: 'אימות אימייל' }}
+            />
+
+            <Stack.Screen
+              name="ChangePassword"
+              component={ChangePasswordScreen}
+              options={{ title: 'שינוי סיסמה חדשה' }}
             />
 
             <Stack.Screen
