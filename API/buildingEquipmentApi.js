@@ -80,6 +80,7 @@ export async function getAvailableBuildingEquipment(buildingId) {
 
 /**
  * שליפת ציוד לפי בניין וקטגוריה
+ * נשארת כפי שהיא, למקרה שתרצה עדיין להשתמש בה במקומות אחרים
  */
 export async function getBuildingEquipmentByCategory(buildingId, categoryId) {
   const supabase = getSupabase();
@@ -192,7 +193,6 @@ export async function createEquipmentItem({
 
 /**
  * עדכון פריט ציוד קיים
- * מומלץ לאפשר רק לבעל הפריט לעדכן
  */
 export async function updateEquipmentItem(equipmentId, updates) {
   const supabase = getSupabase();
@@ -228,7 +228,6 @@ export async function updateEquipmentItem(equipmentId, updates) {
 
 /**
  * מחיקת פריט ציוד
- * מומלץ ב-RLS לאפשר רק לבעלים למחוק
  */
 export async function deleteEquipmentItem(equipmentId) {
   const supabase = getSupabase();
@@ -284,7 +283,6 @@ export async function getMyEquipmentItems(buildingId, ownerId) {
   return data || [];
 }
 
-
 /**
  * חיפוש ציוד בבניין עם תמיכה בשגיאות כתיב ו-fallback לפי קטגוריה
  */
@@ -309,8 +307,6 @@ export async function searchEquipmentInBuilding(buildingId, query, limit = 20) {
 
   return data || [];
 }
-
-
 
 /**
  * שליפת ציוד זמין לפי תגית מזג אוויר
@@ -392,4 +388,202 @@ export async function getAvailableEquipmentByHolidayTag(buildingId, holidayTag) 
   }
 
   return data || [];
+}
+
+/* ===========================
+   לוגיקת המלצה על שכן מתאים
+   =========================== */
+
+/**
+ * חישוב ציון התאמה לבעל ציוד לפי היסטוריית ההשאלות שלו
+ */
+function calculateOwnerScore(stats) {
+  return (
+    (stats.returnedCount * 3) +
+    (stats.approvedCount * 2) -
+    stats.rejectedCount -
+    stats.cancelledCount
+  );
+}
+
+/**
+ * מחזיר מפת סטטיסטיקות לכל owner_id
+ */
+async function getOwnerStatsMap(buildingId, ownerIds = []) {
+  const supabase = getSupabase();
+
+  if (!ownerIds.length) {
+    return {};
+  }
+
+  const { data, error } = await supabase
+    .from("equipment_loans")
+    .select("owner_id, status")
+    .eq("building_id", buildingId)
+    .in("owner_id", ownerIds);
+
+  if (error) {
+    console.error("Error fetching owner recommendation stats:", error);
+    throw error;
+  }
+
+  const statsMap = {};
+
+  ownerIds.forEach((ownerId) => {
+    statsMap[ownerId] = {
+      approvedCount: 0,
+      returnedCount: 0,
+      rejectedCount: 0,
+      cancelledCount: 0,
+      pendingCount: 0,
+      ownerScore: 0,
+    };
+  });
+
+  (data || []).forEach((loan) => {
+    if (!statsMap[loan.owner_id]) {
+      statsMap[loan.owner_id] = {
+        approvedCount: 0,
+        returnedCount: 0,
+        rejectedCount: 0,
+        cancelledCount: 0,
+        pendingCount: 0,
+        ownerScore: 0,
+      };
+    }
+
+    switch (loan.status) {
+      case "approved":
+        statsMap[loan.owner_id].approvedCount += 1;
+        break;
+      case "returned":
+        statsMap[loan.owner_id].returnedCount += 1;
+        break;
+      case "rejected":
+        statsMap[loan.owner_id].rejectedCount += 1;
+        break;
+      case "cancelled":
+        statsMap[loan.owner_id].cancelledCount += 1;
+        break;
+      case "pending":
+        statsMap[loan.owner_id].pendingCount += 1;
+        break;
+      default:
+        break;
+    }
+  });
+
+  Object.keys(statsMap).forEach((ownerId) => {
+    statsMap[ownerId].ownerScore = calculateOwnerScore(statsMap[ownerId]);
+  });
+
+  return statsMap;
+}
+
+/**
+ * מסמן האם כדאי להציג badge של "מומלץ להשאלה מהירה"
+ */
+function buildRecommendationFlags(item, ownerStats, currentUserId = null) {
+  const ownerScore = ownerStats?.ownerScore ?? 0;
+  const isOwnItem = currentUserId && item.owner_id === currentUserId;
+
+  if (isOwnItem) {
+    return {
+      isFastBorrowRecommended: false,
+      recommendationReason: "",
+    };
+  }
+
+  const isFastBorrowRecommended =
+    item.is_available &&
+    (
+      ownerStats?.returnedCount > 0 ||
+      ownerStats?.approvedCount >= 2 ||
+      ownerScore >= 3
+    );
+
+  let recommendationReason = "";
+
+  if (isFastBorrowRecommended) {
+    if ((ownerStats?.returnedCount ?? 0) > 0) {
+      recommendationReason = "בעל ציוד עם היסטוריית השאלות מוצלחת";
+    } else if ((ownerStats?.approvedCount ?? 0) >= 2) {
+      recommendationReason = "שכן פעיל עם זמינות טובה להשאלה";
+    } else {
+      recommendationReason = "מומלץ להשאלה מהירה";
+    }
+  }
+
+  return {
+    isFastBorrowRecommended,
+    recommendationReason,
+  };
+}
+
+/**
+ * שליפת ציוד לפי בניין וקטגוריה + דירוג שכנים מומלצים
+ */
+export async function getRecommendedBuildingEquipmentByCategory(
+  buildingId,
+  categoryId,
+  currentUserId = null
+) {
+  const baseItems = await getBuildingEquipmentByCategory(buildingId, categoryId);
+
+  if (!baseItems.length) {
+    return [];
+  }
+
+  const ownerIds = [...new Set(baseItems.map((item) => item.owner_id).filter(Boolean))];
+  const ownerStatsMap = await getOwnerStatsMap(buildingId, ownerIds);
+
+  const enrichedItems = baseItems.map((item) => {
+    const ownerStats = ownerStatsMap[item.owner_id] || {
+      approvedCount: 0,
+      returnedCount: 0,
+      rejectedCount: 0,
+      cancelledCount: 0,
+      pendingCount: 0,
+      ownerScore: 0,
+    };
+
+    const isOwnItem = currentUserId && item.owner_id === currentUserId;
+
+    const flags = buildRecommendationFlags(item, ownerStats, currentUserId);
+
+    return {
+      ...item,
+      approvedCount: ownerStats.approvedCount,
+      returnedCount: ownerStats.returnedCount,
+      rejectedCount: ownerStats.rejectedCount,
+      cancelledCount: ownerStats.cancelledCount,
+      pendingCount: ownerStats.pendingCount,
+      ownerScore: ownerStats.ownerScore,
+      isOwnItem,
+      isFastBorrowRecommended: flags.isFastBorrowRecommended,
+      recommendationReason: flags.recommendationReason,
+    };
+  });
+
+  enrichedItems.sort((a, b) => {
+    if (a.is_available !== b.is_available) {
+      return a.is_available ? -1 : 1;
+    }
+
+    if (a.isOwnItem !== b.isOwnItem) {
+      return a.isOwnItem ? 1 : -1;
+    }
+
+    if (a.isFastBorrowRecommended !== b.isFastBorrowRecommended) {
+      return a.isFastBorrowRecommended ? -1 : 1;
+    }
+
+    if (a.ownerScore !== b.ownerScore) {
+      return b.ownerScore - a.ownerScore;
+    }
+
+    return new Date(b.created_at) - new Date(a.created_at);
+  });
+
+  return enrichedItems;
 }
