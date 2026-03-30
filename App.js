@@ -33,6 +33,8 @@ import IncomingLoanRequestsScreen from './screens/IncomingLoanRequestsScreen';
 import ChatListScreen from './screens/ChatListScreen';
 import ChatRoomScreen from './screens/ChatRoomScreen';
 import SelectUserForChatScreen from './screens/SelectUserForChatScreen';
+import CommitteeWeeklyForecastScreen from "./screens/CommitteeWeeklyForecastScreen";
+
 
 const Stack = createNativeStackNavigator();
 
@@ -222,6 +224,13 @@ export default function App() {
               name="SelectUserForChat"
               component={SelectUserForChatScreen}
               options={{ title: 'בחר שכן' }}
+            />
+
+
+            <Stack.Screen
+              name="CommitteeWeeklyForecast"
+              component={CommitteeWeeklyForecastScreen}
+              options={{ title: "תחזית שבועית" }}
             />
 
           </Stack.Navigator>

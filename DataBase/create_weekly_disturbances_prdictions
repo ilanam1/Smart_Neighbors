@@ -1,0 +1,29 @@
+create table if not exists public.weekly_disturbance_predictions (
+  id uuid primary key default gen_random_uuid(),
+  building_id uuid not null references buildings(id) on delete cascade,
+  disturbance_type text not null check (
+    disturbance_type in ('NOISE', 'CLEANLINESS', 'SAFETY', 'OTHER')
+  ),
+  prediction_date date not null default current_date,
+  target_week_start date not null,
+  target_week_end date not null,
+  probability numeric(6,5) not null,
+  risk_level text not null check (
+    risk_level in ('LOW', 'MEDIUM', 'HIGH')
+  ),
+  predicted_label boolean not null,
+  explanation text null,
+  recommended_action text null,
+  model_name text not null,
+  model_version text not null default 'v1',
+  created_at timestamptz not null default now()
+);
+
+create index if not exists idx_weekly_predictions_building
+  on public.weekly_disturbance_predictions(building_id);
+
+create index if not exists idx_weekly_predictions_building_week
+  on public.weekly_disturbance_predictions(building_id, target_week_start desc);
+
+create index if not exists idx_weekly_predictions_type
+  on public.weekly_disturbance_predictions(disturbance_type);

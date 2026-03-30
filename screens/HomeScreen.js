@@ -469,6 +469,16 @@ export default function HomeScreen({ navigation, user }) {
             </TouchableOpacity>
 
 
+            <TouchableOpacity
+              style={styles.forecastButton}
+              onPress={() => navigation.navigate("CommitteeWeeklyForecast")}
+            >
+              <Text style={styles.forecastButtonText}>
+                📊 תחזית תקלות שבועית
+              </Text>
+            </TouchableOpacity>
+
+
           </View>
 
         )}
@@ -786,5 +796,24 @@ const styles = StyleSheet.create({
   footerText: {
     color: '#64748b',
     fontSize: 10,
-  }
+  },
+
+
+  forecastButton: {
+  backgroundColor: "#1e3a8a",
+  paddingVertical: 14,
+  paddingHorizontal: 16,
+  borderRadius: 12,
+  marginHorizontal: 16,
+  marginTop: 12,
+  alignItems: "center",
+  justifyContent: "center",
+},
+
+forecastButtonText: {
+  color: "#f8fafc",
+  fontSize: 16,
+  fontWeight: "800",
+},
+
 });
