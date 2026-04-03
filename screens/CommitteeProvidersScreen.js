@@ -18,52 +18,53 @@ import { ArrowRight } from "lucide-react-native";
 import {
   listProviders,
   createProvider,
-  updateProvider,
   deleteProvider,
+  listCompanies,
+  listEmployeesByCompany,
+  assignEmployeeToBuilding
 } from "../API/serviceProvidersApi";
-
-const CATEGORIES = [
-  { key: "PLUMBER", label: "אינסטלטור" },
-  { key: "ELECTRICIAN", label: "חשמלאי" },
-  { key: "CLEANING", label: "ניקיון" },
-  { key: "GENERAL", label: "כללי" },
-];
 
 export default function CommitteeProvidersScreen() {
   const navigation = useNavigation();
   const [items, setItems] = useState([]);
+  const [companies, setCompanies] = useState([]);
   const [loading, setLoading] = useState(false);
 
   // modal
   const [open, setOpen] = useState(false);
-  const [editing, setEditing] = useState(null);
+  const [creationMode, setCreationMode] = useState("existing"); // "existing" | "new"
 
   // form
+  const [companyId, setCompanyId] = useState("");
+  
+  // existing mode
+  const [companyEmployees, setCompanyEmployees] = useState([]);
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState("");
+
+  // new mode
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
-  const [category, setCategory] = useState("GENERAL");
-  const [notes, setNotes] = useState("");
-  const [isActive, setIsActive] = useState(true);
+  const [password, setPassword] = useState("");
 
-  const categoryLabel = useMemo(() => {
-    return CATEGORIES.find((c) => c.key === category)?.label || category;
-  }, [category]);
 
   const resetForm = () => {
-    setEditing(null);
+    setCreationMode("existing");
     setName("");
     setPhone("");
-    setEmail("");
-    setCategory("GENERAL");
-    setNotes("");
-    setIsActive(true);
+    setPassword("");
+    if (companies.length > 0) setCompanyId(companies[0].id);
   };
 
   const load = async () => {
     try {
       setLoading(true);
-      const data = await listProviders({ onlyActive: false });
+      const comps = await listCompanies();
+      setCompanies(comps);
+      if (comps.length > 0 && !companyId) {
+        setCompanyId(comps[0].id);
+      }
+
+      const data = await listProviders();
       setItems(data || []);
     } catch (e) {
       Alert.alert("שגיאה", e.message);
@@ -76,47 +77,50 @@ export default function CommitteeProvidersScreen() {
     load();
   }, []);
 
+  useEffect(() => {
+    if (companyId) {
+      listEmployeesByCompany(companyId).then(data => {
+        setCompanyEmployees(data);
+        if (data.length > 0) setSelectedEmployeeId(data[0].id);
+        else setSelectedEmployeeId("");
+      }).catch(console.log);
+    } else {
+      setCompanyEmployees([]);
+      setSelectedEmployeeId("");
+    }
+  }, [companyId]);
+
   const openCreate = () => {
     resetForm();
     setOpen(true);
   };
 
-  const openEdit = (p) => {
-    setEditing(p);
-    setName(p.name || "");
-    setPhone(p.phone || "");
-    setEmail(p.email || "");
-    setCategory(p.category || "GENERAL");
-    setNotes(p.notes || "");
-    setIsActive(!!p.is_active);
-    setOpen(true);
-  };
-
   const handleSave = async () => {
-    if (!name.trim()) {
-      Alert.alert("שגיאה", "שם ספק הוא חובה");
+    if (!companyId) {
+      Alert.alert("שגיאה", "נא לבחור חברה");
       return;
     }
 
     try {
       setLoading(true);
 
-      if (editing) {
-        await updateProvider(editing.id, {
-          name: name.trim(),
-          phone: phone.trim() || null,
-          email: email.trim() || null,
-          category,
-          notes: notes.trim() || null,
-          is_active: isActive,
-        });
+      if (creationMode === "existing") {
+        if (!selectedEmployeeId) {
+          Alert.alert("שגיאה", "אנא בחר עובד מתוך הרשימה");
+          setLoading(false);
+          return;
+        }
+        await assignEmployeeToBuilding(selectedEmployeeId);
       } else {
+        if (!name.trim()) return Alert.alert("שגיאה", "שם ספק הוא חובה");
+        if (!phone.trim()) return Alert.alert("שגיאה", "מספר טלפון הוא חובה");
+        if (!password.trim()) return Alert.alert("שגיאה", "סיסמה היא חובה");
+        
         await createProvider({
           name: name.trim(),
           phone: phone.trim() || null,
-          email: email.trim() || null,
-          category,
-          notes: notes.trim() || null,
+          password: password.trim(),
+          company_id: companyId
         });
       }
 
@@ -188,34 +192,23 @@ export default function CommitteeProvidersScreen() {
                   <Text style={styles.title}>{item.name}</Text>
 
                   <Text style={styles.meta}>
-                    קטגוריה:{" "}
-                    {CATEGORIES.find((c) => c.key === item.category)?.label ||
-                      item.category}
+                    חברה: {item.company_name}
+                  </Text>
+                  
+                  <Text style={styles.meta}>
+                    סוג שירות: {item.category}
                   </Text>
 
-                  {!!item.phone && <Text style={styles.meta}>טלפון: {item.phone}</Text>}
-                  {!!item.email && <Text style={styles.meta}>מייל: {item.email}</Text>}
-
-                  <Text style={[styles.meta, { marginTop: 6 }]}>
-                    סטטוס: {item.is_active ? "פעיל" : "לא פעיל"}
-                  </Text>
+                  {!!item.phone && <Text style={styles.meta}>טלפון (לוגין): {item.phone}</Text>}
                 </View>
 
                 <View style={styles.actionsCol}>
-                  <TouchableOpacity
-                    style={styles.smallBtn}
-                    onPress={() => openEdit(item)}
-                    activeOpacity={0.85}
-                  >
-                    <Text style={styles.smallBtnText}>עריכה</Text>
-                  </TouchableOpacity>
-
                   <TouchableOpacity
                     style={[styles.smallBtn, styles.dangerBtn]}
                     onPress={() => handleDelete(item)}
                     activeOpacity={0.85}
                   >
-                    <Text style={styles.smallBtnText}>מחק</Text>
+                    <Text style={styles.smallBtnText}>הסר שיוך</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -227,78 +220,108 @@ export default function CommitteeProvidersScreen() {
           <View style={styles.modalBackdrop}>
             <View style={styles.modalCard}>
               <Text style={styles.modalTitle}>
-                {editing ? "עריכת ספק" : "יצירת ספק חדש"}
+                הוספת ספק
               </Text>
 
-              <Text style={styles.label}>שם *</Text>
-              <TextInput
-                style={styles.input}
-                value={name}
-                onChangeText={setName}
-                placeholder="לדוגמה: יוסי אינסטלציה"
-                placeholderTextColor="#9ca3af"
-              />
-
-              <Text style={styles.label}>קטגוריה</Text>
+              <Text style={styles.label}>1. בחר חברה מתוך המאגר</Text>
               <View style={styles.rowWrap}>
-                {CATEGORIES.map((c) => (
+                {companies.map((c) => (
                   <TouchableOpacity
-                    key={c.key}
-                    onPress={() => setCategory(c.key)}
+                    key={c.id}
+                    onPress={() => setCompanyId(c.id)}
                     style={[
                       styles.chip,
-                      category === c.key && styles.chipSelected,
+                      companyId === c.id && styles.chipSelected,
                     ]}
                     activeOpacity={0.85}
                   >
                     <Text
                       style={[
                         styles.chipText,
-                        category === c.key && styles.chipTextSelected,
+                        companyId === c.id && styles.chipTextSelected,
                       ]}
                     >
-                      {c.label}
+                      {c.name}
                     </Text>
                   </TouchableOpacity>
                 ))}
               </View>
 
-              <Text style={styles.label}>טלפון</Text>
-              <TextInput
-                style={styles.input}
-                value={phone}
-                onChangeText={setPhone}
-                keyboardType="phone-pad"
-                placeholder="05X-XXXXXXX"
-                placeholderTextColor="#9ca3af"
-              />
+              <Text style={styles.label}>2. בחר פעולה</Text>
+              <View style={styles.rowWrap}>
+                <TouchableOpacity
+                  onPress={() => setCreationMode("existing")}
+                  style={[styles.chip, creationMode === "existing" && styles.chipSelected]}
+                >
+                  <Text style={[styles.chipText, creationMode === "existing" && styles.chipTextSelected]}>שיוך עובד קיים בחברה</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => setCreationMode("new")}
+                  style={[styles.chip, creationMode === "new" && styles.chipSelected]}
+                >
+                  <Text style={[styles.chipText, creationMode === "new" && styles.chipTextSelected]}>✨ רישום עובד חדש במערכת</Text>
+                </TouchableOpacity>
+              </View>
 
-              <Text style={styles.label}>מייל</Text>
-              <TextInput
-                style={styles.input}
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                placeholder="name@example.com"
-                placeholderTextColor="#9ca3af"
-              />
-
-              <Text style={styles.label}>הערות</Text>
-              <TextInput
-                style={[styles.input, { height: 80 }]}
-                value={notes}
-                onChangeText={setNotes}
-                multiline
-                placeholder="שעות פעילות, מחירון, הערות..."
-                placeholderTextColor="#9ca3af"
-              />
-
-              {editing && (
-                <View style={styles.switchRow}>
-                  <Text style={styles.label}>פעיל</Text>
-                  <Switch value={isActive} onValueChange={setIsActive} />
-                </View>
+              {creationMode === "existing" ? (
+                <>
+                  <Text style={styles.label}>3. בחר עובד מהחברה לשיוך אל הבניין שלך</Text>
+                  <View style={styles.rowWrap}>
+                    {companyEmployees.length === 0 ? (
+                      <Text style={styles.hint}>אין למערכת עובדים מוכרים בחברה זו. בחר 'רישום עובד חדש'.</Text>
+                    ) : (
+                      companyEmployees.map((e) => (
+                        <TouchableOpacity
+                          key={e.id}
+                          onPress={() => setSelectedEmployeeId(e.id)}
+                          style={[
+                            styles.chip,
+                            selectedEmployeeId === e.id && styles.chipSelected,
+                          ]}
+                          activeOpacity={0.85}
+                        >
+                          <Text
+                            style={[
+                              styles.chipText,
+                              selectedEmployeeId === e.id && styles.chipTextSelected,
+                            ]}
+                          >
+                            {e.full_name} ({e.phone})
+                          </Text>
+                        </TouchableOpacity>
+                      ))
+                    )}
+                  </View>
+                </>
+              ) : (
+                <>
+                  <Text style={styles.label}>שם העובד החדש *</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={name}
+                    onChangeText={setName}
+                    placeholder="לדוגמה: משה (אבטחה)"
+                    placeholderTextColor="#9ca3af"
+                  />
+                  <Text style={styles.label}>מספר טלפון (קוד התחברות שלו) *</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={phone}
+                    onChangeText={setPhone}
+                    keyboardType="phone-pad"
+                    placeholder="05X-XXXXXXX"
+                    placeholderTextColor="#9ca3af"
+                  />
+                  <Text style={styles.label}>סיסמה לעובד *</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={password}
+                    onChangeText={setPassword}
+                    placeholder="הזן סיסמה ראשונית (לפחות 8 תווים)"
+                    placeholderTextColor="#9ca3af"
+                    secureTextEntry
+                  />
+                </>
               )}
 
               <View style={styles.modalBtnsRow}>
@@ -321,13 +344,13 @@ export default function CommitteeProvidersScreen() {
                   activeOpacity={0.85}
                 >
                   <Text style={styles.primaryBtnText}>
-                    {editing ? "שמור" : "צור"}
+                    שמור
                   </Text>
                 </TouchableOpacity>
               </View>
 
               <Text style={styles.hint}>
-                קטגוריה נועדה כדי שבמסך המטרדים נציע ספקים רלוונטיים מהר. ({categoryLabel})
+                {creationMode === "new" ? "שים לב: העובד החדש יישמר במאגר המרכזי ויוכל לתת שירות לבניינים נוספים." : "שיוך עובד זה אומר שהוא יוכל לקבל התראות מהבניין שלך באפליקציה."}
               </Text>
             </View>
           </View>

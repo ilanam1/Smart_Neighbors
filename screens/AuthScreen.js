@@ -140,23 +140,37 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
         return;
       }
 
-      // -------------------- ADMIN LOGIN (If not email) --------------------
+      // -------------------- ADMIN & EMPLOYEE LOGIN (If not email) --------------------
       if (!isEmail && mode === 'signin') {
-        const { data, error } = await supabase
+        // Try Admin first
+        const { data: adminData, error: adminError } = await supabase
           .from('admins')
           .select('*')
           .eq('admin_number', sanitized)
           .eq('password', password)
           .single();
 
-        if (error || !data) {
-          setError('Invalid credentials');
+        if (!adminError && adminData) {
+          const adminUser = { ...adminData, role: 'admin' };
+          onSignIn && onSignIn(adminUser);
           return;
         }
 
-        // Add a role marker to the user object
-        const adminUser = { ...data, role: 'admin' };
-        onSignIn && onSignIn(adminUser);
+        // Try Employee if not Admin
+        const { data: empData, error: empError } = await supabase
+          .from('service_employees')
+          .select('*')
+          .eq('employee_number', sanitized)
+          .eq('password', password)
+          .single();
+
+        if (!empError && empData) {
+          const empUser = { ...empData, role: 'employee' };
+          onSignIn && onSignIn(empUser);
+          return;
+        }
+
+        setError('Invalid credentials');
         return;
       }
 
@@ -509,7 +523,7 @@ const formattedDob = dobDate.toISOString().split('T')[0];
         {/* COMMON EMAIL + PASSWORD */}
         <TextInput
           placeholderTextColor="#FFFFFF"
-          placeholder="Email Address"
+          placeholder="Email / Employee Number / Admin Number"
           value={email}
           onChangeText={setEmail}
           style={styles.input}

@@ -34,7 +34,7 @@ import ChatListScreen from './screens/ChatListScreen';
 import ChatRoomScreen from './screens/ChatRoomScreen';
 import SelectUserForChatScreen from './screens/SelectUserForChatScreen';
 import CommitteeWeeklyForecastScreen from "./screens/CommitteeWeeklyForecastScreen";
-
+import EmployeeHomeScreen from './screens/EmployeeHomeScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -73,7 +73,7 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <NavigationContainer>
-        {user && user.role !== 'admin' ? (
+        {user && user.role !== 'admin' && user.role !== 'employee' ? (
           // --------- המשתמש מחובר ---------
           <Stack.Navigator>
             <Stack.Screen
@@ -241,6 +241,13 @@ export default function App() {
               {props => <AdminScreen {...props} user={user} onSignOut={() => setUser(null)} />}
             </Stack.Screen>
             <Stack.Screen name="DeleteUsers" component={DeleteUserScreen} />
+          </Stack.Navigator>
+        ) : user?.role === 'employee' ? (
+          // --------- ספק שירות / עובד ---------
+          <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="EmployeeHome">
+              {props => <EmployeeHomeScreen {...props} user={user} onSignOut={() => setUser(null)} />}
+            </Stack.Screen>
           </Stack.Navigator>
         ) : (
           // --------- המשתמש לא מחובר ---------
