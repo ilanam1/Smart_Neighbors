@@ -33,6 +33,8 @@ import {
 } from 'lucide-react-native';
 import { getSupabase } from "../DataBase/supabase";
 import { getRecentBuildingUpdates } from "../API/buildingUpdatesApi";
+import NotificationsModal from '../components/NotificationsModal';
+import { getMyNotifications } from '../API/notificationsApi';
 const { width } = Dimensions.get('window');
 const SPACING = 16;
 const RADIUS = 24;
@@ -46,6 +48,9 @@ export default function HomeScreen({ navigation, user }) {
   const [profile, setProfile] = useState(null);
   const [profileLoading, setProfileLoading] = useState(false);
   const [isCommittee, setIsCommittee] = useState(false);
+
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   const supabase = getSupabase();
 
@@ -107,9 +112,28 @@ export default function HomeScreen({ navigation, user }) {
         if (mounted) setProfileLoading(false);
       }
     }
+    
+    async function loadNotifications() {
+        try {
+            const notifs = await getMyNotifications(user.id);
+            if (mounted) {
+               setUnreadCount(notifs.filter(n => !n.is_read).length);
+            }
+        } catch (e) {}
+    }
+
     loadProfile();
+    loadNotifications();
     return () => (mounted = false);
   }, [user?.id]);
+
+  const handleCloseNotifications = async () => {
+      setShowNotifications(false);
+      try {
+          const notifs = await getMyNotifications(user.id);
+          setUnreadCount(notifs.filter(n => !n.is_read).length);
+      } catch (e) {}
+  };
 
   // ===== TICKER LOGIC =====
   useEffect(() => {
@@ -163,8 +187,18 @@ export default function HomeScreen({ navigation, user }) {
           </View>
 
           <View style={styles.headerActions}>
-            <TouchableOpacity style={styles.iconBtn} onPress={() => alert("מסך התראות בקרוב!")}>
-              <Bell size={20} color="#94a3b8" />
+            <TouchableOpacity style={styles.iconBtn} onPress={() => setShowNotifications(true)}>
+              <View>
+                  <Bell size={20} color="#94a3b8" />
+                  {unreadCount > 0 && (
+                      <View style={{
+                          position: 'absolute', top: -3, right: -3, backgroundColor: '#ef4444', 
+                          borderRadius: 6, minWidth: 12, height: 12, alignItems: 'center', justifyContent: 'center'
+                      }}>
+                          <Text style={{color: 'white', fontSize: 8, fontWeight: 'bold', paddingHorizontal: 2}}>{unreadCount}</Text>
+                      </View>
+                  )}
+              </View>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.iconBtn, styles.logoutBtn]} onPress={handleSignOut}>
               <LogOut size={20} color="#fb7185" />
@@ -483,6 +517,13 @@ export default function HomeScreen({ navigation, user }) {
 
         )}
       </ScrollView>
+
+      <NotificationsModal 
+          visible={showNotifications} 
+          onClose={handleCloseNotifications} 
+          userId={user?.id} 
+          navigation={navigation} 
+      />
     </SafeAreaView>
   );
 }

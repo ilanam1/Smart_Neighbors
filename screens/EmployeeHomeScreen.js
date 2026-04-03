@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, TouchableOpacity, Alert, FlatList, ActivityIndi
 import { useNavigation } from '@react-navigation/native';
 import { LogOut, Building, ClipboardList, Bell } from 'lucide-react-native';
 import { getSupabase } from '../DataBase/supabase';
+import NotificationsModal from '../components/NotificationsModal';
+import { getMyNotifications } from '../API/notificationsApi';
 
 export default function EmployeeHomeScreen({ user, onSignOut }) {
     const navigation = useNavigation();
@@ -10,6 +12,9 @@ export default function EmployeeHomeScreen({ user, onSignOut }) {
     const [loading, setLoading] = useState(true);
     const [buildingsCount, setBuildingsCount] = useState(0);
     const [requestsCount, setRequestsCount] = useState(0);
+
+    const [showNotifications, setShowNotifications] = useState(false);
+    const [unreadCount, setUnreadCount] = useState(0);
 
     const handleLogout = () => {
         Alert.alert(
@@ -35,12 +40,24 @@ export default function EmployeeHomeScreen({ user, onSignOut }) {
 
             // Here we could count open requests for those buildings related to their service_type
             // For now just mockup the open requests count
-            // In a real scenario we need a complex query combining disturbance_reports and their buildings.
-            setRequestsCount(0); // TODO: actual number
+            // ... existing requests mockup ...
+            setRequestsCount(0); 
+            
+            // Notifications
+            const notifs = await getMyNotifications(user.id);
+            setUnreadCount(notifs.filter(n => !n.is_read).length);
         } catch (e) {
             console.log(e);
         }
         setLoading(false);
+    };
+
+    const handleCloseNotifications = async () => {
+        setShowNotifications(false);
+        try {
+            const notifs = await getMyNotifications(user.id);
+            setUnreadCount(notifs.filter(n => !n.is_read).length);
+        } catch (e) {}
     };
 
     useEffect(() => {
@@ -51,8 +68,15 @@ export default function EmployeeHomeScreen({ user, onSignOut }) {
         <View style={styles.container}>
             <View style={styles.header}>
                 <View style={{ flexDirection: 'row', gap: 16 }}>
-                    <TouchableOpacity onPress={() => Alert.alert('בקרוב', 'מסך התראות בקרוב!')} style={styles.logoutButton}>
-                        <Bell size={24} color="#94a3b8" />
+                    <TouchableOpacity onPress={() => setShowNotifications(true)} style={styles.logoutButton}>
+                        <View>
+                            <Bell size={24} color="#94a3b8" />
+                            {unreadCount > 0 && (
+                                <View style={styles.badge}>
+                                    <Text style={styles.badgeText}>{unreadCount}</Text>
+                                </View>
+                            )}
+                        </View>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
                         <LogOut size={24} color="#ef4444" />
@@ -98,6 +122,13 @@ export default function EmployeeHomeScreen({ user, onSignOut }) {
                     <Text style={styles.infoText}>אין הודעות מערכת חדשות.</Text>
                 </View>
             </View>
+
+            <NotificationsModal 
+                visible={showNotifications} 
+                onClose={handleCloseNotifications} 
+                userId={user?.id} 
+                navigation={navigation} 
+            />
         </View>
     );
 }
@@ -199,5 +230,22 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: '#94a3b8',
         textAlign: 'center'
+    },
+    badge: {
+        position: 'absolute',
+        top: -4,
+        right: -4,
+        backgroundColor: '#ef4444',
+        borderRadius: 8,
+        minWidth: 16,
+        height: 16,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    badgeText: {
+        color: 'white',
+        fontSize: 10,
+        fontWeight: 'bold',
+        paddingHorizontal: 4,
     }
 });

@@ -23,6 +23,7 @@ import {
   listEmployeesByCompany,
   assignEmployeeToBuilding
 } from "../API/serviceProvidersApi";
+import { requestEmployeeAssignmentSelf } from "../API/notificationsApi";
 
 export default function CommitteeProvidersScreen() {
   const navigation = useNavigation();
@@ -80,15 +81,16 @@ export default function CommitteeProvidersScreen() {
   useEffect(() => {
     if (companyId) {
       listEmployeesByCompany(companyId).then(data => {
-        setCompanyEmployees(data);
-        if (data.length > 0) setSelectedEmployeeId(data[0].id);
+        const unassigned = data.filter(e => !items.find(i => i.id === e.id));
+        setCompanyEmployees(unassigned);
+        if (unassigned.length > 0) setSelectedEmployeeId(unassigned[0].id);
         else setSelectedEmployeeId("");
       }).catch(console.log);
     } else {
       setCompanyEmployees([]);
       setSelectedEmployeeId("");
     }
-  }, [companyId]);
+  }, [companyId, items]);
 
   const openCreate = () => {
     resetForm();
@@ -110,7 +112,8 @@ export default function CommitteeProvidersScreen() {
           setLoading(false);
           return;
         }
-        await assignEmployeeToBuilding(selectedEmployeeId);
+        await requestEmployeeAssignmentSelf(selectedEmployeeId);
+        Alert.alert("נשלח בהצלחה!", "בקשת השיוך נשלחה לנותן השירות, ותעודכן ברגע שיאשר.");
       } else {
         if (!name.trim()) return Alert.alert("שגיאה", "שם ספק הוא חובה");
         if (!phone.trim()) return Alert.alert("שגיאה", "מספר טלפון הוא חובה");

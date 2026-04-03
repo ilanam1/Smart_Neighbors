@@ -36,6 +36,7 @@ import SelectUserForChatScreen from './screens/SelectUserForChatScreen';
 import CommitteeWeeklyForecastScreen from "./screens/CommitteeWeeklyForecastScreen";
 import EmployeeHomeScreen from './screens/EmployeeHomeScreen';
 import EmployeeBuildingsScreen from './screens/EmployeeBuildingsScreen';
+import EmployeeAssignmentRequestScreen from './screens/EmployeeAssignmentRequestScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -250,6 +251,7 @@ export default function App() {
               {props => <EmployeeHomeScreen {...props} user={user} onSignOut={() => setUser(null)} />}
             </Stack.Screen>
             <Stack.Screen name="EmployeeBuildings" component={EmployeeBuildingsScreen} />
+            <Stack.Screen name="EmployeeAssignmentRequest" component={EmployeeAssignmentRequestScreen} />
           </Stack.Navigator>
         ) : (
           // --------- המשתמש לא מחובר ---------
