@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert, FlatList, ActivityIndicator } from 'react-native';
-import { LogOut, Building, ClipboardList } from 'lucide-react-native';
+import { useNavigation } from '@react-navigation/native';
+import { LogOut, Building, ClipboardList, Bell } from 'lucide-react-native';
 import { getSupabase } from '../DataBase/supabase';
 
 export default function EmployeeHomeScreen({ user, onSignOut }) {
+    const navigation = useNavigation();
     const supabase = getSupabase();
     const [loading, setLoading] = useState(true);
     const [buildingsCount, setBuildingsCount] = useState(0);
@@ -48,11 +50,15 @@ export default function EmployeeHomeScreen({ user, onSignOut }) {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
-                    <LogOut size={24} color="#ef4444" />
-                </TouchableOpacity>
-                <Text style={styles.headerTitle}>מסך אזור עובד</Text>
-                <View style={{ width: 24 }} />
+                <View style={{ flexDirection: 'row', gap: 16 }}>
+                    <TouchableOpacity onPress={() => Alert.alert('בקרוב', 'מסך התראות בקרוב!')} style={styles.logoutButton}>
+                        <Bell size={24} color="#94a3b8" />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
+                        <LogOut size={24} color="#ef4444" />
+                    </TouchableOpacity>
+                </View>
+                <Text style={styles.headerTitle}>אזור נותני השירות</Text>
             </View>
 
             <View style={styles.content}>
@@ -66,7 +72,7 @@ export default function EmployeeHomeScreen({ user, onSignOut }) {
                 <View style={styles.grid}>
                     <TouchableOpacity
                         style={styles.actionCard}
-                        onPress={() => Alert.alert('בקרוב', 'מסך הבניינים תחת אחריותך')}
+                        onPress={() => navigation.navigate('EmployeeBuildings', { user })}
                     >
                         <View style={[styles.iconCircle, { backgroundColor: '#dbeafe' }]}>
                             <Building size={24} color="#3b82f6" />

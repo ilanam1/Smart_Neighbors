@@ -163,8 +163,8 @@ export default function HomeScreen({ navigation, user }) {
           </View>
 
           <View style={styles.headerActions}>
-            <TouchableOpacity style={styles.iconBtn}>
-              <Settings size={20} color="#94a3b8" />
+            <TouchableOpacity style={styles.iconBtn} onPress={() => alert("מסך התראות בקרוב!")}>
+              <Bell size={20} color="#94a3b8" />
             </TouchableOpacity>
             <TouchableOpacity style={[styles.iconBtn, styles.logoutBtn]} onPress={handleSignOut}>
               <LogOut size={20} color="#fb7185" />

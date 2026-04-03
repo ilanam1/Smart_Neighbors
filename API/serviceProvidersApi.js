@@ -181,3 +181,26 @@ export async function deleteProvider(id) {
 
   return true;
 }
+
+export async function getEmployeeBuildings(employeeId) {
+  const { data, error } = await supabase
+    .from("employee_buildings")
+    .select(`
+      building_id,
+      buildings (
+        id,
+        name,
+        address,
+        city
+      )
+    `)
+    .eq("employee_id", employeeId);
+
+  if (error) {
+    console.error("Error fetching employee buildings:", error.message);
+    throw new Error("שגיאה בשליפת בנייני העובד");
+  }
+
+  // extract the buildings array
+  return (data || []).map(row => row.buildings).filter(b => b != null);
+}

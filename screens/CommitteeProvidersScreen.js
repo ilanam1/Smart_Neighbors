@@ -120,7 +120,7 @@ export default function CommitteeProvidersScreen() {
           name: name.trim(),
           phone: phone.trim() || null,
           password: password.trim(),
-          company_id: companyId
+          company_id: null // Local directly to the building
         });
       }
 
@@ -223,49 +223,49 @@ export default function CommitteeProvidersScreen() {
                 הוספת ספק
               </Text>
 
-              <Text style={styles.label}>1. בחר חברה מתוך המאגר</Text>
-              <View style={styles.rowWrap}>
-                {companies.map((c) => (
-                  <TouchableOpacity
-                    key={c.id}
-                    onPress={() => setCompanyId(c.id)}
-                    style={[
-                      styles.chip,
-                      companyId === c.id && styles.chipSelected,
-                    ]}
-                    activeOpacity={0.85}
-                  >
-                    <Text
-                      style={[
-                        styles.chipText,
-                        companyId === c.id && styles.chipTextSelected,
-                      ]}
-                    >
-                      {c.name}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-
-              <Text style={styles.label}>2. בחר פעולה</Text>
+              <Text style={styles.label}>1. בחר פעולה</Text>
               <View style={styles.rowWrap}>
                 <TouchableOpacity
                   onPress={() => setCreationMode("existing")}
                   style={[styles.chip, creationMode === "existing" && styles.chipSelected]}
                 >
-                  <Text style={[styles.chipText, creationMode === "existing" && styles.chipTextSelected]}>שיוך עובד קיים בחברה</Text>
+                  <Text style={[styles.chipText, creationMode === "existing" && styles.chipTextSelected]}>שיוך עובד קיים מחברה</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => setCreationMode("new")}
                   style={[styles.chip, creationMode === "new" && styles.chipSelected]}
                 >
-                  <Text style={[styles.chipText, creationMode === "new" && styles.chipTextSelected]}>✨ רישום עובד חדש במערכת</Text>
+                  <Text style={[styles.chipText, creationMode === "new" && styles.chipTextSelected]}>🆕 רישום עובד פרטי לבניין</Text>
                 </TouchableOpacity>
               </View>
 
               {creationMode === "existing" ? (
                 <>
-                  <Text style={styles.label}>3. בחר עובד מהחברה לשיוך אל הבניין שלך</Text>
+                  <Text style={styles.label}>2. בחר חברה מתוך המאגר</Text>
+                  <View style={styles.rowWrap}>
+                    {companies.map((c) => (
+                      <TouchableOpacity
+                        key={c.id}
+                        onPress={() => setCompanyId(c.id)}
+                        style={[
+                          styles.chip,
+                          companyId === c.id && styles.chipSelected,
+                        ]}
+                        activeOpacity={0.85}
+                      >
+                        <Text
+                          style={[
+                            styles.chipText,
+                            companyId === c.id && styles.chipTextSelected,
+                          ]}
+                        >
+                          {c.name}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+
+                  <Text style={styles.label}>3. בחר עובד מהחברה לשיוך</Text>
                   <View style={styles.rowWrap}>
                     {companyEmployees.length === 0 ? (
                       <Text style={styles.hint}>אין למערכת עובדים מוכרים בחברה זו. בחר 'רישום עובד חדש'.</Text>
@@ -350,7 +350,7 @@ export default function CommitteeProvidersScreen() {
               </View>
 
               <Text style={styles.hint}>
-                {creationMode === "new" ? "שים לב: העובד החדש יישמר במאגר המרכזי ויוכל לתת שירות לבניינים נוספים." : "שיוך עובד זה אומר שהוא יוכל לקבל התראות מהבניין שלך באפליקציה."}
+                {creationMode === "new" ? "עובד זה יהיה פרטי לבניין שלך ולא יוכלו לשייך אותו לבניינים אחרים דרך מאגר החברות." : "שיוך עובד זה אומר שהוא יוכל לקבל התראות מהבניין שלך באפליקציה."}
               </Text>
             </View>
           </View>
