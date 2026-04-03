@@ -38,6 +38,9 @@ export default function NotificationsModal({ visible, onClose, userId, navigatio
             }
             onClose(); // Close modal
             navigation.navigate("EmployeeAssignmentRequest", { notification: item });
+        } else if (item.type === 'job_request') {
+            onClose();
+            Alert.alert("התקבלה קריאה", "גש ללשונית 'בקשות פתוחות' בדף הבית כדי לצפות בה.");
         } else {
             // General notification, could just mark as read
         }
@@ -69,6 +72,8 @@ export default function NotificationsModal({ visible, onClose, userId, navigatio
                         <CheckCircle size={20} color="#10b981" />
                     ) : item.type === 'assignment_rejected' ? (
                         <X size={20} color="#ef4444" />
+                    ) : item.type === 'job_request' ? (
+                        <Info size={20} color="#f59e0b" />
                     ) : (
                         <Info size={20} color="#3b82f6" />
                     )}

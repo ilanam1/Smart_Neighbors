@@ -12,17 +12,20 @@ import {
 } from "react-native";
 import { listProviders } from "../API/serviceProvidersApi";
 import { getBuildingDisturbanceReports } from "../API/disturbancesApi";
-import {
-  getAssignmentsForReport,
-  createAssignment,
-  updateAssignmentStatus,
-} from "../API/disturbanceAssignmentsApi";
+import { createJobRequest, getJobsForReport } from "../API/jobRequestsApi";
 
 const STATUS_LABEL = {
-  REQUESTED: "הוזמן",
-  IN_PROGRESS: "בטיפול",
-  DONE: "טופל",
-  CANCELED: "בוטל",
+  OPEN: "ממתין לטיפול",
+  IN_PROGRESS: "בטיפול עובד",
+  RESOLVED: "נפתר",
+  REJECTED: "נדחה",
+};
+
+const JOB_STATUS_LABEL = {
+  PENDING: "ממתין לאישור עובד",
+  ACCEPTED: "העובד בדרך/אישר",
+  DONE: "העובד ביצע",
+  REJECTED: "העובד דחה",
 };
 
 export default function CommitteeDisturbancesScreen() {
@@ -30,36 +33,39 @@ export default function CommitteeDisturbancesScreen() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const [providers, setProviders] = useState([]);
+  const [employees, setEmployees] = useState([]);
 
+  // Modal State
   const [open, setOpen] = useState(false);
   const [selectedReport, setSelectedReport] = useState(null);
-  const [selectedProviderId, setSelectedProviderId] = useState(null);
-  const [note, setNote] = useState("");
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
+  const [instructions, setInstructions] = useState("");
+  const [scheduleTime, setScheduleTime] = useState("");
 
-  const [lastAssignments, setLastAssignments] = useState({});
+  const [lastJobs, setLastJobs] = useState({});
 
   const loadReports = async () => {
     const data = await getBuildingDisturbanceReports();
     setItems(data || []);
   };
 
-  const loadProviders = async () => {
-    const data = await listProviders({ onlyActive: true });
-    setProviders(data || []);
+  const loadEmployees = async () => {
+    // This fetches assigned employees to the building
+    const data = await listProviders();
+    setEmployees(data || []);
   };
 
-  const loadLastAssignmentFor = async (reportId) => {
-    const data = await getAssignmentsForReport(reportId);
+  const loadLastJobFor = async (reportId) => {
+    const data = await getJobsForReport(reportId);
     const last = data?.[0] || null;
-    setLastAssignments((prev) => ({ ...prev, [reportId]: last }));
+    setLastJobs((prev) => ({ ...prev, [reportId]: last }));
   };
 
   const loadAll = async () => {
     setError(null);
     setLoading(true);
     try {
-      await Promise.all([loadReports(), loadProviders()]);
+      await Promise.all([loadReports(), loadEmployees()]);
     } catch (e) {
       console.error(e);
       setError(e.message || "שגיאה בטעינת נתוני המטרדים");
@@ -83,58 +89,44 @@ export default function CommitteeDisturbancesScreen() {
     (async () => {
       for (const r of items) {
         if (r?.id) {
-          await loadLastAssignmentFor(r.id);
+          await loadLastJobFor(r.id);
         }
       }
     })();
   }, [items]);
 
-  const openOrderModal = (report) => {
+  const openOrderModal = (report, lastJob = null) => {
     setSelectedReport(report);
-    setSelectedProviderId(null);
-    setNote("");
+    setSelectedEmployeeId(null);
+    setInstructions(lastJob?.instructions || "");
+    setScheduleTime(lastJob?.schedule_time || "");
     setOpen(true);
   };
 
   const handleCreateOrder = async () => {
     if (!selectedReport?.id) return;
-
-    if (!selectedProviderId) {
-      Alert.alert("שגיאה", "בחר ספק");
+    if (!selectedEmployeeId) {
+      Alert.alert("שגיאה", "בחר עובד לביצוע המשימה");
       return;
     }
 
     try {
       setLoading(true);
 
-      await createAssignment({
+      await createJobRequest({
         reportId: selectedReport.id,
-        providerId: selectedProviderId,
-        note: note.trim() || null,
+        employeeId: selectedEmployeeId,
+        instructions: instructions.trim() || null,
+        scheduleTime: scheduleTime.trim() || null
       });
 
       setOpen(false);
-      await loadLastAssignmentFor(selectedReport.id);
-      Alert.alert("הצלחה", "הספק הוזמן בהצלחה");
+      await loadReports(); // To see the IN_PROGRESS status
+      await loadLastJobFor(selectedReport.id);
+      Alert.alert("הצלחה", "קריאת שירות נשלחה בהצלחה לעובד!");
     } catch (e) {
       console.error(e);
-      Alert.alert("שגיאה", e.message || "אירעה שגיאה בהזמנת ספק");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleUpdateStatus = async (reportId, assignmentId, status) => {
-    try {
-      setLoading(true);
-      await updateAssignmentStatus(assignmentId, {
-        status,
-        note: null,
-      });
-      await loadLastAssignmentFor(reportId);
-    } catch (e) {
-      console.error(e);
-      Alert.alert("שגיאה", e.message || "אירעה שגיאה בעדכון הסטטוס");
+      Alert.alert("שגיאה", e.message || "אירעה שגיאה ביצירת הקריאה");
     } finally {
       setLoading(false);
     }
@@ -151,15 +143,9 @@ export default function CommitteeDisturbancesScreen() {
     return [loc, sev, date].filter(Boolean).join(" · ");
   };
 
-  const providerNameById = useMemo(() => {
-    const map = {};
-    for (const p of providers) map[p.id] = p;
-    return map;
-  }, [providers]);
-
-  if (loading) return <ActivityIndicator style={{ marginTop: 20 }} color="#38bdf8" />;
+  if (loading && items.length === 0) return <ActivityIndicator style={{ marginTop: 20 }} color="#38bdf8" />;
   if (error) return <Text style={styles.error}>שגיאה: {error}</Text>;
-  if (!items.length) {
+  if (!items.length && !loading) {
     return <Text style={styles.empty}>אין עדיין דיווחי מטרדים בבניין שלך.</Text>;
   }
 
@@ -170,66 +156,58 @@ export default function CommitteeDisturbancesScreen() {
         data={items}
         keyExtractor={(item) => String(item.id)}
         renderItem={({ item }) => {
-          const last = lastAssignments[item.id] || null;
-          const provider =
-            last?.service_providers ||
-            (last?.provider_id ? providerNameById[last.provider_id] : null);
+          const lastJob = lastJobs[item.id] || null;
 
           return (
             <View style={styles.card}>
-              <Text style={styles.title}>{renderReportTitle(item)}</Text>
+              <View style={{ flexDirection: 'row-reverse', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Text style={styles.title}>{renderReportTitle(item)}</Text>
+                <View style={[styles.statusBadge, item.status === 'RESOLVED' && styles.statusBadgeResolved]}>
+                  <Text style={styles.statusBadgeText}>{STATUS_LABEL[item.status] || item.status}</Text>
+                </View>
+              </View>
               <Text style={styles.body}>{item.description}</Text>
               <Text style={styles.meta}>{renderReportMeta(item)}</Text>
 
               <View style={styles.divider} />
 
-              {!last ? (
+              {!lastJob ? (
                 <TouchableOpacity
                   style={styles.primaryBtn}
                   onPress={() => openOrderModal(item)}
                 >
-                  <Text style={styles.primaryBtnText}>הזמן ספק לטיפול</Text>
+                  <Text style={styles.primaryBtnText}>פתח קריאת שירות לעובד</Text>
                 </TouchableOpacity>
               ) : (
                 <View style={styles.assignmentBox}>
+                  <Text style={styles.assignmentTitle}>הקצאה פעילה:</Text>
                   <Text style={styles.assignmentText}>
-                    ספק: {provider?.name || "לא ידוע"} {provider?.phone ? `· ${provider.phone}` : ""}
+                    עובד מבצע: {lastJob.service_employees?.full_name || "לא ידוע"} {lastJob.service_employees?.phone ? `(${lastJob.service_employees.phone})` : ""}
                   </Text>
                   <Text style={styles.assignmentText}>
-                    סטטוס: {STATUS_LABEL[last.status] || last.status}
+                    תיאור: {lastJob.instructions || "אין תיאור"}
+                  </Text>
+                  <Text style={styles.assignmentText}>
+                    זמן לביצוע: {lastJob.schedule_time || "לא מוגדר"}
+                  </Text>
+                  <Text style={[styles.assignmentText, { color: '#38bdf8', marginTop: 4 }]}>
+                    סטטוס הקריאה: {JOB_STATUS_LABEL[lastJob.status] || lastJob.status}
                   </Text>
 
-                  <View style={styles.statusRow}>
+                  {lastJob.status === 'DONE' && (
+                    <Text style={{ textAlign: "right", color: "#10b981", fontWeight: "700", marginTop: 4 }}>
+                      המשימה הושלמה בהצלחה.
+                    </Text>
+                  )}
+                  
+                  {lastJob.status === 'REJECTED' && (
                     <TouchableOpacity
-                      style={styles.smallBtn}
-                      onPress={() => handleUpdateStatus(item.id, last.id, "IN_PROGRESS")}
+                      style={[styles.primaryBtn, { marginTop: 10 }]}
+                      onPress={() => openOrderModal(item, lastJob)}
                     >
-                      <Text style={styles.smallBtnText}>בטיפול</Text>
+                      <Text style={styles.primaryBtnText}>הקצאה חלופית (העובד סירב)</Text>
                     </TouchableOpacity>
-
-                    <TouchableOpacity
-                      style={styles.smallBtn}
-                      onPress={() => handleUpdateStatus(item.id, last.id, "DONE")}
-                    >
-                      <Text style={styles.smallBtnText}>טופל</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                      style={[styles.smallBtn, styles.dangerBtn]}
-                      onPress={() => handleUpdateStatus(item.id, last.id, "CANCELED")}
-                    >
-                      <Text style={styles.smallBtnText}>ביטול</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                      style={[styles.smallBtn, styles.secondaryBtn]}
-                      onPress={() => openOrderModal(item)}
-                    >
-                      <Text style={[styles.smallBtnText, { color: "#f8fafc" }]}>
-                        הזמנה חדשה
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
+                  )}
                 </View>
               )}
             </View>
@@ -240,44 +218,62 @@ export default function CommitteeDisturbancesScreen() {
       <Modal visible={open} transparent animationType="slide">
         <View style={styles.modalBackdrop}>
           <View style={styles.modalCard}>
-            <Text style={styles.modalTitle}>הזמנת ספק</Text>
+            <Text style={styles.modalTitle}>הפניית מטרד לטיפול עובד</Text>
 
             <Text style={styles.modalSub}>
-              {selectedReport ? renderReportTitle(selectedReport) : ""}
+              עבור: {selectedReport ? renderReportTitle(selectedReport) : ""}
             </Text>
 
-            <Text style={styles.label}>בחר ספק</Text>
-            <View style={styles.providersWrap}>
-              {providers.map((p) => {
-                const selected = selectedProviderId === p.id;
-                return (
-                  <TouchableOpacity
-                    key={p.id}
-                    onPress={() => setSelectedProviderId(p.id)}
-                    style={[
-                      styles.providerChip,
-                      selected && styles.providerChipSelected,
-                    ]}
-                  >
-                    <Text
-                      style={[
-                        styles.providerChipText,
-                        selected && styles.providerChipTextSelected,
-                      ]}
+            <Text style={styles.label}>1. בחר עובד מצוות הבניין</Text>
+            {employees.length === 0 ? (
+              <Text style={{ textAlign: 'right', color: '#ef4444', marginBottom: 10 }}>
+                אין לך עובדים מקושרים לבניין. הוסף נותן שירות במסך ניהול ספקים.
+              </Text>
+            ) : (
+                <View style={styles.providersWrap}>
+                {employees.map((p) => {
+                    const selected = selectedEmployeeId === p.id;
+                    return (
+                    <TouchableOpacity
+                        key={p.id}
+                        onPress={() => setSelectedEmployeeId(p.id)}
+                        style={[
+                        styles.providerChip,
+                        selected && styles.providerChipSelected,
+                        ]}
                     >
-                      {p.name} ({p.category})
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
+                        <Text
+                        style={[
+                            styles.providerChipText,
+                            selected && styles.providerChipTextSelected,
+                        ]}
+                        >
+                        {p.name} ({p.category})
+                        </Text>
+                    </TouchableOpacity>
+                    );
+                })}
+                </View>
+            )}
 
-            <Text style={styles.label}>הערה לספק (אופציונלי)</Text>
+            <Text style={styles.label}>2. תיאור העבודה לעובד (אופציונלי)</Text>
             <TextInput
-              style={[styles.input, { height: 80 }]}
-              value={note}
-              onChangeText={setNote}
+              style={[styles.input, { height: 70 }]}
+              value={instructions}
+              onChangeText={setInstructions}
+              placeholder="לדוגמה: לנקות את חדר המדרגות בקומה 2"
+              placeholderTextColor="#64748b"
               multiline
+              textAlign="right"
+            />
+
+            <Text style={styles.label}>3. מתי ואיך לטפל?</Text>
+            <TextInput
+              style={[styles.input, { height: 50 }]}
+              value={scheduleTime}
+              onChangeText={setScheduleTime}
+              placeholder="לדוגמה: היום אחהצ / בהקדם האפשרי"
+              placeholderTextColor="#64748b"
               textAlign="right"
             />
 
@@ -290,10 +286,15 @@ export default function CommitteeDisturbancesScreen() {
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={[styles.primaryBtn, { flex: 1 }]}
+                style={[styles.primaryBtn, { flex: 1, opacity: employees.length === 0 ? 0.5 : 1 }]}
                 onPress={handleCreateOrder}
+                disabled={employees.length === 0 || loading}
               >
-                <Text style={styles.primaryBtnText}>הזמן</Text>
+                {loading ? (
+                    <ActivityIndicator color="white" />
+                ) : (
+                    <Text style={styles.primaryBtnText}>שלח קריאה לעובד היעודי</Text>
+                )}
               </TouchableOpacity>
             </View>
           </View>
@@ -308,44 +309,36 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#0F172A",
   },
-  list: { padding: 16 },
+  list: { padding: 16, paddingBottom: 60 },
   card: {
     backgroundColor: "#1e293b",
-    padding: 12,
-    borderRadius: 10,
-    marginBottom: 10,
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 14,
     borderWidth: 1,
     borderColor: "#334155",
   },
-  title: { fontWeight: "700", fontSize: 16, textAlign: "right", color: "#f8fafc" },
-  body: { marginTop: 4, color: "#e2e8f0", textAlign: "right" },
-  meta: { marginTop: 6, fontSize: 12, color: "#94a3b8", textAlign: "right" },
+  title: { fontWeight: "800", fontSize: 17, textAlign: "right", color: "#f8fafc", flex: 1 },
+  body: { marginTop: 6, color: "#cbd5e1", textAlign: "right", fontSize: 15 },
+  meta: { marginTop: 8, fontSize: 13, color: "#94a3b8", textAlign: "right" },
 
-  divider: { height: 1, backgroundColor: "#334155", marginVertical: 10 },
+  statusBadge: { backgroundColor: '#334155', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8 },
+  statusBadgeResolved: { backgroundColor: '#166534' },
+  statusBadgeText: { color: 'white', fontSize: 12, fontWeight: 'bold' },
+
+  divider: { height: 1, backgroundColor: "#334155", marginVertical: 12 },
 
   primaryBtn: {
     backgroundColor: "#2563eb",
-    paddingVertical: 10,
-    borderRadius: 10,
+    paddingVertical: 12,
+    borderRadius: 12,
     alignItems: "center",
   },
   primaryBtnText: { color: "white", fontWeight: "800" },
 
-  assignmentBox: { gap: 6 },
-  assignmentText: { textAlign: "right", color: "#f8fafc", fontWeight: "700" },
-  statusRow: { flexDirection: "row-reverse", flexWrap: "wrap", gap: 8, marginTop: 6 },
-
-  smallBtn: {
-    backgroundColor: "#0f172a",
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "#334155",
-  },
-  secondaryBtn: { backgroundColor: "#334155" },
-  dangerBtn: { backgroundColor: "#b91c1c", borderColor: "#b91c1c" },
-  smallBtnText: { color: "white", fontWeight: "800" },
+  assignmentBox: { backgroundColor: '#0f172a', padding: 12, borderRadius: 10, borderWidth: 1, borderColor: '#1e293b' },
+  assignmentTitle: { textAlign: "right", color: "#94a3b8", fontWeight: "800", fontSize: 13, marginBottom: 4 },
+  assignmentText: { textAlign: "right", color: "#f8fafc", fontWeight: "500", fontSize: 14, marginTop: 2 },
 
   error: { marginTop: 20, textAlign: "center", color: "#f87171" },
   empty: { marginTop: 20, textAlign: "center", color: "#94a3b8" },
@@ -359,16 +352,16 @@ const styles = StyleSheet.create({
   modalCard: {
     backgroundColor: "#1e293b",
     borderRadius: 16,
-    padding: 14,
+    padding: 16,
     borderWidth: 1,
     borderColor: "#334155",
   },
-  modalTitle: { fontSize: 18, fontWeight: "900", textAlign: "right", color: "#f8fafc" },
-  modalSub: { marginTop: 6, color: "#94a3b8", textAlign: "right" },
+  modalTitle: { fontSize: 20, fontWeight: "900", textAlign: "right", color: "#f8fafc" },
+  modalSub: { marginTop: 6, color: "#94a3b8", textAlign: "right", fontSize: 13 },
 
   label: {
-    marginTop: 12,
-    marginBottom: 6,
+    marginTop: 16,
+    marginBottom: 8,
     textAlign: "right",
     fontWeight: "800",
     color: "#e2e8f0",
@@ -377,7 +370,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#334155",
     borderRadius: 10,
-    padding: 10,
+    padding: 12,
     textAlign: "right",
     backgroundColor: "#0f172a",
     color: "#f8fafc",
@@ -387,20 +380,21 @@ const styles = StyleSheet.create({
   providerChip: {
     borderWidth: 1,
     borderColor: "#475569",
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-    borderRadius: 18,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderRadius: 20,
+    backgroundColor: '#0f172a'
   },
   providerChipSelected: { backgroundColor: "#2563eb", borderColor: "#2563eb" },
-  providerChipText: { fontWeight: "800", color: "#e2e8f0" },
+  providerChipText: { fontWeight: "800", color: "#94a3b8" },
   providerChipTextSelected: { color: "white" },
 
-  modalBtnsRow: { flexDirection: "row-reverse", gap: 10, marginTop: 14 },
+  modalBtnsRow: { flexDirection: "row-reverse", gap: 12, marginTop: 24 },
   secondaryModalBtn: {
     backgroundColor: "#334155",
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-    borderRadius: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 12,
   },
   secondaryModalBtnText: { fontWeight: "900", color: "#f8fafc" },
 });

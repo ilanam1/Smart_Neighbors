@@ -37,6 +37,9 @@ import CommitteeWeeklyForecastScreen from "./screens/CommitteeWeeklyForecastScre
 import EmployeeHomeScreen from './screens/EmployeeHomeScreen';
 import EmployeeBuildingsScreen from './screens/EmployeeBuildingsScreen';
 import EmployeeAssignmentRequestScreen from './screens/EmployeeAssignmentRequestScreen';
+import EmployeeJobRequestScreen from './screens/EmployeeJobRequestScreen';
+import EmployeeJobRequestsListScreen from './screens/EmployeeJobRequestsListScreen';
+import EmployeeCompletedJobsScreen from './screens/EmployeeCompletedJobsScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -252,6 +255,9 @@ export default function App() {
             </Stack.Screen>
             <Stack.Screen name="EmployeeBuildings" component={EmployeeBuildingsScreen} />
             <Stack.Screen name="EmployeeAssignmentRequest" component={EmployeeAssignmentRequestScreen} />
+            <Stack.Screen name="EmployeeJobRequest" component={EmployeeJobRequestScreen} />
+            <Stack.Screen name="EmployeeJobRequestsList" component={EmployeeJobRequestsListScreen} />
+            <Stack.Screen name="EmployeeCompletedJobs" component={EmployeeCompletedJobsScreen} />
           </Stack.Navigator>
         ) : (
           // --------- המשתמש לא מחובר ---------

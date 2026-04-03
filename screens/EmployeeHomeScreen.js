@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert, FlatList, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { LogOut, Building, ClipboardList, Bell } from 'lucide-react-native';
+import { LogOut, Building, ClipboardList, Bell, CheckCircle } from 'lucide-react-native';
 import { getSupabase } from '../DataBase/supabase';
 import NotificationsModal from '../components/NotificationsModal';
 import { getMyNotifications } from '../API/notificationsApi';
+import { getEmployeeOpenJobs } from '../API/jobRequestsApi';
 
 export default function EmployeeHomeScreen({ user, onSignOut }) {
     const navigation = useNavigation();
@@ -38,10 +39,9 @@ export default function EmployeeHomeScreen({ user, onSignOut }) {
             
             if (!bError) setBuildingsCount(bCount || 0);
 
-            // Here we could count open requests for those buildings related to their service_type
-            // For now just mockup the open requests count
-            // ... existing requests mockup ...
-            setRequestsCount(0); 
+            // Open requests count
+            const openJobs = await getEmployeeOpenJobs(user.id);
+            setRequestsCount(openJobs.length); 
             
             // Notifications
             const notifs = await getMyNotifications(user.id);
@@ -107,13 +107,23 @@ export default function EmployeeHomeScreen({ user, onSignOut }) {
 
                     <TouchableOpacity
                         style={styles.actionCard}
-                        onPress={() => Alert.alert('בקרוב', 'רשימת משימות ופניות פתוחות מהבניינים שלך')}
+                        onPress={() => navigation.navigate('EmployeeJobRequestsList', { employeeId: user.id })}
                     >
                         <View style={[styles.iconCircle, { backgroundColor: '#fef08a' }]}>
                             <ClipboardList size={24} color="#ca8a04" />
                         </View>
                         <Text style={styles.actionTitle}>בקשות פתוחות</Text>
                         <Text style={styles.actionDesc}>לטיפול</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={[styles.actionCard, { marginTop: 16, width: '100%' }]}
+                        onPress={() => navigation.navigate('EmployeeCompletedJobs', { employeeId: user.id })}
+                    >
+                        <View style={[styles.iconCircle, { backgroundColor: '#dcfce7' }]}>
+                            <CheckCircle size={24} color="#16a34a" />
+                        </View>
+                        <Text style={styles.actionTitle}>היסטוריית משימות</Text>
+                        <Text style={styles.actionDesc}>קריאות שטופלו והסתיימו</Text>
                     </TouchableOpacity>
                 </View>
                 
