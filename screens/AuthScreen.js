@@ -401,31 +401,8 @@ const formattedDob = dobDate.toISOString().split('T')[0];
 
   async function handleResetPassword() {
     setError(null);
-    setLoading(true);
-
-    try {
-      const sanitized = sanitizeEmailInput(email);
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-      if (!emailRegex.test(sanitized)) {
-        setError(`Email address "${email}" is invalid`);
-        return;
-      }
-
-      const { data, error } = await supabase.auth.resetPasswordForEmail(sanitized);
-      setInfo({ action: 'resetPassword', data, error });
-
-      if (error) setError(error.message);
-      else
-        setInfo((prev) => ({
-          ...(prev || {}),
-          message: 'Password reset email sent.',
-        }));
-    } catch (e) {
-      setError(e.message || String(e));
-    } finally {
-      setLoading(false);
-    }
+    const sanitized = sanitizeEmailInput(email);
+    navigation.navigate("VerifyEmail", { emailForReset: sanitized });
   }
 
   return (

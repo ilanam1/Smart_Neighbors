@@ -45,6 +45,7 @@ const Stack = createNativeStackNavigator();
 
 export default function App() {
   const [user, setUser] = useState(null);
+  const [isRecovering, setIsRecovering] = useState(false);
   const supabase = getSupabase();
 
   useEffect(() => {
@@ -60,7 +61,10 @@ export default function App() {
     })();
 
     try {
-      const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+      const { data } = supabase.auth.onAuthStateChange((event, session) => {
+        if (event === "PASSWORD_RECOVERY") {
+          setIsRecovering(true);
+        }
         setUser(session?.user ?? null);
       });
       subscription = data?.subscription || null;
@@ -80,7 +84,7 @@ export default function App() {
       <NavigationContainer>
         {user && user.role !== 'admin' && user.role !== 'employee' ? (
           // --------- המשתמש מחובר ---------
-          <Stack.Navigator>
+          <Stack.Navigator initialRouteName={isRecovering ? "ChangePassword" : "Home"}>
             <Stack.Screen
               name="Home"
               options={{ title: 'Smart Neighbors', headerShown: false }}
@@ -269,6 +273,8 @@ export default function App() {
             <Stack.Screen name="Signup">
               {props => <SignupScreen {...props} onSignIn={setUser} />}
             </Stack.Screen>
+            <Stack.Screen name="VerifyEmail" component={VerifyEmailScreen} />
+            <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
           </Stack.Navigator>
         )}
       </NavigationContainer>

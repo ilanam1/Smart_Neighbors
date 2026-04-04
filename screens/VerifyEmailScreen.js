@@ -12,8 +12,9 @@ import {
 } from "react-native";
 import { getSupabase } from "../DataBase/supabase";
 
-export default function VerifyEmailScreen({ navigation }) {
+export default function VerifyEmailScreen({ route, navigation }) {
   const supabase = getSupabase();
+  const emailForReset = route?.params?.emailForReset;
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
@@ -26,10 +27,12 @@ export default function VerifyEmailScreen({ navigation }) {
       const { data: { user } } = await supabase.auth.getUser();
       if (user && user.email) {
         setEmail(user.email);
+      } else if (emailForReset) {
+        setEmail(emailForReset);
       }
     }
     loadUserEmail();
-  }, []);
+  }, [emailForReset]);
 
   async function handleSendCode() {
     setError(null);
@@ -94,10 +97,13 @@ export default function VerifyEmailScreen({ navigation }) {
             <View style={styles.inputGroup}>
               <Text style={styles.label}>האימייל שלך</Text>
               <TextInput
-                style={[styles.input, { color: "#64748b" }]}
+                style={[styles.input, { color: "#f8fafc" }]}
                 value={email}
-                editable={false}
+                onChangeText={setEmail}
+                editable={true}
                 textAlign="right"
+                keyboardType="email-address"
+                autoCapitalize="none"
               />
             </View>
 
@@ -165,7 +171,7 @@ export default function VerifyEmailScreen({ navigation }) {
             onPress={() => navigation.goBack()}
             disabled={loading}
           >
-            <Text style={styles.cancelButtonText}>ביטול חזרה לפרופיל</Text>
+            <Text style={styles.cancelButtonText}>ביטול וחזרה</Text>
           </TouchableOpacity>
         )}
       </View>

@@ -131,7 +131,7 @@ export default function WelcomeScreen({ navigation }) {
           {/* Forgot Password */}
           <TouchableOpacity
             style={styles.forgotPasswordButton}
-            onPress={() => console.log('Forgot Password')}
+            onPress={() => navigation.navigate('VerifyEmail')}
           >
             <Text style={styles.forgotPasswordText}>שכחתי סיסמה</Text>
           </TouchableOpacity>

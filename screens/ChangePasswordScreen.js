@@ -52,7 +52,7 @@ export default function ChangePasswordScreen({ navigation }) {
       }
 
       Alert.alert("הצלחה", "הסיסמה שונתה בהצלחה!", [
-        { text: "אישור", onPress: () => navigation.navigate("ProfilePageScreen") }
+        { text: "אישור", onPress: () => navigation.reset({ index: 0, routes: [{ name: 'Home' }] }) }
       ]);
     } catch (err) {
       setError(err.message || "אירעה שגיאה בעת שינוי הסיסמה.");
