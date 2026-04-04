@@ -12,6 +12,9 @@ import {
   ScrollView,
   KeyboardAvoidingView,
 } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import Svg, { Defs, RadialGradient, Stop, Rect } from 'react-native-svg';
+import { LogIn, UserPlus } from 'lucide-react-native';
 //import DateTimePicker from '@react-native-community/datetimepicker';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { getSupabase } from '../DataBase/supabase.js';
@@ -407,6 +410,26 @@ const formattedDob = dobDate.toISOString().split('T')[0];
 
   return (
     <>
+      <View style={StyleSheet.absoluteFill}>
+        <View style={{ flex: 1, backgroundColor: '#0F172A' }} />
+        <View style={StyleSheet.absoluteFill}>
+          <Svg height="100%" width="100%">
+            <Defs>
+              <RadialGradient id="topGlow" cx="100%" cy="0%" rx="60%" ry="40%" fx="100%" fy="0%" gradientUnits="userSpaceOnUse">
+                <Stop offset="0" stopColor="#ff0080" stopOpacity="0.3" />
+                <Stop offset="1" stopColor="#000000" stopOpacity="0" />
+              </RadialGradient>
+              <RadialGradient id="bottomGlow" cx="0%" cy="100%" rx="60%" ry="40%" fx="0%" fy="100%" gradientUnits="userSpaceOnUse">
+                <Stop offset="0" stopColor="#00f2ff" stopOpacity="0.25" />
+                <Stop offset="1" stopColor="#000000" stopOpacity="0" />
+              </RadialGradient>
+            </Defs>
+            <Rect x="0" y="0" width="100%" height="100%" fill="url(#topGlow)" />
+            <Rect x="0" y="0" width="100%" height="100%" fill="url(#bottomGlow)" />
+          </Svg>
+        </View>
+      </View>
+
       <KeyboardAvoidingView 
         style={styles.container} 
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -419,47 +442,50 @@ const formattedDob = dobDate.toISOString().split('T')[0];
         >
           <View style={styles.card}>
             <Text style={styles.title}>
-              {mode === 'signup' ? 'Create account' : 'Welcome back'}
+              {mode === 'signup' ? 'צור חשבון' : 'ברוך שובך'}
             </Text>
 
         {/* EXTRA FIELDS – SIGNUP ONLY */}
         {mode === 'signup' && (
           <>
-            <TextInput placeholderTextColor="#FFFFFF" placeholder="First Name *" value={firstName} onChangeText={setFirstName} style={styles.input} />
-            <TextInput placeholderTextColor="#FFFFFF" placeholder="Last Name *" value={lastName} onChangeText={setLastName} style={styles.input} />
-            <TextInput placeholderTextColor="#FFFFFF" placeholder="Phone Number (10 Digits) *" value={phone} onChangeText={setPhone} keyboardType="phone-pad" style={styles.input} />
-            <TextInput placeholderTextColor="#FFFFFF" placeholder="Zip / Postal Code (7 Digits) *" value={zip} onChangeText={setZip} keyboardType="number-pad" style={styles.input} />
-            <TextInput placeholderTextColor="#FFFFFF" placeholder="Address *" value={address} onChangeText={setAddress} style={styles.input} />
-            <TextInput placeholderTextColor="#FFFFFF" placeholder="ID Number (9 Digits) *" value={idNumber} onChangeText={setIdNumber} keyboardType="number-pad" style={styles.input} />
+            <TextInput placeholderTextColor="#9ca3af" placeholder="שם פרטי *" value={firstName} onChangeText={setFirstName} style={styles.input} textAlign="right" />
+            <TextInput placeholderTextColor="#9ca3af" placeholder="שם משפחה *" value={lastName} onChangeText={setLastName} style={styles.input} textAlign="right" />
+            <TextInput placeholderTextColor="#9ca3af" placeholder="מס' טלפון (10 ספרות) *" value={phone} onChangeText={setPhone} keyboardType="phone-pad" style={styles.input} textAlign="right" />
+            <TextInput placeholderTextColor="#9ca3af" placeholder="מיקוד (7 ספרות) *" value={zip} onChangeText={setZip} keyboardType="number-pad" style={styles.input} textAlign="right" />
+            <TextInput placeholderTextColor="#9ca3af" placeholder="כתובת *" value={address} onChangeText={setAddress} style={styles.input} textAlign="right" />
+            <TextInput placeholderTextColor="#9ca3af" placeholder="תעודת זהות (9 ספרות) *" value={idNumber} onChangeText={setIdNumber} keyboardType="number-pad" style={styles.input} textAlign="right" />
             
             {/* DATE PICKER */}
-<View style={{ flexDirection: 'row', gap: 8, marginTop: 10 }}>
+<View style={{ flexDirection: 'row-reverse', gap: 8, marginTop: 10 }}>
   <TextInput
-    placeholderTextColor="#FFFFFF"
-    placeholder="DD"
+    placeholderTextColor="#9ca3af"
+    placeholder="יום"
     value={birthDay}
     onChangeText={setBirthDay}
     keyboardType="number-pad"
     maxLength={2}
     style={[styles.input, { flex: 1, marginTop: 0 }]}
+    textAlign="center"
   />
   <TextInput
-    placeholderTextColor="#FFFFFF"
-    placeholder="MM"
+    placeholderTextColor="#9ca3af"
+    placeholder="חודש"
     value={birthMonth}
     onChangeText={setBirthMonth}
     keyboardType="number-pad"
     maxLength={2}
     style={[styles.input, { flex: 1, marginTop: 0 }]}
+    textAlign="center"
   />
   <TextInput
-    placeholderTextColor="#FFFFFF"
-    placeholder="YYYY"
+    placeholderTextColor="#9ca3af"
+    placeholder="שנה"
     value={birthYear}
     onChangeText={setBirthYear}
     keyboardType="number-pad"
     maxLength={4}
     style={[styles.input, { flex: 2, marginTop: 0 }]}
+    textAlign="center"
   />
 </View>
 
@@ -468,28 +494,28 @@ const formattedDob = dobDate.toISOString().split('T')[0];
               style={[styles.input, { justifyContent: 'center' }]}
               onPress={() => setShowBuildingModal(true)}
             >
-              <Text style={{ color: selectedBuildingId ? '#f8fafc' : '#9ca3af' }}>
+              <Text style={{ color: selectedBuildingId ? '#f8fafc' : '#9ca3af', textAlign: 'right' }}>
                 {selectedBuildingId
-                  ? buildings.find(b => b.id === selectedBuildingId)?.name || 'Selected'
-                  : 'Select Building *'}
+                  ? buildings.find(b => b.id === selectedBuildingId)?.name || 'נבחר'
+                  : 'בחר בניין *'}
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity onPress={() => setIsCommittee(!isCommittee)} style={{ marginTop: 10 }}>
-              <Text style={{ fontSize: 16, color: '#e2e8f0' }}>
-                {isCommittee ? '☑ House Committee' : '☐ House Committee'}
+              <Text style={{ fontSize: 16, color: '#e2e8f0', textAlign: 'right' }}>
+                {isCommittee ? '☑ חבר ועד בית' : '☐ חבר ועד בית'}
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.photoButton} onPress={handlePickPhoto}>
               <Text style={styles.photoButtonText}>
-                {photo ? 'Change profile photo' : 'Choose profile photo (Optional)'}
+                {photo ? 'שנה תמונת פרופיל' : 'בחר תמונת פרופיל (רשות)'}
               </Text>
             </TouchableOpacity>
 
             {photo && (
-              <Text style={{ fontSize: 12, color: '#6b7280', marginTop: 4 }}>
-                Selected: {photo.fileName || photo.uri}
+              <Text style={{ fontSize: 12, color: '#6b7280', marginTop: 4, textAlign: 'right' }}>
+                נבחר: {photo.fileName || photo.uri}
               </Text>
             )}
 
@@ -499,39 +525,52 @@ const formattedDob = dobDate.toISOString().split('T')[0];
         {/* COMMON EMAIL + PASSWORD */}
         {/* COMMON EMAIL + PASSWORD */}
         <TextInput
-          placeholderTextColor="#FFFFFF"
-          placeholder="Email / Employee Number / Admin Number"
+          placeholderTextColor="#9ca3af"
+          placeholder="אימייל / מס' עובד / מס' מנהל"
           value={email}
           onChangeText={setEmail}
           style={styles.input}
           keyboardType="default"
           autoCapitalize="none"
+          textAlign="right"
         />
-        <TextInput placeholderTextColor="#FFFFFF" placeholder="Password" value={password} onChangeText={setPassword} style={styles.input} secureTextEntry />
+        <TextInput placeholderTextColor="#9ca3af" placeholder="סיסמה" value={password} onChangeText={setPassword} style={styles.input} secureTextEntry textAlign="right" />
 
         {mode === 'signup' && (
-          <TextInput placeholderTextColor="#FFFFFF" placeholder="Confirm Password" value={confirmPassword} onChangeText={setConfirmPassword} style={styles.input} secureTextEntry />
+          <TextInput placeholderTextColor="#9ca3af" placeholder="אימות סיסמה" value={confirmPassword} onChangeText={setConfirmPassword} style={styles.input} secureTextEntry textAlign="right" />
         )}
 
         {error ? <Text style={styles.error}>{error}</Text> : null}
 
-        <TouchableOpacity style={styles.button} onPress={handleAuth} disabled={loading}>
-          {loading ? <ActivityIndicator color="#fff" /> : (
-            <Text style={styles.buttonText}>
-              {mode === 'signup' ? 'Sign up' : 'Sign in'}
-            </Text>
-          )}
+        <TouchableOpacity style={styles.primaryButtonWrapper} onPress={handleAuth} disabled={loading} activeOpacity={0.9}>
+          <LinearGradient
+            colors={['#ff0080', '#00f2ff']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.gradientBorder}
+          >
+            <View style={styles.primaryButtonInner}>
+              {loading ? <ActivityIndicator color="#ff0080" /> : (
+                <>
+                  {mode === 'signup' ? <UserPlus size={20} color="#ff0080" /> : <LogIn size={20} color="#ff0080" />}
+                  <Text style={styles.primaryButtonText}>
+                    {mode === 'signup' ? 'הרשמה' : 'התחברות'}
+                  </Text>
+                </>
+              )}
+            </View>
+          </LinearGradient>
         </TouchableOpacity>
 
         {/* DEBUG INFO */}
         {info && (
           <View style={{ marginTop: 12 }}>
-            <Text style={{ color: '#444', fontSize: 12 }}>{JSON.stringify(info, null, 2)}</Text>
+            <Text style={{ color: '#444', fontSize: 12, textAlign: 'right' }}>{JSON.stringify(info, null, 2)}</Text>
             <TouchableOpacity
               style={{ marginTop: 8, padding: 8, backgroundColor: '#e5e7eb', borderRadius: 4, alignItems: 'center' }}
               onPress={() => setInfo(null)}
             >
-              <Text style={{ color: '#444', fontSize: 12 }}>Clear logs</Text>
+              <Text style={{ color: '#444', fontSize: 12 }}>נקה יומנים</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -539,8 +578,8 @@ const formattedDob = dobDate.toISOString().split('T')[0];
         {/* AFTER SIGNUP */}
         {postSignUpUser && (
           <View style={{ marginTop: 12, alignItems: 'center' }}>
-            <Text style={{ color: '#111', marginBottom: 8, textAlign: 'center' }}>
-              Account created! Tap below to continue.
+            <Text style={{ color: '#f8fafc', marginBottom: 8, textAlign: 'center' }}>
+              החשבון נוצר! לחץ למטה להמשך.
             </Text>
             <TouchableOpacity
               style={{ backgroundColor: '#10b981', padding: 10, borderRadius: 8 }}
@@ -549,7 +588,7 @@ const formattedDob = dobDate.toISOString().split('T')[0];
                 setPostSignUpUser(null);
               }}
             >
-              <Text style={{ color: '#fff', fontWeight: '600' }}>Proceed to app</Text>
+              <Text style={{ color: '#fff', fontWeight: 'bold' }}>המשך לאפליקציה</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -557,20 +596,20 @@ const formattedDob = dobDate.toISOString().split('T')[0];
         {/* TOGGLE TO SIGNIN/SIGNUP */}
         <TouchableOpacity onPress={() => setMode(mode === 'signup' ? 'signin' : 'signup')}>
           <Text style={styles.toggleText}>
-            {mode === 'signup' ? 'Have an account? Sign in' : "Don't have an account? Sign up"}
+            {mode === 'signup' ? 'יש לך כבר חשבון? התחבר' : 'אין לך חשבון? הרשם'}
           </Text>
         </TouchableOpacity>
 
         <TouchableOpacity onPress={handleResetPassword} disabled={loading}>
-          <Text style={[styles.toggleText, { marginTop: 8 }]}>Forgot password?</Text>
+          <Text style={[styles.toggleText, { marginTop: 8 }]}>שכחתי סיסמה?</Text>
         </TouchableOpacity>
 
         {/* BACK BUTTON */}
         <TouchableOpacity
           onPress={() => navigation.navigate('Welcome')}
-          style={{ marginTop: 18, padding: 10, backgroundColor: '#e5e7eb', borderRadius: 8, alignItems: 'center' }}
+          style={styles.secondaryButton}
         >
-          <Text style={{ color: '#111', fontWeight: '600' }}>← Back</Text>
+          <Text style={styles.secondaryButtonText}>חזרה לעמוד הראשי</Text>
         </TouchableOpacity>
 
       </View>
@@ -580,7 +619,7 @@ const formattedDob = dobDate.toISOString().split('T')[0];
   <Modal visible={showBuildingModal} transparent animationType="slide">
         <View style={styles.modalBg}>
           <View style={styles.modalContent}>
-            <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 12, color: '#111' }}>Select Building</Text>
+            <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 12, color: '#111', textAlign: 'right' }}>בחר בניין</Text>
             <FlatList
               data={buildings}
               keyExtractor={item => item.id}
@@ -592,7 +631,7 @@ const formattedDob = dobDate.toISOString().split('T')[0];
                     setShowBuildingModal(false);
                   }}
                 >
-                  <Text style={{ color: '#111', fontSize: 16 }}>{item.name} - {item.address}</Text>
+                  <Text style={{ color: '#111', fontSize: 16, textAlign: 'right' }}>{item.name} - {item.address}</Text>
                 </TouchableOpacity>
               )}
             />
@@ -600,7 +639,7 @@ const formattedDob = dobDate.toISOString().split('T')[0];
               style={{ marginTop: 12, padding: 10, alignItems: 'center' }}
               onPress={() => setShowBuildingModal(false)}
             >
-              <Text style={{ color: '#ef4444', fontWeight: 'bold' }}>Close</Text>
+              <Text style={{ color: '#ef4444', fontWeight: 'bold' }}>סגור</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -616,47 +655,91 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#0F172A',
+    backgroundColor: 'transparent',
   },
   card: {
     width: '90%',
     maxWidth: 420,
-    padding: 22,
-    backgroundColor: '#1e293b',
-    borderRadius: 12,
+    padding: 26,
+    backgroundColor: 'rgba(30, 41, 59, 0.7)',
+    borderRadius: 24,
     shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowRadius: 10,
-    elevation: 3,
+    shadowOpacity: 0.3,
+    shadowRadius: 15,
+    elevation: 8,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   title: {
-    fontSize: 22,
-    fontWeight: '600',
-    marginBottom: 12,
+    fontSize: 28,
+    fontWeight: '800',
+    marginBottom: 20,
     textAlign: 'center',
     color: '#f8fafc',
+    letterSpacing: 0.5,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#334155',
-    padding: 12,
-    borderRadius: 8,
-    marginTop: 10,
-    backgroundColor: '#0f172a',
-    color: '#f8fafc',
-  },
-  button: {
-    backgroundColor: '#4f46e5',
+    borderColor: 'rgba(255, 255, 255, 0.1)',
     padding: 14,
-    borderRadius: 8,
-    marginTop: 16,
-    alignItems: 'center',
+    borderRadius: 12,
+    marginTop: 12,
+    backgroundColor: 'rgba(15, 23, 42, 0.6)',
+    color: '#f8fafc',
+    fontSize: 16,
   },
-  buttonText: { color: '#fff', fontWeight: '600' },
-  toggleText: { color: '#9ca3af', marginTop: 12, textAlign: 'center' },
-  error: { color: '#f87171', marginTop: 8, textAlign: 'center' },
+  primaryButtonWrapper: {
+    width: '100%',
+    height: 56,
+    borderRadius: 16,
+    overflow: 'hidden',
+    shadowColor: '#ff0080',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.4,
+    shadowRadius: 10,
+    elevation: 5,
+    marginTop: 24,
+  },
+  gradientBorder: {
+    flex: 1,
+    padding: 2,
+    borderRadius: 16,
+  },
+  primaryButtonInner: {
+    flex: 1,
+    backgroundColor: '#000000',
+    borderRadius: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
+  },
+  primaryButtonText: {
+    color: '#ffffff',
+    fontSize: 18,
+    fontWeight: 'bold',
+    letterSpacing: 0.5,
+  },
+  toggleText: { color: '#9ca3af', marginTop: 16, textAlign: 'center', fontSize: 14 },
+  error: { color: '#f87171', marginTop: 12, textAlign: 'center', fontWeight: '500' },
+  secondaryButton: {
+    paddingHorizontal: 24,
+    height: 48,
+    borderRadius: 14,
+    alignSelf: 'center',
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 24,
+  },
+  secondaryButtonText: {
+    color: '#9ca3af',
+    fontSize: 15,
+    fontWeight: '600',
+  },
 
   photoButton: {
     marginTop: 10,
