@@ -2,6 +2,7 @@
 // API לניהול בקשות השאלה של ציוד
 
 import { getSupabase } from "../DataBase/supabase";
+import { createNotification } from "./notificationsApi";
 
 /**
  * בדיקה האם יש חפיפה עם השאלות מאושרות / ממתינות
@@ -69,6 +70,24 @@ export async function requestEquipmentLoan({
     console.error("Error creating equipment loan request:", error);
     throw error;
   }
+
+  // יצירת התראה לבעל הציוד
+  await createNotification({
+    recipient_id: ownerId,
+    sender_id: borrowerId,
+    title: "בקשת השאלה חדשה 📦",
+    message: "דייר אחר שלח לך בקשה להשאלת ציוד. לחץ לצפייה בפרטים.",
+    type: "equipment_loan_request",
+    related_data: {
+      loan_id: data.id,
+      equipment_id: equipmentId,
+      building_id: buildingId,
+      owner_id: ownerId,
+      borrower_id: borrowerId,
+      start_date: startDate,
+      end_date: endDate,
+    },
+  });
 
   return data;
 }
@@ -155,7 +174,7 @@ export async function approveLoanRequest(loanId) {
 
   const { data: loan, error: loanError } = await supabase
     .from("equipment_loans")
-    .select("id, equipment_id, start_date, end_date, status")
+    .select("id, equipment_id, building_id, owner_id, borrower_id, start_date, end_date, status")
     .eq("id", loanId)
     .single();
 
@@ -192,6 +211,23 @@ export async function approveLoanRequest(loanId) {
     throw error;
   }
 
+  await createNotification({
+    recipient_id: loan.borrower_id,
+    sender_id: loan.owner_id,
+    title: "בקשת ההשאלה אושרה ✅",
+    message: "בקשת ההשאלה שלך אושרה על ידי בעל הציוד.",
+    type: "equipment_loan_approved",
+    related_data: {
+      loan_id: loan.id,
+      equipment_id: loan.equipment_id,
+      building_id: loan.building_id,
+      owner_id: loan.owner_id,
+      borrower_id: loan.borrower_id,
+      start_date: loan.start_date,
+      end_date: loan.end_date,
+    },
+  });
+
   return data;
 }
 
@@ -200,6 +236,21 @@ export async function approveLoanRequest(loanId) {
  */
 export async function rejectLoanRequest(loanId) {
   const supabase = getSupabase();
+
+  const { data: loan, error: loanError } = await supabase
+    .from("equipment_loans")
+    .select("id, equipment_id, building_id, owner_id, borrower_id, start_date, end_date, status")
+    .eq("id", loanId)
+    .single();
+
+  if (loanError) {
+    console.error("Error fetching loan request before rejection:", loanError);
+    throw loanError;
+  }
+
+  if (loan.status !== "pending") {
+    throw new Error("רק בקשה במצב pending ניתנת לדחייה.");
+  }
 
   const { data, error } = await supabase
     .from("equipment_loans")
@@ -212,6 +263,23 @@ export async function rejectLoanRequest(loanId) {
     console.error("Error rejecting loan request:", error);
     throw error;
   }
+
+  await createNotification({
+    recipient_id: loan.borrower_id,
+    sender_id: loan.owner_id,
+    title: "בקשת ההשאלה נדחתה ❌",
+    message: "בקשת ההשאלה שלך נדחתה על ידי בעל הציוד.",
+    type: "equipment_loan_rejected",
+    related_data: {
+      loan_id: loan.id,
+      equipment_id: loan.equipment_id,
+      building_id: loan.building_id,
+      owner_id: loan.owner_id,
+      borrower_id: loan.borrower_id,
+      start_date: loan.start_date,
+      end_date: loan.end_date,
+    },
+  });
 
   return data;
 }

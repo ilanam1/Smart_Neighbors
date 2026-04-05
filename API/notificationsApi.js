@@ -169,3 +169,54 @@ export async function respondToAssignmentRequest(notification, isAccepted, reaso
 
   return true;
 }
+
+
+export async function createBuildingMaintenanceNotification({
+  buildingId,
+  senderId,
+  title,
+  message,
+  relatedData = {},
+  excludeUserId = null,
+}) {
+  const supabase = getSupabase();
+
+  const { data: residents, error: residentsError } = await supabase
+    .from("profiles")
+    .select("auth_uid")
+    .eq("building_id", buildingId);
+
+  if (residentsError) {
+    console.error("Error fetching building residents:", residentsError.message);
+    throw new Error("שגיאה בשליפת דיירי הבניין");
+  }
+
+  const recipients = (residents || [])
+    .map((resident) => resident.auth_uid)
+    .filter(Boolean)
+    .filter((uid) => uid !== excludeUserId);
+
+  if (recipients.length === 0) {
+    return true;
+  }
+
+  const rows = recipients.map((recipientId) => ({
+    recipient_id: recipientId,
+    sender_id: senderId,
+    title,
+    message,
+    type: "maintenance_notice",
+    related_data: relatedData,
+  }));
+
+  const { error } = await supabase
+    .from("app_notifications")
+    .insert(rows);
+
+  if (error) {
+    console.error("Error creating building maintenance notifications:", error.message);
+    throw new Error("שגיאה ביצירת התראות תחזוקה לדיירים");
+  }
+
+  return true;
+}

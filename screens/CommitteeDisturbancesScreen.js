@@ -10,9 +10,11 @@ import {
   TextInput,
   Alert,
 } from "react-native";
+import { getSupabase } from "../DataBase/supabase";
 import { listProviders } from "../API/serviceProvidersApi";
 import { getBuildingDisturbanceReports } from "../API/disturbancesApi";
 import { createJobRequest, getJobsForReport } from "../API/jobRequestsApi";
+import { createBuildingMaintenanceNotification } from "../API/notificationsApi";
 
 const STATUS_LABEL = {
   OPEN: "ממתין לטיפול",
@@ -26,6 +28,22 @@ const JOB_STATUS_LABEL = {
   ACCEPTED: "העובד בדרך/אישר",
   DONE: "העובד ביצע",
   REJECTED: "העובד דחה",
+};
+
+
+const getCurrentAuthUser = async () => {
+  const supabase = getSupabase();
+
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
+
+  if (error || !user) {
+    throw new Error("שגיאה בזיהוי המשתמש המחובר");
+  }
+
+  return user;
 };
 
 export default function CommitteeDisturbancesScreen() {
@@ -118,6 +136,30 @@ export default function CommitteeDisturbancesScreen() {
         employeeId: selectedEmployeeId,
         instructions: instructions.trim() || null,
         scheduleTime: scheduleTime.trim() || null
+      });
+
+
+
+      const currentUser = await getCurrentAuthUser();
+
+      const maintenanceDateText = scheduleTime?.trim()
+        ? `בתאריך/זמן: ${scheduleTime.trim()}`
+        : "בזמן הקרוב";
+
+      await createBuildingMaintenanceNotification({
+        buildingId: selectedReport.building_id,
+        senderId: currentUser.id,
+        title: "הודעת תחזוקה לבניין 🔧",
+        message: `צפויה עבודת תחזוקה בבניין בנושא ${selectedReport.type}. ${maintenanceDateText}.`,
+        relatedData: {
+          report_id: selectedReport.id,
+          disturbance_type: selectedReport.type,
+          disturbance_status: selectedReport.status,
+          schedule_time: scheduleTime?.trim() || null,
+          location: selectedReport.location || null,
+          description: selectedReport.description || null,
+        },
+        excludeUserId: currentUser.id,
       });
 
       setOpen(false);
