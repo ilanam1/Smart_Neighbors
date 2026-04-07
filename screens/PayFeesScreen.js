@@ -1,6 +1,3 @@
-// screens/PayFeesScreen.js
-// מסך לתשלום מיסי ועד הבית
-
 import React, { useEffect, useState } from 'react';
 import {
   View,
@@ -12,96 +9,152 @@ import {
 } from 'react-native';
 import { Linking } from 'react-native';
 import {
-  getCommitteeMembers,
-  createHouseFeePayment,
-  markPaymentAsPaid,
+  getCommitteeMembersByBuilding,
+  getCurrentBuildingCharge,
+  createLinkPaymentRequest,
+  createCashPaymentRequest,
+  confirmLinkPaymentAsPaid,
+  getMyPaymentForMonth,
 } from '../API/paymentsApi';
 
+function getCurrentMonthYear() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  return `${year}-${month}`;
+}
+
 export default function PayFeesScreen() {
-  // אפשר לשנות את הסכום הדיפולטי לפי החלטה שלך
-  const [amount] = useState(200); // ₪ 200 לחודש לדוגמה
-  const [monthYear, setMonthYear] = useState(getCurrentMonthYear()); // "2025-12"
+  const [monthYear] = useState(getCurrentMonthYear());
   const [committeeMembers, setCommitteeMembers] = useState([]);
   const [selectedCommittee, setSelectedCommittee] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [loadingMembers, setLoadingMembers] = useState(false);
-  const [lastPaymentId, setLastPaymentId] = useState(null);
+  const [charge, setCharge] = useState(null);
+  const [lastPayment, setLastPayment] = useState(null);
+
+  const [loadingPage, setLoadingPage] = useState(true);
+  const [loadingAction, setLoadingAction] = useState(false);
 
   useEffect(() => {
-    loadCommitteeMembers();
+    loadData();
   }, []);
 
-  async function loadCommitteeMembers() {
+  async function loadData() {
     try {
-      setLoadingMembers(true);
-      const data = await getCommitteeMembers();
-      setCommitteeMembers(data);
-      if (data.length > 0) {
-        setSelectedCommittee(data[0]);
+      setLoadingPage(true);
+
+      const [members, currentCharge, myPayment] = await Promise.all([
+        getCommitteeMembersByBuilding(),
+        getCurrentBuildingCharge(monthYear),
+        getMyPaymentForMonth(monthYear),
+      ]);
+
+      setCommitteeMembers(members || []);
+      setCharge(currentCharge || null);
+      setLastPayment(myPayment || null);
+
+      if (members && members.length > 0) {
+        const memberWithLink = members.find(m => !!m.committee_payment_link);
+        setSelectedCommittee(memberWithLink || members[0]);
       }
     } catch (err) {
       console.error(err);
-      Alert.alert('שגיאה', err.message || 'שגיאה בטעינת חברי הוועד.');
+      Alert.alert('שגיאה', err.message || 'שגיאה בטעינת הנתונים');
     } finally {
-      setLoadingMembers(false);
+      setLoadingPage(false);
     }
   }
 
-  function getCurrentMonthYear() {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    return `${year}-${month}`;
+  function formatCommitteeName(member) {
+    if (!member) return 'חבר ועד';
+    return `${member.first_name || ''} ${member.last_name || ''}`.trim() || 'חבר ועד';
   }
 
-  async function handlePay() {
+  async function handleCashPayment() {
     if (!selectedCommittee) {
-      Alert.alert('שגיאה', 'לא נבחר חבר ועד לתשלום.');
+      Alert.alert('שגיאה', 'לא נמצא חבר ועד מתאים');
       return;
     }
 
-    let url = selectedCommittee.committee_payment_link || '';
-
-    // 1. ניקוי רווחים ותווים מיותרים
-    url = url.trim();
-
-    if (!url) {
-      Alert.alert('שגיאה', 'לחבר הוועד שנבחר אין קישור תשלום מוגדר.');
+    if (!charge) {
+      Alert.alert('שגיאה', 'לא הוגדר חיוב לחודש זה על ידי ועד הבית');
       return;
-    }
-
-    // 2. אם אין פרוטוקול – נוסיף https://
-    if (!url.startsWith('http://') && !url.startsWith('https://')) {
-      url = 'https://' + url;
     }
 
     try {
-      setLoading(true);
+      setLoadingAction(true);
 
-      // יצירת רשומת תשלום בבסיס הנתונים
-      const payment = await createHouseFeePayment({
+      const payment = await createCashPaymentRequest({
         committeeAuthUserId: selectedCommittee.auth_uid,
-        amount,
+        amount: charge.amount,
         monthYear,
+        chargeId: charge.id,
       });
 
-      setLastPaymentId(payment.id);
+      setLastPayment(payment);
 
-      console.log('PAY URL =', url);
+      Alert.alert(
+        'הבקשה נשלחה',
+        'בקשת תשלום במזומן נשמרה בהצלחה.'
+      );
+    } catch (err) {
+      console.error(err);
+      Alert.alert('שגיאה', err.message || 'שגיאה ביצירת בקשת תשלום במזומן');
+    } finally {
+      setLoadingAction(false);
+    }
+  }
 
-      // 3. עבור http/https אפשר פשוט לפתוח – אם יש בעיה, נתפוס ב-catch
+  async function handleLinkPayment() {
+    if (!selectedCommittee) {
+      Alert.alert('שגיאה', 'לא נמצא חבר ועד מתאים');
+      return;
+    }
+
+    if (!charge) {
+      Alert.alert('שגיאה', 'לא הוגדר חיוב לחודש זה על ידי ועד הבית');
+      return;
+    }
+
+    let url = (selectedCommittee.committee_payment_link || '').trim();
+
+    if (!url) {
+      Alert.alert('שגיאה', 'לחבר הוועד אין קישור תשלום מוגדר');
+      return;
+    }
+
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+      url = `https://${url}`;
+    }
+
+    try {
+      setLoadingAction(true);
+
+      const payment = await createLinkPaymentRequest({
+        committeeAuthUserId: selectedCommittee.auth_uid,
+        amount: charge.amount,
+        monthYear,
+        chargeId: charge.id,
+        externalPaymentLink: url,
+      });
+
+      setLastPayment(payment);
+
       Alert.alert(
         'מעבר לתשלום',
-        'נפתח דף תשלום מאובטח. לאחר סיום התשלום, חזור לאפליקציה כדי לסמן ששילמת.',
+        'יועבר כעת לעמוד התשלום. לאחר שסיימת, חזור לאפליקציה ולחץ על "סיימתי לשלם".',
         [
+          {
+            text: 'ביטול',
+            style: 'cancel',
+          },
           {
             text: 'המשך',
             onPress: async () => {
               try {
                 await Linking.openURL(url);
               } catch (e) {
-                console.log('openURL error', e);
-                Alert.alert('שגיאה', 'לא ניתן לפתוח את קישור התשלום.');
+                console.error('openURL error', e);
+                Alert.alert('שגיאה', 'לא ניתן לפתוח את קישור התשלום');
               }
             },
           },
@@ -109,32 +162,47 @@ export default function PayFeesScreen() {
       );
     } catch (err) {
       console.error(err);
-      Alert.alert('שגיאה', err.message || 'שגיאה בהתחלת התשלום.');
+      Alert.alert('שגיאה', err.message || 'שגיאה בהתחלת תשלום דרך לינק');
     } finally {
-      setLoading(false);
+      setLoadingAction(false);
     }
   }
 
+  async function handleConfirmPaid() {
+    if (!lastPayment?.id) {
+      Alert.alert('מידע', 'לא נמצאה בקשת תשלום אחרונה לאישור');
+      return;
+    }
 
-  async function handleMarkAsPaid() {
-    if (!lastPaymentId) {
-      Alert.alert(
-        'מידע',
-        'אין תשלום אחרון מסומן. בצע קודם תשלום, ואז סמן אותו כבוצע.'
-      );
+    if (lastPayment.payment_method !== 'LINK') {
+      Alert.alert('מידע', 'אפשר לאשר כאן רק תשלום שבוצע דרך לינק');
       return;
     }
 
     try {
-      setLoading(true);
-      await markPaymentAsPaid(lastPaymentId);
-      Alert.alert('הצלחה', 'סטטוס התשלום עודכן כ"שולם" בהצלחה.');
+      setLoadingAction(true);
+
+      const updatedPayment = await confirmLinkPaymentAsPaid(lastPayment.id);
+      setLastPayment(updatedPayment);
+
+      Alert.alert(
+        'התשלום נשמר בהצלחה',
+        `התשלום סומן כשולם.\nאסמכתא: ${updatedPayment.receipt_code}`
+      );
     } catch (err) {
       console.error(err);
-      Alert.alert('שגיאה', err.message || 'שגיאה בעדכון סטטוס התשלום.');
+      Alert.alert('שגיאה', err.message || 'שגיאה באישור התשלום');
     } finally {
-      setLoading(false);
+      setLoadingAction(false);
     }
+  }
+
+  if (loadingPage) {
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" color="#4f46e5" />
+      </View>
+    );
   }
 
   return (
@@ -144,25 +212,22 @@ export default function PayFeesScreen() {
       <Text style={styles.label}>חודש תשלום</Text>
       <Text style={styles.value}>{monthYear}</Text>
 
-      <Text style={styles.label}>סכום לתשלום</Text>
-      <Text style={styles.value}>{amount} ₪</Text>
+      <Text style={styles.label}>סכום לתשלום החודש</Text>
+      <Text style={styles.value}>
+        {charge ? `${charge.amount} ₪` : 'לא הוגדר עדיין'}
+      </Text>
 
-      <Text style={styles.label}>בחירת חבר ועד לקבלת התשלום</Text>
+      <Text style={styles.label}>חבר ועד של הבניין</Text>
 
-      {loadingMembers ? (
-        <ActivityIndicator size="small" color="#4f46e5" />
-      ) : committeeMembers.length === 0 ? (
+      {committeeMembers.length === 0 ? (
         <Text style={styles.warningText}>
-          אין חברי ועד עם קישור תשלום מוגדר. יש להגדיר ב-Supabase.
+          לא נמצאו חברי ועד עבור הבניין שלך.
         </Text>
       ) : (
         <View style={styles.committeeList}>
           {committeeMembers.map(member => {
             const isSelected =
-              selectedCommittee &&
-              selectedCommittee.auth_uid === member.auth_uid;
-            const name = `${member.first_name || ''} ${member.last_name || ''
-              }`.trim() || 'חבר ועד';
+              selectedCommittee?.auth_uid === member.auth_uid;
 
             return (
               <TouchableOpacity
@@ -179,7 +244,7 @@ export default function PayFeesScreen() {
                     isSelected && styles.committeeTextSelected,
                   ]}
                 >
-                  {name}
+                  {formatCommitteeName(member)}
                 </Text>
               </TouchableOpacity>
             );
@@ -188,23 +253,47 @@ export default function PayFeesScreen() {
       )}
 
       <TouchableOpacity
-        style={[styles.payButton, loading && styles.buttonDisabled]}
-        onPress={handlePay}
-        disabled={loading || committeeMembers.length === 0}
+        style={[styles.cashButton, loadingAction && styles.buttonDisabled]}
+        onPress={handleCashPayment}
+        disabled={loadingAction || !charge || committeeMembers.length === 0}
       >
-        {loading ? (
+        {loadingAction ? (
           <ActivityIndicator color="#fff" />
         ) : (
-          <Text style={styles.payButtonText}>עבור לתשלום</Text>
+          <Text style={styles.buttonText}>אני רוצה לשלם במזומן</Text>
         )}
       </TouchableOpacity>
 
       <TouchableOpacity
-        style={[styles.markPaidButton]}
-        onPress={handleMarkAsPaid}
+        style={[styles.linkButton, loadingAction && styles.buttonDisabled]}
+        onPress={handleLinkPayment}
+        disabled={loadingAction || !charge || committeeMembers.length === 0}
       >
-        <Text style={styles.markPaidText}>סימנתי ששילמתי</Text>
+        <Text style={styles.buttonText}>לתשלום דרך לינק</Text>
       </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.confirmButton}
+        onPress={handleConfirmPaid}
+      >
+        <Text style={styles.buttonText}>סיימתי לשלם דרך הלינק</Text>
+      </TouchableOpacity>
+
+      {lastPayment && (
+        <View style={styles.summaryCard}>
+          <Text style={styles.summaryTitle}>סטטוס תשלום אחרון</Text>
+          <Text style={styles.summaryText}>סטטוס: {lastPayment.status}</Text>
+          <Text style={styles.summaryText}>שיטה: {lastPayment.payment_method || '-'}</Text>
+          <Text style={styles.summaryText}>חודש: {lastPayment.month_year}</Text>
+          <Text style={styles.summaryText}>סכום: {lastPayment.amount} ₪</Text>
+
+          {lastPayment.receipt_code ? (
+            <Text style={styles.receiptText}>
+              אסמכתא: {lastPayment.receipt_code}
+            </Text>
+          ) : null}
+        </View>
+      )}
     </View>
   );
 }
@@ -213,6 +302,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
+    backgroundColor: '#0F172A',
+  },
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
     backgroundColor: '#0F172A',
   },
   header: {
@@ -266,9 +361,23 @@ const styles = StyleSheet.create({
   committeeTextSelected: {
     color: '#fff',
   },
-  payButton: {
+  cashButton: {
     marginTop: 24,
+    backgroundColor: '#f59e0b',
+    paddingVertical: 12,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  linkButton: {
+    marginTop: 12,
     backgroundColor: '#16a34a',
+    paddingVertical: 12,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  confirmButton: {
+    marginTop: 12,
+    backgroundColor: '#334155',
     paddingVertical: 12,
     borderRadius: 10,
     alignItems: 'center',
@@ -276,20 +385,34 @@ const styles = StyleSheet.create({
   buttonDisabled: {
     opacity: 0.7,
   },
-  payButtonText: {
+  buttonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: '700',
   },
-  markPaidButton: {
-    marginTop: 12,
-    paddingVertical: 10,
-    borderRadius: 10,
-    alignItems: 'center',
-    backgroundColor: '#334155',
+  summaryCard: {
+    marginTop: 20,
+    backgroundColor: '#1E293B',
+    borderRadius: 14,
+    padding: 14,
   },
-  markPaidText: {
-    color: '#f1f5f9',
-    fontWeight: '600',
+  summaryTitle: {
+    color: '#fff',
+    fontWeight: '700',
+    fontSize: 16,
+    marginBottom: 8,
+    textAlign: 'right',
+  },
+  summaryText: {
+    color: '#CBD5E1',
+    fontSize: 14,
+    marginBottom: 4,
+    textAlign: 'right',
+  },
+  receiptText: {
+    color: '#86EFAC',
+    fontWeight: '700',
+    marginTop: 8,
+    textAlign: 'right',
   },
 });

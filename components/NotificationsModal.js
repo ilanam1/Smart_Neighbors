@@ -99,6 +99,30 @@ export default function NotificationsModal({ visible, onClose, userId, navigatio
                 "הודעת תחזוקה",
                 item.message || "צפויה עבודת תחזוקה בבניין."
             );
+        
+
+        } else if (item.type === 'house_fee_cash_request') {
+            await markNotificationAsRead(item.id);
+            markAsReadLocally(item.id);
+
+            onClose();
+            Alert.alert(
+                "בקשת תשלום מזומן",
+                item.message || "דייר ביקש לשלם במזומן עבור מיסי הוועד."
+            );
+        
+
+        } else if (item.type === 'house_fee_link_paid') {
+            await markNotificationAsRead(item.id);
+            markAsReadLocally(item.id);
+
+            onClose();
+            Alert.alert(
+                "תשלום דרך לינק הושלם",
+                item.message || "דייר סימן שהתשלום בוצע בהצלחה דרך הלינק."
+            );
+
+
         }
         else {
             // General notification - כבר סומן כנקרא למעלה אם היה צריך
@@ -147,6 +171,15 @@ export default function NotificationsModal({ visible, onClose, userId, navigatio
             return <Info size={20} color="#f59e0b" />;
         }
 
+
+        if (item.type === 'house_fee_cash_request') {
+            return <Info size={20} color="#f59e0b" />;
+        }
+
+        if (item.type === 'house_fee_link_paid') {
+            return <CheckCircle size={20} color="#10b981" />;
+        }
+
         return <Info size={20} color="#3b82f6" />;
     };
 
@@ -169,6 +202,23 @@ export default function NotificationsModal({ visible, onClose, userId, navigatio
             return (
                 <Text style={styles.actionPrompt}>
                     ליחצו לצפייה ועברו למסך הבקשות הנכנסות
+                </Text>
+            );
+        }
+
+
+        if (item.type === 'house_fee_cash_request') {
+            return (
+                <Text style={styles.actionPrompt}>
+                    לחצו לצפייה בפרטי בקשת התשלום במזומן
+                </Text>
+            );
+        }
+
+        if (item.type === 'house_fee_link_paid') {
+            return (
+                <Text style={styles.actionPrompt}>
+                    לחצו לצפייה בפרטי התשלום שהושלם
                 </Text>
             );
         }

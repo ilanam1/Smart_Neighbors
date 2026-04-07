@@ -220,3 +220,55 @@ export async function createBuildingMaintenanceNotification({
 
   return true;
 }
+
+
+// -------------------------
+// House Fee Notifications
+
+export async function notifyCommitteeAboutCashPaymentRequest({
+  committeeUserId,
+  tenantUserId,
+  tenantName,
+  monthYear,
+  amount,
+  paymentId,
+}) {
+  return createNotification({
+    recipient_id: committeeUserId,
+    sender_id: tenantUserId,
+    title: "בקשה לתשלום מזומן 💵",
+    message: `${tenantName} ביקש לשלם במזומן עבור מיסי ועד לחודש ${monthYear} בסכום של ${amount} ₪.`,
+    type: "house_fee_cash_request",
+    related_data: {
+      payment_id: paymentId,
+      month_year: monthYear,
+      amount,
+      tenant_user_id: tenantUserId,
+    },
+  });
+}
+
+export async function notifyCommitteeAboutLinkPaymentCompleted({
+  committeeUserId,
+  tenantUserId,
+  tenantName,
+  monthYear,
+  amount,
+  paymentId,
+  receiptCode,
+}) {
+  return createNotification({
+    recipient_id: committeeUserId,
+    sender_id: tenantUserId,
+    title: "תשלום ועד הושלם ✅",
+    message: `${tenantName} סימן שתשלום מיסי הוועד לחודש ${monthYear} הושלם דרך הלינק. סכום: ${amount} ₪.`,
+    type: "house_fee_link_paid",
+    related_data: {
+      payment_id: paymentId,
+      month_year: monthYear,
+      amount,
+      receipt_code: receiptCode || null,
+      tenant_user_id: tenantUserId,
+    },
+  });
+}

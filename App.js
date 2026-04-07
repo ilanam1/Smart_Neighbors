@@ -40,7 +40,8 @@ import EmployeeAssignmentRequestScreen from './screens/EmployeeAssignmentRequest
 import EmployeeJobRequestScreen from './screens/EmployeeJobRequestScreen';
 import EmployeeJobRequestsListScreen from './screens/EmployeeJobRequestsListScreen';
 import EmployeeCompletedJobsScreen from './screens/EmployeeCompletedJobsScreen';
-
+import CommitteeMonthlyFeeScreen from './screens/CommitteeMonthlyFeeScreen';
+import CommitteePaymentsManagementScreen from './screens/CommitteePaymentsManagementScreen';
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -240,6 +241,19 @@ export default function App() {
               name="CommitteeWeeklyForecast"
               component={CommitteeWeeklyForecastScreen}
               options={{ title: "תחזית שבועית" }}
+            />
+
+
+            <Stack.Screen
+              name="CommitteeMonthlyFee"
+              component={CommitteeMonthlyFeeScreen}
+              options={{ title: 'ניהול סכום חודשי' }}
+            />
+
+            <Stack.Screen
+              name="CommitteePaymentsManagement"
+              component={CommitteePaymentsManagementScreen}
+              options={{ title: 'ניהול תשלומים' }}
             />
 
           </Stack.Navigator>

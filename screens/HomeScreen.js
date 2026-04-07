@@ -513,6 +513,27 @@ export default function HomeScreen({ navigation, user }) {
             </TouchableOpacity>
 
 
+
+
+            <TouchableOpacity
+              style={styles.forecastButton}
+              onPress={() => navigation.navigate("CommitteeMonthlyFee")}
+            >
+              <Text style={styles.forecastButtonText}>
+                💰 ניהול סכום חודשי
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.forecastButton}
+              onPress={() => navigation.navigate("CommitteePaymentsManagement")}
+            >
+              <Text style={styles.forecastButtonText}>
+                🧾 ניהול תשלומי ועד
+              </Text>
+            </TouchableOpacity>
+
+
           </View>
 
         )}
