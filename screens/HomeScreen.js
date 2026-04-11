@@ -1,4 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
+import { useFocusEffect } from '@react-navigation/native';
+import { getOpenRequests } from "../API/requestsApi";
+import { getBuildingDisturbanceReports } from "../API/disturbancesApi";
 import {
   View,
   Text,
@@ -51,6 +54,9 @@ export default function HomeScreen({ navigation, user }) {
 
   const [showNotifications, setShowNotifications] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+
+  const [requestsCount, setRequestsCount] = useState(0);
+  const [disturbancesCount, setDisturbancesCount] = useState(0);
 
   const supabase = getSupabase();
 
@@ -134,6 +140,30 @@ export default function HomeScreen({ navigation, user }) {
           setUnreadCount(notifs.filter(n => !n.is_read).length);
       } catch (e) {}
   };
+
+  // ===== LOAD COMMITTEE STATS =====
+  useFocusEffect(
+    useCallback(() => {
+      let mounted = true;
+      async function loadCommitteeStats() {
+        if (!isCommittee || !profile?.building_id) return;
+        try {
+          const [reqs, dists] = await Promise.all([
+            getOpenRequests(),
+            getBuildingDisturbanceReports()
+          ]);
+          if (mounted) {
+            setRequestsCount(reqs?.length || 0);
+            setDisturbancesCount((dists || []).filter(d => d.status !== 'RESOLVED' && d.status !== 'REJECTED').length);
+          }
+        } catch (e) {
+          console.log("Error loading stats:", e);
+        }
+      }
+      loadCommitteeStats();
+      return () => { mounted = false; };
+    }, [isCommittee, profile?.building_id])
+  );
 
   // ===== TICKER LOGIC =====
   useEffect(() => {
@@ -460,14 +490,14 @@ export default function HomeScreen({ navigation, user }) {
               style={styles.committeeSubBtn}
               onPress={() => navigation.navigate("CommitteeRequests")}
             >
-              <Text style={styles.committeeStatNum}>8</Text>
+              <Text style={styles.committeeStatNum}>{requestsCount}</Text>
               <Text style={styles.committeeStatLabel}>בקשות דיירים</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.committeeSubBtn, { marginTop: 12 }]}
               onPress={() => navigation.navigate("CommitteeDisturbances")}
             >
-              <Text style={[styles.committeeStatNum, { color: '#fb7185' }]}>2</Text>
+              <Text style={[styles.committeeStatNum, { color: '#fb7185' }]}>{disturbancesCount}</Text>
               <Text style={styles.committeeStatLabel}>דיווחי מטרדים</Text>
             </TouchableOpacity>
 

@@ -9,8 +9,11 @@ import {
   ScrollView,
   SafeAreaView,
   TouchableOpacity,
+  Alert
 } from "react-native";
 import { getSupabase } from "../DataBase/supabase";
+import { useFocusEffect } from "@react-navigation/native";
+import { listMfaFactors, unenrollMfa } from "../API/mfaApi";
 
 export default function ProfilePageScreen({ navigation }) {
   const supabase = getSupabase();
@@ -18,6 +21,9 @@ export default function ProfilePageScreen({ navigation }) {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  const [mfaFactor, setMfaFactor] = useState(null);
+  const [mfaLoading, setMfaLoading] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -62,6 +68,50 @@ export default function ProfilePageScreen({ navigation }) {
     loadProfile();
     return () => (mounted = false);
   }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      let mounted = true;
+      async function checkMfa() {
+        try {
+          const res = await listMfaFactors();
+          if (mounted && res && res.totp && res.totp.length > 0) {
+            // Find the active verified factor
+            const verifiedFactory = res.totp.find(f => f.status === 'verified');
+            setMfaFactor(verifiedFactory || null);
+          } else {
+            if (mounted) setMfaFactor(null);
+          }
+        } catch (e) {
+          console.log("Error loading MFA factors", e);
+        }
+      }
+      checkMfa();
+      return () => { mounted = false; };
+    }, [])
+  );
+
+  const handleDisableMfa = () => {
+    Alert.alert("ביטול 2FA", "האם אתה בטוח שברצונך לבטל את האימות הדו-שלבי?", [
+      { text: "ביטול", style: "cancel" },
+      { 
+        text: "כן, בטל", 
+        style: "destructive", 
+        onPress: async () => {
+          try {
+            setMfaLoading(true);
+            await unenrollMfa(mfaFactor.id);
+            setMfaFactor(null);
+            Alert.alert("בוצע", "האימות הדו-שלבי בוטל בהצלחה.");
+          } catch (e) {
+            Alert.alert("שגיאה", "לא הצלחנו לבטל את ה-2FA: " + e.message);
+          } finally {
+            setMfaLoading(false);
+          }
+        }
+      }
+    ]);
+  };
 
   if (loading) {
     return (
@@ -141,6 +191,25 @@ export default function ProfilePageScreen({ navigation }) {
             <Text style={styles.securityRowText}>שינוי סיסמה</Text>
             <Text style={styles.securityRowArrow}>{"<"}</Text>
           </TouchableOpacity>
+          
+          {mfaFactor ? (
+            <TouchableOpacity
+              style={styles.securityRow}
+              onPress={handleDisableMfa}
+              disabled={mfaLoading}
+            >
+              <Text style={[styles.securityRowText, { color: '#ef4444' }]}>ביטול אימות דו-שלבי (2FA)</Text>
+              {mfaLoading ? <ActivityIndicator size="small" color="#ef4444" /> : <Text style={styles.securityRowArrow}>{"<"}</Text>}
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              style={styles.securityRow}
+              onPress={() => navigation.navigate("MfaSetupScreen")}
+            >
+              <Text style={[styles.securityRowText, { color: '#10b981' }]}>הגדר אימות דו-שלבי (2FA)</Text>
+              <Text style={styles.securityRowArrow}>{"<"}</Text>
+            </TouchableOpacity>
+          )}
         </View>
 
         {/* SECTION: COMMITTEE */}

@@ -1,5 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
+import { View, ActivityIndicator } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -16,6 +17,8 @@ import CommitteeDisturbancesScreen from './screens/CommitteeDisturbancesScreen';
 import CommitteePaymentSetupScreen from './screens/CommitteePaymentSetupScreen';
 import PublicRequestsScreen from './screens/PublicRequestsScreen';
 import ProfilePageScreen from './screens/ProfilePageScreen';
+import MfaSetupScreen from './screens/MfaSetupScreen';
+import StandaloneMfaChallengeScreen from './screens/StandaloneMfaChallengeScreen';
 import VerifyEmailScreen from './screens/VerifyEmailScreen';
 import ChangePasswordScreen from './screens/ChangePasswordScreen';
 import BuildingDocumentsScreen from "./screens/BuildingDocumentsScreen";
@@ -47,7 +50,36 @@ const Stack = createNativeStackNavigator();
 export default function App() {
   const [user, setUser] = useState(null);
   const [isRecovering, setIsRecovering] = useState(false);
+  const [mfaChallengeConfig, setMfaChallengeConfig] = useState(null);
+  const [authChecking, setAuthChecking] = useState(true);
   const supabase = getSupabase();
+
+  const processSession = async (session) => {
+    if (!session) {
+      setUser(null);
+      setMfaChallengeConfig(null);
+      setAuthChecking(false);
+      return;
+    }
+
+    try {
+      const { data: aalData, error: aalError } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+      if (!aalError && aalData.nextLevel === 'aal2' && aalData.currentLevel === 'aal1') {
+        const factors = await supabase.auth.mfa.listFactors();
+        const totpFactor = factors.data?.totp?.find(f => f.status === 'verified');
+        if (totpFactor) {
+          setMfaChallengeConfig({ factorId: totpFactor.id, user: session.user });
+          setUser(null);
+          setAuthChecking(false);
+          return;
+        }
+      }
+    } catch(e) {}
+
+    setMfaChallengeConfig(null);
+    setUser(session.user);
+    setAuthChecking(false);
+  };
 
   useEffect(() => {
     let subscription = null;
@@ -55,9 +87,9 @@ export default function App() {
     (async () => {
       try {
         const { data } = await supabase.auth.getSession();
-        setUser(data?.session?.user ?? null);
+        await processSession(data?.session);
       } catch (e) {
-        console.log('getSession failed', e);
+        processSession(null);
       }
     })();
 
@@ -66,11 +98,21 @@ export default function App() {
         if (event === "PASSWORD_RECOVERY") {
           setIsRecovering(true);
         }
-        setUser(session?.user ?? null);
+        if (event === "SIGNED_OUT") {
+          processSession(null);
+          return;
+        }
+        
+        // Push processSession to the next tick to heavily avoid React Native AsyncStorage deadlocks
+        // during token upgrade processes like mfa.verify
+        setTimeout(() => {
+          processSession(session);
+        }, 500);
       });
       subscription = data?.subscription || null;
     } catch (e) {
       console.log('auth listener failed', e);
+      processSession(null);
     }
 
     return () => {
@@ -80,10 +122,41 @@ export default function App() {
     };
   }, [supabase]);
 
+  if (authChecking) {
+    return (
+      <View style={{ flex: 1, backgroundColor: '#0f172a', justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#00f2ff" />
+      </View>
+    );
+  }
+
   return (
     <SafeAreaProvider>
       <NavigationContainer>
-        {user && user.role !== 'admin' && user.role !== 'employee' ? (
+        {mfaChallengeConfig ? (
+          <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="StandaloneMfaChallenge">
+              {props => (
+                <StandaloneMfaChallengeScreen 
+                  {...props} 
+                  factorId={mfaChallengeConfig.factorId} 
+                  onCancel={() => processSession(null)} 
+                  onVerify={(session) => {
+                    setMfaChallengeConfig(null);
+                    if (session && session.user) {
+                      setUser(session.user);
+                    } else {
+                      // Fallback if session wrapper isn't strictly returned
+                      supabase.auth.getUser().then(({ data }) => {
+                        setUser(data.user);
+                      });
+                    }
+                  }}
+                />
+              )}
+            </Stack.Screen>
+          </Stack.Navigator>
+        ) : user && user.role !== 'admin' && user.role !== 'employee' ? (
           // --------- המשתמש מחובר ---------
           <Stack.Navigator initialRouteName={isRecovering ? "ChangePassword" : "Home"}>
             <Stack.Screen
@@ -98,6 +171,12 @@ export default function App() {
               name="ProfilePageScreen"
               component={ProfilePageScreen}
               options={{ title: 'הפרופיל שלי' }}
+            />
+
+            <Stack.Screen
+              name="MfaSetupScreen"
+              component={MfaSetupScreen}
+              options={{ title: 'הגדרת אימות דו-שלבי' }}
             />
 
             <Stack.Screen
