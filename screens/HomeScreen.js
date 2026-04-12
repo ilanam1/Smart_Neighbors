@@ -563,6 +563,15 @@ export default function HomeScreen({ navigation, user }) {
               </Text>
             </TouchableOpacity>
 
+            <TouchableOpacity
+              style={[styles.forecastButton, { borderColor: '#f59e0b', backgroundColor: 'rgba(245, 158, 11, 0.1)' }]}
+              onPress={() => navigation.navigate("CommitteePendingUsers", { buildingId: profile.building_id })}
+            >
+              <Text style={[styles.forecastButtonText, { color: '#f59e0b' }]}>
+                ⏳ דיירים ממתינים לאישור
+              </Text>
+            </TouchableOpacity>
+
 
           </View>
 

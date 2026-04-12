@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { LogOut, Trash2 } from 'lucide-react-native';
+import { LogOut, Trash2, ShieldCheck } from 'lucide-react-native';
 
 export default function AdminScreen({ user, onSignOut, navigation }) {
 
@@ -33,6 +33,17 @@ export default function AdminScreen({ user, onSignOut, navigation }) {
 
                 {/* Admin Features Grid */}
                 <View style={styles.grid}>
+                    <TouchableOpacity
+                        style={styles.actionCard}
+                        onPress={() => navigation.navigate('AdminPendingCommittees', { adminUser: user })}
+                    >
+                        <View style={[styles.iconCircle, { backgroundColor: '#cffafe' }]}>
+                            <ShieldCheck size={24} color="#06b6d4" />
+                        </View>
+                        <Text style={styles.actionTitle}>Approve Committees</Text>
+                        <Text style={styles.actionDesc}>Authorize new buildings</Text>
+                    </TouchableOpacity>
+
                     <TouchableOpacity
                         style={styles.actionCard}
                         onPress={() => navigation.navigate('DeleteUsers', { adminUser: user })}

@@ -363,8 +363,8 @@ const formattedDob = dobDate.toISOString().split('T')[0];
           date_of_birth: formattedDob,
           is_house_committee: isCommittee,
           building_id: selectedBuildingId,
+          is_approved: false, // Default to unapproved for Committee and Admins to vet
         };
-
 
         if (uploadedPhotoUrl) {
           profilePayload.photo_url = uploadedPhotoUrl;
@@ -382,6 +382,8 @@ const formattedDob = dobDate.toISOString().split('T')[0];
           return;
         }
 
+        // Attach needs_approval immediately so App.js correctly restricts the new login
+        user.needs_approval = true;
         setPostSignUpUser(user);
         return;
       }
@@ -399,6 +401,14 @@ const formattedDob = dobDate.toISOString().split('T')[0];
         } else {
           const user = data?.user || data?.session?.user || null;
           
+          // Check for Approval Database
+          try {
+            const { data: profile } = await supabase.from('profiles').select('is_approved, is_house_committee').eq('auth_uid', user.id).single();
+            if (profile && profile.is_approved === false) {
+              user.needs_approval = true;
+            }
+          } catch(e) {}
+
           // Check for MFA
           const { data: aalData, error: aalError } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
           if (!aalError && aalData.nextLevel === 'aal2' && aalData.nextLevel !== aalData.currentLevel) {
@@ -639,18 +649,7 @@ const formattedDob = dobDate.toISOString().split('T')[0];
           </LinearGradient>
         </TouchableOpacity>
 
-        {/* DEBUG INFO */}
-        {info && (
-          <View style={{ marginTop: 12 }}>
-            <Text style={{ color: '#444', fontSize: 12, textAlign: 'right' }}>{JSON.stringify(info, null, 2)}</Text>
-            <TouchableOpacity
-              style={{ marginTop: 8, padding: 8, backgroundColor: '#e5e7eb', borderRadius: 4, alignItems: 'center' }}
-              onPress={() => setInfo(null)}
-            >
-              <Text style={{ color: '#444', fontSize: 12 }}>נקה יומנים</Text>
-            </TouchableOpacity>
-          </View>
-        )}
+        {/* DEBUG INFO OMITTED */}
 
         {/* AFTER SIGNUP */}
         {postSignUpUser && (

@@ -14,11 +14,13 @@ import BuildingUpdatesScreen from './screens/BuildingUpdatesScreen';
 import PayFeesScreen from './screens/PayFeesScreen';
 import CommitteeRequestsScreen from './screens/CommitteeRequestsScreen';
 import CommitteeDisturbancesScreen from './screens/CommitteeDisturbancesScreen';
+import CommitteePendingUsersScreen from './screens/CommitteePendingUsersScreen';
 import CommitteePaymentSetupScreen from './screens/CommitteePaymentSetupScreen';
 import PublicRequestsScreen from './screens/PublicRequestsScreen';
 import ProfilePageScreen from './screens/ProfilePageScreen';
 import MfaSetupScreen from './screens/MfaSetupScreen';
 import StandaloneMfaChallengeScreen from './screens/StandaloneMfaChallengeScreen';
+import PendingApprovalScreen from './screens/PendingApprovalScreen';
 import VerifyEmailScreen from './screens/VerifyEmailScreen';
 import ChangePasswordScreen from './screens/ChangePasswordScreen';
 import BuildingDocumentsScreen from "./screens/BuildingDocumentsScreen";
@@ -26,6 +28,7 @@ import BuildingRulesScreen from "./screens/BuildingRulesScreen";
 import { getSupabase } from './DataBase/supabase';
 import CommitteeProvidersScreen from './screens/CommitteeProvidersScreen';
 import AdminScreen from './screens/AdminScreen';
+import AdminPendingCommitteesScreen from './screens/AdminPendingCommitteesScreen';
 import DeleteUserScreen from './screens/DeleteUserScreen';
 import EquipmentCategoriesScreen from './screens/EquipmentCategoriesScreen';
 import EquipmentListScreen from './screens/EquipmentListScreen';
@@ -61,6 +64,13 @@ export default function App() {
       setAuthChecking(false);
       return;
     }
+
+    try {
+      const { data: profile } = await supabase.from('profiles').select('is_approved, is_house_committee').eq('auth_uid', session.user.id).single();
+      if (profile && profile.is_approved === false) {
+        session.user.needs_approval = true;
+      }
+    } catch(e){}
 
     try {
       const { data: aalData, error: aalError } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
@@ -144,17 +154,23 @@ export default function App() {
                   onVerify={(session) => {
                     setMfaChallengeConfig(null);
                     if (session && session.user) {
+                      // Preserve needs_approval if it was attached
+                      session.user.needs_approval = mfaChallengeConfig.user?.needs_approval;
                       setUser(session.user);
                     } else {
-                      // Fallback if session wrapper isn't strictly returned
                       supabase.auth.getUser().then(({ data }) => {
-                        setUser(data.user);
+                        if (data?.user) data.user.needs_approval = mfaChallengeConfig.user?.needs_approval;
+                        setUser(data?.user);
                       });
                     }
                   }}
                 />
               )}
             </Stack.Screen>
+          </Stack.Navigator>
+        ) : user?.needs_approval ? (
+          <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="PendingApproval" component={PendingApprovalScreen} />
           </Stack.Navigator>
         ) : user && user.role !== 'admin' && user.role !== 'employee' ? (
           // --------- המשתמש מחובר ---------
@@ -218,6 +234,12 @@ export default function App() {
             <Stack.Screen
               name="CommitteeRequests"
               component={CommitteeRequestsScreen}
+            />
+
+            <Stack.Screen
+              name="CommitteePendingUsers"
+              component={CommitteePendingUsersScreen}
+              options={{ title: 'אישור דיירים' }}
             />
 
             <Stack.Screen
@@ -342,6 +364,7 @@ export default function App() {
             <Stack.Screen name="AdminDashboard">
               {props => <AdminScreen {...props} user={user} onSignOut={() => setUser(null)} />}
             </Stack.Screen>
+            <Stack.Screen name="AdminPendingCommittees" component={AdminPendingCommitteesScreen} />
             <Stack.Screen name="DeleteUsers" component={DeleteUserScreen} />
           </Stack.Navigator>
         ) : user?.role === 'employee' ? (
