@@ -1,4 +1,5 @@
 import { getSupabase } from '../DataBase/supabase';
+import { encryptMessage, decryptMessage } from '../utils/crypto';
 
 const resolveProfileId = async (authUid) => {
     const supabase = getSupabase();
@@ -213,7 +214,14 @@ export const getMessages = async (conversationId) => {
             .order('created_at', { ascending: true });
             
         if (error) throw error;
-        return data;
+        
+        // Decrypt the contents locally
+        const decryptedData = data.map(msg => ({
+            ...msg,
+            content: decryptMessage(msg.content)
+        }));
+            
+        return decryptedData;
     } catch (error) {
         console.error('Error fetching messages:', error);
         throw error;
@@ -228,12 +236,14 @@ export const sendMessage = async (conversationId, senderId, content) => {
         const supabase = getSupabase();
         const senderProfileId = await resolveProfileId(senderId);
 
+        const encryptedContent = encryptMessage(content);
+
         const { data, error } = await supabase
             .from('messages')
             .insert([{
                 conversation_id: conversationId,
                 sender_id: senderProfileId,
-                content: content
+                content: encryptedContent
             }])
             .select()
             .single();
@@ -298,9 +308,11 @@ export const editMessage = async (messageId, newContent) => {
     try {
         const supabase = getSupabase();
         
+        const encryptedContent = encryptMessage(newContent);
+        
         const { data, error } = await supabase
             .from('messages')
-            .update({ content: newContent })
+            .update({ content: encryptedContent })
             .eq('id', messageId)
             .select()
             .single();
