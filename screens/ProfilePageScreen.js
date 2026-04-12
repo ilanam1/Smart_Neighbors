@@ -9,21 +9,50 @@ import {
   ScrollView,
   SafeAreaView,
   TouchableOpacity,
-  Alert
+  Alert,
+  Modal,
+  TextInput
 } from "react-native";
 import { getSupabase } from "../DataBase/supabase";
 import { useFocusEffect } from "@react-navigation/native";
 import { listMfaFactors, unenrollMfa } from "../API/mfaApi";
+import { Eye, EyeOff, Lock } from "lucide-react-native";
+
+// --- Masking Utils ---
+const maskEmail = (email) => {
+    if (!email) return '';
+    const parts = email.split('@');
+    if (parts.length !== 2) return email;
+    const name = parts[0];
+    const domain = parts[1];
+    const maskedName = name.length > 2 ? name.slice(0, 2) + '*'.repeat(name.length - 2) : name + '**';
+    return `${maskedName}@${domain}`;
+};
+const maskPhone = (phone) => {
+    if (!phone) return '';
+    return '*'.repeat(Math.max(phone.length - 3, 0)) + phone.slice(-3);
+};
+const maskId = (id) => {
+    if (!id) return '';
+    return '*'.repeat(Math.max(id.length - 3, 0)) + id.slice(-3);
+};
 
 export default function ProfilePageScreen({ navigation }) {
   const supabase = getSupabase();
 
   const [profile, setProfile] = useState(null);
+  const [currentUserEmail, setCurrentUserEmail] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
   const [mfaFactor, setMfaFactor] = useState(null);
   const [mfaLoading, setMfaLoading] = useState(false);
+
+  // Security Locking
+  const [isUnlocked, setIsUnlocked] = useState(false);
+  const [unlockModalVisible, setUnlockModalVisible] = useState(false);
+  const [unlockPassword, setUnlockPassword] = useState("");
+  const [unlockLoading, setUnlockLoading] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -35,6 +64,7 @@ export default function ProfilePageScreen({ navigation }) {
         } = await supabase.auth.getUser();
 
         if (!user) throw new Error("User not logged in");
+        if (mounted) setCurrentUserEmail(user.email);
 
         const { data, error } = await supabase
           .from("profiles")
@@ -68,6 +98,27 @@ export default function ProfilePageScreen({ navigation }) {
     loadProfile();
     return () => (mounted = false);
   }, []);
+
+  const handleUnlockInfo = async () => {
+    if (!unlockPassword) return;
+    setUnlockLoading(true);
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: currentUserEmail || profile?.email,
+        password: unlockPassword,
+      });
+
+      if (error) throw error;
+      
+      setIsUnlocked(true);
+      setUnlockModalVisible(false);
+      setUnlockPassword("");
+    } catch (e) {
+      Alert.alert("שגיאה", "סיסמה שגויה. נסה שוב.");
+    } finally {
+      setUnlockLoading(false);
+    }
+  };
 
   useFocusEffect(
     React.useCallback(() => {
@@ -151,7 +202,9 @@ export default function ProfilePageScreen({ navigation }) {
         </Text>
 
         {/* EMAIL */}
-        <Text style={styles.email}>{profile?.email}</Text>
+        <Text style={styles.email}>
+          {isUnlocked ? profile?.email : maskEmail(profile?.email)}
+        </Text>
 
         {/* ROLE */}
         <View style={styles.badge}>
@@ -162,10 +215,21 @@ export default function ProfilePageScreen({ navigation }) {
 
         {/* SECTION: PERSONAL INFO */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>פרטים אישיים</Text>
+          <View style={styles.sectionHeaderRow}>
+            <Text style={styles.sectionTitle}>פרטים אישיים</Text>
+            <TouchableOpacity onPress={() => isUnlocked ? setIsUnlocked(false) : setUnlockModalVisible(true)} style={styles.unlockToggle}>
+              {isUnlocked ? <EyeOff size={20} color="#64748b" /> : <Eye size={20} color="#3b82f6" />}
+            </TouchableOpacity>
+          </View>
 
-          <ProfileRow label="תעודת זהות" value={profile?.id_number || "—"} />
-          <ProfileRow label="טלפון" value={profile?.phone || "—"} />
+          <ProfileRow 
+            label="תעודת זהות" 
+            value={!profile?.id_number ? "—" : (isUnlocked ? profile.id_number : maskId(profile.id_number))} 
+          />
+          <ProfileRow 
+            label="טלפון" 
+            value={!profile?.phone ? "—" : (isUnlocked ? profile.phone : maskPhone(profile.phone))} 
+          />
           <ProfileRow
             label="תאריך לידה"
             value={profile?.date_of_birth ? profile.date_of_birth.split('-').reverse().join('/') : "—"}
@@ -224,6 +288,49 @@ export default function ProfilePageScreen({ navigation }) {
           </View>
         )}
       </ScrollView>
+
+      {/* Security Check Modal */}
+      <Modal
+        visible={unlockModalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setUnlockModalVisible(false)}
+      >
+        <View style={styles.modalBg}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Lock size={24} color="#f59e0b" style={{ marginRight: 8 }} />
+              <Text style={styles.modalTitle}>אימות אבטחה</Text>
+            </View>
+            <Text style={styles.modalSubtitle}>הזן את סיסמת החשבון שלך כדי לחשוף את הפרטים הרגישים.</Text>
+            
+            <TextInput
+              style={styles.modalInput}
+              placeholder="סיסמה"
+              placeholderTextColor="#64748b"
+              secureTextEntry
+              value={unlockPassword}
+              onChangeText={setUnlockPassword}
+              textAlign="right"
+              autoFocus
+            />
+
+            {unlockLoading ? (
+              <ActivityIndicator size="large" color="#3b82f6" style={{ marginVertical: 10 }} />
+            ) : (
+              <View style={styles.modalActions}>
+                <TouchableOpacity style={[styles.modalBtn, styles.modalBtnCancel]} onPress={() => { setUnlockModalVisible(false); setUnlockPassword(''); }}>
+                  <Text style={styles.modalBtnCancelText}>ביטול</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.modalBtn, styles.modalBtnSubmit]} onPress={handleUnlockInfo}>
+                  <Text style={styles.modalBtnSubmitText}>אמת וחשוף</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </View>
+        </View>
+      </Modal>
+
     </SafeAreaView>
   );
 }
@@ -386,4 +493,83 @@ const styles = StyleSheet.create({
     fontSize: 13,
     marginTop: 4,
   },
+
+  /* ---------- MODAL & UNLOCK STYLES ---------- */
+  sectionHeaderRow: {
+    flexDirection: 'row-reverse',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  unlockToggle: {
+    padding: 6,
+    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+    borderRadius: 8,
+  },
+  modalBg: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  modalContent: {
+    backgroundColor: '#1e293b',
+    borderRadius: 16,
+    padding: 24,
+    borderWidth: 1,
+    borderColor: '#334155',
+  },
+  modalHeader: {
+    flexDirection: 'row-reverse',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#f8fafc',
+  },
+  modalSubtitle: {
+    fontSize: 14,
+    color: '#94a3b8',
+    marginBottom: 20,
+    textAlign: 'right',
+  },
+  modalInput: {
+    backgroundColor: '#0f172a',
+    borderWidth: 1,
+    borderColor: '#334155',
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+    color: '#f8fafc',
+    marginBottom: 20,
+    height: 50,
+  },
+  modalActions: {
+    flexDirection: 'row-reverse',
+    gap: 12,
+  },
+  modalBtn: {
+    flex: 1,
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  modalBtnSubmit: {
+    backgroundColor: '#3b82f6',
+  },
+  modalBtnCancel: {
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: '#ef4444',
+  },
+  modalBtnSubmitText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  modalBtnCancelText: {
+    color: '#ef4444',
+    fontWeight: 'bold',
+  }
 });
