@@ -5,13 +5,16 @@ import {
   ActivityIndicator,
   FlatList,
   StyleSheet,
+  TouchableOpacity,
+  Alert,
 } from "react-native";
-import { getOpenRequests } from "../API/requestsApi";
+import { getOpenRequests, completeRequest } from "../API/requestsApi";
 
 export default function CommitteeRequestsScreen() {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [completingId, setCompletingId] = useState(null);
 
   useEffect(() => {
     let mounted = true;
@@ -81,8 +84,45 @@ export default function CommitteeRequestsScreen() {
     }
   }
 
+  async function handleCompleteRequest(requestId) {
+    try {
+      setCompletingId(requestId);
+
+      await completeRequest(requestId);
+
+      Alert.alert("הצלחה", "הבקשה סומנה כטופלה.");
+
+      setRequests((prev) => prev.filter((item) => item.id !== requestId));
+    } catch (e) {
+      console.error(e);
+      Alert.alert("שגיאה", e.message || "לא ניתן היה לסמן את הבקשה כטופלה");
+    } finally {
+      setCompletingId(null);
+    }
+  }
+
+  function confirmCompleteRequest(requestId) {
+    Alert.alert(
+      "סימון בקשה כטופלה",
+      "האם אתה בטוח שברצונך לסמן את הבקשה הזאת כטופלה?",
+      [
+        { text: "ביטול", style: "cancel" },
+        {
+          text: "כן",
+          onPress: () => handleCompleteRequest(requestId),
+        },
+      ]
+    );
+  }
+
   if (loading) {
-    return <ActivityIndicator style={{ marginTop: 20 }} size="large" color="#38bdf8" />;
+    return (
+      <ActivityIndicator
+        style={{ marginTop: 20 }}
+        size="large"
+        color="#38bdf8"
+      />
+    );
   }
 
   if (error) {
@@ -90,7 +130,11 @@ export default function CommitteeRequestsScreen() {
   }
 
   if (!requests.length) {
-    return <Text style={styles.empty}>אין עדיין בקשות פתוחות מהדיירים בבניין שלך.</Text>;
+    return (
+      <Text style={styles.empty}>
+        אין עדיין בקשות פתוחות מהדיירים בבניין שלך.
+      </Text>
+    );
   }
 
   return (
@@ -120,6 +164,21 @@ export default function CommitteeRequestsScreen() {
             <Text style={styles.meta}>
               נוצר בתאריך: {formatDate(item.created_at)}
             </Text>
+
+            <TouchableOpacity
+              style={[
+                styles.completeButton,
+                completingId === item.id && styles.completeButtonDisabled,
+              ]}
+              onPress={() => confirmCompleteRequest(item.id)}
+              disabled={completingId === item.id}
+            >
+              {completingId === item.id ? (
+                <ActivityIndicator size="small" color="#fff" />
+              ) : (
+                <Text style={styles.completeButtonText}>סמן כטופלה</Text>
+              )}
+            </TouchableOpacity>
           </View>
         )}
       />
@@ -159,6 +218,21 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#94a3b8",
     textAlign: "right",
+  },
+  completeButton: {
+    marginTop: 12,
+    backgroundColor: "#16a34a",
+    borderRadius: 8,
+    paddingVertical: 10,
+    alignItems: "center",
+  },
+  completeButtonDisabled: {
+    opacity: 0.7,
+  },
+  completeButtonText: {
+    color: "#fff",
+    fontSize: 14,
+    fontWeight: "700",
   },
   error: {
     marginTop: 20,

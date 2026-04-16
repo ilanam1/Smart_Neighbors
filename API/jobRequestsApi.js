@@ -198,3 +198,54 @@ export async function rejectJob(jobId, committeeUid, employeeName) {
 
   return true;
 }
+
+
+
+export async function getEmployeeMonthlyReport(employeeId, year, month) {
+  const supabase = getSupabase();
+
+  const startDate = new Date(year, month - 1, 1, 0, 0, 0, 0);
+  const endDate = new Date(year, month, 1, 0, 0, 0, 0);
+
+  const { data, error } = await supabase
+    .from("employee_job_requests")
+    .select(`
+      id,
+      report_id,
+      employee_id,
+      building_id,
+      manager_uid,
+      instructions,
+      schedule_time,
+      status,
+      created_at,
+      updated_at,
+      buildings (
+        id,
+        name,
+        address,
+        city
+      ),
+      disturbance_reports (
+        id,
+        type,
+        severity,
+        description,
+        location,
+        status,
+        created_at,
+        occurred_at
+      )
+    `)
+    .eq("employee_id", employeeId)
+    .gte("created_at", startDate.toISOString())
+    .lt("created_at", endDate.toISOString())
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Error fetching monthly report:", error.message);
+    throw new Error("שגיאה בשליפת הדוח החודשי");
+  }
+
+  return data || [];
+}

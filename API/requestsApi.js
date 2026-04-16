@@ -195,3 +195,53 @@ export async function cancelRequest(id) {
 
   return data;
 }
+
+/**
+ * סימון בקשה כטופלה
+ * משנה סטטוס ל-COMPLETED רק אם הבקשה שייכת לבניין של המשתמש
+ */
+export async function completeRequest(id) {
+  const { buildingId } = await getCurrentUserWithBuilding();
+
+  const { data, error } = await supabase
+    .from('requests')
+    .update({
+      status: 'COMPLETED',
+      closed_at: new Date().toISOString(),
+    })
+    .eq('id', id)
+    .eq('building_id', buildingId)
+    .eq('status', 'OPEN')
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error completing request:', error.message);
+    throw new Error('שגיאה בסימון הבקשה כטופלה');
+  }
+
+  return data;
+}
+
+
+
+/**
+ * קבלת כל הבקשות של הבניין של המשתמש המחובר
+ * מיועד למסך סטטיסטיקות / ניתוחים עבור ועד הבית
+ */
+export async function getAllBuildingRequests() {
+  const { buildingId } = await getCurrentUserWithBuilding();
+
+  const { data, error } = await supabase
+    .from('requests')
+    .select('*')
+    .eq('building_id', buildingId)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching all building requests:', error.message);
+    throw new Error('שגיאה בשליפת כל הבקשות של הבניין');
+  }
+
+  return data || [];
+}

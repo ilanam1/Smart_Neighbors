@@ -48,6 +48,11 @@ import EmployeeJobRequestsListScreen from './screens/EmployeeJobRequestsListScre
 import EmployeeCompletedJobsScreen from './screens/EmployeeCompletedJobsScreen';
 import CommitteeMonthlyFeeScreen from './screens/CommitteeMonthlyFeeScreen';
 import CommitteePaymentsManagementScreen from './screens/CommitteePaymentsManagementScreen';
+import CommitteeInsightsScreen from "./screens/CommitteeInsightsScreen";
+import EmployeeMonthlyReportScreen from "./screens/EmployeeMonthlyReportScreen";
+import CommitteeInspectionsScreen from "./screens/CommitteeInspectionsScreen";
+import EmployeePeriodicInspectionsScreen from "./screens/EmployeePeriodicInspectionsScreen";
+import EmployeeInspectionDetailsScreen from "./screens/EmployeeInspectionDetailsScreen";
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -357,6 +362,21 @@ export default function App() {
               options={{ title: 'ניהול תשלומים' }}
             />
 
+
+
+            <Stack.Screen
+              name="CommitteeInsights"
+              component={CommitteeInsightsScreen}
+              options={{ title: "סטטיסטיקות ועד הבית" }}
+            />
+
+
+            <Stack.Screen
+              name="CommitteeInspections"
+              component={CommitteeInspectionsScreen}
+              options={{ headerShown: false }}
+            />
+
           </Stack.Navigator>
         ) : user?.role === 'admin' ? (
           // --------- ADMIN ---------
@@ -378,6 +398,23 @@ export default function App() {
             <Stack.Screen name="EmployeeJobRequest" component={EmployeeJobRequestScreen} />
             <Stack.Screen name="EmployeeJobRequestsList" component={EmployeeJobRequestsListScreen} />
             <Stack.Screen name="EmployeeCompletedJobs" component={EmployeeCompletedJobsScreen} />
+            <Stack.Screen
+              name="EmployeeMonthlyReport"
+              component={EmployeeMonthlyReportScreen}
+              options={{ headerShown: false }}
+            />
+
+            <Stack.Screen
+              name="EmployeePeriodicInspections"
+              component={EmployeePeriodicInspectionsScreen}
+              options={{ headerShown: false }}
+            />
+
+            <Stack.Screen
+              name="EmployeeInspectionDetails"
+              component={EmployeeInspectionDetailsScreen}
+              options={{ headerShown: false }}
+            />
           </Stack.Navigator>
         ) : (
           // --------- המשתמש לא מחובר ---------

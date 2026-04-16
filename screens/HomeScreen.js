@@ -544,6 +544,27 @@ export default function HomeScreen({ navigation, user }) {
 
 
 
+            <TouchableOpacity
+              style={styles.forecastButton}
+              onPress={() => navigation.navigate("CommitteeInsights")}
+            >
+              <Text style={styles.forecastButtonText}>
+                📊 סטטיסטיקות ניהול הבניין
+              </Text>
+            </TouchableOpacity>
+
+
+            <TouchableOpacity
+              style={styles.forecastButton}
+              onPress={() => navigation.navigate("CommitteeInspections")}
+            >
+              <Text style={styles.forecastButtonText}>
+                🛡️ ביקורות תקופתיות
+              </Text>
+            </TouchableOpacity>
+
+
+
 
             <TouchableOpacity
               style={styles.forecastButton}

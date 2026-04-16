@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert, FlatList, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { LogOut, Building, ClipboardList, Bell, CheckCircle } from 'lucide-react-native';
-import { getSupabase } from '../DataBase/supabase';
+import { LogOut, Building, ClipboardList, Bell, CheckCircle, ShieldCheck, FileText } from 'lucide-react-native';import { getSupabase } from '../DataBase/supabase';
 import NotificationsModal from '../components/NotificationsModal';
 import { getMyNotifications } from '../API/notificationsApi';
 import { getEmployeeOpenJobs } from '../API/jobRequestsApi';
@@ -115,6 +114,39 @@ export default function EmployeeHomeScreen({ user, onSignOut }) {
                         <Text style={styles.actionTitle}>בקשות פתוחות</Text>
                         <Text style={styles.actionDesc}>לטיפול</Text>
                     </TouchableOpacity>
+
+
+
+                    <TouchableOpacity
+                        style={[styles.actionCard, { marginTop: 16, width: '100%' }]}
+                        onPress={() => navigation.navigate('EmployeePeriodicInspections', { employeeId: user.id })}
+                    >
+                        <View style={[styles.iconCircle, { backgroundColor: '#dbeafe' }]}>
+                            <ShieldCheck size={24} color="#2563eb" />
+                        </View>
+                        <Text style={styles.actionTitle}>ביקורות תקופתיות</Text>
+                        <Text style={styles.actionDesc}>משימות בטיחות ותחזוקה חוזרות</Text>
+                    </TouchableOpacity>
+
+
+
+                    <TouchableOpacity
+                        style={[styles.actionCard, { marginTop: 16, width: '100%' }]}
+                        onPress={() =>
+                            navigation.navigate('EmployeeMonthlyReport', {
+                                employeeId: user.id,
+                                employeeName: user.full_name,
+                            })
+                        }
+                    >
+                        <View style={[styles.iconCircle, { backgroundColor: '#dbeafe' }]}>
+                            <FileText size={24} color="#2563eb" />
+                        </View>
+                        <Text style={styles.actionTitle}>דו"ח חודשי</Text>
+                        <Text style={styles.actionDesc}>תקלות ועבודות שבוצעו החודש</Text>
+                    </TouchableOpacity>
+
+                    
                     <TouchableOpacity
                         style={[styles.actionCard, { marginTop: 16, width: '100%' }]}
                         onPress={() => navigation.navigate('EmployeeCompletedJobs', { employeeId: user.id })}
