@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert, SafeAreaView, ScrollView } from 'react-native';
-import { LogOut, ShieldCheck, PlusCircle, Building2, LayoutDashboard, Users } from 'lucide-react-native';
+import { LogOut, ShieldCheck, PlusCircle, Building2, LayoutDashboard, Users, Briefcase } from 'lucide-react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
 export default function AdminScreen({ user, onSignOut, navigation }) {
@@ -89,9 +89,9 @@ export default function AdminScreen({ user, onSignOut, navigation }) {
                         <Text style={styles.actionDesc}>אשר נציגי בניין חדשים</Text>
                     </TouchableOpacity>
 
-                    {/* ניהול משתמשים - Full Width */}
+                    {/* ניהול משתמשים - Half Width now */}
                     <TouchableOpacity
-                        style={styles.actionCardFullSpan}
+                        style={styles.actionCardHalf}
                         activeOpacity={0.8}
                         onPress={() => navigation.navigate('DeleteUsers', { adminUser: user })}
                     >
@@ -100,6 +100,19 @@ export default function AdminScreen({ user, onSignOut, navigation }) {
                         </View>
                         <Text style={styles.actionTitle}>ניהול משתמשים</Text>
                         <Text style={styles.actionDesc}>צפייה ומחיקת משתמשים</Text>
+                    </TouchableOpacity>
+
+                    {/* חברות שירות - Half Width */}
+                    <TouchableOpacity
+                        style={styles.actionCardHalf}
+                        activeOpacity={0.8}
+                        onPress={() => navigation.navigate('AdminServiceCompanies', { adminUser: user })}
+                    >
+                        <View style={[styles.iconCircle, { backgroundColor: 'rgba(6, 182, 212, 0.1)' }]}>
+                            <Briefcase size={28} color="#06b6d4" />
+                        </View>
+                        <Text style={styles.actionTitle}>חברות שירות</Text>
+                        <Text style={styles.actionDesc}>מאגר ספקי שירות</Text>
                     </TouchableOpacity>
                 </View>
 

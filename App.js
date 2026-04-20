@@ -31,6 +31,10 @@ import AdminScreen from './screens/AdminScreen';
 import AdminPendingCommitteesScreen from './screens/AdminPendingCommitteesScreen';
 import AdminAddBuildingScreen from './screens/AdminAddBuildingScreen';
 import AdminBuildingsScreen from './screens/AdminBuildingsScreen';
+import AdminServiceCompaniesScreen from './screens/AdminServiceCompaniesScreen';
+import AdminAddCompanyScreen from './screens/AdminAddCompanyScreen';
+import AdminCompanyDetailsScreen from './screens/AdminCompanyDetailsScreen';
+import AdminAddEmployeeScreen from './screens/AdminAddEmployeeScreen';
 import DeleteUserScreen from './screens/DeleteUserScreen';
 import EquipmentCategoriesScreen from './screens/EquipmentCategoriesScreen';
 import EquipmentListScreen from './screens/EquipmentListScreen';
@@ -389,6 +393,10 @@ export default function App() {
             <Stack.Screen name="AdminPendingCommittees" component={AdminPendingCommitteesScreen} />
             <Stack.Screen name="AdminAddBuilding" component={AdminAddBuildingScreen} />
             <Stack.Screen name="AdminBuildings" component={AdminBuildingsScreen} />
+            <Stack.Screen name="AdminServiceCompanies" component={AdminServiceCompaniesScreen} />
+            <Stack.Screen name="AdminAddCompany" component={AdminAddCompanyScreen} />
+            <Stack.Screen name="AdminCompanyDetails" component={AdminCompanyDetailsScreen} />
+            <Stack.Screen name="AdminAddEmployee" component={AdminAddEmployeeScreen} />
             <Stack.Screen name="DeleteUsers" component={DeleteUserScreen} />
           </Stack.Navigator>
         ) : user?.role === 'employee' ? (
