@@ -83,7 +83,7 @@ export default function WelcomeScreen({ navigation }) {
           <View style={styles.textContainer}>
             <Text style={styles.mainTitle}>
               <Text style={styles.textWhite}>Smart </Text>
-              <Text style={styles.textPink}>App</Text>
+              <Text style={styles.textPink}>Neighbors</Text>
             </Text>
             {/* Divider Line */}
             <LinearGradient
@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   mainTitle: {
-    fontSize: 56,
+    fontSize: 48,
     fontWeight: '900',
     fontStyle: 'italic',
     letterSpacing: -2,

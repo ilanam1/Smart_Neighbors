@@ -1,15 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
     View,
     Text,
     StyleSheet,
     FlatList,
+    ScrollView,
     TouchableOpacity,
     Alert,
     ActivityIndicator,
     TextInput
 } from 'react-native';
-import { Trash2, Search, ArrowRight, User, Mail, SearchX, MapPin } from 'lucide-react-native';
+import { Trash2, Search, ArrowRight, User, Mail, SearchX, MapPin, Building2, ShieldCheck } from 'lucide-react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { getSupabase } from '../DataBase/supabase';
 
@@ -18,11 +19,34 @@ export default function DeleteUserScreen({ navigation, route }) {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
+    
+    // Filters state
+    const [buildings, setBuildings] = useState([]);
+    const [selectedBuildingId, setSelectedBuildingId] = useState('ALL');
+    const [adminFilter, setAdminFilter] = useState('ALL'); // 'ALL' | 'ADMIN' | 'RESIDENT'
+
     const supabase = getSupabase();
 
     useEffect(() => {
-        fetchUsers();
+        fetchData();
     }, []);
+
+    async function fetchData() {
+        setLoading(true);
+        await Promise.all([fetchUsers(), fetchBuildings()]);
+        setLoading(false);
+    }
+
+    async function fetchBuildings() {
+        try {
+            const { data, error } = await supabase.from('buildings').select('id, name');
+            if (!error && data) {
+                setBuildings(data);
+            }
+        } catch (e) {
+            console.error('Error fetching buildings', e);
+        }
+    }
 
     async function fetchUsers() {
         setLoading(true);
@@ -46,8 +70,6 @@ export default function DeleteUserScreen({ navigation, route }) {
         } catch (e) {
             console.error('Exception fetching users:', e);
             Alert.alert('שגיאה', e.message);
-        } finally {
-            setLoading(false);
         }
     }
 
@@ -100,7 +122,22 @@ export default function DeleteUserScreen({ navigation, route }) {
         const q = searchQuery.toLowerCase();
         const fullName = `${user.first_name || ''} ${user.last_name || ''}`.toLowerCase();
         const email = (user.email || '').toLowerCase();
-        return fullName.includes(q) || email.includes(q);
+        
+        let matchesSearch = fullName.includes(q) || email.includes(q);
+        
+        let matchesBuilding = true;
+        if (selectedBuildingId !== 'ALL') {
+            matchesBuilding = user.building_id === selectedBuildingId;
+        }
+
+        let matchesAdmin = true;
+        if (adminFilter === 'ADMIN') {
+            matchesAdmin = user.is_house_committee === true;
+        } else if (adminFilter === 'RESIDENT') {
+            matchesAdmin = user.is_house_committee !== true;
+        }
+
+        return matchesSearch && matchesBuilding && matchesAdmin;
     });
 
     const renderItem = ({ item }) => (
@@ -168,6 +205,55 @@ export default function DeleteUserScreen({ navigation, route }) {
                 <Search size={20} color="#22d3ee" style={styles.searchIcon} />
             </View>
 
+            {/* Admin Filter Chips */}
+            <View style={styles.filterSection}>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterScroll} inverted>
+                    <TouchableOpacity 
+                        style={[styles.filterChip, adminFilter === 'ALL' && styles.filterChipActive]}
+                        onPress={() => setAdminFilter('ALL')}
+                    >
+                        <Text style={[styles.filterChipText, adminFilter === 'ALL' && styles.filterChipTextActive]}>כל המשתמשים</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity 
+                        style={[styles.filterChip, adminFilter === 'ADMIN' && styles.filterChipActive]}
+                        onPress={() => setAdminFilter('ADMIN')}
+                    >
+                        <ShieldCheck size={14} color={adminFilter === 'ADMIN' ? '#0F172A' : '#94a3b8'} style={{marginRight: 4}} />
+                        <Text style={[styles.filterChipText, adminFilter === 'ADMIN' && styles.filterChipTextActive]}>רק מנהלי ועד</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity 
+                        style={[styles.filterChip, adminFilter === 'RESIDENT' && styles.filterChipActive]}
+                        onPress={() => setAdminFilter('RESIDENT')}
+                    >
+                        <User size={14} color={adminFilter === 'RESIDENT' ? '#0F172A' : '#94a3b8'} style={{marginRight: 4}} />
+                        <Text style={[styles.filterChipText, adminFilter === 'RESIDENT' && styles.filterChipTextActive]}>רק דיירים</Text>
+                    </TouchableOpacity>
+                </ScrollView>
+            </View>
+
+            {/* Building Filter Chips */}
+            <View style={styles.filterSection}>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterScroll} inverted>
+                    <TouchableOpacity 
+                        style={[styles.filterChip, selectedBuildingId === 'ALL' && styles.filterChipActive]}
+                        onPress={() => setSelectedBuildingId('ALL')}
+                    >
+                        <Text style={[styles.filterChipText, selectedBuildingId === 'ALL' && styles.filterChipTextActive]}>כל הבניינים</Text>
+                    </TouchableOpacity>
+                    
+                    {buildings.map(b => (
+                        <TouchableOpacity 
+                            key={b.id}
+                            style={[styles.filterChip, selectedBuildingId === b.id && styles.filterChipActive]}
+                            onPress={() => setSelectedBuildingId(b.id)}
+                        >
+                            <Building2 size={14} color={selectedBuildingId === b.id ? '#0F172A' : '#94a3b8'} style={{marginRight: 4}} />
+                            <Text style={[styles.filterChipText, selectedBuildingId === b.id && styles.filterChipTextActive]}>{b.name}</Text>
+                        </TouchableOpacity>
+                    ))}
+                </ScrollView>
+            </View>
+
             {loading ? (
                 <ActivityIndicator size="large" color="#22d3ee" style={{ marginTop: 60 }} />
             ) : (
@@ -218,7 +304,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: '#0a1b31',
         marginHorizontal: 16,
-        marginBottom: 24,
+        marginBottom: 12,
         paddingHorizontal: 20,
         borderRadius: 24,
         borderWidth: 1,
@@ -228,6 +314,38 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.05,
         shadowRadius: 8,
         elevation: 3,
+    },
+    filterSection: {
+        marginBottom: 16,
+    },
+    filterScroll: {
+        paddingHorizontal: 16,
+        gap: 12,
+        flexDirection: 'row-reverse'
+    },
+    filterChip: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        borderRadius: 20,
+        backgroundColor: '#1e293b',
+        borderWidth: 1,
+        borderColor: '#334155',
+    },
+    filterChipActive: {
+        backgroundColor: '#06b6d4',
+        borderColor: '#22d3ee',
+    },
+    filterChipText: {
+        color: '#94a3b8',
+        fontSize: 14,
+        fontWeight: '500',
+    },
+    filterChipTextActive: {
+        color: '#0F172A',
+        fontWeight: 'bold',
     },
     searchInput: {
         flex: 1,

@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Svg, { Defs, RadialGradient, Stop, Rect } from 'react-native-svg';
-import { LogIn, UserPlus } from 'lucide-react-native';
+import { LogIn, UserPlus, Eye, EyeOff } from 'lucide-react-native';
 //import DateTimePicker from '@react-native-community/datetimepicker';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { getSupabase } from '../DataBase/supabase.js';
@@ -35,6 +35,9 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // Extra profile fields (signup only)
   const [firstName, setFirstName] = useState('');
@@ -610,10 +613,9 @@ const formattedDob = dobDate.toISOString().split('T')[0];
         )}
 
         {/* COMMON EMAIL + PASSWORD */}
-        {/* COMMON EMAIL + PASSWORD */}
         <TextInput
           placeholderTextColor="#9ca3af"
-          placeholder="אימייל / מס' עובד / מס' מנהל"
+          placeholder="אימייל / מזהה משתמש"
           value={email}
           onChangeText={setEmail}
           style={styles.input}
@@ -621,10 +623,43 @@ const formattedDob = dobDate.toISOString().split('T')[0];
           autoCapitalize="none"
           textAlign="right"
         />
-        <TextInput placeholderTextColor="#9ca3af" placeholder="סיסמה" value={password} onChangeText={setPassword} style={styles.input} secureTextEntry textAlign="right" />
+        
+        <View style={styles.passwordContainer}>
+          <TextInput 
+            placeholderTextColor="#9ca3af" 
+            placeholder="סיסמה" 
+            value={password} 
+            onChangeText={setPassword} 
+            style={[styles.input, styles.passwordInputLayout]} 
+            secureTextEntry={!showPassword} 
+            textAlign="right" 
+          />
+          <TouchableOpacity 
+            style={styles.eyeIcon} 
+            onPress={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ? <EyeOff size={20} color="#9ca3af" /> : <Eye size={20} color="#9ca3af" />}
+          </TouchableOpacity>
+        </View>
 
         {mode === 'signup' && (
-          <TextInput placeholderTextColor="#9ca3af" placeholder="אימות סיסמה" value={confirmPassword} onChangeText={setConfirmPassword} style={styles.input} secureTextEntry textAlign="right" />
+          <View style={styles.passwordContainer}>
+            <TextInput 
+              placeholderTextColor="#9ca3af" 
+              placeholder="אימות סיסמה" 
+              value={confirmPassword} 
+              onChangeText={setConfirmPassword} 
+              style={[styles.input, styles.passwordInputLayout]} 
+              secureTextEntry={!showConfirmPassword} 
+              textAlign="right" 
+            />
+            <TouchableOpacity 
+              style={styles.eyeIcon} 
+              onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+            >
+              {showConfirmPassword ? <EyeOff size={20} color="#9ca3af" /> : <Eye size={20} color="#9ca3af" />}
+            </TouchableOpacity>
+          </View>
         )}
 
         {error ? <Text style={styles.error}>{error}</Text> : null}
@@ -766,6 +801,20 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(15, 23, 42, 0.6)',
     color: '#f8fafc',
     fontSize: 16,
+  },
+  passwordContainer: {
+    position: 'relative',
+    width: '100%',
+  },
+  passwordInputLayout: {
+    paddingLeft: 45, // Map space for the eye icon
+  },
+  eyeIcon: {
+    position: 'absolute',
+    left: 12,
+    top: '50%',
+    transform: [{ translateY: -4 }],
+    padding: 4,
   },
   primaryButtonWrapper: {
     width: '100%',
