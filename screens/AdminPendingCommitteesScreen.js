@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, FlatList, Alert } from 'react-native';
 import { getSupabase } from '../DataBase/supabase';
-import { ShieldCheck, XCircle, UserCheck } from 'lucide-react-native';
+import { ShieldCheck, XCircle, UserCheck, ArrowRight } from 'lucide-react-native';
 
 export default function AdminPendingCommitteesScreen({ route, navigation }) {
     const { adminUser } = route.params || {};
@@ -101,6 +101,9 @@ export default function AdminPendingCommitteesScreen({ route, navigation }) {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={{ padding: 5, marginLeft: 10 }}>
+                    <ArrowRight size={28} color="#f8fafc" />
+                </TouchableOpacity>
                 <ShieldCheck size={32} color="#00f2ff" />
                 <Text style={styles.headerTitle}>ניהול ועדי בית ממתינים</Text>
             </View>

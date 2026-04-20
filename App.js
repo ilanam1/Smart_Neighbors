@@ -29,6 +29,8 @@ import { getSupabase } from './DataBase/supabase';
 import CommitteeProvidersScreen from './screens/CommitteeProvidersScreen';
 import AdminScreen from './screens/AdminScreen';
 import AdminPendingCommitteesScreen from './screens/AdminPendingCommitteesScreen';
+import AdminAddBuildingScreen from './screens/AdminAddBuildingScreen';
+import AdminBuildingsScreen from './screens/AdminBuildingsScreen';
 import DeleteUserScreen from './screens/DeleteUserScreen';
 import EquipmentCategoriesScreen from './screens/EquipmentCategoriesScreen';
 import EquipmentListScreen from './screens/EquipmentListScreen';
@@ -385,6 +387,8 @@ export default function App() {
               {props => <AdminScreen {...props} user={user} onSignOut={() => setUser(null)} />}
             </Stack.Screen>
             <Stack.Screen name="AdminPendingCommittees" component={AdminPendingCommitteesScreen} />
+            <Stack.Screen name="AdminAddBuilding" component={AdminAddBuildingScreen} />
+            <Stack.Screen name="AdminBuildings" component={AdminBuildingsScreen} />
             <Stack.Screen name="DeleteUsers" component={DeleteUserScreen} />
           </Stack.Navigator>
         ) : user?.role === 'employee' ? (
