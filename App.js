@@ -59,6 +59,8 @@ import EmployeeMonthlyReportScreen from "./screens/EmployeeMonthlyReportScreen";
 import CommitteeInspectionsScreen from "./screens/CommitteeInspectionsScreen";
 import EmployeePeriodicInspectionsScreen from "./screens/EmployeePeriodicInspectionsScreen";
 import EmployeeInspectionDetailsScreen from "./screens/EmployeeInspectionDetailsScreen";
+import BuildingCalendarScreen from "./screens/BuildingCalendarScreen";
+import AdminLoadMonitoringScreen from './screens/AdminLoadMonitoringScreen';
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -242,6 +244,7 @@ export default function App() {
               options={{ title: 'תשלום מיסי ועד' }}
             />
 
+
             <Stack.Screen
               name="CommitteeRequests"
               component={CommitteeRequestsScreen}
@@ -377,9 +380,17 @@ export default function App() {
             />
 
 
+
             <Stack.Screen
               name="CommitteeInspections"
               component={CommitteeInspectionsScreen}
+              options={{ headerShown: false }}
+            />
+
+
+            <Stack.Screen
+              name="BuildingCalendar"
+              component={BuildingCalendarScreen}
               options={{ headerShown: false }}
             />
 
@@ -398,6 +409,10 @@ export default function App() {
             <Stack.Screen name="AdminCompanyDetails" component={AdminCompanyDetailsScreen} />
             <Stack.Screen name="AdminAddEmployee" component={AdminAddEmployeeScreen} />
             <Stack.Screen name="DeleteUsers" component={DeleteUserScreen} />
+            <Stack.Screen
+              name="AdminLoadMonitoring"
+              component={AdminLoadMonitoringScreen}
+            />
           </Stack.Navigator>
         ) : user?.role === 'employee' ? (
           // --------- ספק שירות / עובד ---------

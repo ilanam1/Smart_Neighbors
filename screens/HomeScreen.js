@@ -292,6 +292,8 @@ export default function HomeScreen({ navigation, user }) {
           </TouchableOpacity>
 
 
+
+
           <TouchableOpacity
             style={styles.fullBox}
             onPress={() =>
@@ -434,6 +436,34 @@ export default function HomeScreen({ navigation, user }) {
                 <Text style={styles.boxTitle}>מסמכי בניין</Text>
                 <Text style={styles.boxSub}>צפייה בתקנון ומסמכים רשמיים</Text>
               </View>
+            </View>
+          </TouchableOpacity>
+
+
+
+          <TouchableOpacity
+            style={styles.fullBox}
+            onPress={() => navigation.navigate("BuildingCalendar")}
+          >
+            <View style={styles.boxRow}>
+              <View
+                style={[
+                  styles.boxIconContainer,
+                  {
+                    backgroundColor: "rgba(37, 99, 235, 0.15)",
+                    borderColor: "rgba(37, 99, 235, 0.25)",
+                  },
+                ]}
+              >
+                <Text style={{ fontSize: 22 }}>📅</Text>
+              </View>
+
+              <View style={styles.boxTextContent}>
+                <Text style={styles.boxTitle}>לוח אירועי הבניין</Text>
+                <Text style={styles.boxSub}>צפייה באירועים ובביקורות הקרובות</Text>
+              </View>
+
+              <ChevronLeft size={20} color="#64748b" />
             </View>
           </TouchableOpacity>
 
@@ -592,6 +622,7 @@ export default function HomeScreen({ navigation, user }) {
                 ⏳ דיירים ממתינים לאישור
               </Text>
             </TouchableOpacity>
+
 
 
           </View>

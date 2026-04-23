@@ -187,6 +187,17 @@ export default function CommitteeInspectionsScreen() {
           <TouchableOpacity style={styles.primaryBtn} onPress={openCreate}>
             <Text style={styles.primaryBtnText}>+ ביקורת חדשה</Text>
           </TouchableOpacity>
+
+
+
+
+          <TouchableOpacity
+            style={[styles.primaryBtn, { backgroundColor: "#0ea5e9" }]}
+            onPress={() => navigation.navigate("BuildingCalendar")}
+          >
+            <Text style={styles.primaryBtnText}>לוח אירועים</Text>
+          </TouchableOpacity>
+          
         </View>
 
         {loading ? (

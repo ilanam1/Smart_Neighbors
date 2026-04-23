@@ -27,9 +27,10 @@ async function getCurrentUserWithBuilding() {
 
   const { data: profile, error: profileError } = await supabase
     .from('profiles')
-    .select('building_id')
+    .select('building_id, is_blocked')
     .eq('auth_uid', user.id)
     .maybeSingle();
+    
 
   if (profileError) {
     console.error('Error fetching profile:', profileError.message);
@@ -42,6 +43,10 @@ async function getCurrentUserWithBuilding() {
 
   if (!profile.building_id) {
     throw new Error('למשתמש המחובר עדיין לא משויך בניין');
+  }
+
+  if (profile.is_blocked) {
+  throw new Error('המשתמש חסום זמנית מפעילות במערכת');
   }
 
   return {

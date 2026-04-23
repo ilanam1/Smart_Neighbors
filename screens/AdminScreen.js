@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert, SafeAreaView, ScrollView } from 'react-native';
 import { LogOut, ShieldCheck, PlusCircle, Building2, LayoutDashboard, Users, Briefcase } from 'lucide-react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import { TriangleAlert } from 'lucide-react-native';
 
 export default function AdminScreen({ user, onSignOut, navigation }) {
 
@@ -131,6 +132,19 @@ export default function AdminScreen({ user, onSignOut, navigation }) {
                             <PlusCircle size={28} color="#34d399" />
                         </View>
                     </View>
+                </TouchableOpacity>
+
+
+                <TouchableOpacity
+                style={styles.actionCardHalf}
+                activeOpacity={0.8}
+                onPress={() => navigation.navigate('AdminLoadMonitoring', { adminUser: user })}
+                >
+                <View style={[styles.iconCircle, { backgroundColor: 'rgba(251, 191, 36, 0.1)' }]}>
+                    <TriangleAlert size={28} color="#f59e0b" />
+                </View>
+                <Text style={styles.actionTitle}>ניטור עומסים</Text>
+                <Text style={styles.actionDesc}>בקשות, מטרדים ומשתמשים חריגים</Text>
                 </TouchableOpacity>
 
             </ScrollView>
