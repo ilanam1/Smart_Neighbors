@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { View, ActivityIndicator } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { StripeProvider } from '@stripe/stripe-react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import WelcomeScreen from './screens/WelcomeScreen';
 import LoginScreen from './screens/LoginScreen';
@@ -154,8 +155,12 @@ export default function App() {
   }
 
   return (
-    <SafeAreaProvider>
-      <NavigationContainer>
+    <StripeProvider
+      publishableKey="pk_test_51TQPOECyAT1eCIn0Xwk2MVZPL4i29Gf7lBT6aOp0PCWHCKE80Bsa4LhAUcv4Dr2jA1CcpRwtEptZGnj1OI7Vplrq00QDKbSLcM"
+      merchantIdentifier="com.smartneighbors"
+    >
+      <SafeAreaProvider>
+        <NavigationContainer>
         {mfaChallengeConfig ? (
           <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name="StandaloneMfaChallenge">
@@ -459,5 +464,6 @@ export default function App() {
         )}
       </NavigationContainer>
     </SafeAreaProvider>
+    </StripeProvider>
   );
 }

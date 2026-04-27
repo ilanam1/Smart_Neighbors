@@ -7,13 +7,12 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
-import { Linking } from 'react-native';
+import { useStripe } from '@stripe/stripe-react-native';
+import { createPaymentIntent } from '../API/stripeApi';
 import {
   getCommitteeMembersByBuilding,
   getCurrentBuildingCharge,
-  createLinkPaymentRequest,
   createCashPaymentRequest,
-  confirmLinkPaymentAsPaid,
   getMyPaymentForMonth,
 } from '../API/paymentsApi';
 
@@ -33,6 +32,8 @@ export default function PayFeesScreen() {
 
   const [loadingPage, setLoadingPage] = useState(true);
   const [loadingAction, setLoadingAction] = useState(false);
+  
+  const { initPaymentSheet, presentPaymentSheet } = useStripe();
 
   useEffect(() => {
     loadData();
@@ -104,7 +105,7 @@ export default function PayFeesScreen() {
     }
   }
 
-  async function handleLinkPayment() {
+  async function handleStripePayment() {
     if (!selectedCommittee) {
       Alert.alert('שגיאה', 'לא נמצא חבר ועד מתאים');
       return;
@@ -115,87 +116,49 @@ export default function PayFeesScreen() {
       return;
     }
 
-    let url = (selectedCommittee.committee_payment_link || '').trim();
-
-    if (!url) {
-      Alert.alert('שגיאה', 'לחבר הוועד אין קישור תשלום מוגדר');
-      return;
-    }
-
-    if (!url.startsWith('http://') && !url.startsWith('https://')) {
-      url = `https://${url}`;
-    }
-
     try {
       setLoadingAction(true);
 
-      const payment = await createLinkPaymentRequest({
-        committeeAuthUserId: selectedCommittee.auth_uid,
-        amount: charge.amount,
-        monthYear,
-        chargeId: charge.id,
-        externalPaymentLink: url,
+      // 1. צור PaymentIntent מול השרת שלנו
+      const { clientSecret, paymentIntentId } = await createPaymentIntent(Number(charge.amount));
+
+      // 2. אתחול מסך התשלום המובנה של Stripe
+      const { error: initError } = await initPaymentSheet({
+        merchantDisplayName: 'Smart Neighbors',
+        paymentIntentClientSecret: clientSecret,
+        defaultBillingDetails: {
+          name: formatCommitteeName(selectedCommittee),
+        },
       });
 
-      setLastPayment(payment);
+      if (initError) {
+        Alert.alert('שגיאת סליקה', initError.message);
+        return;
+      }
 
-      Alert.alert(
-        'מעבר לתשלום',
-        'יועבר כעת לעמוד התשלום. לאחר שסיימת, חזור לאפליקציה ולחץ על "סיימתי לשלם".',
-        [
-          {
-            text: 'ביטול',
-            style: 'cancel',
-          },
-          {
-            text: 'המשך',
-            onPress: async () => {
-              try {
-                await Linking.openURL(url);
-              } catch (e) {
-                console.error('openURL error', e);
-                Alert.alert('שגיאה', 'לא ניתן לפתוח את קישור התשלום');
-              }
-            },
-          },
-        ]
-      );
+      // 3. הצגת מסך התשלום (יפתח פופאפ אשראי/Google Pay)
+      const { error: paymentError } = await presentPaymentSheet();
+
+      if (paymentError) {
+        if (paymentError.code === 'Canceled') {
+          console.log('Payment canceled by user');
+        } else {
+          Alert.alert('שגיאה בתשלום', paymentError.message);
+        }
+      } else {
+        Alert.alert('התשלום עבר בהצלחה!', 'תודה ששילמת. קבלה נשמרה במערכת.');
+        // כאן בהמשך נקרא ל- paymentsApi להוסיף רשומת PAYMENT לתבלת בית משותף
+        loadData(); // נרענן את המסך כדי להראות קרדיט
+      }
     } catch (err) {
       console.error(err);
-      Alert.alert('שגיאה', err.message || 'שגיאה בהתחלת תשלום דרך לינק');
+      Alert.alert('שגיאה', err.message || 'שגיאה כללית בהתחלת שרת סליקה');
     } finally {
       setLoadingAction(false);
     }
   }
 
-  async function handleConfirmPaid() {
-    if (!lastPayment?.id) {
-      Alert.alert('מידע', 'לא נמצאה בקשת תשלום אחרונה לאישור');
-      return;
-    }
-
-    if (lastPayment.payment_method !== 'LINK') {
-      Alert.alert('מידע', 'אפשר לאשר כאן רק תשלום שבוצע דרך לינק');
-      return;
-    }
-
-    try {
-      setLoadingAction(true);
-
-      const updatedPayment = await confirmLinkPaymentAsPaid(lastPayment.id);
-      setLastPayment(updatedPayment);
-
-      Alert.alert(
-        'התשלום נשמר בהצלחה',
-        `התשלום סומן כשולם.\nאסמכתא: ${updatedPayment.receipt_code}`
-      );
-    } catch (err) {
-      console.error(err);
-      Alert.alert('שגיאה', err.message || 'שגיאה באישור התשלום');
-    } finally {
-      setLoadingAction(false);
-    }
-  }
+  // Confirm Paid removed completely as Stripe tells us automatically
 
   if (loadingPage) {
     return (
@@ -266,17 +229,14 @@ export default function PayFeesScreen() {
 
       <TouchableOpacity
         style={[styles.linkButton, loadingAction && styles.buttonDisabled]}
-        onPress={handleLinkPayment}
+        onPress={handleStripePayment}
         disabled={loadingAction || !charge || committeeMembers.length === 0}
       >
-        <Text style={styles.buttonText}>לתשלום דרך לינק</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.confirmButton}
-        onPress={handleConfirmPaid}
-      >
-        <Text style={styles.buttonText}>סיימתי לשלם דרך הלינק</Text>
+        {loadingAction ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text style={styles.buttonText}>תשלום מאובטח באשראי (Stripe)</Text>
+        )}
       </TouchableOpacity>
 
       {lastPayment && (
