@@ -2,7 +2,7 @@
 
 import React from "react";
 import { render, fireEvent, waitFor } from "@testing-library/react-native";
-import BuildingDocumentsScreen from "../screens/BuildingDocumentsScreen";
+import BuildingDocumentsScreen from "../../../screens/BuildingDocumentsScreen";
 
 // 👇 מוקים (mock) לכל מה שהקומפוננטה משתמשת בו
 
@@ -15,7 +15,7 @@ jest.mock("@react-navigation/native", () => ({
 }));
 
 // mock ל-supabase
-jest.mock("../DataBase/supabase", () => ({
+jest.mock("../../../DataBase/supabase", () => ({
   getSupabase: () => ({
     storage: {
       from: () => ({
@@ -32,7 +32,7 @@ const mockGetBuildingDocuments = jest.fn();
 const mockUploadBuildingDocument = jest.fn();
 const mockDeleteBuildingDocument = jest.fn();
 
-jest.mock("../buildingDocumentsApi", () => ({
+jest.mock("../../../API/buildingDocumentsApi", () => ({
   getBuildingDocuments: (...args) => mockGetBuildingDocuments(...args),
   uploadBuildingDocument: (...args) => mockUploadBuildingDocument(...args),
   deleteBuildingDocument: (...args) => mockDeleteBuildingDocument(...args),

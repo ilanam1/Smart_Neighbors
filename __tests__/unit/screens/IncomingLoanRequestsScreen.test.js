@@ -1,21 +1,21 @@
 import React from "react";
 import { render, waitFor, fireEvent } from "@testing-library/react-native";
 import { Alert } from "react-native";
-import IncomingLoanRequestsScreen from "../screens/IncomingLoanRequestsScreen";
+import IncomingLoanRequestsScreen from "../../../screens/IncomingLoanRequestsScreen";
 import {
   getIncomingLoanRequests,
   approveLoanRequest,
   rejectLoanRequest,
-} from "../API/equipmentLoansApi";
-import { getSupabase } from "../DataBase/supabase";
+} from "../../../API/equipmentLoansApi";
+import { getSupabase } from "../../../DataBase/supabase";
 
-jest.mock("../API/equipmentLoansApi", () => ({
+jest.mock("../../../API/equipmentLoansApi", () => ({
   getIncomingLoanRequests: jest.fn(),
   approveLoanRequest: jest.fn(),
   rejectLoanRequest: jest.fn(),
 }));
 
-jest.mock("../DataBase/supabase", () => ({
+jest.mock("../../../DataBase/supabase", () => ({
   getSupabase: jest.fn(),
 }));
 

@@ -1,10 +1,11 @@
 import React from "react";
 import { render, waitFor, fireEvent } from "@testing-library/react-native";
-import EquipmentCategoriesScreen from "../screens/EquipmentCategoriesScreen";
-import { getEquipmentCategories } from "../API/equipmentCategoriesApi";
+import EquipmentCategoriesScreen from "../../../screens/EquipmentCategoriesScreen";
+import { getEquipmentCategories, getEquipmentCategoriesByWeatherTag } from "../../../API/equipmentCategoriesApi";
 
-jest.mock("../API/equipmentCategoriesApi", () => ({
+jest.mock("../../../API/equipmentCategoriesApi", () => ({
   getEquipmentCategories: jest.fn(),
+  getEquipmentCategoriesByWeatherTag: jest.fn(),
 }));
 
 describe("EquipmentCategoriesScreen", () => {
@@ -14,25 +15,14 @@ describe("EquipmentCategoriesScreen", () => {
 
   test("renders categories from API", async () => {
     getEquipmentCategories.mockResolvedValue([
-      {
-        id: "c1",
-        name: "כלי עבודה",
-        description: "מקדחות וכלים",
-        image_url: null,
-      },
+      { id: "c1", name: "כלי עבודה", description: "מקדחות וכלים", image_url: null },
     ]);
+    getEquipmentCategoriesByWeatherTag.mockResolvedValue([]);
 
     const navigation = { navigate: jest.fn() };
-    const route = {
-      params: {
-        buildingId: "b1",
-        user: { id: "u1" },
-      },
-    };
+    const route = { params: { buildingId: "b1", user: { id: "u1" } } };
 
-    const { getByText } = render(
-      <EquipmentCategoriesScreen navigation={navigation} route={route} />
-    );
+    const { getByText } = render(<EquipmentCategoriesScreen navigation={navigation} route={route} />);
 
     await waitFor(() => {
       expect(getByText("כלי עבודה")).toBeTruthy();
@@ -43,25 +33,14 @@ describe("EquipmentCategoriesScreen", () => {
 
   test("navigates to EquipmentList when category is pressed", async () => {
     getEquipmentCategories.mockResolvedValue([
-      {
-        id: "c1",
-        name: "כלי עבודה",
-        description: "מקדחות וכלים",
-        image_url: null,
-      },
+      { id: "c1", name: "כלי עבודה", description: "מקדחות וכלים", image_url: null },
     ]);
+    getEquipmentCategoriesByWeatherTag.mockResolvedValue([]);
 
     const navigation = { navigate: jest.fn() };
-    const route = {
-      params: {
-        buildingId: "b1",
-        user: { id: "u1" },
-      },
-    };
+    const route = { params: { buildingId: "b1", user: { id: "u1" } } };
 
-    const { getByText } = render(
-      <EquipmentCategoriesScreen navigation={navigation} route={route} />
-    );
+    const { getByText } = render(<EquipmentCategoriesScreen navigation={navigation} route={route} />);
 
     await waitFor(() => {
       expect(getByText("כלי עבודה")).toBeTruthy();

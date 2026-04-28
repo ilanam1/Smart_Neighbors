@@ -1,19 +1,19 @@
 import React from "react";
 import { render, waitFor, fireEvent } from "@testing-library/react-native";
-import AddEquipmentScreen from "../screens/AddEquipmentScreen";
-import { getEquipmentCategories } from "../API/equipmentCategoriesApi";
-import { createEquipmentItem } from "../API/buildingEquipmentApi";
-import { getSupabase } from "../DataBase/supabase";
+import AddEquipmentScreen from "../../../screens/AddEquipmentScreen";
+import { getEquipmentCategories } from "../../../API/equipmentCategoriesApi";
+import { createEquipmentItem } from "../../../API/buildingEquipmentApi";
+import { getSupabase } from "../../../DataBase/supabase";
 
-jest.mock("../API/equipmentCategoriesApi", () => ({
+jest.mock("../../../API/equipmentCategoriesApi", () => ({
   getEquipmentCategories: jest.fn(),
 }));
 
-jest.mock("../API/buildingEquipmentApi", () => ({
+jest.mock("../../../API/buildingEquipmentApi", () => ({
   createEquipmentItem: jest.fn(),
 }));
 
-jest.mock("../DataBase/supabase", () => ({
+jest.mock("../../../DataBase/supabase", () => ({
   getSupabase: jest.fn(),
 }));
 

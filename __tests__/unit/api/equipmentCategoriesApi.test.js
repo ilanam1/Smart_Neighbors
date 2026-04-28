@@ -1,7 +1,7 @@
-import { getEquipmentCategories } from "../API/equipmentCategoriesApi";
-import { getSupabase } from "../DataBase/supabase";
+import { getEquipmentCategories } from "../../../API/equipmentCategoriesApi";
+import { getSupabase } from "../../../DataBase/supabase";
 
-jest.mock("../DataBase/supabase", () => ({
+jest.mock("../../../DataBase/supabase", () => ({
   getSupabase: jest.fn(),
 }));
 
