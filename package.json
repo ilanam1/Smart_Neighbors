@@ -7,7 +7,8 @@
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",
-    "test": "jest"
+    "test": "jest",
+    "test:all": "npm test && python -m pytest __tests__/unit/model"
   },
   "dependencies": {
     "@react-native-community/datetimepicker": "^8.6.0",
@@ -59,4 +60,5 @@
   "engines": {
     "node": ">=20"
   }
+
 }
