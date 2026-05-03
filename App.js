@@ -62,6 +62,10 @@ import EmployeePeriodicInspectionsScreen from "./screens/EmployeePeriodicInspect
 import EmployeeInspectionDetailsScreen from "./screens/EmployeeInspectionDetailsScreen";
 import BuildingCalendarScreen from "./screens/BuildingCalendarScreen";
 import AdminLoadMonitoringScreen from './screens/AdminLoadMonitoringScreen';
+import AdminEquipmentBuildingsSelectorScreen from "./screens/AdminEquipmentBuildingsSelectorScreen";
+import AdminEquipmentPopularityReportScreen from "./screens/AdminEquipmentPopularityReportScreen";
+
+
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -417,6 +421,18 @@ export default function App() {
             <Stack.Screen
               name="AdminLoadMonitoring"
               component={AdminLoadMonitoringScreen}
+            />
+
+            <Stack.Screen
+              name="AdminEquipmentBuildingsSelector"
+              component={AdminEquipmentBuildingsSelectorScreen}
+              options={{ headerShown: false }}
+            />
+
+            <Stack.Screen
+              name="AdminEquipmentPopularityReport"
+              component={AdminEquipmentPopularityReportScreen}
+              options={{ headerShown: false }}
             />
           </Stack.Navigator>
         ) : user?.role === 'employee' ? (

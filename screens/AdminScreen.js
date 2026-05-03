@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Alert, SafeAreaView, ScrollVi
 import { LogOut, ShieldCheck, PlusCircle, Building2, LayoutDashboard, Users, Briefcase } from 'lucide-react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { TriangleAlert } from 'lucide-react-native';
+import { BarChart3 } from "lucide-react-native";
 
 export default function AdminScreen({ user, onSignOut, navigation }) {
 
@@ -145,6 +146,24 @@ export default function AdminScreen({ user, onSignOut, navigation }) {
                 </View>
                 <Text style={styles.actionTitle}>ניטור עומסים</Text>
                 <Text style={styles.actionDesc}>בקשות, מטרדים ומשתמשים חריגים</Text>
+                </TouchableOpacity>
+
+
+
+                <TouchableOpacity
+                style={styles.actionCardHalf}
+                activeOpacity={0.8}
+                onPress={() =>
+                navigation.navigate("AdminEquipmentBuildingsSelector", {
+                    adminUser: user,
+                })
+                }
+                >
+                <View style={[styles.iconCircle, { backgroundColor: "rgba(34, 211, 238, 0.1)" }]}>
+                    <BarChart3 size={28} color="#22d3ee" />
+                </View>
+                <Text style={styles.actionTitle}>דוח ציוד פופולרי</Text>
+                <Text style={styles.actionDesc}>חיזוי ביקוש לפי השאלות</Text>
                 </TouchableOpacity>
 
             </ScrollView>
