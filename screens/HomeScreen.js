@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useFocusEffect } from '@react-navigation/native';
 import { getOpenRequests } from "../API/requestsApi";
 import { getBuildingDisturbanceReports } from "../API/disturbancesApi";
+import { getBuildingWallet, getBuildingMonthlySummary } from "../API/paymentsApi";
 import {
   View,
   Text,
@@ -57,6 +58,8 @@ export default function HomeScreen({ navigation, user }) {
 
   const [requestsCount, setRequestsCount] = useState(0);
   const [disturbancesCount, setDisturbancesCount] = useState(0);
+  const [walletTotal, setWalletTotal] = useState(null);       // קופה כוללת
+  const [monthPaidCount, setMonthPaidCount] = useState(null); // שילמו החודש
 
   const supabase = getSupabase();
 
@@ -148,13 +151,17 @@ export default function HomeScreen({ navigation, user }) {
       async function loadCommitteeStats() {
         if (!isCommittee || !profile?.building_id) return;
         try {
-          const [reqs, dists] = await Promise.all([
+          const [reqs, dists, wallet, monthlySummary] = await Promise.all([
             getOpenRequests(),
-            getBuildingDisturbanceReports()
+            getBuildingDisturbanceReports(),
+            getBuildingWallet().catch(() => null),
+            getBuildingMonthlySummary().catch(() => null),
           ]);
           if (mounted) {
             setRequestsCount(reqs?.length || 0);
             setDisturbancesCount((dists || []).filter(d => d.status !== 'RESOLVED' && d.status !== 'REJECTED').length);
+            setWalletTotal(wallet?.total_collected ?? 0);
+            setMonthPaidCount(monthlySummary?.paid_count ?? 0);
           }
         } catch (e) {
           console.log("Error loading stats:", e);
@@ -212,7 +219,18 @@ export default function HomeScreen({ navigation, user }) {
             </TouchableOpacity>
             <View style={styles.userTextWrapper}>
               <Text style={styles.welcomeText}>שלום, {profile?.first_name || "שכן/ה"} 👋</Text>
-
+              {isCommittee && walletTotal !== null && (
+                <TouchableOpacity
+                  style={styles.walletChip}
+                  onPress={() => navigation.navigate("CommitteePaymentsManagement")}
+                  activeOpacity={0.75}
+                >
+                  <Text style={styles.walletChipText}>
+                    💰 {Number(walletTotal).toLocaleString('he-IL')} ₪
+                    {monthPaidCount !== null ? `  ·  ${monthPaidCount} שילמו` : ''}
+                  </Text>
+                </TouchableOpacity>
+              )}
             </View>
           </View>
 
@@ -605,6 +623,7 @@ export default function HomeScreen({ navigation, user }) {
               </Text>
             </TouchableOpacity>
 
+            {/* ── כפתור ניהול תשלומים ── */}
             <TouchableOpacity
               style={styles.forecastButton}
               onPress={() => navigation.navigate("CommitteePaymentsManagement")}
@@ -968,5 +987,22 @@ forecastButtonText: {
   fontSize: 16,
   fontWeight: "800",
 },
+
+  // ── chip קטן ליד השם (ועד בית בלבד) ───────────────────
+  walletChip: {
+    alignSelf: 'flex-end',
+    backgroundColor: 'rgba(5, 46, 22, 0.9)',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#16a34a',
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    marginTop: 4,
+  },
+  walletChipText: {
+    color: '#4ade80',
+    fontSize: 11,
+    fontWeight: '700',
+  },
 
 });

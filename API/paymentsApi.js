@@ -62,38 +62,6 @@ export async function getCurrentUserProfile() {
 }
 
 /**
- * מביא חברי ועד של הבניין של המשתמש
- */
-export async function getCommitteeMembersByBuilding() {
-  const supabase = getSupabase();
-  const { profile } = await getCurrentUserProfile();
-
-  if (!profile.building_id) {
-    throw new Error('למשתמש אין בניין משויך');
-  }
-
-  const { data, error } = await supabase
-    .from('profiles')
-    .select(`
-      auth_uid,
-      first_name,
-      last_name,
-      committee_payment_link,
-      is_house_committee,
-      building_id
-    `)
-    .eq('building_id', profile.building_id)
-    .eq('is_house_committee', true);
-
-  if (error) {
-    console.error('Error fetching committee members by building:', error);
-    throw new Error('שגיאה בשליפת חברי ועד הבית');
-  }
-
-  return data || [];
-}
-
-/**
  * מביא את החיוב החודשי של הבניין עבור חודש מסוים
  */
 export async function getCurrentBuildingCharge(monthYear = getCurrentMonthYear()) {
@@ -219,10 +187,60 @@ export async function getMyPaymentForMonth(monthYear = getCurrentMonthYear()) {
 }
 
 /**
- * דייר - יצירת בקשת תשלום במזומן
+ * שליפת קופת הבניין (סה"כ שנגבה)
+ */
+export async function getBuildingWallet() {
+  const supabase = getSupabase();
+  const { profile } = await getCurrentUserProfile();
+
+  if (!profile.building_id) {
+    throw new Error('למשתמש אין בניין משויך');
+  }
+
+  const { data, error } = await supabase
+    .from('building_wallets')
+    .select('*')
+    .eq('building_id', profile.building_id)
+    .maybeSingle();
+
+  if (error) {
+    console.error('Error fetching building wallet:', error);
+    throw new Error('שגיאה בשליפת נתוני הקופה');
+  }
+
+  return data; // יכול להיות null אם אין עדיין תשלומים
+}
+
+/**
+ * שליפת סיכום חודשי של קופת הבניין
+ */
+export async function getBuildingMonthlySummary(monthYear = getCurrentMonthYear()) {
+  const supabase = getSupabase();
+  const { profile } = await getCurrentUserProfile();
+
+  if (!profile.building_id) {
+    throw new Error('למשתמש אין בניין משויך');
+  }
+
+  const { data, error } = await supabase
+    .from('building_monthly_summary')
+    .select('*')
+    .eq('building_id', profile.building_id)
+    .eq('month_year', monthYear)
+    .maybeSingle();
+
+  if (error) {
+    console.error('Error fetching building monthly summary:', error);
+    throw new Error('שגיאה בשליפת סיכום חודשי');
+  }
+
+  return data;
+}
+
+/**
+ * דייר - יצירת בקשת תשלום במזומן לקופת הבניין (ללא בחירת חבר ועד ידנית)
  */
 export async function createCashPaymentRequest({
-  committeeAuthUserId,
   amount,
   monthYear,
   chargeId,
@@ -237,6 +255,20 @@ export async function createCashPaymentRequest({
   ) {
     throw new Error('כבר קיימת בקשת תשלום עבור חודש זה');
   }
+
+  // מצא חבר ועד כלשהו בבניין לצורך אישור המזומן
+  const { data: committeeMembers, error: committeeError } = await supabase
+    .from('profiles')
+    .select('auth_uid, first_name, last_name')
+    .eq('building_id', profile.building_id)
+    .eq('is_house_committee', true)
+    .limit(1);
+
+  if (committeeError) {
+    console.error('Error fetching committee member:', committeeError);
+  }
+
+  const committeeAuthUserId = committeeMembers?.[0]?.auth_uid || null;
 
   const { data, error } = await supabase
     .from('house_fee_payments')
@@ -262,43 +294,79 @@ export async function createCashPaymentRequest({
   }
 
   // יצירת התראה לוועד הבית
-  try {
-    const tenantName =
-      `${profile.first_name || ''} ${profile.last_name || ''}`.trim() || 'דייר';
+  if (committeeAuthUserId) {
+    try {
+      const tenantName =
+        `${profile.first_name || ''} ${profile.last_name || ''}`.trim() || 'דייר';
 
-    await notifyCommitteeAboutCashPaymentRequest({
-      committeeUserId: committeeAuthUserId,
-      tenantUserId: user.id,
-      tenantName,
-      monthYear,
-      amount: Number(amount),
-      paymentId: data.id,
-    });
-  } catch (notificationError) {
-    console.error('Error creating cash payment notification:', notificationError);
+      await notifyCommitteeAboutCashPaymentRequest({
+        committeeUserId: committeeAuthUserId,
+        tenantUserId: user.id,
+        tenantName,
+        monthYear,
+        amount: Number(amount),
+        paymentId: data.id,
+      });
+    } catch (notificationError) {
+      console.error('Error creating cash payment notification:', notificationError);
+    }
   }
 
   return data;
 }
 
 /**
- * דייר - יצירת בקשת תשלום דרך לינק
+ * דייר - רישום תשלום Stripe שהושלם בהצלחה לקופת הבניין
+ * נקרא לאחר presentPaymentSheet() הצליח
  */
-export async function createLinkPaymentRequest({
-  committeeAuthUserId,
+export async function recordStripePaymentAsPaid({
   amount,
   monthYear,
   chargeId,
-  externalPaymentLink,
+  stripePaymentIntentId,
 }) {
   const supabase = getSupabase();
   const { user, profile } = await getCurrentUserProfile();
+  const receiptCode = generateReceiptCode();
 
   const existingPayment = await getMyPaymentForMonth(monthYear);
-  if (existingPayment && ['INITIATED', 'LINK_OPENED', 'CASH_REQUESTED', 'PAID'].includes(existingPayment.status)) {
-    throw new Error('כבר קיימת בקשת תשלום עבור חודש זה');
+  if (existingPayment && existingPayment.status === 'PAID') {
+    throw new Error('כבר רשום תשלום עבור חודש זה');
   }
 
+  // מצא חבר ועד לצורך שמירת reference
+  const { data: committeeMembers } = await supabase
+    .from('profiles')
+    .select('auth_uid')
+    .eq('building_id', profile.building_id)
+    .eq('is_house_committee', true)
+    .limit(1);
+
+  const committeeAuthUserId = committeeMembers?.[0]?.auth_uid || null;
+
+  // אם כבר יש רשומה ב-INITIATED – עדכן אותה, אחרת צור חדשה
+  if (existingPayment && existingPayment.id) {
+    const { data, error } = await supabase
+      .from('house_fee_payments')
+      .update({
+        status: 'PAID',
+        paid_at: new Date().toISOString(),
+        receipt_code: receiptCode,
+        stripe_payment_intent_id: stripePaymentIntentId || null,
+      })
+      .eq('id', existingPayment.id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error updating stripe payment to PAID:', error);
+      throw new Error('שגיאה ברישום התשלום');
+    }
+
+    return data;
+  }
+
+  // יצירת רשומה חדשה
   const { data, error } = await supabase
     .from('house_fee_payments')
     .insert([
@@ -309,64 +377,19 @@ export async function createLinkPaymentRequest({
         charge_id: chargeId || null,
         amount: Number(amount),
         month_year: monthYear,
-        payment_method: 'LINK',
-        status: 'INITIATED',
-        external_payment_link: externalPaymentLink || null,
+        payment_method: 'STRIPE',
+        status: 'PAID',
+        paid_at: new Date().toISOString(),
+        receipt_code: receiptCode,
+        stripe_payment_intent_id: stripePaymentIntentId || null,
       },
     ])
     .select()
     .single();
 
   if (error) {
-    console.error('Error creating link payment request:', error);
-    throw new Error('שגיאה ביצירת בקשת תשלום דרך לינק');
-  }
-
-  return data;
-}
-
-/**
- * דייר - אישור ידני לאחר חזרה מהלינק
- */
-export async function confirmLinkPaymentAsPaid(paymentId) {
-  const supabase = getSupabase();
-  const receiptCode = generateReceiptCode();
-
-  const { user, profile } = await getCurrentUserProfile();
-
-  const { data, error } = await supabase
-    .from('house_fee_payments')
-    .update({
-      status: 'PAID',
-      paid_at: new Date().toISOString(),
-      receipt_code: receiptCode,
-    })
-    .eq('id', paymentId)
-    .eq('payment_method', 'LINK')
-    .select()
-    .single();
-
-  if (error) {
-    console.error('Error confirming link payment as paid:', error);
-    throw new Error('שגיאה באישור התשלום');
-  }
-
-  // יצירת התראה לוועד הבית
-  try {
-    const tenantName =
-      `${profile.first_name || ''} ${profile.last_name || ''}`.trim() || 'דייר';
-
-    await notifyCommitteeAboutLinkPaymentCompleted({
-      committeeUserId: data.committee_auth_user_id,
-      tenantUserId: user.id,
-      tenantName,
-      monthYear: data.month_year,
-      amount: Number(data.amount),
-      paymentId: data.id,
-      receiptCode: data.receipt_code,
-    });
-  } catch (notificationError) {
-    console.error('Error creating link payment completed notification:', notificationError);
+    console.error('Error recording stripe payment:', error);
+    throw new Error('שגיאה ברישום התשלום');
   }
 
   return data;

@@ -20,7 +20,7 @@ serve(async (req) => {
   }
 
   try {
-    const { amount, currency = 'ils' } = await req.json()
+    const { amount, currency = 'ils', buildingId, tenantUserId, monthYear } = await req.json()
 
     if (!amount || amount <= 0) {
       throw new Error('Amount must be greater than 0')
@@ -30,16 +30,22 @@ serve(async (req) => {
     const amountInCents = Math.round(amount * 100)
 
     // יצירת בקשת תשלום מול השרתים של סטרייפ
+    // metadata משמש למעקב – לאיזה בניין וחודש שייך התשלום
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amountInCents,
       currency: currency,
-      // בהמשך פה נוסיף ניתוב תשלומים ארנקי לחשבון בנק יעד (Stripe Connect)
+      metadata: {
+        building_id:     buildingId    || '',
+        tenant_user_id:  tenantUserId  || '',
+        month_year:      monthYear     || '',
+        app:             'smart_neighbors',
+      },
     })
 
     // מחזירים למובייל את המפתח הייחודי להפעלת תהליך התשלום באפליקציה בלי לחשוף מפתחות
     return new Response(
       JSON.stringify({ 
-        clientSecret: paymentIntent.client_secret,
+        clientSecret:    paymentIntent.client_secret,
         paymentIntentId: paymentIntent.id
       }),
       { 

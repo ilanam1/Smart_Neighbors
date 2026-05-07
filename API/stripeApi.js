@@ -4,12 +4,21 @@ import { getSupabase } from '../DataBase/supabase';
 /**
  * קריאה לפונקציית השרת ליצירת כוונת חיוב מול Stripe
  * מחזירה את ה-clientSecret שנדרש להפעלת טופס כרטיס האשראי
+ * @param {number} amount - סכום בשקלים
+ * @param {string} currency - מטבע (ברירת מחדל: 'ils')
+ * @param {object} meta - מטא-דאטה נוסף: { buildingId, tenantUserId, monthYear }
  */
-export async function createPaymentIntent(amount, currency = 'ils') {
+export async function createPaymentIntent(amount, currency = 'ils', meta = {}) {
   const supabase = getSupabase();
   
   const { data, error } = await supabase.functions.invoke('create-payment-intent', {
-    body: { amount, currency },
+    body: {
+      amount,
+      currency,
+      buildingId:    meta.buildingId    || null,
+      tenantUserId:  meta.tenantUserId  || null,
+      monthYear:     meta.monthYear     || null,
+    },
   });
 
   if (error) {
@@ -23,7 +32,7 @@ export async function createPaymentIntent(amount, currency = 'ils') {
   }
 
   return {
-    clientSecret: data.clientSecret,
-    paymentIntentId: data.paymentIntentId
+    clientSecret:    data.clientSecret,
+    paymentIntentId: data.paymentIntentId,
   };
 }
