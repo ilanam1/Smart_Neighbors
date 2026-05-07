@@ -61,6 +61,7 @@ export default function CommitteeDisturbancesScreen() {
   const [scheduleTime, setScheduleTime] = useState("");
 
   const [lastJobs, setLastJobs] = useState({});
+  const [showResolved, setShowResolved] = useState(false);
 
   const loadReports = async () => {
     const data = await getBuildingDisturbanceReports();
@@ -191,11 +192,27 @@ export default function CommitteeDisturbancesScreen() {
     return <Text style={styles.empty}>אין עדיין דיווחי מטרדים בבניין שלך.</Text>;
   }
 
+  const filteredItems = items.filter(item => 
+    showResolved ? true : (item.status !== 'RESOLVED' && item.status !== 'REJECTED')
+  );
+
   return (
     <View style={styles.container}>
+      <View style={{ flexDirection: 'row-reverse', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 16, paddingTop: 10 }}>
+        <Text style={{ color: '#94a3b8', fontSize: 13 }}>מציג: {filteredItems.length} מטרדים</Text>
+        <TouchableOpacity 
+          onPress={() => setShowResolved(!showResolved)} 
+          style={{ backgroundColor: 'rgba(56, 189, 248, 0.1)', paddingVertical: 6, paddingHorizontal: 12, borderRadius: 8 }}
+        >
+          <Text style={{ color: '#38bdf8', fontWeight: 'bold', fontSize: 13 }}>
+            {showResolved ? "הסתר מטרדים שטופלו" : "הצג הכל (כולל היסטוריה)"}
+          </Text>
+        </TouchableOpacity>
+      </View>
+
       <FlatList
         contentContainerStyle={styles.list}
-        data={items}
+        data={filteredItems}
         keyExtractor={(item) => String(item.id)}
         renderItem={({ item }) => {
           const lastJob = lastJobs[item.id] || null;

@@ -79,8 +79,7 @@ export default function ProfilePageScreen({ navigation }) {
             date_of_birth,
             id_number,
             photo_url,
-            is_house_committee,
-            committee_payment_link
+            is_house_committee
           `
           )
           .eq("auth_uid", user.id)
@@ -276,17 +275,7 @@ export default function ProfilePageScreen({ navigation }) {
           )}
         </View>
 
-        {/* SECTION: COMMITTEE */}
-        {profile?.is_house_committee && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>ועד הבית</Text>
 
-            <ProfileRow
-              label="קישור תשלום"
-              value={profile?.committee_payment_link || "לא הוגדר"}
-            />
-          </View>
-        )}
       </ScrollView>
 
       {/* Security Check Modal */}

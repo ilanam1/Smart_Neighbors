@@ -14,7 +14,14 @@ import {
   Platform,
   StatusBar,
   Dimensions,
+  LayoutAnimation,
+  UIManager,
 } from "react-native";
+
+// Enable LayoutAnimation on Android
+if (Platform.OS === 'android') {
+  UIManager.setLayoutAnimationEnabledExperimental?.(true);
+}
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
   Bell,
@@ -24,6 +31,7 @@ import {
   Settings,
   LogOut,
   ChevronLeft,
+  ChevronDown,
   ShieldCheck,
   Plus,
   ArrowUpRight,
@@ -33,7 +41,16 @@ import {
   FileText,
   Package,
   Inbox,
-  MessageCircle
+  MessageCircle,
+  ClipboardList,
+  BarChart2,
+  Shield,
+  DollarSign,
+  Receipt,
+  Clock,
+  Wrench,
+  Users,
+  Calendar,
 } from 'lucide-react-native';
 import { getSupabase } from "../DataBase/supabase";
 import { getRecentBuildingUpdates } from "../API/buildingUpdatesApi";
@@ -58,8 +75,11 @@ export default function HomeScreen({ navigation, user }) {
 
   const [requestsCount, setRequestsCount] = useState(0);
   const [disturbancesCount, setDisturbancesCount] = useState(0);
-  const [walletTotal, setWalletTotal] = useState(null);       // קופה כוללת
-  const [monthPaidCount, setMonthPaidCount] = useState(null); // שילמו החודש
+  const [walletTotal, setWalletTotal] = useState(null);
+  const [monthPaidCount, setMonthPaidCount] = useState(null);
+  const [committeeExpanded, setCommitteeExpanded] = useState(false);
+  const [equipmentExpanded, setEquipmentExpanded] = useState(false);
+  const [communityExpanded, setCommunityExpanded] = useState(false);
 
   const supabase = getSupabase();
 
@@ -71,6 +91,21 @@ export default function HomeScreen({ navigation, user }) {
     } catch (e) {
       console.error("Sign out error:", e);
     }
+  }
+
+  function toggleCommittee() {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setCommitteeExpanded(prev => !prev);
+  }
+
+  function toggleEquipment() {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setEquipmentExpanded(prev => !prev);
+  }
+
+  function toggleCommunity() {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setCommunityExpanded(prev => !prev);
   }
 
   // ===== LOAD BUILDING UPDATES =====
@@ -103,7 +138,8 @@ export default function HomeScreen({ navigation, user }) {
         setProfileLoading(true);
         const { data, error } = await supabase
           .from("profiles")
-          .select("first_name, last_name, email, photo_url, is_house_committee, committee_payment_link, building_id")          .eq("auth_uid", user.id)
+          .select("first_name, last_name, email, photo_url, is_house_committee, building_id")
+          .eq("auth_uid", user.id)
           .maybeSingle();
 
         if (error) throw error;
@@ -111,9 +147,6 @@ export default function HomeScreen({ navigation, user }) {
           setProfile(data);
           const isC = !!data?.is_house_committee;
           setIsCommittee(isC);
-          if (isC && !data?.committee_payment_link) {
-            navigation.navigate("CommitteePaymentSetup");
-          }
         }
       } catch (e) {
         console.error(e.message);
@@ -226,8 +259,7 @@ export default function HomeScreen({ navigation, user }) {
                   activeOpacity={0.75}
                 >
                   <Text style={styles.walletChipText}>
-                    💰 {Number(walletTotal).toLocaleString('he-IL')} ₪
-                    {monthPaidCount !== null ? `  ·  ${monthPaidCount} שילמו` : ''}
+                    קופת הבניין - {Number(walletTotal).toLocaleString('he-IL')} שקלים
                   </Text>
                 </TouchableOpacity>
               )}
@@ -235,9 +267,20 @@ export default function HomeScreen({ navigation, user }) {
           </View>
 
           <View style={styles.headerActions}>
+            <TouchableOpacity style={[styles.iconBtn, styles.logoutBtn]} onPress={handleSignOut}>
+              <LogOut size={18} color="#fb7185" />
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={styles.iconBtn} 
+              onPress={() => navigation.navigate("ChatList", { user: { ...user, building_id: profile?.building_id } })}
+            >
+              <MessageCircle size={18} color="#8b5cf6" />
+            </TouchableOpacity>
+
             <TouchableOpacity style={styles.iconBtn} onPress={() => setShowNotifications(true)}>
               <View>
-                  <Bell size={20} color="#94a3b8" />
+                  <Bell size={18} color="#94a3b8" />
                   {unreadCount > 0 && (
                       <View style={{
                           position: 'absolute', top: -3, right: -3, backgroundColor: '#ef4444', 
@@ -247,9 +290,6 @@ export default function HomeScreen({ navigation, user }) {
                       </View>
                   )}
               </View>
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.iconBtn, styles.logoutBtn]} onPress={handleSignOut}>
-              <LogOut size={20} color="#fb7185" />
             </TouchableOpacity>
           </View>
         </View>
@@ -312,81 +352,50 @@ export default function HomeScreen({ navigation, user }) {
 
 
 
-          <TouchableOpacity
-            style={styles.fullBox}
-            onPress={() =>
-              navigation.navigate("EquipmentCategories", {
-                user,
-                buildingId: profile?.building_id,
-              })
-            }
-          >
-            <View style={styles.boxRow}>
-              <View style={[styles.boxIconContainer, { backgroundColor: "rgba(245, 158, 11, 0.15)", borderColor: "rgba(245, 158, 11, 0.25)" }]}>
-                <Package size={24} color="#f59e0b" />
+          {/* EQUIPMENT SECTION – accordion */}
+          <View style={styles.fullBox}>
+            <TouchableOpacity
+              style={styles.boxRow}
+              onPress={toggleEquipment}
+              activeOpacity={0.8}
+            >
+              <View style={[styles.boxIconContainer, { backgroundColor: 'rgba(245, 158, 11, 0.15)', borderColor: 'rgba(245, 158, 11, 0.25)' }]}>
+                <Package size={20} color="#f59e0b" />
               </View>
-
               <View style={styles.boxTextContent}>
                 <Text style={styles.boxTitle}>השאלת ציוד</Text>
-                <Text style={styles.boxSub}>השאלת או הצעת ציוד לשכנים בבניין</Text>
+                <Text style={styles.boxSub}>בקש, הצע ואשר ציוד בבניין</Text>
               </View>
-
-              <ChevronLeft size={20} color="#64748b" />
-            </View>
-          </TouchableOpacity>
-
-          {/* Messages / Chat - Full Width */}
-          <TouchableOpacity
-            style={styles.fullBox}
-            onPress={() => 
-                navigation.navigate("ChatList", { user: { ...user, building_id: profile?.building_id } })
-            }
-          >
-            <View style={styles.boxRow}>
-              <View style={[styles.boxIconContainer, { backgroundColor: 'rgba(139, 92, 246, 0.15)', borderColor: 'rgba(139, 92, 246, 0.25)' }]}>
-                <MessageCircle size={24} color="#8b5cf6" />
+              <View style={[
+                styles.committeeChevron,
+                equipmentExpanded && styles.committeeChevronOpen
+              ]}>
+                <ChevronDown size={18} color="#f59e0b" />
               </View>
+            </TouchableOpacity>
 
-              <View style={styles.boxTextContent}>
-                <Text style={styles.boxTitle}>הודעות בניין ושיחות פרטיות</Text>
-                <Text style={styles.boxSub}>שליחת הודעות לשכנים ולקבוצת הבניין</Text>
+            {equipmentExpanded && (
+              <View style={styles.committeeBody}>
+                <TouchableOpacity
+                  style={styles.cmRow}
+                  onPress={() => navigation.navigate("EquipmentCategories", { user, buildingId: profile?.building_id })}
+                >
+                  <Package size={16} color="#f59e0b" />
+                  <Text style={styles.cmRowText}>חיפוש או הצעת ציוד</Text>
+                  <ChevronLeft size={14} color="#475569" style={{ marginRight: 'auto' }} />
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.cmRow}
+                  onPress={() => navigation.navigate("IncomingLoanRequests", { user, buildingId: profile?.building_id })}
+                >
+                  <Inbox size={16} color="#f59e0b" />
+                  <Text style={styles.cmRowText}>בקשות השאלה שקיבלתי</Text>
+                  <ChevronLeft size={14} color="#475569" style={{ marginRight: 'auto' }} />
+                </TouchableOpacity>
               </View>
-
-              <ChevronLeft size={20} color="#64748b" />
-            </View>
-          </TouchableOpacity>
-
-
-          <TouchableOpacity
-            style={styles.fullBox}
-            onPress={() =>
-              navigation.navigate("IncomingLoanRequests", {
-                user,
-                buildingId: profile?.building_id,
-              })
-            }
-          >
-            <View style={styles.boxRow}>
-              <View
-                style={[
-                  styles.boxIconContainer,
-                  {
-                    backgroundColor: "rgba(59, 130, 246, 0.15)",
-                    borderColor: "rgba(59, 130, 246, 0.25)",
-                  },
-                ]}
-              >
-                <Inbox size={24} color="#60a5fa" />
-              </View>
-
-              <View style={styles.boxTextContent}>
-                <Text style={styles.boxTitle}>בקשות השאלה שקיבלתי</Text>
-                <Text style={styles.boxSub}>אישור או דחייה של בקשות על הציוד שלך</Text>
-              </View>
-
-              <ChevronLeft size={20} color="#64748b" />
-            </View>
-          </TouchableOpacity>
+            )}
+          </View>
 
           {/* Square Boxes Row */}
           <View style={styles.row}>
@@ -395,11 +404,10 @@ export default function HomeScreen({ navigation, user }) {
               onPress={() => navigation.navigate("PayFees")}
             >
               <View style={[styles.squareIcon, { backgroundColor: '#2563eb' }]}>
-                <CreditCard size={20} color="white" />
+                <CreditCard size={18} color="white" />
               </View>
-              <View>
-                <Text style={styles.boxTitle}>תשלומים</Text>
-                <Text style={styles.boxSubSmall}>מיסי ועד וחשבונות</Text>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.squareBoxTitle}>תשלומים</Text>
               </View>
             </TouchableOpacity>
 
@@ -408,244 +416,227 @@ export default function HomeScreen({ navigation, user }) {
               onPress={() => navigation.navigate("ReportDisturbance")}
             >
               <View style={[styles.squareIcon, { backgroundColor: '#e11d48' }]}>
-                <AlertTriangle size={20} color="white" />
+                <AlertTriangle size={18} color="white" />
               </View>
-              <View>
-                <Text style={styles.boxTitle}>דיווח מטרד</Text>
-                <Text style={styles.boxSubSmall}>רעש, חניה או הפרעה</Text>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.squareBoxTitle}>דיווח מטרד</Text>
               </View>
             </TouchableOpacity>
           </View>
 
           {/* Neighbors Feed - Full Width */}
-          <TouchableOpacity
-            style={styles.fullBox}
-            onPress={() => navigation.navigate("PublicRequests")}
-          >
-            <View style={styles.boxRow}>
-              <View style={styles.avatarOverlap}>
-                <View style={styles.miniAvatar}><User size={12} color="#94a3b8" /></View>
-                <View style={[styles.miniAvatar, { right: -10 }]}><User size={12} color="#94a3b8" /></View>
-              </View>
-              <View style={[styles.boxTextContent, { marginRight: 20 }]}>
-                <Text style={styles.boxTitle}>הלוח הציבורי</Text>
-                <Text style={styles.boxSub}>מה השכנים מבקשים כרגע</Text>
-              </View>
-              <ChevronLeft size={20} color="#64748b" />
-            </View>
-          </TouchableOpacity>
-
-          {/* כרטיס מסמכי בניין - גישה לכל הדיירים */}
-          <TouchableOpacity
-            style={styles.fullBox}
-            onPress={() =>
-              navigation.navigate("BuildingDocuments", {
-                user,
-                isCommittee,
-                buildingId: profile?.building_id,   // חשוב! אותו בניין של המשתמש
-              })
-            }
-          >
-            <View style={styles.boxRow}>
-              <View style={styles.boxIconContainer}>
-                <FileText size={24} color="#e5e7eb" />
-              </View>
-              <View style={styles.boxTextContent}>
-                <Text style={styles.boxTitle}>מסמכי בניין</Text>
-                <Text style={styles.boxSub}>צפייה בתקנון ומסמכים רשמיים</Text>
-              </View>
-            </View>
-          </TouchableOpacity>
-
-
-
-          <TouchableOpacity
-            style={styles.fullBox}
-            onPress={() => navigation.navigate("BuildingCalendar")}
-          >
-            <View style={styles.boxRow}>
-              <View
-                style={[
-                  styles.boxIconContainer,
-                  {
-                    backgroundColor: "rgba(37, 99, 235, 0.15)",
-                    borderColor: "rgba(37, 99, 235, 0.25)",
-                  },
-                ]}
-              >
-                <Text style={{ fontSize: 22 }}>📅</Text>
-              </View>
-
-              <View style={styles.boxTextContent}>
-                <Text style={styles.boxTitle}>לוח אירועי הבניין</Text>
-                <Text style={styles.boxSub}>צפייה באירועים ובביקורות הקרובות</Text>
-              </View>
-
-              <ChevronLeft size={20} color="#64748b" />
-            </View>
-          </TouchableOpacity>
-
-
-
-          {!isCommittee && (
+          {/* COMMUNITY SECTION – accordion */}
+          <View style={styles.fullBox}>
             <TouchableOpacity
-              style={styles.fullBox}
-              onPress={() =>
-                navigation.navigate("BuildingRules", {
-                  user,
-                  isCommittee,
-                })
-              }
+              style={styles.boxRow}
+              onPress={toggleCommunity}
+              activeOpacity={0.8}
             >
-              <View style={styles.boxRow}>
-                <View style={[styles.boxIconContainer, { backgroundColor: "#38bdf8" }]}>
-                  <FileText size={24} color="#0f172a" />
-                </View>
-
-                <View style={styles.boxTextContent}>
-                  <Text style={styles.boxTitle}>חוקי ונהלי הבניין</Text>
-                  <Text style={styles.boxSub}>צפייה בנהלים של ועד הבית</Text>
-                </View>
-
-                <ChevronLeft size={20} color="#64748b" />
+              <View style={[styles.boxIconContainer, { backgroundColor: 'rgba(59, 130, 246, 0.15)', borderColor: 'rgba(59, 130, 246, 0.25)' }]}>
+                <Users size={20} color="#3b82f6" />
+              </View>
+              <View style={styles.boxTextContent}>
+                <Text style={styles.boxTitle}>קהילה ומידע</Text>
+                <Text style={styles.boxSub}>לוח ציבורי, מסמכים ואירועים</Text>
+              </View>
+              <View style={[
+                styles.committeeChevron,
+                communityExpanded && styles.committeeChevronOpen
+              ]}>
+                <ChevronDown size={18} color="#3b82f6" />
               </View>
             </TouchableOpacity>
-          )}
 
+            {communityExpanded && (
+              <View style={styles.committeeBody}>
+                <TouchableOpacity
+                  style={styles.cmRow}
+                  onPress={() => navigation.navigate("PublicRequests")}
+                >
+                  <Users size={16} color="#3b82f6" />
+                  <Text style={styles.cmRowText}>הלוח הציבורי</Text>
+                  <ChevronLeft size={14} color="#475569" style={{ marginRight: 'auto' }} />
+                </TouchableOpacity>
 
+                <TouchableOpacity
+                  style={styles.cmRow}
+                  onPress={() => navigation.navigate("BuildingDocuments", { user, isCommittee, buildingId: profile?.building_id })}
+                >
+                  <FileText size={16} color="#3b82f6" />
+                  <Text style={styles.cmRowText}>מסמכי בניין</Text>
+                  <ChevronLeft size={14} color="#475569" style={{ marginRight: 'auto' }} />
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.cmRow}
+                  onPress={() => navigation.navigate("BuildingCalendar")}
+                >
+                  <Calendar size={16} color="#3b82f6" />
+                  <Text style={styles.cmRowText}>לוח אירועי הבניין</Text>
+                  <ChevronLeft size={14} color="#475569" style={{ marginRight: 'auto' }} />
+                </TouchableOpacity>
+
+                {!isCommittee && (
+                  <TouchableOpacity
+                    style={styles.cmRow}
+                    onPress={() => navigation.navigate("BuildingRules", { user, isCommittee })}
+                  >
+                    <FileText size={16} color="#3b82f6" />
+                    <Text style={styles.cmRowText}>חוקי ונהלי הבניין</Text>
+                    <ChevronLeft size={14} color="#475569" style={{ marginRight: 'auto' }} />
+                  </TouchableOpacity>
+                )}
+              </View>
+            )}
+          </View>
         </View>
 
-        {/* COMMITTEE SECTION */}
+        {/* COMMITTEE SECTION – accordion */}
         {isCommittee && (
           <View style={styles.committeeContainer}>
-            <View style={styles.committeeHeader}>
-              <View style={styles.committeeIconBg}>
-                <ShieldCheck size={18} color="#10b981" />
+
+            {/* ── Header תמיד גלוי – לחיצה פותחת/סוגרת ── */}
+            <TouchableOpacity
+              style={styles.committeeHeaderRow}
+              onPress={toggleCommittee}
+              activeOpacity={0.8}
+            >
+              <View style={styles.committeeHeaderLeft}>
+                <View style={styles.committeeIconBg}>
+                  <ShieldCheck size={16} color="#10b981" />
+                </View>
+                <View style={{ alignItems: 'flex-end' }}>
+                  <Text style={styles.committeeTitle}>ניהול ועד הבית</Text>
+                  <Text style={styles.committeeSubtitle}>
+                    {requestsCount > 0 ? `${requestsCount} בקשות` : 'אין בקשות'}
+                    {disturbancesCount > 0 ? `  ·  ${disturbancesCount} מטרדים` : ''}
+                  </Text>
+                </View>
               </View>
-              <Text style={styles.committeeTitle}>ניהול ועד הבית</Text>
-            </View>
-
-            <TouchableOpacity
-              style={styles.committeeMainBtn}
-              onPress={() => navigation.navigate("BuildingUpdates", { isCommittee: true })}
-            >
-              <Text style={styles.committeeMainBtnText}>ניהול ויצירת עדכוני בניין</Text>
-              <Zap size={16} color="#0f172a" />
+              <View style={[
+                styles.committeeChevron,
+                committeeExpanded && styles.committeeChevronOpen
+              ]}>
+                <ChevronDown size={18} color="#10b981" />
+              </View>
             </TouchableOpacity>
 
+            {/* ── Body – נפתח בלחיצה ── */}
+            {committeeExpanded && (
+              <View style={styles.committeeBody}>
 
-            <TouchableOpacity
-              style={styles.committeeSubBtn}
-              onPress={() => navigation.navigate("CommitteeRequests")}
-            >
-              <Text style={styles.committeeStatNum}>{requestsCount}</Text>
-              <Text style={styles.committeeStatLabel}>בקשות דיירים</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.committeeSubBtn, { marginTop: 12 }]}
-              onPress={() => navigation.navigate("CommitteeDisturbances")}
-            >
-              <Text style={[styles.committeeStatNum, { color: '#fb7185' }]}>{disturbancesCount}</Text>
-              <Text style={styles.committeeStatLabel}>דיווחי מטרדים</Text>
-            </TouchableOpacity>
+                {/* קבוצה 1 – דיירים ושוטף */}
+                <Text style={styles.committeeGroupLabel}>פעילות שוטפת</Text>
+                <View style={styles.committeeRow}>
+                  <TouchableOpacity
+                    style={[styles.cmBtn, { flex: 1 }]}
+                    onPress={() => navigation.navigate("CommitteeRequests")}
+                  >
+                    <ClipboardList size={18} color="#60a5fa" />
+                    <Text style={styles.cmBtnNum}>{requestsCount}</Text>
+                    <Text style={styles.cmBtnLabel}>בקשות{"\n"}דיירים</Text>
+                  </TouchableOpacity>
 
+                  <TouchableOpacity
+                    style={[styles.cmBtn, { flex: 1 }]}
+                    onPress={() => navigation.navigate("CommitteeDisturbances")}
+                  >
+                    <AlertTriangle size={18} color="#fb7185" />
+                    <Text style={[styles.cmBtnNum, { color: '#fb7185' }]}>{disturbancesCount}</Text>
+                    <Text style={styles.cmBtnLabel}>מטרדים{"\n"}פתוחים</Text>
+                  </TouchableOpacity>
 
+                  <TouchableOpacity
+                    style={[styles.cmBtn, { flex: 1 }]}
+                    onPress={() => navigation.navigate("CommitteePendingUsers", { buildingId: profile.building_id })}
+                  >
+                    <Clock size={18} color="#fcd34d" />
+                    <Text style={[styles.cmBtnNum, { color: '#fcd34d' }]}>!</Text>
+                    <Text style={styles.cmBtnLabel}>ממתינים{"\n"}לאישור</Text>
+                  </TouchableOpacity>
+                </View>
 
+                {/* קבוצה 2 – ניהול */}
+                <Text style={styles.committeeGroupLabel}>ניהול</Text>
+                <TouchableOpacity
+                  style={styles.cmRow}
+                  onPress={() => navigation.navigate("BuildingUpdates", { isCommittee: true })}
+                >
+                  <Zap size={16} color="#10b981" />
+                  <Text style={styles.cmRowText}>עדכוני בניין</Text>
+                  <ChevronLeft size={14} color="#475569" style={{ marginRight: 'auto' }} />
+                </TouchableOpacity>
 
+                <TouchableOpacity
+                  style={styles.cmRow}
+                  onPress={() => navigation.navigate("BuildingRules", { user, isCommittee })}
+                >
+                  <FileText size={16} color="#10b981" />
+                  <Text style={styles.cmRowText}>נהלים וחוקים</Text>
+                  <ChevronLeft size={14} color="#475569" style={{ marginRight: 'auto' }} />
+                </TouchableOpacity>
 
-            <TouchableOpacity
-              style={[styles.committeeMainBtn, { marginTop: 12 }]}
-              onPress={() =>
-                navigation.navigate("BuildingRules", {
-                  user,
-                  isCommittee,
-                })
-              }
-            >
-              <Text style={styles.committeeMainBtnText}>עריכת נהלים וחוקי שימוש</Text>
-              <FileText size={16} color="#0f172a" />
-            </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.cmRow}
+                  onPress={() => navigation.navigate("CommitteeProviders", { user, isCommittee })}
+                >
+                  <Wrench size={16} color="#10b981" />
+                  <Text style={styles.cmRowText}>ספקי שירות</Text>
+                  <ChevronLeft size={14} color="#475569" style={{ marginRight: 'auto' }} />
+                </TouchableOpacity>
 
+                <TouchableOpacity
+                  style={styles.cmRow}
+                  onPress={() => navigation.navigate("CommitteeInspections")}
+                >
+                  <Shield size={16} color="#10b981" />
+                  <Text style={styles.cmRowText}>ביקורות תקופתיות</Text>
+                  <ChevronLeft size={14} color="#475569" style={{ marginRight: 'auto' }} />
+                </TouchableOpacity>
 
-            <TouchableOpacity
-              style={styles.committeeMainBtn}
-              onPress={() =>
-                navigation.navigate("CommitteeProviders", {
-                  user,
-                  isCommittee,
-                })
-              }
-            >
-              <Text style={styles.committeeMainBtnText}>בחירת ספקים</Text>
-              <FileText size={16} color="#0f172a" />
-            </TouchableOpacity>
+                {/* קבוצה 3 – כספים */}
+                <Text style={styles.committeeGroupLabel}>כספים</Text>
+                <TouchableOpacity
+                  style={styles.cmRow}
+                  onPress={() => navigation.navigate("CommitteeMonthlyFee")}
+                >
+                  <DollarSign size={16} color="#34d399" />
+                  <Text style={styles.cmRowText}>קביעת סכום חודשי</Text>
+                  <ChevronLeft size={14} color="#475569" style={{ marginRight: 'auto' }} />
+                </TouchableOpacity>
 
+                <TouchableOpacity
+                  style={styles.cmRow}
+                  onPress={() => navigation.navigate("CommitteePaymentsManagement")}
+                >
+                  <Receipt size={16} color="#34d399" />
+                  <Text style={styles.cmRowText}>ניהול תשלומים וקופה</Text>
+                  <ChevronLeft size={14} color="#475569" style={{ marginRight: 'auto' }} />
+                </TouchableOpacity>
 
-            <TouchableOpacity
-              style={styles.forecastButton}
-              onPress={() => navigation.navigate("CommitteeWeeklyForecast")}
-            >
-              <Text style={styles.forecastButtonText}>
-                📊 תחזית תקלות שבועית
-              </Text>
-            </TouchableOpacity>
+                {/* קבוצה 4 – ניתוחים */}
+                <Text style={styles.committeeGroupLabel}>ניתוחים</Text>
+                <TouchableOpacity
+                  style={styles.cmRow}
+                  onPress={() => navigation.navigate("CommitteeWeeklyForecast")}
+                >
+                  <BarChart2 size={16} color="#818cf8" />
+                  <Text style={styles.cmRowText}>תחזית תקלות שבועית</Text>
+                  <ChevronLeft size={14} color="#475569" style={{ marginRight: 'auto' }} />
+                </TouchableOpacity>
 
+                <TouchableOpacity
+                  style={styles.cmRow}
+                  onPress={() => navigation.navigate("CommitteeInsights")}
+                >
+                  <BarChart2 size={16} color="#818cf8" />
+                  <Text style={styles.cmRowText}>סטטיסטיקות ניהול</Text>
+                  <ChevronLeft size={14} color="#475569" style={{ marginRight: 'auto' }} />
+                </TouchableOpacity>
 
-
-            <TouchableOpacity
-              style={styles.forecastButton}
-              onPress={() => navigation.navigate("CommitteeInsights")}
-            >
-              <Text style={styles.forecastButtonText}>
-                📊 סטטיסטיקות ניהול הבניין
-              </Text>
-            </TouchableOpacity>
-
-
-            <TouchableOpacity
-              style={styles.forecastButton}
-              onPress={() => navigation.navigate("CommitteeInspections")}
-            >
-              <Text style={styles.forecastButtonText}>
-                🛡️ ביקורות תקופתיות
-              </Text>
-            </TouchableOpacity>
-
-
-
-
-            <TouchableOpacity
-              style={styles.forecastButton}
-              onPress={() => navigation.navigate("CommitteeMonthlyFee")}
-            >
-              <Text style={styles.forecastButtonText}>
-                💰 ניהול סכום חודשי
-              </Text>
-            </TouchableOpacity>
-
-            {/* ── כפתור ניהול תשלומים ── */}
-            <TouchableOpacity
-              style={styles.forecastButton}
-              onPress={() => navigation.navigate("CommitteePaymentsManagement")}
-            >
-              <Text style={styles.forecastButtonText}>
-                🧾 ניהול תשלומי ועד
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.forecastButton, { borderColor: '#f59e0b', backgroundColor: 'rgba(245, 158, 11, 0.1)' }]}
-              onPress={() => navigation.navigate("CommitteePendingUsers", { buildingId: profile.building_id })}
-            >
-              <Text style={[styles.forecastButtonText, { color: '#f59e0b' }]}>
-                ⏳ דיירים ממתינים לאישור
-              </Text>
-            </TouchableOpacity>
-
-
-
+              </View>
+            )}
           </View>
-
         )}
       </ScrollView>
 
@@ -736,9 +727,9 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   iconBtn: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
+    width: 36,
+    height: 36,
+    borderRadius: 10,
     backgroundColor: 'rgba(30, 41, 59, 0.5)',
     borderWidth: 1,
     borderColor: '#334155',
@@ -819,7 +810,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(51, 65, 85, 0.5)',
     borderRadius: RADIUS,
-    padding: SPACING,
+    padding: 12,
   },
   boxRow: {
     flexDirection: 'row-reverse',
@@ -827,9 +818,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   boxIconContainer: {
-    width: 56,
-    height: 56,
-    borderRadius: 16,
+    width: 44,
+    height: 44,
+    borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(148, 163, 184, 0.12)', // חדש
@@ -843,12 +834,12 @@ const styles = StyleSheet.create({
   },
   boxTitle: {
     color: '#f8fafc',
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '700',
   },
   boxSub: {
     color: '#94a3b8',
-    fontSize: 12,
+    fontSize: 11,
   },
   row: {
     flexDirection: 'row-reverse',
@@ -856,17 +847,24 @@ const styles = StyleSheet.create({
   },
   squareBox: {
     flex: 1,
-    aspectRatio: 1,
-    borderRadius: RADIUS,
-    padding: SPACING,
+    flexDirection: 'row-reverse',
+    alignItems: 'center',
+    borderRadius: 12,
+    paddingVertical: 14,
+    paddingHorizontal: 12,
     borderWidth: 1,
-    justifyContent: 'space-between',
-    alignItems: 'flex-end',
+    gap: 10,
+  },
+  squareBoxTitle: {
+    color: '#f8fafc',
+    fontSize: 14,
+    fontWeight: '800',
+    textAlign: 'right',
   },
   squareIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
+    width: 32,
+    height: 32,
+    borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -971,22 +969,110 @@ const styles = StyleSheet.create({
   },
 
 
-  forecastButton: {
-  backgroundColor: "#1e3a8a",
-  paddingVertical: 14,
-  paddingHorizontal: 16,
-  borderRadius: 12,
-  marginHorizontal: 16,
-  marginTop: 12,
-  alignItems: "center",
-  justifyContent: "center",
-},
+  // ── Accordion ועד הבית ─────────────────────────────────
+  committeeHeaderRow: {
+    flexDirection: 'row-reverse',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 8,
+    paddingHorizontal: 4,
+  },
+  committeeHeaderLeft: {
+    flexDirection: 'row-reverse',
+    alignItems: 'center',
+    gap: 10,
+  },
+  committeeSubtitle: {
+    color: '#475569',
+    fontSize: 11,
+    textAlign: 'right',
+    marginTop: 2,
+  },
+  committeeChevron: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: 'rgba(16,185,129,0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  committeeChevronOpen: {
+    transform: [{ rotate: '180deg' }],
+    backgroundColor: 'rgba(16,185,129,0.2)',
+  },
+  committeeBody: {
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(51,65,85,0.6)',
+    paddingTop: 12,
+  },
+  committeeGroupLabel: {
+    color: '#475569',
+    fontSize: 11,
+    fontWeight: '700',
+    textAlign: 'right',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginTop: 14,
+    marginBottom: 6,
+    paddingRight: 2,
+  },
+  committeeRow: {
+    flexDirection: 'row-reverse',
+    gap: 10,
+    marginBottom: 4,
+  },
+  cmBtn: {
+    backgroundColor: 'rgba(15,23,42,0.8)',
+    borderWidth: 1,
+    borderColor: '#1e293b',
+    borderRadius: 14,
+    padding: 12,
+    alignItems: 'center',
+    gap: 4,
+  },
+  cmBtnNum: {
+    color: '#60a5fa',
+    fontSize: 20,
+    fontWeight: '800',
+  },
+  cmBtnLabel: {
+    color: '#64748b',
+    fontSize: 10,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  cmRow: {
+    flexDirection: 'row-reverse',
+    alignItems: 'center',
+    gap: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 4,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(51,65,85,0.4)',
+  },
+  cmRowText: {
+    color: '#cbd5e1',
+    fontSize: 14,
+    fontWeight: '600',
+    flex: 1,
+    textAlign: 'right',
+  },
 
-forecastButtonText: {
-  color: "#f8fafc",
-  fontSize: 16,
-  fontWeight: "800",
-},
+  forecastButton: {
+    backgroundColor: "#1e3a8a",
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    marginHorizontal: 16,
+    marginTop: 12,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  forecastButtonText: {
+    color: "#f8fafc",
+    fontSize: 16,
+    fontWeight: "800",
+  },
 
   // ── chip קטן ליד השם (ועד בית בלבד) ───────────────────
   walletChip: {
