@@ -1,0 +1,781 @@
+﻿type,selected_severity,description,location,target_severity,model_text
+CLEANLINESS,LOW,צריך ניקיון רגיל בחדר מדרגות,במחסן,LOW,type_CLEANLINESS selected_LOW location_במחסן צריך ניקיון רגיל בחדר מדרגות
+SAFETY,HIGH,מרצפת מעט עקומה ללא סכנה מיידית זה קורה כבר כמה פעמים,במחסן,LOW,type_SAFETY selected_HIGH location_במחסן מרצפת מעט עקומה ללא סכנה מיידית זה קורה כבר כמה פעמים
+SAFETY,HIGH,עשן יוצא מחדר החשמל,ליד ארון החשמל,HIGH,type_SAFETY selected_HIGH location_ליד ארון החשמל עשן יוצא מחדר החשמל
+OTHER,MEDIUM,נדרש טיפול של ועד הבית בזמן הקרוב,בקומה 2,MEDIUM,type_OTHER selected_MEDIUM location_בקומה 2 נדרש טיפול של ועד הבית בזמן הקרוב
+OTHER,HIGH,אירוע חירום שדורש טיפול מיידי,,HIGH,type_OTHER selected_HIGH location_ אירוע חירום שדורש טיפול מיידי
+NOISE,HIGH,רעש חזק מאוד שמונע מדיירים לישון כבר כמה לילות נא לטפל בהקדם,בקומה 2,HIGH,type_NOISE selected_HIGH location_בקומה 2 רעש חזק מאוד שמונע מדיירים לישון כבר כמה לילות נא לטפל בהקדם
+NOISE,LOW,מישהו הזיז רהיטים לזמן קצר זה קורה כבר כמה פעמים,בחדר אשפה,LOW,type_NOISE selected_LOW location_בחדר אשפה מישהו הזיז רהיטים לזמן קצר זה קורה כבר כמה פעמים
+SAFETY,HIGH,זכוכית שבורה מסוכנת ליד הכניסה נא לטפל בהקדם,בכניסה לבניין,HIGH,type_SAFETY selected_HIGH location_בכניסה לבניין זכוכית שבורה מסוכנת ליד הכניסה נא לטפל בהקדם
+OTHER,HIGH,צריך לבדוק משהו לא דחוף נא לטפל בהקדם,בקומה 1,LOW,type_OTHER selected_HIGH location_בקומה 1 צריך לבדוק משהו לא דחוף נא לטפל בהקדם
+NOISE,LOW,שומעים מעט רעש מהשכנים במהלך היום,בקומה 5,LOW,type_NOISE selected_LOW location_בקומה 5 שומעים מעט רעש מהשכנים במהלך היום
+NOISE,LOW,רעש מתמשך מהחניה,בקומה 1,MEDIUM,type_NOISE selected_LOW location_בקומה 1 רעש מתמשך מהחניה
+OTHER,MEDIUM,בעיה שחוזרת כמה פעמים ודורשת טיפול,,MEDIUM,type_OTHER selected_MEDIUM location_ בעיה שחוזרת כמה פעמים ודורשת טיפול
+OTHER,MEDIUM,תקלה לא מסוכנת אבל מפריעה לדיירים הדיירים התלוננו על זה,בחדר אשפה,MEDIUM,type_OTHER selected_MEDIUM location_בחדר אשפה תקלה לא מסוכנת אבל מפריעה לדיירים הדיירים התלוננו על זה
+NOISE,HIGH,רעש חזק בלילה שמפריע לדיירים נא לטפל בהקדם,ליד ארון החשמל,MEDIUM,type_NOISE selected_HIGH location_ליד ארון החשמל רעש חזק בלילה שמפריע לדיירים נא לטפל בהקדם
+SAFETY,MEDIUM,מרצפת שבורה שעלולה לגרום לנפילה נא לטפל בהקדם,בגינה,MEDIUM,type_SAFETY selected_MEDIUM location_בגינה מרצפת שבורה שעלולה לגרום לנפילה נא לטפל בהקדם
+SAFETY,HIGH,זכוכית שבורה מסוכנת ליד הכניסה נא לטפל בהקדם,ליד המעלית,HIGH,type_SAFETY selected_HIGH location_ליד המעלית זכוכית שבורה מסוכנת ליד הכניסה נא לטפל בהקדם
+CLEANLINESS,HIGH,שקיות זבל נשארו ליד הכניסה זה קורה כבר כמה פעמים נא לטפל בהקדם,בלובי,MEDIUM,type_CLEANLINESS selected_HIGH location_בלובי שקיות זבל נשארו ליד הכניסה זה קורה כבר כמה פעמים נא לטפל בהקדם
+OTHER,LOW,תקלה לא מסוכנת אבל מפריעה לדיירים,בחדר מדרגות,MEDIUM,type_OTHER selected_LOW location_בחדר מדרגות תקלה לא מסוכנת אבל מפריעה לדיירים
+CLEANLINESS,LOW,לכלוך חמור שעלול לגרום לסכנה בריאותית,בחדר אשפה,HIGH,type_CLEANLINESS selected_LOW location_בחדר אשפה לכלוך חמור שעלול לגרום לסכנה בריאותית
+SAFETY,LOW,יש סכנת התחשמלות הדיירים התלוננו על זה,בקומה 5,HIGH,type_SAFETY selected_LOW location_בקומה 5 יש סכנת התחשמלות הדיירים התלוננו על זה
+SAFETY,HIGH,יש ריח שרוף ליד ארון החשמל,בגינה,HIGH,type_SAFETY selected_HIGH location_בגינה יש ריח שרוף ליד ארון החשמל
+SAFETY,LOW,מרצפת שבורה שעלולה לגרום לנפילה,,MEDIUM,type_SAFETY selected_LOW location_ מרצפת שבורה שעלולה לגרום לנפילה
+NOISE,HIGH,רעש חירום חזק מהחניה בשעות הלילה הדיירים התלוננו על זה,בקומה 5,HIGH,type_NOISE selected_HIGH location_בקומה 5 רעש חירום חזק מהחניה בשעות הלילה הדיירים התלוננו על זה
+OTHER,MEDIUM,תקלה שמשפיעה על כמה דיירים זה קורה כבר כמה פעמים,בגינה,MEDIUM,type_OTHER selected_MEDIUM location_בגינה תקלה שמשפיעה על כמה דיירים זה קורה כבר כמה פעמים
+SAFETY,HIGH,שריפה קטנה בלובי,בחדר מדרגות,HIGH,type_SAFETY selected_HIGH location_בחדר מדרגות שריפה קטנה בלובי
+CLEANLINESS,MEDIUM,צריך ניקיון רגיל בחדר מדרגות נא לטפל בהקדם הדיירים התלוננו על זה,בקומה 5,LOW,type_CLEANLINESS selected_MEDIUM location_בקומה 5 צריך ניקיון רגיל בחדר מדרגות נא לטפל בהקדם הדיירים התלוננו על זה
+OTHER,MEDIUM,תקלה לא מסוכנת אבל מפריעה לדיירים,בלובי,MEDIUM,type_OTHER selected_MEDIUM location_בלובי תקלה לא מסוכנת אבל מפריעה לדיירים
+CLEANLINESS,MEDIUM,שקיות זבל נשארו ליד הכניסה,בחדר מדרגות,MEDIUM,type_CLEANLINESS selected_MEDIUM location_בחדר מדרגות שקיות זבל נשארו ליד הכניסה
+SAFETY,LOW,חוטי חשמל חשופים ליד הכניסה זה קורה כבר כמה פעמים,ליד המעלית,HIGH,type_SAFETY selected_LOW location_ליד המעלית חוטי חשמל חשופים ליד הכניסה זה קורה כבר כמה פעמים
+SAFETY,LOW,דלת כניסה לא נסגרת ויש חשש ביטחוני,בחדר אשפה,MEDIUM,type_SAFETY selected_LOW location_בחדר אשפה דלת כניסה לא נסגרת ויש חשש ביטחוני
+CLEANLINESS,MEDIUM,יש הרבה אשפה בחדר אשפה וריח רע זה קורה כבר כמה פעמים נא לטפל בהקדם הדיירים התלוננו על זה,בלובי,MEDIUM,type_CLEANLINESS selected_MEDIUM location_בלובי יש הרבה אשפה בחדר אשפה וריח רע זה קורה כבר כמה פעמים נא לטפל בהקדם הדיירים התלוננו על זה
+NOISE,LOW,יש רעש חלש מדי פעם אבל לא דחוף,בקומה 1,LOW,type_NOISE selected_LOW location_בקומה 1 יש רעש חלש מדי פעם אבל לא דחוף
+CLEANLINESS,LOW,יש כמה ניירות על הרצפה,בחניה,LOW,type_CLEANLINESS selected_LOW location_בחניה יש כמה ניירות על הרצפה
+CLEANLINESS,MEDIUM,נזילה חזקה שגורמת להצפה נא לטפל בהקדם,ליד המעלית,HIGH,type_CLEANLINESS selected_MEDIUM location_ליד המעלית נזילה חזקה שגורמת להצפה נא לטפל בהקדם
+CLEANLINESS,MEDIUM,שקיות זבל נשארו ליד הכניסה זה קורה כבר כמה פעמים,ליד המעלית,MEDIUM,type_CLEANLINESS selected_MEDIUM location_ליד המעלית שקיות זבל נשארו ליד הכניסה זה קורה כבר כמה פעמים
+OTHER,MEDIUM,אירוע חירום שדורש טיפול מיידי הדיירים התלוננו על זה,בקומה 2,HIGH,type_OTHER selected_MEDIUM location_בקומה 2 אירוע חירום שדורש טיפול מיידי הדיירים התלוננו על זה
+OTHER,LOW,דיווח כללי ללא סכנה,בקומה 5,LOW,type_OTHER selected_LOW location_בקומה 5 דיווח כללי ללא סכנה
+OTHER,MEDIUM,בעיה שחוזרת כמה פעמים ודורשת טיפול,בקומה 2,MEDIUM,type_OTHER selected_MEDIUM location_בקומה 2 בעיה שחוזרת כמה פעמים ודורשת טיפול
+CLEANLINESS,LOW,יש כמה ניירות על הרצפה,בחדר אשפה,LOW,type_CLEANLINESS selected_LOW location_בחדר אשפה יש כמה ניירות על הרצפה
+SAFETY,HIGH,מעלית תקועה עם אנשים בפנים,,HIGH,type_SAFETY selected_HIGH location_ מעלית תקועה עם אנשים בפנים
+OTHER,LOW,יש בעיה קטנה שאפשר לטפל בה בהמשך,בקומה 2,LOW,type_OTHER selected_LOW location_בקומה 2 יש בעיה קטנה שאפשר לטפל בה בהמשך
+CLEANLINESS,HIGH,יש ריח לא נעים בלובי כבר יומיים,בקומה 5,MEDIUM,type_CLEANLINESS selected_HIGH location_בקומה 5 יש ריח לא נעים בלובי כבר יומיים
+NOISE,LOW,מישהו הזיז רהיטים לזמן קצר,,LOW,type_NOISE selected_LOW location_ מישהו הזיז רהיטים לזמן קצר
+OTHER,HIGH,בקשה כללית לבדיקה כשאפשר נא לטפל בהקדם,ליד ארון החשמל,LOW,type_OTHER selected_HIGH location_ליד ארון החשמל בקשה כללית לבדיקה כשאפשר נא לטפל בהקדם
+CLEANLINESS,HIGH,הצפה בחדר מדרגות ומים זורמים,בכניסה לבניין,HIGH,type_CLEANLINESS selected_HIGH location_בכניסה לבניין הצפה בחדר מדרגות ומים זורמים
+SAFETY,HIGH,חוטי חשמל חשופים ליד הכניסה,בקומה 5,HIGH,type_SAFETY selected_HIGH location_בקומה 5 חוטי חשמל חשופים ליד הכניסה
+OTHER,HIGH,בעיה חמורה שמסכנת דיירים נא לטפל בהקדם,בחדר אשפה,HIGH,type_OTHER selected_HIGH location_בחדר אשפה בעיה חמורה שמסכנת דיירים נא לטפל בהקדם
+NOISE,LOW,צעקות ורעש בחדר מדרגות נא לטפל בהקדם,בגינה,MEDIUM,type_NOISE selected_LOW location_בגינה צעקות ורעש בחדר מדרגות נא לטפל בהקדם
+CLEANLINESS,LOW,פח קטן לא רוקן אבל לא דחוף זה קורה כבר כמה פעמים,במחסן,LOW,type_CLEANLINESS selected_LOW location_במחסן פח קטן לא רוקן אבל לא דחוף זה קורה כבר כמה פעמים
+NOISE,LOW,מטרד רעש קיצוני ומתמשך זה קורה כבר כמה פעמים,בחדר אשפה,HIGH,type_NOISE selected_LOW location_בחדר אשפה מטרד רעש קיצוני ומתמשך זה קורה כבר כמה פעמים
+CLEANLINESS,HIGH,יש ריח לא נעים בלובי כבר יומיים,בחניה,MEDIUM,type_CLEANLINESS selected_HIGH location_בחניה יש ריח לא נעים בלובי כבר יומיים
+NOISE,LOW,מטרד רעש קיצוני ומתמשך,בחניה,HIGH,type_NOISE selected_LOW location_בחניה מטרד רעש קיצוני ומתמשך
+SAFETY,LOW,תאורה חלשה באזור הכניסה,,LOW,type_SAFETY selected_LOW location_ תאורה חלשה באזור הכניסה
+NOISE,HIGH,קולות חזקים של שבירה ואלימות מהדירה,בחדר מדרגות,HIGH,type_NOISE selected_HIGH location_בחדר מדרגות קולות חזקים של שבירה ואלימות מהדירה
+SAFETY,HIGH,מרצפת שבורה שעלולה לגרום לנפילה זה קורה כבר כמה פעמים,בגינה,MEDIUM,type_SAFETY selected_HIGH location_בגינה מרצפת שבורה שעלולה לגרום לנפילה זה קורה כבר כמה פעמים
+CLEANLINESS,MEDIUM,שקיות זבל נשארו ליד הכניסה,,MEDIUM,type_CLEANLINESS selected_MEDIUM location_ שקיות זבל נשארו ליד הכניסה
+SAFETY,HIGH,קיר או תקרה נראים לפני קריסה זה קורה כבר כמה פעמים הדיירים התלוננו על זה,,HIGH,type_SAFETY selected_HIGH location_ קיר או תקרה נראים לפני קריסה זה קורה כבר כמה פעמים הדיירים התלוננו על זה
+SAFETY,HIGH,יש סכנת התחשמלות,בחדר אשפה,HIGH,type_SAFETY selected_HIGH location_בחדר אשפה יש סכנת התחשמלות
+SAFETY,MEDIUM,מעקה רופף שצריך תיקון בהקדם,בקומה 1,MEDIUM,type_SAFETY selected_MEDIUM location_בקומה 1 מעקה רופף שצריך תיקון בהקדם
+CLEANLINESS,LOW,פח קטן לא רוקן אבל לא דחוף זה קורה כבר כמה פעמים,בלובי,LOW,type_CLEANLINESS selected_LOW location_בלובי פח קטן לא רוקן אבל לא דחוף זה קורה כבר כמה פעמים
+CLEANLINESS,MEDIUM,הצפה בחדר מדרגות ומים זורמים,בלובי,HIGH,type_CLEANLINESS selected_MEDIUM location_בלובי הצפה בחדר מדרגות ומים זורמים
+CLEANLINESS,MEDIUM,נזילה חזקה שגורמת להצפה הדיירים התלוננו על זה,בלובי,HIGH,type_CLEANLINESS selected_MEDIUM location_בלובי נזילה חזקה שגורמת להצפה הדיירים התלוננו על זה
+OTHER,HIGH,אירוע חריג שמצריך תגובה מיידית נא לטפל בהקדם,בחניה,HIGH,type_OTHER selected_HIGH location_בחניה אירוע חריג שמצריך תגובה מיידית נא לטפל בהקדם
+SAFETY,MEDIUM,דלת כניסה לא נסגרת ויש חשש ביטחוני,בקומה 1,MEDIUM,type_SAFETY selected_MEDIUM location_בקומה 1 דלת כניסה לא נסגרת ויש חשש ביטחוני
+CLEANLINESS,HIGH,אשפה מסוכנת מפוזרת בכניסה לבניין זה קורה כבר כמה פעמים,בחניה,HIGH,type_CLEANLINESS selected_HIGH location_בחניה אשפה מסוכנת מפוזרת בכניסה לבניין זה קורה כבר כמה פעמים
+NOISE,LOW,יש רעש חלש מדי פעם אבל לא דחוף נא לטפל בהקדם,,LOW,type_NOISE selected_LOW location_ יש רעש חלש מדי פעם אבל לא דחוף נא לטפל בהקדם
+CLEANLINESS,MEDIUM,יש הרבה אשפה בחדר אשפה וריח רע,בחניה,MEDIUM,type_CLEANLINESS selected_MEDIUM location_בחניה יש הרבה אשפה בחדר אשפה וריח רע
+CLEANLINESS,LOW,נזילה חזקה שגורמת להצפה זה קורה כבר כמה פעמים הדיירים התלוננו על זה,ליד המעלית,HIGH,type_CLEANLINESS selected_LOW location_ליד המעלית נזילה חזקה שגורמת להצפה זה קורה כבר כמה פעמים הדיירים התלוננו על זה
+OTHER,MEDIUM,תקלה לא מסוכנת אבל מפריעה לדיירים,ליד ארון החשמל,MEDIUM,type_OTHER selected_MEDIUM location_ליד ארון החשמל תקלה לא מסוכנת אבל מפריעה לדיירים
+SAFETY,HIGH,חוטי חשמל חשופים ליד הכניסה,בקומה 5,HIGH,type_SAFETY selected_HIGH location_בקומה 5 חוטי חשמל חשופים ליד הכניסה
+CLEANLINESS,MEDIUM,שקיות זבל נשארו ליד הכניסה הדיירים התלוננו על זה,בחדר מדרגות,MEDIUM,type_CLEANLINESS selected_MEDIUM location_בחדר מדרגות שקיות זבל נשארו ליד הכניסה הדיירים התלוננו על זה
+SAFETY,HIGH,מעלית תקועה עם אנשים בפנים נא לטפל בהקדם,בכניסה לבניין,HIGH,type_SAFETY selected_HIGH location_בכניסה לבניין מעלית תקועה עם אנשים בפנים נא לטפל בהקדם
+SAFETY,HIGH,מעלית תקועה עם אנשים בפנים נא לטפל בהקדם,בקומה 5,HIGH,type_SAFETY selected_HIGH location_בקומה 5 מעלית תקועה עם אנשים בפנים נא לטפל בהקדם
+CLEANLINESS,MEDIUM,יש קצת לכלוך בלובי,ליד המעלית,LOW,type_CLEANLINESS selected_MEDIUM location_ליד המעלית יש קצת לכלוך בלובי
+SAFETY,HIGH,ריח גז חזק בבניין נא לטפל בהקדם,בכניסה לבניין,HIGH,type_SAFETY selected_HIGH location_בכניסה לבניין ריח גז חזק בבניין נא לטפל בהקדם
+OTHER,LOW,דיווח כללי ללא סכנה זה קורה כבר כמה פעמים,בגינה,LOW,type_OTHER selected_LOW location_בגינה דיווח כללי ללא סכנה זה קורה כבר כמה פעמים
+NOISE,LOW,רעש קל מהחצר בשעות היום,בחדר מדרגות,LOW,type_NOISE selected_LOW location_בחדר מדרגות רעש קל מהחצר בשעות היום
+OTHER,HIGH,תקלה דחופה מאוד בבניין זה קורה כבר כמה פעמים,בחדר אשפה,HIGH,type_OTHER selected_HIGH location_בחדר אשפה תקלה דחופה מאוד בבניין זה קורה כבר כמה פעמים
+SAFETY,MEDIUM,תאורה לא עובדת בחדר מדרגות וזה מסוכן בלילה,ליד המעלית,MEDIUM,type_SAFETY selected_MEDIUM location_ליד המעלית תאורה לא עובדת בחדר מדרגות וזה מסוכן בלילה
+OTHER,LOW,בקשה כללית לבדיקה כשאפשר זה קורה כבר כמה פעמים,בחדר אשפה,LOW,type_OTHER selected_LOW location_בחדר אשפה בקשה כללית לבדיקה כשאפשר זה קורה כבר כמה פעמים
+NOISE,MEDIUM,מוזיקה חזקה מהדירה מעל כבר כמה שעות זה קורה כבר כמה פעמים נא לטפל בהקדם,בקומה 2,MEDIUM,type_NOISE selected_MEDIUM location_בקומה 2 מוזיקה חזקה מהדירה מעל כבר כמה שעות זה קורה כבר כמה פעמים נא לטפל בהקדם
+SAFETY,MEDIUM,דלת כניסה לא נסגרת ויש חשש ביטחוני נא לטפל בהקדם,בלובי,MEDIUM,type_SAFETY selected_MEDIUM location_בלובי דלת כניסה לא נסגרת ויש חשש ביטחוני נא לטפל בהקדם
+SAFETY,HIGH,עשן יוצא מחדר החשמל זה קורה כבר כמה פעמים נא לטפל בהקדם,ליד המעלית,HIGH,type_SAFETY selected_HIGH location_ליד המעלית עשן יוצא מחדר החשמל זה קורה כבר כמה פעמים נא לטפל בהקדם
+SAFETY,HIGH,ריח גז חזק בבניין,בכניסה לבניין,HIGH,type_SAFETY selected_HIGH location_בכניסה לבניין ריח גז חזק בבניין
+NOISE,MEDIUM,יש רעש חלש מדי פעם אבל לא דחוף הדיירים התלוננו על זה,בקומה 2,LOW,type_NOISE selected_MEDIUM location_בקומה 2 יש רעש חלש מדי פעם אבל לא דחוף הדיירים התלוננו על זה
+NOISE,HIGH,רעש חריג מאוד באמצע הלילה עם צעקות חזקות,בחדר מדרגות,HIGH,type_NOISE selected_HIGH location_בחדר מדרגות רעש חריג מאוד באמצע הלילה עם צעקות חזקות
+NOISE,HIGH,מטרד רעש קיצוני ומתמשך הדיירים התלוננו על זה,,HIGH,type_NOISE selected_HIGH location_ מטרד רעש קיצוני ומתמשך הדיירים התלוננו על זה
+SAFETY,LOW,דלת המחסן לא נסגרת טוב נא לטפל בהקדם הדיירים התלוננו על זה,ליד ארון החשמל,LOW,type_SAFETY selected_LOW location_ליד ארון החשמל דלת המחסן לא נסגרת טוב נא לטפל בהקדם הדיירים התלוננו על זה
+SAFETY,HIGH,עשן יוצא מחדר החשמל,,HIGH,type_SAFETY selected_HIGH location_ עשן יוצא מחדר החשמל
+OTHER,MEDIUM,דיווח כללי ללא סכנה,בקומה 2,LOW,type_OTHER selected_MEDIUM location_בקומה 2 דיווח כללי ללא סכנה
+OTHER,HIGH,נדרש טיפול של ועד הבית בזמן הקרוב נא לטפל בהקדם,בחדר מדרגות,MEDIUM,type_OTHER selected_HIGH location_בחדר מדרגות נדרש טיפול של ועד הבית בזמן הקרוב נא לטפל בהקדם
+OTHER,HIGH,אירוע חריג שמצריך תגובה מיידית זה קורה כבר כמה פעמים,,HIGH,type_OTHER selected_HIGH location_ אירוע חריג שמצריך תגובה מיידית זה קורה כבר כמה פעמים
+NOISE,MEDIUM,מוזיקה חזקה מהדירה מעל כבר כמה שעות זה קורה כבר כמה פעמים,ליד ארון החשמל,MEDIUM,type_NOISE selected_MEDIUM location_ליד ארון החשמל מוזיקה חזקה מהדירה מעל כבר כמה שעות זה קורה כבר כמה פעמים
+SAFETY,LOW,יש בורג חסר בשלט של הבניין זה קורה כבר כמה פעמים,בחדר אשפה,LOW,type_SAFETY selected_LOW location_בחדר אשפה יש בורג חסר בשלט של הבניין זה קורה כבר כמה פעמים
+SAFETY,LOW,מעקה רופף שצריך תיקון בהקדם,במחסן,MEDIUM,type_SAFETY selected_LOW location_במחסן מעקה רופף שצריך תיקון בהקדם
+NOISE,HIGH,רעש חירום חזק מהחניה בשעות הלילה,בחדר מדרגות,HIGH,type_NOISE selected_HIGH location_בחדר מדרגות רעש חירום חזק מהחניה בשעות הלילה
+SAFETY,MEDIUM,דלת כניסה לא נסגרת ויש חשש ביטחוני זה קורה כבר כמה פעמים,בחניה,MEDIUM,type_SAFETY selected_MEDIUM location_בחניה דלת כניסה לא נסגרת ויש חשש ביטחוני זה קורה כבר כמה פעמים
+SAFETY,LOW,מרצפת מעט עקומה ללא סכנה מיידית,ליד ארון החשמל,LOW,type_SAFETY selected_LOW location_ליד ארון החשמל מרצפת מעט עקומה ללא סכנה מיידית
+CLEANLINESS,HIGH,לכלוך חריג בחדר מדרגות,בקומה 1,MEDIUM,type_CLEANLINESS selected_HIGH location_בקומה 1 לכלוך חריג בחדר מדרגות
+CLEANLINESS,MEDIUM,נזילה קטנה שגרמה לרטיבות בקיר,במחסן,MEDIUM,type_CLEANLINESS selected_MEDIUM location_במחסן נזילה קטנה שגרמה לרטיבות בקיר
+CLEANLINESS,LOW,אשפה מסוכנת מפוזרת בכניסה לבניין,בחניה,HIGH,type_CLEANLINESS selected_LOW location_בחניה אשפה מסוכנת מפוזרת בכניסה לבניין
+OTHER,HIGH,תקלה דחופה מאוד בבניין זה קורה כבר כמה פעמים,בחדר אשפה,HIGH,type_OTHER selected_HIGH location_בחדר אשפה תקלה דחופה מאוד בבניין זה קורה כבר כמה פעמים
+NOISE,HIGH,רעש חזק בלילה שמפריע לדיירים,ליד ארון החשמל,MEDIUM,type_NOISE selected_HIGH location_ליד ארון החשמל רעש חזק בלילה שמפריע לדיירים
+SAFETY,MEDIUM,תאורה לא עובדת בחדר מדרגות וזה מסוכן בלילה,,MEDIUM,type_SAFETY selected_MEDIUM location_ תאורה לא עובדת בחדר מדרגות וזה מסוכן בלילה
+NOISE,LOW,יש רעש חלש מדי פעם אבל לא דחוף,בקומה 1,LOW,type_NOISE selected_LOW location_בקומה 1 יש רעש חלש מדי פעם אבל לא דחוף
+CLEANLINESS,HIGH,לכלוך חמור שעלול לגרום לסכנה בריאותית,בקומה 1,HIGH,type_CLEANLINESS selected_HIGH location_בקומה 1 לכלוך חמור שעלול לגרום לסכנה בריאותית
+CLEANLINESS,HIGH,ביוב עולה ויש ריח חריף מאוד,במחסן,HIGH,type_CLEANLINESS selected_HIGH location_במחסן ביוב עולה ויש ריח חריף מאוד
+CLEANLINESS,LOW,פח קטן לא רוקן אבל לא דחוף זה קורה כבר כמה פעמים,ליד המעלית,LOW,type_CLEANLINESS selected_LOW location_ליד המעלית פח קטן לא רוקן אבל לא דחוף זה קורה כבר כמה פעמים
+OTHER,HIGH,בעיה חמורה שמסכנת דיירים,במחסן,HIGH,type_OTHER selected_HIGH location_במחסן בעיה חמורה שמסכנת דיירים
+OTHER,LOW,בקשה כללית לבדיקה כשאפשר,ליד ארון החשמל,LOW,type_OTHER selected_LOW location_ליד ארון החשמל בקשה כללית לבדיקה כשאפשר
+OTHER,LOW,יש בעיה קטנה שאפשר לטפל בה בהמשך זה קורה כבר כמה פעמים,ליד המעלית,LOW,type_OTHER selected_LOW location_ליד המעלית יש בעיה קטנה שאפשר לטפל בה בהמשך זה קורה כבר כמה פעמים
+CLEANLINESS,LOW,יש קצת לכלוך בלובי הדיירים התלוננו על זה,בקומה 1,LOW,type_CLEANLINESS selected_LOW location_בקומה 1 יש קצת לכלוך בלובי הדיירים התלוננו על זה
+CLEANLINESS,HIGH,אשפה מסוכנת מפוזרת בכניסה לבניין,בקומה 1,HIGH,type_CLEANLINESS selected_HIGH location_בקומה 1 אשפה מסוכנת מפוזרת בכניסה לבניין
+OTHER,MEDIUM,בעיה שחוזרת כמה פעמים ודורשת טיפול זה קורה כבר כמה פעמים,,MEDIUM,type_OTHER selected_MEDIUM location_ בעיה שחוזרת כמה פעמים ודורשת טיפול זה קורה כבר כמה פעמים
+NOISE,MEDIUM,צעקות ורעש בחדר מדרגות זה קורה כבר כמה פעמים הדיירים התלוננו על זה,בחדר אשפה,MEDIUM,type_NOISE selected_MEDIUM location_בחדר אשפה צעקות ורעש בחדר מדרגות זה קורה כבר כמה פעמים הדיירים התלוננו על זה
+SAFETY,LOW,תאורה חלשה באזור הכניסה,בקומה 5,LOW,type_SAFETY selected_LOW location_בקומה 5 תאורה חלשה באזור הכניסה
+OTHER,MEDIUM,יש הערה קטנה לגבי תחזוקה נא לטפל בהקדם הדיירים התלוננו על זה,ליד ארון החשמל,LOW,type_OTHER selected_MEDIUM location_ליד ארון החשמל יש הערה קטנה לגבי תחזוקה נא לטפל בהקדם הדיירים התלוננו על זה
+SAFETY,LOW,מרצפת מעט עקומה ללא סכנה מיידית,ליד ארון החשמל,LOW,type_SAFETY selected_LOW location_ליד ארון החשמל מרצפת מעט עקומה ללא סכנה מיידית
+NOISE,MEDIUM,רעש מתמשך מהחניה זה קורה כבר כמה פעמים,בקומה 1,MEDIUM,type_NOISE selected_MEDIUM location_בקומה 1 רעש מתמשך מהחניה זה קורה כבר כמה פעמים
+CLEANLINESS,LOW,יש מעט אבק ליד הכניסה,,LOW,type_CLEANLINESS selected_LOW location_ יש מעט אבק ליד הכניסה
+CLEANLINESS,MEDIUM,לכלוך חריג בחדר מדרגות זה קורה כבר כמה פעמים נא לטפל בהקדם,בחניה,MEDIUM,type_CLEANLINESS selected_MEDIUM location_בחניה לכלוך חריג בחדר מדרגות זה קורה כבר כמה פעמים נא לטפל בהקדם
+SAFETY,MEDIUM,דלת כניסה לא נסגרת ויש חשש ביטחוני נא לטפל בהקדם,בחדר אשפה,MEDIUM,type_SAFETY selected_MEDIUM location_בחדר אשפה דלת כניסה לא נסגרת ויש חשש ביטחוני נא לטפל בהקדם
+OTHER,HIGH,אירוע חירום שדורש טיפול מיידי זה קורה כבר כמה פעמים,ליד ארון החשמל,HIGH,type_OTHER selected_HIGH location_ליד ארון החשמל אירוע חירום שדורש טיפול מיידי זה קורה כבר כמה פעמים
+OTHER,MEDIUM,תקלה לא מסוכנת אבל מפריעה לדיירים,,MEDIUM,type_OTHER selected_MEDIUM location_ תקלה לא מסוכנת אבל מפריעה לדיירים
+SAFETY,MEDIUM,מרצפת שבורה שעלולה לגרום לנפילה,בקומה 2,MEDIUM,type_SAFETY selected_MEDIUM location_בקומה 2 מרצפת שבורה שעלולה לגרום לנפילה
+SAFETY,MEDIUM,עשן יוצא מחדר החשמל,בלובי,HIGH,type_SAFETY selected_MEDIUM location_בלובי עשן יוצא מחדר החשמל
+SAFETY,LOW,דלת המחסן לא נסגרת טוב,,LOW,type_SAFETY selected_LOW location_ דלת המחסן לא נסגרת טוב
+NOISE,LOW,רעש קל מהחצר בשעות היום,בגינה,LOW,type_NOISE selected_LOW location_בגינה רעש קל מהחצר בשעות היום
+NOISE,MEDIUM,שיפוצים מרעישים בשעות לא מתאימות זה קורה כבר כמה פעמים,ליד ארון החשמל,MEDIUM,type_NOISE selected_MEDIUM location_ליד ארון החשמל שיפוצים מרעישים בשעות לא מתאימות זה קורה כבר כמה פעמים
+SAFETY,HIGH,יש ניצוצות מארון החשמל בלובי,ליד המעלית,HIGH,type_SAFETY selected_HIGH location_ליד המעלית יש ניצוצות מארון החשמל בלובי
+SAFETY,MEDIUM,מרצפת מעט עקומה ללא סכנה מיידית זה קורה כבר כמה פעמים,בכניסה לבניין,LOW,type_SAFETY selected_MEDIUM location_בכניסה לבניין מרצפת מעט עקומה ללא סכנה מיידית זה קורה כבר כמה פעמים
+CLEANLINESS,LOW,יש מעט אבק ליד הכניסה,בקומה 2,LOW,type_CLEANLINESS selected_LOW location_בקומה 2 יש מעט אבק ליד הכניסה
+SAFETY,MEDIUM,יש ניצוצות מארון החשמל בלובי נא לטפל בהקדם הדיירים התלוננו על זה,בקומה 2,HIGH,type_SAFETY selected_MEDIUM location_בקומה 2 יש ניצוצות מארון החשמל בלובי נא לטפל בהקדם הדיירים התלוננו על זה
+CLEANLINESS,LOW,יש קצת לכלוך בלובי,ליד ארון החשמל,LOW,type_CLEANLINESS selected_LOW location_ליד ארון החשמל יש קצת לכלוך בלובי
+OTHER,MEDIUM,בעיה חמורה שמסכנת דיירים,בגינה,HIGH,type_OTHER selected_MEDIUM location_בגינה בעיה חמורה שמסכנת דיירים
+NOISE,LOW,מוזיקה חזקה מהדירה מעל כבר כמה שעות הדיירים התלוננו על זה,בכניסה לבניין,MEDIUM,type_NOISE selected_LOW location_בכניסה לבניין מוזיקה חזקה מהדירה מעל כבר כמה שעות הדיירים התלוננו על זה
+NOISE,LOW,מישהו הזיז רהיטים לזמן קצר הדיירים התלוננו על זה,בלובי,LOW,type_NOISE selected_LOW location_בלובי מישהו הזיז רהיטים לזמן קצר הדיירים התלוננו על זה
+OTHER,MEDIUM,אירוע חירום שדורש טיפול מיידי,בקומה 2,HIGH,type_OTHER selected_MEDIUM location_בקומה 2 אירוע חירום שדורש טיפול מיידי
+OTHER,HIGH,בעיה חמורה שמסכנת דיירים,במחסן,HIGH,type_OTHER selected_HIGH location_במחסן בעיה חמורה שמסכנת דיירים
+OTHER,MEDIUM,תקלה שמשפיעה על כמה דיירים,בקומה 2,MEDIUM,type_OTHER selected_MEDIUM location_בקומה 2 תקלה שמשפיעה על כמה דיירים
+SAFETY,MEDIUM,עשן יוצא מחדר החשמל,,HIGH,type_SAFETY selected_MEDIUM location_ עשן יוצא מחדר החשמל
+SAFETY,MEDIUM,מרצפת שבורה שעלולה לגרום לנפילה הדיירים התלוננו על זה,,MEDIUM,type_SAFETY selected_MEDIUM location_ מרצפת שבורה שעלולה לגרום לנפילה הדיירים התלוננו על זה
+OTHER,MEDIUM,יש הערה קטנה לגבי תחזוקה הדיירים התלוננו על זה,בקומה 5,LOW,type_OTHER selected_MEDIUM location_בקומה 5 יש הערה קטנה לגבי תחזוקה הדיירים התלוננו על זה
+CLEANLINESS,LOW,צריך ניקיון רגיל בחדר מדרגות הדיירים התלוננו על זה,ליד המעלית,LOW,type_CLEANLINESS selected_LOW location_ליד המעלית צריך ניקיון רגיל בחדר מדרגות הדיירים התלוננו על זה
+OTHER,HIGH,מצב מסוכן שמצריך טיפול בהול נא לטפל בהקדם,בקומה 1,HIGH,type_OTHER selected_HIGH location_בקומה 1 מצב מסוכן שמצריך טיפול בהול נא לטפל בהקדם
+NOISE,HIGH,קולות חזקים של שבירה ואלימות מהדירה,במחסן,HIGH,type_NOISE selected_HIGH location_במחסן קולות חזקים של שבירה ואלימות מהדירה
+CLEANLINESS,HIGH,ביוב עולה ויש ריח חריף מאוד זה קורה כבר כמה פעמים,בקומה 2,HIGH,type_CLEANLINESS selected_HIGH location_בקומה 2 ביוב עולה ויש ריח חריף מאוד זה קורה כבר כמה פעמים
+SAFETY,LOW,תאורה חלשה באזור הכניסה,,LOW,type_SAFETY selected_LOW location_ תאורה חלשה באזור הכניסה
+SAFETY,HIGH,יש ניצוצות מארון החשמל בלובי זה קורה כבר כמה פעמים,במחסן,HIGH,type_SAFETY selected_HIGH location_במחסן יש ניצוצות מארון החשמל בלובי זה קורה כבר כמה פעמים
+OTHER,LOW,דיווח כללי ללא סכנה נא לטפל בהקדם,בקומה 2,LOW,type_OTHER selected_LOW location_בקומה 2 דיווח כללי ללא סכנה נא לטפל בהקדם
+SAFETY,LOW,מעקה מעט רופף אבל לא נראה מסוכן כרגע,בקומה 2,LOW,type_SAFETY selected_LOW location_בקומה 2 מעקה מעט רופף אבל לא נראה מסוכן כרגע
+CLEANLINESS,HIGH,נזילה חזקה שגורמת להצפה,ליד המעלית,HIGH,type_CLEANLINESS selected_HIGH location_ליד המעלית נזילה חזקה שגורמת להצפה
+OTHER,MEDIUM,תקלה דחופה מאוד בבניין,ליד המעלית,HIGH,type_OTHER selected_MEDIUM location_ליד המעלית תקלה דחופה מאוד בבניין
+OTHER,MEDIUM,תקלה שמשפיעה על כמה דיירים זה קורה כבר כמה פעמים נא לטפל בהקדם,בקומה 1,MEDIUM,type_OTHER selected_MEDIUM location_בקומה 1 תקלה שמשפיעה על כמה דיירים זה קורה כבר כמה פעמים נא לטפל בהקדם
+SAFETY,LOW,יש בורג חסר בשלט של הבניין זה קורה כבר כמה פעמים,,LOW,type_SAFETY selected_LOW location_ יש בורג חסר בשלט של הבניין זה קורה כבר כמה פעמים
+OTHER,MEDIUM,נדרש טיפול של ועד הבית בזמן הקרוב,בקומה 2,MEDIUM,type_OTHER selected_MEDIUM location_בקומה 2 נדרש טיפול של ועד הבית בזמן הקרוב
+OTHER,MEDIUM,נדרש טיפול של ועד הבית בזמן הקרוב,בחדר מדרגות,MEDIUM,type_OTHER selected_MEDIUM location_בחדר מדרגות נדרש טיפול של ועד הבית בזמן הקרוב
+SAFETY,HIGH,שריפה קטנה בלובי,בקומה 2,HIGH,type_SAFETY selected_HIGH location_בקומה 2 שריפה קטנה בלובי
+SAFETY,MEDIUM,יש ריח שרוף ליד ארון החשמל,בחדר מדרגות,HIGH,type_SAFETY selected_MEDIUM location_בחדר מדרגות יש ריח שרוף ליד ארון החשמל
+SAFETY,LOW,מעלית תקועה עם אנשים בפנים זה קורה כבר כמה פעמים,בקומה 1,HIGH,type_SAFETY selected_LOW location_בקומה 1 מעלית תקועה עם אנשים בפנים זה קורה כבר כמה פעמים
+NOISE,LOW,מישהו הזיז רהיטים לזמן קצר הדיירים התלוננו על זה,,LOW,type_NOISE selected_LOW location_ מישהו הזיז רהיטים לזמן קצר הדיירים התלוננו על זה
+SAFETY,HIGH,תאורה חלשה באזור הכניסה נא לטפל בהקדם,בכניסה לבניין,LOW,type_SAFETY selected_HIGH location_בכניסה לבניין תאורה חלשה באזור הכניסה נא לטפל בהקדם
+CLEANLINESS,LOW,צריך ניקיון רגיל בחדר מדרגות זה קורה כבר כמה פעמים,ליד ארון החשמל,LOW,type_CLEANLINESS selected_LOW location_ליד ארון החשמל צריך ניקיון רגיל בחדר מדרגות זה קורה כבר כמה פעמים
+NOISE,LOW,יש דיבורים בקומה אבל זה לא מפריע מאוד זה קורה כבר כמה פעמים הדיירים התלוננו על זה,בקומה 2,LOW,type_NOISE selected_LOW location_בקומה 2 יש דיבורים בקומה אבל זה לא מפריע מאוד זה קורה כבר כמה פעמים הדיירים התלוננו על זה
+OTHER,HIGH,בעיה חמורה שמסכנת דיירים,ליד ארון החשמל,HIGH,type_OTHER selected_HIGH location_ליד ארון החשמל בעיה חמורה שמסכנת דיירים
+OTHER,HIGH,אירוע חירום שדורש טיפול מיידי הדיירים התלוננו על זה,בחדר אשפה,HIGH,type_OTHER selected_HIGH location_בחדר אשפה אירוע חירום שדורש טיפול מיידי הדיירים התלוננו על זה
+SAFETY,MEDIUM,יש ונדליזם ליד המעלית,ליד ארון החשמל,MEDIUM,type_SAFETY selected_MEDIUM location_ליד ארון החשמל יש ונדליזם ליד המעלית
+NOISE,HIGH,רעש חירום חזק מהחניה בשעות הלילה,בחדר אשפה,HIGH,type_NOISE selected_HIGH location_בחדר אשפה רעש חירום חזק מהחניה בשעות הלילה
+SAFETY,MEDIUM,יש סכנת התחשמלות זה קורה כבר כמה פעמים,בחדר מדרגות,HIGH,type_SAFETY selected_MEDIUM location_בחדר מדרגות יש סכנת התחשמלות זה קורה כבר כמה פעמים
+CLEANLINESS,MEDIUM,שקיות זבל נשארו ליד הכניסה,בגינה,MEDIUM,type_CLEANLINESS selected_MEDIUM location_בגינה שקיות זבל נשארו ליד הכניסה
+NOISE,MEDIUM,רעש חזק בלילה שמפריע לדיירים,בחדר אשפה,MEDIUM,type_NOISE selected_MEDIUM location_בחדר אשפה רעש חזק בלילה שמפריע לדיירים
+CLEANLINESS,MEDIUM,יש הרבה אשפה בחדר אשפה וריח רע,בגינה,MEDIUM,type_CLEANLINESS selected_MEDIUM location_בגינה יש הרבה אשפה בחדר אשפה וריח רע
+OTHER,HIGH,אירוע חריג שמצריך תגובה מיידית,בחדר אשפה,HIGH,type_OTHER selected_HIGH location_בחדר אשפה אירוע חריג שמצריך תגובה מיידית
+OTHER,HIGH,תקלה דחופה מאוד בבניין זה קורה כבר כמה פעמים נא לטפל בהקדם,בלובי,HIGH,type_OTHER selected_HIGH location_בלובי תקלה דחופה מאוד בבניין זה קורה כבר כמה פעמים נא לטפל בהקדם
+CLEANLINESS,LOW,אשפה מסוכנת מפוזרת בכניסה לבניין זה קורה כבר כמה פעמים,בלובי,HIGH,type_CLEANLINESS selected_LOW location_בלובי אשפה מסוכנת מפוזרת בכניסה לבניין זה קורה כבר כמה פעמים
+OTHER,MEDIUM,תקלה לא מסוכנת אבל מפריעה לדיירים,במחסן,MEDIUM,type_OTHER selected_MEDIUM location_במחסן תקלה לא מסוכנת אבל מפריעה לדיירים
+NOISE,MEDIUM,קולות חזקים של שבירה ואלימות מהדירה נא לטפל בהקדם,בחדר אשפה,HIGH,type_NOISE selected_MEDIUM location_בחדר אשפה קולות חזקים של שבירה ואלימות מהדירה נא לטפל בהקדם
+CLEANLINESS,MEDIUM,יש ריח לא נעים בלובי כבר יומיים הדיירים התלוננו על זה,בקומה 2,MEDIUM,type_CLEANLINESS selected_MEDIUM location_בקומה 2 יש ריח לא נעים בלובי כבר יומיים הדיירים התלוננו על זה
+OTHER,LOW,מצב מסוכן שמצריך טיפול בהול,בקומה 5,HIGH,type_OTHER selected_LOW location_בקומה 5 מצב מסוכן שמצריך טיפול בהול
+SAFETY,HIGH,עשן יוצא מחדר החשמל נא לטפל בהקדם,בחדר אשפה,HIGH,type_SAFETY selected_HIGH location_בחדר אשפה עשן יוצא מחדר החשמל נא לטפל בהקדם
+NOISE,LOW,יש רעש חלש מדי פעם אבל לא דחוף זה קורה כבר כמה פעמים נא לטפל בהקדם,בקומה 2,LOW,type_NOISE selected_LOW location_בקומה 2 יש רעש חלש מדי פעם אבל לא דחוף זה קורה כבר כמה פעמים נא לטפל בהקדם
+SAFETY,MEDIUM,תאורה לא עובדת בחדר מדרגות וזה מסוכן בלילה,בחדר אשפה,MEDIUM,type_SAFETY selected_MEDIUM location_בחדר אשפה תאורה לא עובדת בחדר מדרגות וזה מסוכן בלילה
+OTHER,HIGH,בקשה כללית לבדיקה כשאפשר זה קורה כבר כמה פעמים הדיירים התלוננו על זה,בחדר מדרגות,LOW,type_OTHER selected_HIGH location_בחדר מדרגות בקשה כללית לבדיקה כשאפשר זה קורה כבר כמה פעמים הדיירים התלוננו על זה
+NOISE,LOW,יש דיבורים בקומה אבל זה לא מפריע מאוד,בחדר אשפה,LOW,type_NOISE selected_LOW location_בחדר אשפה יש דיבורים בקומה אבל זה לא מפריע מאוד
+CLEANLINESS,LOW,צריך ניקיון רגיל בחדר מדרגות נא לטפל בהקדם,ליד ארון החשמל,LOW,type_CLEANLINESS selected_LOW location_ליד ארון החשמל צריך ניקיון רגיל בחדר מדרגות נא לטפל בהקדם
+SAFETY,HIGH,עשן יוצא מחדר החשמל נא לטפל בהקדם,בחדר אשפה,HIGH,type_SAFETY selected_HIGH location_בחדר אשפה עשן יוצא מחדר החשמל נא לטפל בהקדם
+NOISE,HIGH,רעש חזק מאוד שמונע מדיירים לישון כבר כמה לילות זה קורה כבר כמה פעמים הדיירים התלוננו על זה,בחדר מדרגות,HIGH,type_NOISE selected_HIGH location_בחדר מדרגות רעש חזק מאוד שמונע מדיירים לישון כבר כמה לילות זה קורה כבר כמה פעמים הדיירים התלוננו על זה
+OTHER,HIGH,בעיה חמורה שמסכנת דיירים נא לטפל בהקדם,במחסן,HIGH,type_OTHER selected_HIGH location_במחסן בעיה חמורה שמסכנת דיירים נא לטפל בהקדם
+SAFETY,LOW,מעקה מעט רופף אבל לא נראה מסוכן כרגע נא לטפל בהקדם,בגינה,LOW,type_SAFETY selected_LOW location_בגינה מעקה מעט רופף אבל לא נראה מסוכן כרגע נא לטפל בהקדם
+SAFETY,MEDIUM,מעקה רופף שצריך תיקון בהקדם זה קורה כבר כמה פעמים,ליד המעלית,MEDIUM,type_SAFETY selected_MEDIUM location_ליד המעלית מעקה רופף שצריך תיקון בהקדם זה קורה כבר כמה פעמים
+OTHER,MEDIUM,בעיה חמורה שמסכנת דיירים זה קורה כבר כמה פעמים,בגינה,HIGH,type_OTHER selected_MEDIUM location_בגינה בעיה חמורה שמסכנת דיירים זה קורה כבר כמה פעמים
+SAFETY,HIGH,מעלית תקועה עם אנשים בפנים,ליד המעלית,HIGH,type_SAFETY selected_HIGH location_ליד המעלית מעלית תקועה עם אנשים בפנים
+OTHER,LOW,דיווח כללי ללא סכנה,במחסן,LOW,type_OTHER selected_LOW location_במחסן דיווח כללי ללא סכנה
+CLEANLINESS,LOW,לכלוך חמור שעלול לגרום לסכנה בריאותית הדיירים התלוננו על זה,בלובי,HIGH,type_CLEANLINESS selected_LOW location_בלובי לכלוך חמור שעלול לגרום לסכנה בריאותית הדיירים התלוננו על זה
+CLEANLINESS,LOW,יש כמה ניירות על הרצפה נא לטפל בהקדם,בחניה,LOW,type_CLEANLINESS selected_LOW location_בחניה יש כמה ניירות על הרצפה נא לטפל בהקדם
+SAFETY,MEDIUM,מעקה מעט רופף אבל לא נראה מסוכן כרגע,במחסן,LOW,type_SAFETY selected_MEDIUM location_במחסן מעקה מעט רופף אבל לא נראה מסוכן כרגע
+SAFETY,MEDIUM,יש ריח שרוף ליד ארון החשמל נא לטפל בהקדם הדיירים התלוננו על זה,בקומה 2,HIGH,type_SAFETY selected_MEDIUM location_בקומה 2 יש ריח שרוף ליד ארון החשמל נא לטפל בהקדם הדיירים התלוננו על זה
+SAFETY,MEDIUM,יש בורג חסר בשלט של הבניין,בקומה 2,LOW,type_SAFETY selected_MEDIUM location_בקומה 2 יש בורג חסר בשלט של הבניין
+SAFETY,MEDIUM,מעלית תקועה עם אנשים בפנים,בחדר אשפה,HIGH,type_SAFETY selected_MEDIUM location_בחדר אשפה מעלית תקועה עם אנשים בפנים
+NOISE,HIGH,שומעים מעט רעש מהשכנים במהלך היום זה קורה כבר כמה פעמים הדיירים התלוננו על זה,בחדר מדרגות,LOW,type_NOISE selected_HIGH location_בחדר מדרגות שומעים מעט רעש מהשכנים במהלך היום זה קורה כבר כמה פעמים הדיירים התלוננו על זה
+OTHER,MEDIUM,מצב מסוכן שמצריך טיפול בהול,במחסן,HIGH,type_OTHER selected_MEDIUM location_במחסן מצב מסוכן שמצריך טיפול בהול
+OTHER,HIGH,אירוע חירום שדורש טיפול מיידי הדיירים התלוננו על זה,בקומה 2,HIGH,type_OTHER selected_HIGH location_בקומה 2 אירוע חירום שדורש טיפול מיידי הדיירים התלוננו על זה
+OTHER,HIGH,אירוע חירום שדורש טיפול מיידי,בגינה,HIGH,type_OTHER selected_HIGH location_בגינה אירוע חירום שדורש טיפול מיידי
+SAFETY,HIGH,יש ניצוצות מארון החשמל בלובי,בלובי,HIGH,type_SAFETY selected_HIGH location_בלובי יש ניצוצות מארון החשמל בלובי
+NOISE,LOW,יש רעש חלש מדי פעם אבל לא דחוף נא לטפל בהקדם,ליד המעלית,LOW,type_NOISE selected_LOW location_ליד המעלית יש רעש חלש מדי פעם אבל לא דחוף נא לטפל בהקדם
+NOISE,LOW,מישהו הזיז רהיטים לזמן קצר,בגינה,LOW,type_NOISE selected_LOW location_בגינה מישהו הזיז רהיטים לזמן קצר
+NOISE,LOW,מישהו הזיז רהיטים לזמן קצר נא לטפל בהקדם,בחדר מדרגות,LOW,type_NOISE selected_LOW location_בחדר מדרגות מישהו הזיז רהיטים לזמן קצר נא לטפל בהקדם
+CLEANLINESS,MEDIUM,יש ריח לא נעים בלובי כבר יומיים,בקומה 5,MEDIUM,type_CLEANLINESS selected_MEDIUM location_בקומה 5 יש ריח לא נעים בלובי כבר יומיים
+NOISE,LOW,רעש קל מהחצר בשעות היום זה קורה כבר כמה פעמים,ליד ארון החשמל,LOW,type_NOISE selected_LOW location_ליד ארון החשמל רעש קל מהחצר בשעות היום זה קורה כבר כמה פעמים
+SAFETY,HIGH,יש ריח שרוף ליד ארון החשמל זה קורה כבר כמה פעמים,במחסן,HIGH,type_SAFETY selected_HIGH location_במחסן יש ריח שרוף ליד ארון החשמל זה קורה כבר כמה פעמים
+SAFETY,LOW,מרצפת מעט עקומה ללא סכנה מיידית נא לטפל בהקדם,בקומה 5,LOW,type_SAFETY selected_LOW location_בקומה 5 מרצפת מעט עקומה ללא סכנה מיידית נא לטפל בהקדם
+OTHER,MEDIUM,יש בעיה מתמשכת בבניין זה קורה כבר כמה פעמים נא לטפל בהקדם,בקומה 5,MEDIUM,type_OTHER selected_MEDIUM location_בקומה 5 יש בעיה מתמשכת בבניין זה קורה כבר כמה פעמים נא לטפל בהקדם
+OTHER,MEDIUM,תקלה שמשפיעה על כמה דיירים זה קורה כבר כמה פעמים הדיירים התלוננו על זה,בלובי,MEDIUM,type_OTHER selected_MEDIUM location_בלובי תקלה שמשפיעה על כמה דיירים זה קורה כבר כמה פעמים הדיירים התלוננו על זה
+NOISE,MEDIUM,יש דיבורים בקומה אבל זה לא מפריע מאוד,בקומה 2,LOW,type_NOISE selected_MEDIUM location_בקומה 2 יש דיבורים בקומה אבל זה לא מפריע מאוד
+NOISE,LOW,יש דיבורים בקומה אבל זה לא מפריע מאוד הדיירים התלוננו על זה,בלובי,LOW,type_NOISE selected_LOW location_בלובי יש דיבורים בקומה אבל זה לא מפריע מאוד הדיירים התלוננו על זה
+NOISE,MEDIUM,מוזיקה חזקה מהדירה מעל כבר כמה שעות,ליד המעלית,MEDIUM,type_NOISE selected_MEDIUM location_ליד המעלית מוזיקה חזקה מהדירה מעל כבר כמה שעות
+CLEANLINESS,LOW,יש קצת לכלוך בלובי זה קורה כבר כמה פעמים נא לטפל בהקדם,בגינה,LOW,type_CLEANLINESS selected_LOW location_בגינה יש קצת לכלוך בלובי זה קורה כבר כמה פעמים נא לטפל בהקדם
+NOISE,HIGH,קולות חזקים של שבירה ואלימות מהדירה זה קורה כבר כמה פעמים,,HIGH,type_NOISE selected_HIGH location_ קולות חזקים של שבירה ואלימות מהדירה זה קורה כבר כמה פעמים
+CLEANLINESS,MEDIUM,נזילה קטנה שגרמה לרטיבות בקיר הדיירים התלוננו על זה,ליד המעלית,MEDIUM,type_CLEANLINESS selected_MEDIUM location_ליד המעלית נזילה קטנה שגרמה לרטיבות בקיר הדיירים התלוננו על זה
+CLEANLINESS,MEDIUM,נזילה קטנה שגרמה לרטיבות בקיר נא לטפל בהקדם,ליד ארון החשמל,MEDIUM,type_CLEANLINESS selected_MEDIUM location_ליד ארון החשמל נזילה קטנה שגרמה לרטיבות בקיר נא לטפל בהקדם
+SAFETY,LOW,יש סכנת התחשמלות נא לטפל בהקדם,בחדר מדרגות,HIGH,type_SAFETY selected_LOW location_בחדר מדרגות יש סכנת התחשמלות נא לטפל בהקדם
+SAFETY,LOW,מעקה מעט רופף אבל לא נראה מסוכן כרגע,בחניה,LOW,type_SAFETY selected_LOW location_בחניה מעקה מעט רופף אבל לא נראה מסוכן כרגע
+NOISE,LOW,יש דיבורים בקומה אבל זה לא מפריע מאוד,בקומה 2,LOW,type_NOISE selected_LOW location_בקומה 2 יש דיבורים בקומה אבל זה לא מפריע מאוד
+OTHER,MEDIUM,יש בעיה מתמשכת בבניין,בקומה 2,MEDIUM,type_OTHER selected_MEDIUM location_בקומה 2 יש בעיה מתמשכת בבניין
+OTHER,LOW,דיווח כללי ללא סכנה,,LOW,type_OTHER selected_LOW location_ דיווח כללי ללא סכנה
+NOISE,HIGH,מטרד רעש קיצוני ומתמשך,בכניסה לבניין,HIGH,type_NOISE selected_HIGH location_בכניסה לבניין מטרד רעש קיצוני ומתמשך
+OTHER,MEDIUM,בעיה שחוזרת כמה פעמים ודורשת טיפול,בקומה 5,MEDIUM,type_OTHER selected_MEDIUM location_בקומה 5 בעיה שחוזרת כמה פעמים ודורשת טיפול
+CLEANLINESS,MEDIUM,לכלוך חריג בחדר מדרגות,בגינה,MEDIUM,type_CLEANLINESS selected_MEDIUM location_בגינה לכלוך חריג בחדר מדרגות
+OTHER,MEDIUM,תקלה שמשפיעה על כמה דיירים נא לטפל בהקדם,בחדר אשפה,MEDIUM,type_OTHER selected_MEDIUM location_בחדר אשפה תקלה שמשפיעה על כמה דיירים נא לטפל בהקדם
+CLEANLINESS,MEDIUM,לכלוך חמור שעלול לגרום לסכנה בריאותית,ליד המעלית,HIGH,type_CLEANLINESS selected_MEDIUM location_ליד המעלית לכלוך חמור שעלול לגרום לסכנה בריאותית
+NOISE,MEDIUM,מוזיקה חזקה מהדירה מעל כבר כמה שעות זה קורה כבר כמה פעמים הדיירים התלוננו על זה,בקומה 2,MEDIUM,type_NOISE selected_MEDIUM location_בקומה 2 מוזיקה חזקה מהדירה מעל כבר כמה שעות זה קורה כבר כמה פעמים הדיירים התלוננו על זה
+CLEANLINESS,LOW,לכלוך חריג בחדר מדרגות זה קורה כבר כמה פעמים,בחדר מדרגות,MEDIUM,type_CLEANLINESS selected_LOW location_בחדר מדרגות לכלוך חריג בחדר מדרגות זה קורה כבר כמה פעמים
+CLEANLINESS,HIGH,הצפה בחדר מדרגות ומים זורמים נא לטפל בהקדם,,HIGH,type_CLEANLINESS selected_HIGH location_ הצפה בחדר מדרגות ומים זורמים נא לטפל בהקדם
+NOISE,HIGH,מטרד רעש קיצוני ומתמשך,בקומה 1,HIGH,type_NOISE selected_HIGH location_בקומה 1 מטרד רעש קיצוני ומתמשך
+OTHER,HIGH,תקלה דחופה מאוד בבניין,ליד המעלית,HIGH,type_OTHER selected_HIGH location_ליד המעלית תקלה דחופה מאוד בבניין
+CLEANLINESS,MEDIUM,נזילה חזקה שגורמת להצפה,בכניסה לבניין,HIGH,type_CLEANLINESS selected_MEDIUM location_בכניסה לבניין נזילה חזקה שגורמת להצפה
+NOISE,MEDIUM,קולות חזקים של שבירה ואלימות מהדירה נא לטפל בהקדם הדיירים התלוננו על זה,במחסן,HIGH,type_NOISE selected_MEDIUM location_במחסן קולות חזקים של שבירה ואלימות מהדירה נא לטפל בהקדם הדיירים התלוננו על זה
+NOISE,HIGH,קולות חזקים של שבירה ואלימות מהדירה,ליד המעלית,HIGH,type_NOISE selected_HIGH location_ליד המעלית קולות חזקים של שבירה ואלימות מהדירה
+CLEANLINESS,HIGH,הצפה בחדר מדרגות ומים זורמים,בקומה 5,HIGH,type_CLEANLINESS selected_HIGH location_בקומה 5 הצפה בחדר מדרגות ומים זורמים
+SAFETY,LOW,שריפה קטנה בלובי,בגינה,HIGH,type_SAFETY selected_LOW location_בגינה שריפה קטנה בלובי
+NOISE,HIGH,רעש חזק מאוד שמונע מדיירים לישון כבר כמה לילות זה קורה כבר כמה פעמים,בכניסה לבניין,HIGH,type_NOISE selected_HIGH location_בכניסה לבניין רעש חזק מאוד שמונע מדיירים לישון כבר כמה לילות זה קורה כבר כמה פעמים
+NOISE,LOW,יש רעש חלש מדי פעם אבל לא דחוף,,LOW,type_NOISE selected_LOW location_ יש רעש חלש מדי פעם אבל לא דחוף
+NOISE,HIGH,רעש חזק מאוד שמונע מדיירים לישון כבר כמה לילות זה קורה כבר כמה פעמים,בקומה 1,HIGH,type_NOISE selected_HIGH location_בקומה 1 רעש חזק מאוד שמונע מדיירים לישון כבר כמה לילות זה קורה כבר כמה פעמים
+CLEANLINESS,LOW,יש קצת לכלוך בלובי,בקומה 1,LOW,type_CLEANLINESS selected_LOW location_בקומה 1 יש קצת לכלוך בלובי
+NOISE,HIGH,רעש חריג מאוד באמצע הלילה עם צעקות חזקות זה קורה כבר כמה פעמים,במחסן,HIGH,type_NOISE selected_HIGH location_במחסן רעש חריג מאוד באמצע הלילה עם צעקות חזקות זה קורה כבר כמה פעמים
+OTHER,LOW,צריך לבדוק משהו לא דחוף,בלובי,LOW,type_OTHER selected_LOW location_בלובי צריך לבדוק משהו לא דחוף
+OTHER,MEDIUM,בעיה שחוזרת כמה פעמים ודורשת טיפול הדיירים התלוננו על זה,בחניה,MEDIUM,type_OTHER selected_MEDIUM location_בחניה בעיה שחוזרת כמה פעמים ודורשת טיפול הדיירים התלוננו על זה
+SAFETY,HIGH,חוטי חשמל חשופים ליד הכניסה הדיירים התלוננו על זה,בגינה,HIGH,type_SAFETY selected_HIGH location_בגינה חוטי חשמל חשופים ליד הכניסה הדיירים התלוננו על זה
+SAFETY,HIGH,יש סכנת התחשמלות נא לטפל בהקדם,בחדר מדרגות,HIGH,type_SAFETY selected_HIGH location_בחדר מדרגות יש סכנת התחשמלות נא לטפל בהקדם
+NOISE,HIGH,שיפוצים מרעישים בשעות לא מתאימות,בקומה 5,MEDIUM,type_NOISE selected_HIGH location_בקומה 5 שיפוצים מרעישים בשעות לא מתאימות
+OTHER,MEDIUM,יש בעיה מתמשכת בבניין זה קורה כבר כמה פעמים,בקומה 5,MEDIUM,type_OTHER selected_MEDIUM location_בקומה 5 יש בעיה מתמשכת בבניין זה קורה כבר כמה פעמים
+SAFETY,MEDIUM,מעקה רופף שצריך תיקון בהקדם,בקומה 2,MEDIUM,type_SAFETY selected_MEDIUM location_בקומה 2 מעקה רופף שצריך תיקון בהקדם
+SAFETY,HIGH,שריפה קטנה בלובי,בקומה 2,HIGH,type_SAFETY selected_HIGH location_בקומה 2 שריפה קטנה בלובי
+CLEANLINESS,MEDIUM,יש ריח לא נעים בלובי כבר יומיים,בלובי,MEDIUM,type_CLEANLINESS selected_MEDIUM location_בלובי יש ריח לא נעים בלובי כבר יומיים
+NOISE,LOW,רעש חריג מאוד באמצע הלילה עם צעקות חזקות נא לטפל בהקדם הדיירים התלוננו על זה,במחסן,HIGH,type_NOISE selected_LOW location_במחסן רעש חריג מאוד באמצע הלילה עם צעקות חזקות נא לטפל בהקדם הדיירים התלוננו על זה
+CLEANLINESS,MEDIUM,נזילה קטנה שגרמה לרטיבות בקיר זה קורה כבר כמה פעמים נא לטפל בהקדם,,MEDIUM,type_CLEANLINESS selected_MEDIUM location_ נזילה קטנה שגרמה לרטיבות בקיר זה קורה כבר כמה פעמים נא לטפל בהקדם
+NOISE,HIGH,קולות חזקים של שבירה ואלימות מהדירה זה קורה כבר כמה פעמים,בקומה 5,HIGH,type_NOISE selected_HIGH location_בקומה 5 קולות חזקים של שבירה ואלימות מהדירה זה קורה כבר כמה פעמים
+OTHER,MEDIUM,בעיה שחוזרת כמה פעמים ודורשת טיפול,בקומה 5,MEDIUM,type_OTHER selected_MEDIUM location_בקומה 5 בעיה שחוזרת כמה פעמים ודורשת טיפול
+NOISE,LOW,מישהו הזיז רהיטים לזמן קצר,בקומה 2,LOW,type_NOISE selected_LOW location_בקומה 2 מישהו הזיז רהיטים לזמן קצר
+SAFETY,LOW,יש בורג חסר בשלט של הבניין זה קורה כבר כמה פעמים נא לטפל בהקדם,ליד המעלית,LOW,type_SAFETY selected_LOW location_ליד המעלית יש בורג חסר בשלט של הבניין זה קורה כבר כמה פעמים נא לטפל בהקדם
+NOISE,MEDIUM,צעקות ורעש בחדר מדרגות,,MEDIUM,type_NOISE selected_MEDIUM location_ צעקות ורעש בחדר מדרגות
+OTHER,MEDIUM,תקלה שמשפיעה על כמה דיירים זה קורה כבר כמה פעמים,בחדר אשפה,MEDIUM,type_OTHER selected_MEDIUM location_בחדר אשפה תקלה שמשפיעה על כמה דיירים זה קורה כבר כמה פעמים
+NOISE,LOW,יש רעש חלש מדי פעם אבל לא דחוף,בקומה 5,LOW,type_NOISE selected_LOW location_בקומה 5 יש רעש חלש מדי פעם אבל לא דחוף
+NOISE,HIGH,מטרד רעש קיצוני ומתמשך,בקומה 1,HIGH,type_NOISE selected_HIGH location_בקומה 1 מטרד רעש קיצוני ומתמשך
+OTHER,LOW,דיווח כללי ללא סכנה זה קורה כבר כמה פעמים נא לטפל בהקדם,בחניה,LOW,type_OTHER selected_LOW location_בחניה דיווח כללי ללא סכנה זה קורה כבר כמה פעמים נא לטפל בהקדם
+SAFETY,MEDIUM,חוטי חשמל חשופים ליד הכניסה זה קורה כבר כמה פעמים,ליד ארון החשמל,HIGH,type_SAFETY selected_MEDIUM location_ליד ארון החשמל חוטי חשמל חשופים ליד הכניסה זה קורה כבר כמה פעמים
+SAFETY,MEDIUM,מעקה מעט רופף אבל לא נראה מסוכן כרגע,בקומה 2,LOW,type_SAFETY selected_MEDIUM location_בקומה 2 מעקה מעט רופף אבל לא נראה מסוכן כרגע
+SAFETY,HIGH,חוטי חשמל חשופים ליד הכניסה זה קורה כבר כמה פעמים,במחסן,HIGH,type_SAFETY selected_HIGH location_במחסן חוטי חשמל חשופים ליד הכניסה זה קורה כבר כמה פעמים
+SAFETY,HIGH,יש ניצוצות מארון החשמל בלובי נא לטפל בהקדם,בכניסה לבניין,HIGH,type_SAFETY selected_HIGH location_בכניסה לבניין יש ניצוצות מארון החשמל בלובי נא לטפל בהקדם
+SAFETY,HIGH,חוטי חשמל חשופים ליד הכניסה,בלובי,HIGH,type_SAFETY selected_HIGH location_בלובי חוטי חשמל חשופים ליד הכניסה
+SAFETY,LOW,מעקה מעט רופף אבל לא נראה מסוכן כרגע זה קורה כבר כמה פעמים,בקומה 5,LOW,type_SAFETY selected_LOW location_בקומה 5 מעקה מעט רופף אבל לא נראה מסוכן כרגע זה קורה כבר כמה פעמים
+OTHER,MEDIUM,בעיה שחוזרת כמה פעמים ודורשת טיפול,בחניה,MEDIUM,type_OTHER selected_MEDIUM location_בחניה בעיה שחוזרת כמה פעמים ודורשת טיפול
+NOISE,LOW,רעש חזק בלילה שמפריע לדיירים נא לטפל בהקדם,בחניה,MEDIUM,type_NOISE selected_LOW location_בחניה רעש חזק בלילה שמפריע לדיירים נא לטפל בהקדם
+NOISE,LOW,יש דיבורים בקומה אבל זה לא מפריע מאוד הדיירים התלוננו על זה,בלובי,LOW,type_NOISE selected_LOW location_בלובי יש דיבורים בקומה אבל זה לא מפריע מאוד הדיירים התלוננו על זה
+SAFETY,LOW,דלת המחסן לא נסגרת טוב,ליד המעלית,LOW,type_SAFETY selected_LOW location_ליד המעלית דלת המחסן לא נסגרת טוב
+OTHER,MEDIUM,אירוע חירום שדורש טיפול מיידי,בחדר אשפה,HIGH,type_OTHER selected_MEDIUM location_בחדר אשפה אירוע חירום שדורש טיפול מיידי
+OTHER,MEDIUM,יש בעיה מתמשכת בבניין,בחדר אשפה,MEDIUM,type_OTHER selected_MEDIUM location_בחדר אשפה יש בעיה מתמשכת בבניין
+SAFETY,HIGH,ריח גז חזק בבניין,בחדר מדרגות,HIGH,type_SAFETY selected_HIGH location_בחדר מדרגות ריח גז חזק בבניין
+SAFETY,MEDIUM,מעקה רופף שצריך תיקון בהקדם,בכניסה לבניין,MEDIUM,type_SAFETY selected_MEDIUM location_בכניסה לבניין מעקה רופף שצריך תיקון בהקדם
+NOISE,MEDIUM,רעש חזק בלילה שמפריע לדיירים,ליד המעלית,MEDIUM,type_NOISE selected_MEDIUM location_ליד המעלית רעש חזק בלילה שמפריע לדיירים
+OTHER,LOW,צריך לבדוק משהו לא דחוף הדיירים התלוננו על זה,בחדר אשפה,LOW,type_OTHER selected_LOW location_בחדר אשפה צריך לבדוק משהו לא דחוף הדיירים התלוננו על זה
+SAFETY,HIGH,שריפה קטנה בלובי זה קורה כבר כמה פעמים,בקומה 5,HIGH,type_SAFETY selected_HIGH location_בקומה 5 שריפה קטנה בלובי זה קורה כבר כמה פעמים
+SAFETY,MEDIUM,מרצפת שבורה שעלולה לגרום לנפילה נא לטפל בהקדם,בחדר אשפה,MEDIUM,type_SAFETY selected_MEDIUM location_בחדר אשפה מרצפת שבורה שעלולה לגרום לנפילה נא לטפל בהקדם
+CLEANLINESS,MEDIUM,יש ריח לא נעים בלובי כבר יומיים,בכניסה לבניין,MEDIUM,type_CLEANLINESS selected_MEDIUM location_בכניסה לבניין יש ריח לא נעים בלובי כבר יומיים
+OTHER,LOW,צריך לבדוק משהו לא דחוף הדיירים התלוננו על זה,בחדר אשפה,LOW,type_OTHER selected_LOW location_בחדר אשפה צריך לבדוק משהו לא דחוף הדיירים התלוננו על זה
+NOISE,HIGH,רעש חריג מאוד באמצע הלילה עם צעקות חזקות,בקומה 5,HIGH,type_NOISE selected_HIGH location_בקומה 5 רעש חריג מאוד באמצע הלילה עם צעקות חזקות
+CLEANLINESS,MEDIUM,לכלוך חריג בחדר מדרגות נא לטפל בהקדם,ליד ארון החשמל,MEDIUM,type_CLEANLINESS selected_MEDIUM location_ליד ארון החשמל לכלוך חריג בחדר מדרגות נא לטפל בהקדם
+CLEANLINESS,MEDIUM,יש מעט אבק ליד הכניסה הדיירים התלוננו על זה,במחסן,LOW,type_CLEANLINESS selected_MEDIUM location_במחסן יש מעט אבק ליד הכניסה הדיירים התלוננו על זה
+CLEANLINESS,MEDIUM,יש הרבה אשפה בחדר אשפה וריח רע זה קורה כבר כמה פעמים,בחדר אשפה,MEDIUM,type_CLEANLINESS selected_MEDIUM location_בחדר אשפה יש הרבה אשפה בחדר אשפה וריח רע זה קורה כבר כמה פעמים
+SAFETY,LOW,דלת המחסן לא נסגרת טוב הדיירים התלוננו על זה,בחדר מדרגות,LOW,type_SAFETY selected_LOW location_בחדר מדרגות דלת המחסן לא נסגרת טוב הדיירים התלוננו על זה
+CLEANLINESS,HIGH,נזילה חזקה שגורמת להצפה,בחניה,HIGH,type_CLEANLINESS selected_HIGH location_בחניה נזילה חזקה שגורמת להצפה
+NOISE,HIGH,רעש חזק מאוד שמונע מדיירים לישון כבר כמה לילות,ליד המעלית,HIGH,type_NOISE selected_HIGH location_ליד המעלית רעש חזק מאוד שמונע מדיירים לישון כבר כמה לילות
+NOISE,LOW,רעש חירום חזק מהחניה בשעות הלילה,בחדר אשפה,HIGH,type_NOISE selected_LOW location_בחדר אשפה רעש חירום חזק מהחניה בשעות הלילה
+SAFETY,HIGH,חוטי חשמל חשופים ליד הכניסה הדיירים התלוננו על זה,בלובי,HIGH,type_SAFETY selected_HIGH location_בלובי חוטי חשמל חשופים ליד הכניסה הדיירים התלוננו על זה
+CLEANLINESS,MEDIUM,יש ריח לא נעים בלובי כבר יומיים הדיירים התלוננו על זה,ליד המעלית,MEDIUM,type_CLEANLINESS selected_MEDIUM location_ליד המעלית יש ריח לא נעים בלובי כבר יומיים הדיירים התלוננו על זה
+OTHER,HIGH,תקלה דחופה מאוד בבניין,,HIGH,type_OTHER selected_HIGH location_ תקלה דחופה מאוד בבניין
+NOISE,LOW,שומעים מעט רעש מהשכנים במהלך היום,בכניסה לבניין,LOW,type_NOISE selected_LOW location_בכניסה לבניין שומעים מעט רעש מהשכנים במהלך היום
+CLEANLINESS,MEDIUM,לכלוך חריג בחדר מדרגות זה קורה כבר כמה פעמים נא לטפל בהקדם,ליד ארון החשמל,MEDIUM,type_CLEANLINESS selected_MEDIUM location_ליד ארון החשמל לכלוך חריג בחדר מדרגות זה קורה כבר כמה פעמים נא לטפל בהקדם
+SAFETY,HIGH,עשן יוצא מחדר החשמל,בחדר אשפה,HIGH,type_SAFETY selected_HIGH location_בחדר אשפה עשן יוצא מחדר החשמל
+OTHER,LOW,צריך לבדוק משהו לא דחוף זה קורה כבר כמה פעמים,בקומה 5,LOW,type_OTHER selected_LOW location_בקומה 5 צריך לבדוק משהו לא דחוף זה קורה כבר כמה פעמים
+SAFETY,HIGH,זכוכית שבורה מסוכנת ליד הכניסה נא לטפל בהקדם,בקומה 1,HIGH,type_SAFETY selected_HIGH location_בקומה 1 זכוכית שבורה מסוכנת ליד הכניסה נא לטפל בהקדם
+OTHER,LOW,בקשה כללית לבדיקה כשאפשר זה קורה כבר כמה פעמים הדיירים התלוננו על זה,בכניסה לבניין,LOW,type_OTHER selected_LOW location_בכניסה לבניין בקשה כללית לבדיקה כשאפשר זה קורה כבר כמה פעמים הדיירים התלוננו על זה
+OTHER,HIGH,צריך לבדוק משהו לא דחוף הדיירים התלוננו על זה,בחדר מדרגות,LOW,type_OTHER selected_HIGH location_בחדר מדרגות צריך לבדוק משהו לא דחוף הדיירים התלוננו על זה
+SAFETY,MEDIUM,יש ונדליזם ליד המעלית,,MEDIUM,type_SAFETY selected_MEDIUM location_ יש ונדליזם ליד המעלית
+NOISE,HIGH,רעש חירום חזק מהחניה בשעות הלילה נא לטפל בהקדם,ליד ארון החשמל,HIGH,type_NOISE selected_HIGH location_ליד ארון החשמל רעש חירום חזק מהחניה בשעות הלילה נא לטפל בהקדם
+CLEANLINESS,LOW,פח קטן לא רוקן אבל לא דחוף,בכניסה לבניין,LOW,type_CLEANLINESS selected_LOW location_בכניסה לבניין פח קטן לא רוקן אבל לא דחוף
+OTHER,HIGH,תקלה דחופה מאוד בבניין,במחסן,HIGH,type_OTHER selected_HIGH location_במחסן תקלה דחופה מאוד בבניין
+SAFETY,LOW,מעקה מעט רופף אבל לא נראה מסוכן כרגע,בקומה 1,LOW,type_SAFETY selected_LOW location_בקומה 1 מעקה מעט רופף אבל לא נראה מסוכן כרגע
+NOISE,LOW,רעש חירום חזק מהחניה בשעות הלילה נא לטפל בהקדם הדיירים התלוננו על זה,בקומה 5,HIGH,type_NOISE selected_LOW location_בקומה 5 רעש חירום חזק מהחניה בשעות הלילה נא לטפל בהקדם הדיירים התלוננו על זה
+NOISE,LOW,יש רעש חלש מדי פעם אבל לא דחוף זה קורה כבר כמה פעמים נא לטפל בהקדם,בחדר מדרגות,LOW,type_NOISE selected_LOW location_בחדר מדרגות יש רעש חלש מדי פעם אבל לא דחוף זה קורה כבר כמה פעמים נא לטפל בהקדם
+CLEANLINESS,LOW,יש כמה ניירות על הרצפה,,LOW,type_CLEANLINESS selected_LOW location_ יש כמה ניירות על הרצפה
+CLEANLINESS,LOW,יש מעט אבק ליד הכניסה,בגינה,LOW,type_CLEANLINESS selected_LOW location_בגינה יש מעט אבק ליד הכניסה
+SAFETY,HIGH,ריח גז חזק בבניין,בחדר מדרגות,HIGH,type_SAFETY selected_HIGH location_בחדר מדרגות ריח גז חזק בבניין
+SAFETY,MEDIUM,זכוכית שבורה מסוכנת ליד הכניסה זה קורה כבר כמה פעמים,בגינה,HIGH,type_SAFETY selected_MEDIUM location_בגינה זכוכית שבורה מסוכנת ליד הכניסה זה קורה כבר כמה פעמים
+SAFETY,HIGH,ריח גז חזק בבניין הדיירים התלוננו על זה,בגינה,HIGH,type_SAFETY selected_HIGH location_בגינה ריח גז חזק בבניין הדיירים התלוננו על זה
+OTHER,HIGH,אירוע חריג שמצריך תגובה מיידית,בגינה,HIGH,type_OTHER selected_HIGH location_בגינה אירוע חריג שמצריך תגובה מיידית
+CLEANLINESS,MEDIUM,צריך ניקיון רגיל בחדר מדרגות,בלובי,LOW,type_CLEANLINESS selected_MEDIUM location_בלובי צריך ניקיון רגיל בחדר מדרגות
+CLEANLINESS,MEDIUM,שקיות זבל נשארו ליד הכניסה נא לטפל בהקדם,ליד ארון החשמל,MEDIUM,type_CLEANLINESS selected_MEDIUM location_ליד ארון החשמל שקיות זבל נשארו ליד הכניסה נא לטפל בהקדם
+NOISE,MEDIUM,צעקות ורעש בחדר מדרגות זה קורה כבר כמה פעמים נא לטפל בהקדם,בחדר אשפה,MEDIUM,type_NOISE selected_MEDIUM location_בחדר אשפה צעקות ורעש בחדר מדרגות זה קורה כבר כמה פעמים נא לטפל בהקדם
+OTHER,MEDIUM,תקלה לא מסוכנת אבל מפריעה לדיירים,בגינה,MEDIUM,type_OTHER selected_MEDIUM location_בגינה תקלה לא מסוכנת אבל מפריעה לדיירים
+OTHER,LOW,אירוע חירום שדורש טיפול מיידי זה קורה כבר כמה פעמים,ליד ארון החשמל,HIGH,type_OTHER selected_LOW location_ליד ארון החשמל אירוע חירום שדורש טיפול מיידי זה קורה כבר כמה פעמים
+CLEANLINESS,HIGH,לכלוך חמור שעלול לגרום לסכנה בריאותית,במחסן,HIGH,type_CLEANLINESS selected_HIGH location_במחסן לכלוך חמור שעלול לגרום לסכנה בריאותית
+NOISE,HIGH,רעש חזק בלילה שמפריע לדיירים זה קורה כבר כמה פעמים,בקומה 1,MEDIUM,type_NOISE selected_HIGH location_בקומה 1 רעש חזק בלילה שמפריע לדיירים זה קורה כבר כמה פעמים
+CLEANLINESS,LOW,יש כמה ניירות על הרצפה זה קורה כבר כמה פעמים,בגינה,LOW,type_CLEANLINESS selected_LOW location_בגינה יש כמה ניירות על הרצפה זה קורה כבר כמה פעמים
+NOISE,MEDIUM,מישהו הזיז רהיטים לזמן קצר,ליד המעלית,LOW,type_NOISE selected_MEDIUM location_ליד המעלית מישהו הזיז רהיטים לזמן קצר
+NOISE,LOW,רעש חריג מאוד באמצע הלילה עם צעקות חזקות זה קורה כבר כמה פעמים הדיירים התלוננו על זה,בכניסה לבניין,HIGH,type_NOISE selected_LOW location_בכניסה לבניין רעש חריג מאוד באמצע הלילה עם צעקות חזקות זה קורה כבר כמה פעמים הדיירים התלוננו על זה
+SAFETY,MEDIUM,תאורה חלשה באזור הכניסה זה קורה כבר כמה פעמים,במחסן,LOW,type_SAFETY selected_MEDIUM location_במחסן תאורה חלשה באזור הכניסה זה קורה כבר כמה פעמים
+OTHER,MEDIUM,יש בעיה מתמשכת בבניין נא לטפל בהקדם,בגינה,MEDIUM,type_OTHER selected_MEDIUM location_בגינה יש בעיה מתמשכת בבניין נא לטפל בהקדם
+CLEANLINESS,MEDIUM,נזילה קטנה שגרמה לרטיבות בקיר,,MEDIUM,type_CLEANLINESS selected_MEDIUM location_ נזילה קטנה שגרמה לרטיבות בקיר
+OTHER,MEDIUM,נדרש טיפול של ועד הבית בזמן הקרוב,בכניסה לבניין,MEDIUM,type_OTHER selected_MEDIUM location_בכניסה לבניין נדרש טיפול של ועד הבית בזמן הקרוב
+OTHER,LOW,יש הערה קטנה לגבי תחזוקה זה קורה כבר כמה פעמים,,LOW,type_OTHER selected_LOW location_ יש הערה קטנה לגבי תחזוקה זה קורה כבר כמה פעמים
+OTHER,MEDIUM,יש בעיה מתמשכת בבניין נא לטפל בהקדם הדיירים התלוננו על זה,ליד ארון החשמל,MEDIUM,type_OTHER selected_MEDIUM location_ליד ארון החשמל יש בעיה מתמשכת בבניין נא לטפל בהקדם הדיירים התלוננו על זה
+CLEANLINESS,MEDIUM,יש הרבה אשפה בחדר אשפה וריח רע זה קורה כבר כמה פעמים,בחדר אשפה,MEDIUM,type_CLEANLINESS selected_MEDIUM location_בחדר אשפה יש הרבה אשפה בחדר אשפה וריח רע זה קורה כבר כמה פעמים
+NOISE,MEDIUM,רעש חירום חזק מהחניה בשעות הלילה,בחדר מדרגות,HIGH,type_NOISE selected_MEDIUM location_בחדר מדרגות רעש חירום חזק מהחניה בשעות הלילה
+SAFETY,HIGH,תאורה לא עובדת בחדר מדרגות וזה מסוכן בלילה,בחניה,MEDIUM,type_SAFETY selected_HIGH location_בחניה תאורה לא עובדת בחדר מדרגות וזה מסוכן בלילה
+CLEANLINESS,LOW,יש מעט אבק ליד הכניסה הדיירים התלוננו על זה,בקומה 2,LOW,type_CLEANLINESS selected_LOW location_בקומה 2 יש מעט אבק ליד הכניסה הדיירים התלוננו על זה
+SAFETY,LOW,יש בורג חסר בשלט של הבניין נא לטפל בהקדם הדיירים התלוננו על זה,בקומה 5,LOW,type_SAFETY selected_LOW location_בקומה 5 יש בורג חסר בשלט של הבניין נא לטפל בהקדם הדיירים התלוננו על זה
+NOISE,LOW,מישהו הזיז רהיטים לזמן קצר נא לטפל בהקדם,במחסן,LOW,type_NOISE selected_LOW location_במחסן מישהו הזיז רהיטים לזמן קצר נא לטפל בהקדם
+NOISE,HIGH,רעש קל מהחצר בשעות היום נא לטפל בהקדם,בקומה 2,LOW,type_NOISE selected_HIGH location_בקומה 2 רעש קל מהחצר בשעות היום נא לטפל בהקדם
+OTHER,HIGH,יש בעיה קטנה שאפשר לטפל בה בהמשך,בחדר אשפה,LOW,type_OTHER selected_HIGH location_בחדר אשפה יש בעיה קטנה שאפשר לטפל בה בהמשך
+OTHER,MEDIUM,יש בעיה מתמשכת בבניין,ליד המעלית,MEDIUM,type_OTHER selected_MEDIUM location_ליד המעלית יש בעיה מתמשכת בבניין
+NOISE,MEDIUM,מוזיקה חזקה מהדירה מעל כבר כמה שעות זה קורה כבר כמה פעמים הדיירים התלוננו על זה,בחדר אשפה,MEDIUM,type_NOISE selected_MEDIUM location_בחדר אשפה מוזיקה חזקה מהדירה מעל כבר כמה שעות זה קורה כבר כמה פעמים הדיירים התלוננו על זה
+SAFETY,HIGH,זכוכית שבורה מסוכנת ליד הכניסה,ליד המעלית,HIGH,type_SAFETY selected_HIGH location_ליד המעלית זכוכית שבורה מסוכנת ליד הכניסה
+OTHER,LOW,מצב מסוכן שמצריך טיפול בהול,בקומה 1,HIGH,type_OTHER selected_LOW location_בקומה 1 מצב מסוכן שמצריך טיפול בהול
+SAFETY,HIGH,מעקה רופף שצריך תיקון בהקדם נא לטפל בהקדם,בקומה 2,MEDIUM,type_SAFETY selected_HIGH location_בקומה 2 מעקה רופף שצריך תיקון בהקדם נא לטפל בהקדם
+SAFETY,HIGH,עשן יוצא מחדר החשמל,בלובי,HIGH,type_SAFETY selected_HIGH location_בלובי עשן יוצא מחדר החשמל
+OTHER,LOW,יש הערה קטנה לגבי תחזוקה,ליד המעלית,LOW,type_OTHER selected_LOW location_ליד המעלית יש הערה קטנה לגבי תחזוקה
+NOISE,HIGH,קולות חזקים של שבירה ואלימות מהדירה זה קורה כבר כמה פעמים נא לטפל בהקדם,ליד ארון החשמל,HIGH,type_NOISE selected_HIGH location_ליד ארון החשמל קולות חזקים של שבירה ואלימות מהדירה זה קורה כבר כמה פעמים נא לטפל בהקדם
+NOISE,MEDIUM,מישהו הזיז רהיטים לזמן קצר זה קורה כבר כמה פעמים,בחניה,LOW,type_NOISE selected_MEDIUM location_בחניה מישהו הזיז רהיטים לזמן קצר זה קורה כבר כמה פעמים
+OTHER,MEDIUM,יש בעיה מתמשכת בבניין,בקומה 5,MEDIUM,type_OTHER selected_MEDIUM location_בקומה 5 יש בעיה מתמשכת בבניין
+NOISE,MEDIUM,שיפוצים מרעישים בשעות לא מתאימות זה קורה כבר כמה פעמים,בחניה,MEDIUM,type_NOISE selected_MEDIUM location_בחניה שיפוצים מרעישים בשעות לא מתאימות זה קורה כבר כמה פעמים
+SAFETY,LOW,דלת המחסן לא נסגרת טוב זה קורה כבר כמה פעמים,בגינה,LOW,type_SAFETY selected_LOW location_בגינה דלת המחסן לא נסגרת טוב זה קורה כבר כמה פעמים
+OTHER,LOW,צריך לבדוק משהו לא דחוף,בחניה,LOW,type_OTHER selected_LOW location_בחניה צריך לבדוק משהו לא דחוף
+NOISE,MEDIUM,רעש חזק בלילה שמפריע לדיירים,בלובי,MEDIUM,type_NOISE selected_MEDIUM location_בלובי רעש חזק בלילה שמפריע לדיירים
+CLEANLINESS,LOW,יש מעט אבק ליד הכניסה זה קורה כבר כמה פעמים,במחסן,LOW,type_CLEANLINESS selected_LOW location_במחסן יש מעט אבק ליד הכניסה זה קורה כבר כמה פעמים
+NOISE,LOW,יש דיבורים בקומה אבל זה לא מפריע מאוד,בחדר אשפה,LOW,type_NOISE selected_LOW location_בחדר אשפה יש דיבורים בקומה אבל זה לא מפריע מאוד
+CLEANLINESS,LOW,פח קטן לא רוקן אבל לא דחוף,בחניה,LOW,type_CLEANLINESS selected_LOW location_בחניה פח קטן לא רוקן אבל לא דחוף
+CLEANLINESS,HIGH,ביוב עולה ויש ריח חריף מאוד נא לטפל בהקדם,בחדר מדרגות,HIGH,type_CLEANLINESS selected_HIGH location_בחדר מדרגות ביוב עולה ויש ריח חריף מאוד נא לטפל בהקדם
+OTHER,MEDIUM,תקלה שמשפיעה על כמה דיירים נא לטפל בהקדם,בלובי,MEDIUM,type_OTHER selected_MEDIUM location_בלובי תקלה שמשפיעה על כמה דיירים נא לטפל בהקדם
+SAFETY,LOW,יש ונדליזם ליד המעלית,בלובי,MEDIUM,type_SAFETY selected_LOW location_בלובי יש ונדליזם ליד המעלית
+OTHER,MEDIUM,נדרש טיפול של ועד הבית בזמן הקרוב,בחדר אשפה,MEDIUM,type_OTHER selected_MEDIUM location_בחדר אשפה נדרש טיפול של ועד הבית בזמן הקרוב
+CLEANLINESS,LOW,יש קצת לכלוך בלובי זה קורה כבר כמה פעמים נא לטפל בהקדם,,LOW,type_CLEANLINESS selected_LOW location_ יש קצת לכלוך בלובי זה קורה כבר כמה פעמים נא לטפל בהקדם
+OTHER,HIGH,אירוע חירום שדורש טיפול מיידי זה קורה כבר כמה פעמים,ליד המעלית,HIGH,type_OTHER selected_HIGH location_ליד המעלית אירוע חירום שדורש טיפול מיידי זה קורה כבר כמה פעמים
+OTHER,MEDIUM,בעיה חמורה שמסכנת דיירים הדיירים התלוננו על זה,,HIGH,type_OTHER selected_MEDIUM location_ בעיה חמורה שמסכנת דיירים הדיירים התלוננו על זה
+SAFETY,MEDIUM,דלת המחסן לא נסגרת טוב,בקומה 2,LOW,type_SAFETY selected_MEDIUM location_בקומה 2 דלת המחסן לא נסגרת טוב
+NOISE,HIGH,רעש חזק מאוד שמונע מדיירים לישון כבר כמה לילות,בחדר אשפה,HIGH,type_NOISE selected_HIGH location_בחדר אשפה רעש חזק מאוד שמונע מדיירים לישון כבר כמה לילות
+SAFETY,LOW,מרצפת מעט עקומה ללא סכנה מיידית,ליד ארון החשמל,LOW,type_SAFETY selected_LOW location_ליד ארון החשמל מרצפת מעט עקומה ללא סכנה מיידית
+CLEANLINESS,MEDIUM,נזילה חזקה שגורמת להצפה הדיירים התלוננו על זה,בקומה 5,HIGH,type_CLEANLINESS selected_MEDIUM location_בקומה 5 נזילה חזקה שגורמת להצפה הדיירים התלוננו על זה
+SAFETY,HIGH,שריפה קטנה בלובי זה קורה כבר כמה פעמים נא לטפל בהקדם,בלובי,HIGH,type_SAFETY selected_HIGH location_בלובי שריפה קטנה בלובי זה קורה כבר כמה פעמים נא לטפל בהקדם
+NOISE,MEDIUM,שיפוצים מרעישים בשעות לא מתאימות,בלובי,MEDIUM,type_NOISE selected_MEDIUM location_בלובי שיפוצים מרעישים בשעות לא מתאימות
+NOISE,MEDIUM,שיפוצים מרעישים בשעות לא מתאימות זה קורה כבר כמה פעמים נא לטפל בהקדם,בחדר אשפה,MEDIUM,type_NOISE selected_MEDIUM location_בחדר אשפה שיפוצים מרעישים בשעות לא מתאימות זה קורה כבר כמה פעמים נא לטפל בהקדם
+OTHER,MEDIUM,תקלה שמשפיעה על כמה דיירים,בלובי,MEDIUM,type_OTHER selected_MEDIUM location_בלובי תקלה שמשפיעה על כמה דיירים
+CLEANLINESS,MEDIUM,יש כמה ניירות על הרצפה,בחניה,LOW,type_CLEANLINESS selected_MEDIUM location_בחניה יש כמה ניירות על הרצפה
+NOISE,MEDIUM,מוזיקה חזקה מהדירה מעל כבר כמה שעות נא לטפל בהקדם,בחדר מדרגות,MEDIUM,type_NOISE selected_MEDIUM location_בחדר מדרגות מוזיקה חזקה מהדירה מעל כבר כמה שעות נא לטפל בהקדם
+NOISE,MEDIUM,שיפוצים מרעישים בשעות לא מתאימות זה קורה כבר כמה פעמים,בחדר מדרגות,MEDIUM,type_NOISE selected_MEDIUM location_בחדר מדרגות שיפוצים מרעישים בשעות לא מתאימות זה קורה כבר כמה פעמים
+NOISE,MEDIUM,שיפוצים מרעישים בשעות לא מתאימות זה קורה כבר כמה פעמים,בקומה 5,MEDIUM,type_NOISE selected_MEDIUM location_בקומה 5 שיפוצים מרעישים בשעות לא מתאימות זה קורה כבר כמה פעמים
+CLEANLINESS,HIGH,אשפה מסוכנת מפוזרת בכניסה לבניין נא לטפל בהקדם,בלובי,HIGH,type_CLEANLINESS selected_HIGH location_בלובי אשפה מסוכנת מפוזרת בכניסה לבניין נא לטפל בהקדם
+CLEANLINESS,LOW,צריך ניקיון רגיל בחדר מדרגות זה קורה כבר כמה פעמים הדיירים התלוננו על זה,בחדר מדרגות,LOW,type_CLEANLINESS selected_LOW location_בחדר מדרגות צריך ניקיון רגיל בחדר מדרגות זה קורה כבר כמה פעמים הדיירים התלוננו על זה
+OTHER,LOW,יש הערה קטנה לגבי תחזוקה נא לטפל בהקדם,ליד המעלית,LOW,type_OTHER selected_LOW location_ליד המעלית יש הערה קטנה לגבי תחזוקה נא לטפל בהקדם
+CLEANLINESS,MEDIUM,נזילה קטנה שגרמה לרטיבות בקיר נא לטפל בהקדם,ליד המעלית,MEDIUM,type_CLEANLINESS selected_MEDIUM location_ליד המעלית נזילה קטנה שגרמה לרטיבות בקיר נא לטפל בהקדם
+SAFETY,LOW,יש בורג חסר בשלט של הבניין זה קורה כבר כמה פעמים,בקומה 1,LOW,type_SAFETY selected_LOW location_בקומה 1 יש בורג חסר בשלט של הבניין זה קורה כבר כמה פעמים
+SAFETY,HIGH,שריפה קטנה בלובי הדיירים התלוננו על זה,ליד המעלית,HIGH,type_SAFETY selected_HIGH location_ליד המעלית שריפה קטנה בלובי הדיירים התלוננו על זה
+OTHER,HIGH,בקשה כללית לבדיקה כשאפשר,בלובי,LOW,type_OTHER selected_HIGH location_בלובי בקשה כללית לבדיקה כשאפשר
+NOISE,MEDIUM,רעש מתמשך מהחניה זה קורה כבר כמה פעמים,במחסן,MEDIUM,type_NOISE selected_MEDIUM location_במחסן רעש מתמשך מהחניה זה קורה כבר כמה פעמים
+CLEANLINESS,MEDIUM,הצפה בחדר מדרגות ומים זורמים זה קורה כבר כמה פעמים,בלובי,HIGH,type_CLEANLINESS selected_MEDIUM location_בלובי הצפה בחדר מדרגות ומים זורמים זה קורה כבר כמה פעמים
+NOISE,HIGH,צעקות ורעש בחדר מדרגות זה קורה כבר כמה פעמים,בלובי,MEDIUM,type_NOISE selected_HIGH location_בלובי צעקות ורעש בחדר מדרגות זה קורה כבר כמה פעמים
+SAFETY,LOW,יש בורג חסר בשלט של הבניין נא לטפל בהקדם הדיירים התלוננו על זה,בקומה 1,LOW,type_SAFETY selected_LOW location_בקומה 1 יש בורג חסר בשלט של הבניין נא לטפל בהקדם הדיירים התלוננו על זה
+SAFETY,LOW,מעקה מעט רופף אבל לא נראה מסוכן כרגע נא לטפל בהקדם,בגינה,LOW,type_SAFETY selected_LOW location_בגינה מעקה מעט רופף אבל לא נראה מסוכן כרגע נא לטפל בהקדם
+NOISE,MEDIUM,רעש מתמשך מהחניה זה קורה כבר כמה פעמים,בחדר אשפה,MEDIUM,type_NOISE selected_MEDIUM location_בחדר אשפה רעש מתמשך מהחניה זה קורה כבר כמה פעמים
+CLEANLINESS,MEDIUM,שקיות זבל נשארו ליד הכניסה נא לטפל בהקדם,במחסן,MEDIUM,type_CLEANLINESS selected_MEDIUM location_במחסן שקיות זבל נשארו ליד הכניסה נא לטפל בהקדם
+OTHER,MEDIUM,יש בעיה קטנה שאפשר לטפל בה בהמשך,ליד ארון החשמל,LOW,type_OTHER selected_MEDIUM location_ליד ארון החשמל יש בעיה קטנה שאפשר לטפל בה בהמשך
+CLEANLINESS,HIGH,נזילה חזקה שגורמת להצפה,במחסן,HIGH,type_CLEANLINESS selected_HIGH location_במחסן נזילה חזקה שגורמת להצפה
+NOISE,LOW,יש דיבורים בקומה אבל זה לא מפריע מאוד זה קורה כבר כמה פעמים,בקומה 2,LOW,type_NOISE selected_LOW location_בקומה 2 יש דיבורים בקומה אבל זה לא מפריע מאוד זה קורה כבר כמה פעמים
+OTHER,HIGH,תקלה דחופה מאוד בבניין,בחדר מדרגות,HIGH,type_OTHER selected_HIGH location_בחדר מדרגות תקלה דחופה מאוד בבניין
+SAFETY,MEDIUM,מעקה רופף שצריך תיקון בהקדם,בכניסה לבניין,MEDIUM,type_SAFETY selected_MEDIUM location_בכניסה לבניין מעקה רופף שצריך תיקון בהקדם
+CLEANLINESS,LOW,הצפה בחדר מדרגות ומים זורמים,בחדר אשפה,HIGH,type_CLEANLINESS selected_LOW location_בחדר אשפה הצפה בחדר מדרגות ומים זורמים
+SAFETY,HIGH,יש סכנת התחשמלות נא לטפל בהקדם,בכניסה לבניין,HIGH,type_SAFETY selected_HIGH location_בכניסה לבניין יש סכנת התחשמלות נא לטפל בהקדם
+CLEANLINESS,HIGH,נזילה חזקה שגורמת להצפה זה קורה כבר כמה פעמים,בגינה,HIGH,type_CLEANLINESS selected_HIGH location_בגינה נזילה חזקה שגורמת להצפה זה קורה כבר כמה פעמים
+CLEANLINESS,MEDIUM,שקיות זבל נשארו ליד הכניסה,בחדר אשפה,MEDIUM,type_CLEANLINESS selected_MEDIUM location_בחדר אשפה שקיות זבל נשארו ליד הכניסה
+OTHER,LOW,יש הערה קטנה לגבי תחזוקה,בקומה 2,LOW,type_OTHER selected_LOW location_בקומה 2 יש הערה קטנה לגבי תחזוקה
+SAFETY,LOW,יש ונדליזם ליד המעלית,בחדר אשפה,MEDIUM,type_SAFETY selected_LOW location_בחדר אשפה יש ונדליזם ליד המעלית
+SAFETY,HIGH,יש ניצוצות מארון החשמל בלובי הדיירים התלוננו על זה,בלובי,HIGH,type_SAFETY selected_HIGH location_בלובי יש ניצוצות מארון החשמל בלובי הדיירים התלוננו על זה
+SAFETY,HIGH,יש ריח שרוף ליד ארון החשמל,בקומה 1,HIGH,type_SAFETY selected_HIGH location_בקומה 1 יש ריח שרוף ליד ארון החשמל
+OTHER,HIGH,אירוע חריג שמצריך תגובה מיידית נא לטפל בהקדם,בחניה,HIGH,type_OTHER selected_HIGH location_בחניה אירוע חריג שמצריך תגובה מיידית נא לטפל בהקדם
+NOISE,MEDIUM,רעש מתמשך מהחניה,ליד ארון החשמל,MEDIUM,type_NOISE selected_MEDIUM location_ליד ארון החשמל רעש מתמשך מהחניה
+NOISE,LOW,שומעים מעט רעש מהשכנים במהלך היום זה קורה כבר כמה פעמים,בגינה,LOW,type_NOISE selected_LOW location_בגינה שומעים מעט רעש מהשכנים במהלך היום זה קורה כבר כמה פעמים
+OTHER,MEDIUM,תקלה שמשפיעה על כמה דיירים,בחדר אשפה,MEDIUM,type_OTHER selected_MEDIUM location_בחדר אשפה תקלה שמשפיעה על כמה דיירים
+SAFETY,LOW,דלת כניסה לא נסגרת ויש חשש ביטחוני,בכניסה לבניין,MEDIUM,type_SAFETY selected_LOW location_בכניסה לבניין דלת כניסה לא נסגרת ויש חשש ביטחוני
+SAFETY,MEDIUM,תאורה לא עובדת בחדר מדרגות וזה מסוכן בלילה זה קורה כבר כמה פעמים,בגינה,MEDIUM,type_SAFETY selected_MEDIUM location_בגינה תאורה לא עובדת בחדר מדרגות וזה מסוכן בלילה זה קורה כבר כמה פעמים
+NOISE,LOW,שומעים מעט רעש מהשכנים במהלך היום,בקומה 2,LOW,type_NOISE selected_LOW location_בקומה 2 שומעים מעט רעש מהשכנים במהלך היום
+CLEANLINESS,LOW,צריך ניקיון רגיל בחדר מדרגות זה קורה כבר כמה פעמים,בגינה,LOW,type_CLEANLINESS selected_LOW location_בגינה צריך ניקיון רגיל בחדר מדרגות זה קורה כבר כמה פעמים
+SAFETY,HIGH,עשן יוצא מחדר החשמל זה קורה כבר כמה פעמים,ליד ארון החשמל,HIGH,type_SAFETY selected_HIGH location_ליד ארון החשמל עשן יוצא מחדר החשמל זה קורה כבר כמה פעמים
+OTHER,LOW,צריך לבדוק משהו לא דחוף זה קורה כבר כמה פעמים הדיירים התלוננו על זה,בחניה,LOW,type_OTHER selected_LOW location_בחניה צריך לבדוק משהו לא דחוף זה קורה כבר כמה פעמים הדיירים התלוננו על זה
+NOISE,MEDIUM,שיפוצים מרעישים בשעות לא מתאימות,בקומה 2,MEDIUM,type_NOISE selected_MEDIUM location_בקומה 2 שיפוצים מרעישים בשעות לא מתאימות
+CLEANLINESS,MEDIUM,יש הרבה אשפה בחדר אשפה וריח רע,בגינה,MEDIUM,type_CLEANLINESS selected_MEDIUM location_בגינה יש הרבה אשפה בחדר אשפה וריח רע
+SAFETY,MEDIUM,יש סכנת התחשמלות,בקומה 1,HIGH,type_SAFETY selected_MEDIUM location_בקומה 1 יש סכנת התחשמלות
+OTHER,HIGH,אירוע חירום שדורש טיפול מיידי זה קורה כבר כמה פעמים,בקומה 5,HIGH,type_OTHER selected_HIGH location_בקומה 5 אירוע חירום שדורש טיפול מיידי זה קורה כבר כמה פעמים
+CLEANLINESS,LOW,יש מעט אבק ליד הכניסה,,LOW,type_CLEANLINESS selected_LOW location_ יש מעט אבק ליד הכניסה
+CLEANLINESS,HIGH,לכלוך חמור שעלול לגרום לסכנה בריאותית זה קורה כבר כמה פעמים,,HIGH,type_CLEANLINESS selected_HIGH location_ לכלוך חמור שעלול לגרום לסכנה בריאותית זה קורה כבר כמה פעמים
+SAFETY,HIGH,ריח גז חזק בבניין זה קורה כבר כמה פעמים,בחניה,HIGH,type_SAFETY selected_HIGH location_בחניה ריח גז חזק בבניין זה קורה כבר כמה פעמים
+OTHER,HIGH,אירוע חריג שמצריך תגובה מיידית,בקומה 5,HIGH,type_OTHER selected_HIGH location_בקומה 5 אירוע חריג שמצריך תגובה מיידית
+SAFETY,HIGH,זכוכית שבורה מסוכנת ליד הכניסה,ליד המעלית,HIGH,type_SAFETY selected_HIGH location_ליד המעלית זכוכית שבורה מסוכנת ליד הכניסה
+SAFETY,LOW,ריח גז חזק בבניין הדיירים התלוננו על זה,בכניסה לבניין,HIGH,type_SAFETY selected_LOW location_בכניסה לבניין ריח גז חזק בבניין הדיירים התלוננו על זה
+NOISE,LOW,יש דיבורים בקומה אבל זה לא מפריע מאוד,בקומה 5,LOW,type_NOISE selected_LOW location_בקומה 5 יש דיבורים בקומה אבל זה לא מפריע מאוד
+NOISE,MEDIUM,רעש מתמשך מהחניה,ליד המעלית,MEDIUM,type_NOISE selected_MEDIUM location_ליד המעלית רעש מתמשך מהחניה
+CLEANLINESS,HIGH,נזילה קטנה שגרמה לרטיבות בקיר,בחדר מדרגות,MEDIUM,type_CLEANLINESS selected_HIGH location_בחדר מדרגות נזילה קטנה שגרמה לרטיבות בקיר
+SAFETY,MEDIUM,מרצפת שבורה שעלולה לגרום לנפילה הדיירים התלוננו על זה,במחסן,MEDIUM,type_SAFETY selected_MEDIUM location_במחסן מרצפת שבורה שעלולה לגרום לנפילה הדיירים התלוננו על זה
+SAFETY,MEDIUM,דלת כניסה לא נסגרת ויש חשש ביטחוני הדיירים התלוננו על זה,בקומה 1,MEDIUM,type_SAFETY selected_MEDIUM location_בקומה 1 דלת כניסה לא נסגרת ויש חשש ביטחוני הדיירים התלוננו על זה
+SAFETY,MEDIUM,מעקה רופף שצריך תיקון בהקדם נא לטפל בהקדם,ליד ארון החשמל,MEDIUM,type_SAFETY selected_MEDIUM location_ליד ארון החשמל מעקה רופף שצריך תיקון בהקדם נא לטפל בהקדם
+CLEANLINESS,MEDIUM,יש הרבה אשפה בחדר אשפה וריח רע,בקומה 5,MEDIUM,type_CLEANLINESS selected_MEDIUM location_בקומה 5 יש הרבה אשפה בחדר אשפה וריח רע
+SAFETY,LOW,מעלית תקועה עם אנשים בפנים זה קורה כבר כמה פעמים,בחניה,HIGH,type_SAFETY selected_LOW location_בחניה מעלית תקועה עם אנשים בפנים זה קורה כבר כמה פעמים
+OTHER,HIGH,יש הערה קטנה לגבי תחזוקה,,LOW,type_OTHER selected_HIGH location_ יש הערה קטנה לגבי תחזוקה
+SAFETY,MEDIUM,מרצפת שבורה שעלולה לגרום לנפילה,במחסן,MEDIUM,type_SAFETY selected_MEDIUM location_במחסן מרצפת שבורה שעלולה לגרום לנפילה
+OTHER,HIGH,תקלה דחופה מאוד בבניין,בחדר אשפה,HIGH,type_OTHER selected_HIGH location_בחדר אשפה תקלה דחופה מאוד בבניין
+OTHER,HIGH,נדרש טיפול של ועד הבית בזמן הקרוב הדיירים התלוננו על זה,בגינה,MEDIUM,type_OTHER selected_HIGH location_בגינה נדרש טיפול של ועד הבית בזמן הקרוב הדיירים התלוננו על זה
+SAFETY,LOW,מעקה רופף שצריך תיקון בהקדם זה קורה כבר כמה פעמים נא לטפל בהקדם,במחסן,MEDIUM,type_SAFETY selected_LOW location_במחסן מעקה רופף שצריך תיקון בהקדם זה קורה כבר כמה פעמים נא לטפל בהקדם
+NOISE,HIGH,רעש חריג מאוד באמצע הלילה עם צעקות חזקות זה קורה כבר כמה פעמים,בלובי,HIGH,type_NOISE selected_HIGH location_בלובי רעש חריג מאוד באמצע הלילה עם צעקות חזקות זה קורה כבר כמה פעמים
+OTHER,MEDIUM,יש בעיה קטנה שאפשר לטפל בה בהמשך נא לטפל בהקדם,בחדר מדרגות,LOW,type_OTHER selected_MEDIUM location_בחדר מדרגות יש בעיה קטנה שאפשר לטפל בה בהמשך נא לטפל בהקדם
+NOISE,MEDIUM,צעקות ורעש בחדר מדרגות זה קורה כבר כמה פעמים,בלובי,MEDIUM,type_NOISE selected_MEDIUM location_בלובי צעקות ורעש בחדר מדרגות זה קורה כבר כמה פעמים
+CLEANLINESS,MEDIUM,נזילה קטנה שגרמה לרטיבות בקיר,בחדר אשפה,MEDIUM,type_CLEANLINESS selected_MEDIUM location_בחדר אשפה נזילה קטנה שגרמה לרטיבות בקיר
+SAFETY,LOW,ריח גז חזק בבניין,בקומה 1,HIGH,type_SAFETY selected_LOW location_בקומה 1 ריח גז חזק בבניין
+OTHER,HIGH,בקשה כללית לבדיקה כשאפשר הדיירים התלוננו על זה,בקומה 5,LOW,type_OTHER selected_HIGH location_בקומה 5 בקשה כללית לבדיקה כשאפשר הדיירים התלוננו על זה
+NOISE,HIGH,מטרד רעש קיצוני ומתמשך,ליד ארון החשמל,HIGH,type_NOISE selected_HIGH location_ליד ארון החשמל מטרד רעש קיצוני ומתמשך
+OTHER,LOW,תקלה לא מסוכנת אבל מפריעה לדיירים,בכניסה לבניין,MEDIUM,type_OTHER selected_LOW location_בכניסה לבניין תקלה לא מסוכנת אבל מפריעה לדיירים
+OTHER,LOW,יש בעיה קטנה שאפשר לטפל בה בהמשך,בחדר אשפה,LOW,type_OTHER selected_LOW location_בחדר אשפה יש בעיה קטנה שאפשר לטפל בה בהמשך
+CLEANLINESS,MEDIUM,שקיות זבל נשארו ליד הכניסה,במחסן,MEDIUM,type_CLEANLINESS selected_MEDIUM location_במחסן שקיות זבל נשארו ליד הכניסה
+CLEANLINESS,MEDIUM,יש ריח לא נעים בלובי כבר יומיים נא לטפל בהקדם הדיירים התלוננו על זה,בגינה,MEDIUM,type_CLEANLINESS selected_MEDIUM location_בגינה יש ריח לא נעים בלובי כבר יומיים נא לטפל בהקדם הדיירים התלוננו על זה
+SAFETY,MEDIUM,יש ונדליזם ליד המעלית,במחסן,MEDIUM,type_SAFETY selected_MEDIUM location_במחסן יש ונדליזם ליד המעלית
+NOISE,LOW,שומעים מעט רעש מהשכנים במהלך היום הדיירים התלוננו על זה,בחדר אשפה,LOW,type_NOISE selected_LOW location_בחדר אשפה שומעים מעט רעש מהשכנים במהלך היום הדיירים התלוננו על זה
+OTHER,MEDIUM,תקלה לא מסוכנת אבל מפריעה לדיירים,בקומה 1,MEDIUM,type_OTHER selected_MEDIUM location_בקומה 1 תקלה לא מסוכנת אבל מפריעה לדיירים
+NOISE,MEDIUM,שיפוצים מרעישים בשעות לא מתאימות,בגינה,MEDIUM,type_NOISE selected_MEDIUM location_בגינה שיפוצים מרעישים בשעות לא מתאימות
+OTHER,LOW,תקלה דחופה מאוד בבניין נא לטפל בהקדם,בגינה,HIGH,type_OTHER selected_LOW location_בגינה תקלה דחופה מאוד בבניין נא לטפל בהקדם
+CLEANLINESS,LOW,יש קצת לכלוך בלובי נא לטפל בהקדם,בקומה 2,LOW,type_CLEANLINESS selected_LOW location_בקומה 2 יש קצת לכלוך בלובי נא לטפל בהקדם
+NOISE,HIGH,רעש חזק מאוד שמונע מדיירים לישון כבר כמה לילות,בחניה,HIGH,type_NOISE selected_HIGH location_בחניה רעש חזק מאוד שמונע מדיירים לישון כבר כמה לילות
+NOISE,HIGH,קולות חזקים של שבירה ואלימות מהדירה,,HIGH,type_NOISE selected_HIGH location_ קולות חזקים של שבירה ואלימות מהדירה
+CLEANLINESS,LOW,אשפה מסוכנת מפוזרת בכניסה לבניין זה קורה כבר כמה פעמים,בכניסה לבניין,HIGH,type_CLEANLINESS selected_LOW location_בכניסה לבניין אשפה מסוכנת מפוזרת בכניסה לבניין זה קורה כבר כמה פעמים
+CLEANLINESS,LOW,יש קצת לכלוך בלובי נא לטפל בהקדם,,LOW,type_CLEANLINESS selected_LOW location_ יש קצת לכלוך בלובי נא לטפל בהקדם
+SAFETY,MEDIUM,זכוכית שבורה מסוכנת ליד הכניסה נא לטפל בהקדם,בחניה,HIGH,type_SAFETY selected_MEDIUM location_בחניה זכוכית שבורה מסוכנת ליד הכניסה נא לטפל בהקדם
+CLEANLINESS,HIGH,ביוב עולה ויש ריח חריף מאוד,בלובי,HIGH,type_CLEANLINESS selected_HIGH location_בלובי ביוב עולה ויש ריח חריף מאוד
+NOISE,MEDIUM,צעקות ורעש בחדר מדרגות נא לטפל בהקדם,ליד ארון החשמל,MEDIUM,type_NOISE selected_MEDIUM location_ליד ארון החשמל צעקות ורעש בחדר מדרגות נא לטפל בהקדם
+SAFETY,HIGH,יש ניצוצות מארון החשמל בלובי,בקומה 2,HIGH,type_SAFETY selected_HIGH location_בקומה 2 יש ניצוצות מארון החשמל בלובי
+OTHER,MEDIUM,נדרש טיפול של ועד הבית בזמן הקרוב,ליד ארון החשמל,MEDIUM,type_OTHER selected_MEDIUM location_ליד ארון החשמל נדרש טיפול של ועד הבית בזמן הקרוב
+NOISE,HIGH,רעש חירום חזק מהחניה בשעות הלילה,בגינה,HIGH,type_NOISE selected_HIGH location_בגינה רעש חירום חזק מהחניה בשעות הלילה
+NOISE,LOW,קולות חזקים של שבירה ואלימות מהדירה נא לטפל בהקדם,בלובי,HIGH,type_NOISE selected_LOW location_בלובי קולות חזקים של שבירה ואלימות מהדירה נא לטפל בהקדם
+CLEANLINESS,MEDIUM,לכלוך חריג בחדר מדרגות זה קורה כבר כמה פעמים נא לטפל בהקדם,בחניה,MEDIUM,type_CLEANLINESS selected_MEDIUM location_בחניה לכלוך חריג בחדר מדרגות זה קורה כבר כמה פעמים נא לטפל בהקדם
+SAFETY,HIGH,עשן יוצא מחדר החשמל הדיירים התלוננו על זה,בלובי,HIGH,type_SAFETY selected_HIGH location_בלובי עשן יוצא מחדר החשמל הדיירים התלוננו על זה
+NOISE,MEDIUM,מוזיקה חזקה מהדירה מעל כבר כמה שעות הדיירים התלוננו על זה,בחניה,MEDIUM,type_NOISE selected_MEDIUM location_בחניה מוזיקה חזקה מהדירה מעל כבר כמה שעות הדיירים התלוננו על זה
+CLEANLINESS,LOW,יש כמה ניירות על הרצפה,ליד ארון החשמל,LOW,type_CLEANLINESS selected_LOW location_ליד ארון החשמל יש כמה ניירות על הרצפה
+NOISE,LOW,יש דיבורים בקומה אבל זה לא מפריע מאוד,בלובי,LOW,type_NOISE selected_LOW location_בלובי יש דיבורים בקומה אבל זה לא מפריע מאוד
+CLEANLINESS,MEDIUM,יש הרבה אשפה בחדר אשפה וריח רע,בלובי,MEDIUM,type_CLEANLINESS selected_MEDIUM location_בלובי יש הרבה אשפה בחדר אשפה וריח רע
+CLEANLINESS,LOW,פח קטן לא רוקן אבל לא דחוף,,LOW,type_CLEANLINESS selected_LOW location_ פח קטן לא רוקן אבל לא דחוף
+OTHER,MEDIUM,בעיה שחוזרת כמה פעמים ודורשת טיפול נא לטפל בהקדם,במחסן,MEDIUM,type_OTHER selected_MEDIUM location_במחסן בעיה שחוזרת כמה פעמים ודורשת טיפול נא לטפל בהקדם
+OTHER,LOW,צריך לבדוק משהו לא דחוף זה קורה כבר כמה פעמים,בלובי,LOW,type_OTHER selected_LOW location_בלובי צריך לבדוק משהו לא דחוף זה קורה כבר כמה פעמים
+CLEANLINESS,MEDIUM,נזילה קטנה שגרמה לרטיבות בקיר,בקומה 1,MEDIUM,type_CLEANLINESS selected_MEDIUM location_בקומה 1 נזילה קטנה שגרמה לרטיבות בקיר
+SAFETY,MEDIUM,קיר או תקרה נראים לפני קריסה הדיירים התלוננו על זה,ליד המעלית,HIGH,type_SAFETY selected_MEDIUM location_ליד המעלית קיר או תקרה נראים לפני קריסה הדיירים התלוננו על זה
+CLEANLINESS,HIGH,אשפה מסוכנת מפוזרת בכניסה לבניין,,HIGH,type_CLEANLINESS selected_HIGH location_ אשפה מסוכנת מפוזרת בכניסה לבניין
+OTHER,MEDIUM,תקלה שמשפיעה על כמה דיירים,בכניסה לבניין,MEDIUM,type_OTHER selected_MEDIUM location_בכניסה לבניין תקלה שמשפיעה על כמה דיירים
+NOISE,MEDIUM,צעקות ורעש בחדר מדרגות נא לטפל בהקדם,בקומה 1,MEDIUM,type_NOISE selected_MEDIUM location_בקומה 1 צעקות ורעש בחדר מדרגות נא לטפל בהקדם
+CLEANLINESS,LOW,צריך ניקיון רגיל בחדר מדרגות,במחסן,LOW,type_CLEANLINESS selected_LOW location_במחסן צריך ניקיון רגיל בחדר מדרגות
+NOISE,LOW,שומעים מעט רעש מהשכנים במהלך היום נא לטפל בהקדם,בחניה,LOW,type_NOISE selected_LOW location_בחניה שומעים מעט רעש מהשכנים במהלך היום נא לטפל בהקדם
+SAFETY,HIGH,קיר או תקרה נראים לפני קריסה זה קורה כבר כמה פעמים נא לטפל בהקדם,בלובי,HIGH,type_SAFETY selected_HIGH location_בלובי קיר או תקרה נראים לפני קריסה זה קורה כבר כמה פעמים נא לטפל בהקדם
+CLEANLINESS,MEDIUM,יש קצת לכלוך בלובי,בחניה,LOW,type_CLEANLINESS selected_MEDIUM location_בחניה יש קצת לכלוך בלובי
+OTHER,LOW,יש הערה קטנה לגבי תחזוקה,בחדר מדרגות,LOW,type_OTHER selected_LOW location_בחדר מדרגות יש הערה קטנה לגבי תחזוקה
+OTHER,MEDIUM,יש הערה קטנה לגבי תחזוקה,בקומה 5,LOW,type_OTHER selected_MEDIUM location_בקומה 5 יש הערה קטנה לגבי תחזוקה
+SAFETY,LOW,קיר או תקרה נראים לפני קריסה,בכניסה לבניין,HIGH,type_SAFETY selected_LOW location_בכניסה לבניין קיר או תקרה נראים לפני קריסה
+NOISE,LOW,מישהו הזיז רהיטים לזמן קצר זה קורה כבר כמה פעמים,במחסן,LOW,type_NOISE selected_LOW location_במחסן מישהו הזיז רהיטים לזמן קצר זה קורה כבר כמה פעמים
+OTHER,HIGH,מצב מסוכן שמצריך טיפול בהול,בחניה,HIGH,type_OTHER selected_HIGH location_בחניה מצב מסוכן שמצריך טיפול בהול
+OTHER,HIGH,בעיה חמורה שמסכנת דיירים זה קורה כבר כמה פעמים,ליד המעלית,HIGH,type_OTHER selected_HIGH location_ליד המעלית בעיה חמורה שמסכנת דיירים זה קורה כבר כמה פעמים
+OTHER,LOW,דיווח כללי ללא סכנה נא לטפל בהקדם,במחסן,LOW,type_OTHER selected_LOW location_במחסן דיווח כללי ללא סכנה נא לטפל בהקדם
+SAFETY,HIGH,קיר או תקרה נראים לפני קריסה נא לטפל בהקדם,בגינה,HIGH,type_SAFETY selected_HIGH location_בגינה קיר או תקרה נראים לפני קריסה נא לטפל בהקדם
+SAFETY,LOW,דלת המחסן לא נסגרת טוב זה קורה כבר כמה פעמים,ליד המעלית,LOW,type_SAFETY selected_LOW location_ליד המעלית דלת המחסן לא נסגרת טוב זה קורה כבר כמה פעמים
+CLEANLINESS,LOW,נזילה קטנה שגרמה לרטיבות בקיר הדיירים התלוננו על זה,בחניה,MEDIUM,type_CLEANLINESS selected_LOW location_בחניה נזילה קטנה שגרמה לרטיבות בקיר הדיירים התלוננו על זה
+CLEANLINESS,MEDIUM,הצפה בחדר מדרגות ומים זורמים,במחסן,HIGH,type_CLEANLINESS selected_MEDIUM location_במחסן הצפה בחדר מדרגות ומים זורמים
+CLEANLINESS,LOW,יש כמה ניירות על הרצפה זה קורה כבר כמה פעמים,,LOW,type_CLEANLINESS selected_LOW location_ יש כמה ניירות על הרצפה זה קורה כבר כמה פעמים
+SAFETY,LOW,יש בורג חסר בשלט של הבניין זה קורה כבר כמה פעמים,ליד ארון החשמל,LOW,type_SAFETY selected_LOW location_ליד ארון החשמל יש בורג חסר בשלט של הבניין זה קורה כבר כמה פעמים
+NOISE,MEDIUM,רעש חזק בלילה שמפריע לדיירים,ליד ארון החשמל,MEDIUM,type_NOISE selected_MEDIUM location_ליד ארון החשמל רעש חזק בלילה שמפריע לדיירים
+CLEANLINESS,LOW,יש ריח לא נעים בלובי כבר יומיים,בחדר מדרגות,MEDIUM,type_CLEANLINESS selected_LOW location_בחדר מדרגות יש ריח לא נעים בלובי כבר יומיים
+CLEANLINESS,MEDIUM,לכלוך חריג בחדר מדרגות זה קורה כבר כמה פעמים,בגינה,MEDIUM,type_CLEANLINESS selected_MEDIUM location_בגינה לכלוך חריג בחדר מדרגות זה קורה כבר כמה פעמים
+CLEANLINESS,LOW,יש כמה ניירות על הרצפה,,LOW,type_CLEANLINESS selected_LOW location_ יש כמה ניירות על הרצפה
+SAFETY,MEDIUM,מרצפת שבורה שעלולה לגרום לנפילה,במחסן,MEDIUM,type_SAFETY selected_MEDIUM location_במחסן מרצפת שבורה שעלולה לגרום לנפילה
+CLEANLINESS,HIGH,אשפה מסוכנת מפוזרת בכניסה לבניין,בחדר מדרגות,HIGH,type_CLEANLINESS selected_HIGH location_בחדר מדרגות אשפה מסוכנת מפוזרת בכניסה לבניין
+NOISE,MEDIUM,רעש מתמשך מהחניה,בחדר אשפה,MEDIUM,type_NOISE selected_MEDIUM location_בחדר אשפה רעש מתמשך מהחניה
+SAFETY,HIGH,יש ריח שרוף ליד ארון החשמל זה קורה כבר כמה פעמים הדיירים התלוננו על זה,בחניה,HIGH,type_SAFETY selected_HIGH location_בחניה יש ריח שרוף ליד ארון החשמל זה קורה כבר כמה פעמים הדיירים התלוננו על זה
+CLEANLINESS,MEDIUM,פח קטן לא רוקן אבל לא דחוף זה קורה כבר כמה פעמים,במחסן,LOW,type_CLEANLINESS selected_MEDIUM location_במחסן פח קטן לא רוקן אבל לא דחוף זה קורה כבר כמה פעמים
+CLEANLINESS,MEDIUM,יש הרבה אשפה בחדר אשפה וריח רע זה קורה כבר כמה פעמים,בקומה 5,MEDIUM,type_CLEANLINESS selected_MEDIUM location_בקומה 5 יש הרבה אשפה בחדר אשפה וריח רע זה קורה כבר כמה פעמים
+OTHER,LOW,צריך לבדוק משהו לא דחוף,,LOW,type_OTHER selected_LOW location_ צריך לבדוק משהו לא דחוף
+OTHER,MEDIUM,בעיה שחוזרת כמה פעמים ודורשת טיפול זה קורה כבר כמה פעמים,בלובי,MEDIUM,type_OTHER selected_MEDIUM location_בלובי בעיה שחוזרת כמה פעמים ודורשת טיפול זה קורה כבר כמה פעמים
+CLEANLINESS,LOW,יש מעט אבק ליד הכניסה,בקומה 5,LOW,type_CLEANLINESS selected_LOW location_בקומה 5 יש מעט אבק ליד הכניסה
+SAFETY,HIGH,יש ריח שרוף ליד ארון החשמל זה קורה כבר כמה פעמים הדיירים התלוננו על זה,בלובי,HIGH,type_SAFETY selected_HIGH location_בלובי יש ריח שרוף ליד ארון החשמל זה קורה כבר כמה פעמים הדיירים התלוננו על זה
+NOISE,MEDIUM,מוזיקה חזקה מהדירה מעל כבר כמה שעות,בחניה,MEDIUM,type_NOISE selected_MEDIUM location_בחניה מוזיקה חזקה מהדירה מעל כבר כמה שעות
+OTHER,MEDIUM,נדרש טיפול של ועד הבית בזמן הקרוב זה קורה כבר כמה פעמים,בכניסה לבניין,MEDIUM,type_OTHER selected_MEDIUM location_בכניסה לבניין נדרש טיפול של ועד הבית בזמן הקרוב זה קורה כבר כמה פעמים
+NOISE,HIGH,רעש חריג מאוד באמצע הלילה עם צעקות חזקות,בחניה,HIGH,type_NOISE selected_HIGH location_בחניה רעש חריג מאוד באמצע הלילה עם צעקות חזקות
+OTHER,MEDIUM,יש בעיה מתמשכת בבניין זה קורה כבר כמה פעמים,בחדר מדרגות,MEDIUM,type_OTHER selected_MEDIUM location_בחדר מדרגות יש בעיה מתמשכת בבניין זה קורה כבר כמה פעמים
+OTHER,LOW,יש בעיה קטנה שאפשר לטפל בה בהמשך נא לטפל בהקדם,בקומה 5,LOW,type_OTHER selected_LOW location_בקומה 5 יש בעיה קטנה שאפשר לטפל בה בהמשך נא לטפל בהקדם
+SAFETY,HIGH,יש סכנת התחשמלות נא לטפל בהקדם,בחדר אשפה,HIGH,type_SAFETY selected_HIGH location_בחדר אשפה יש סכנת התחשמלות נא לטפל בהקדם
+NOISE,MEDIUM,רעש מתמשך מהחניה הדיירים התלוננו על זה,בלובי,MEDIUM,type_NOISE selected_MEDIUM location_בלובי רעש מתמשך מהחניה הדיירים התלוננו על זה
+OTHER,HIGH,מצב מסוכן שמצריך טיפול בהול,בחדר אשפה,HIGH,type_OTHER selected_HIGH location_בחדר אשפה מצב מסוכן שמצריך טיפול בהול
+CLEANLINESS,HIGH,ביוב עולה ויש ריח חריף מאוד,ליד ארון החשמל,HIGH,type_CLEANLINESS selected_HIGH location_ליד ארון החשמל ביוב עולה ויש ריח חריף מאוד
+OTHER,LOW,בקשה כללית לבדיקה כשאפשר,בקומה 5,LOW,type_OTHER selected_LOW location_בקומה 5 בקשה כללית לבדיקה כשאפשר
+NOISE,MEDIUM,צעקות ורעש בחדר מדרגות הדיירים התלוננו על זה,בקומה 5,MEDIUM,type_NOISE selected_MEDIUM location_בקומה 5 צעקות ורעש בחדר מדרגות הדיירים התלוננו על זה
+SAFETY,LOW,דלת המחסן לא נסגרת טוב,ליד ארון החשמל,LOW,type_SAFETY selected_LOW location_ליד ארון החשמל דלת המחסן לא נסגרת טוב
+NOISE,LOW,יש דיבורים בקומה אבל זה לא מפריע מאוד,בגינה,LOW,type_NOISE selected_LOW location_בגינה יש דיבורים בקומה אבל זה לא מפריע מאוד
+SAFETY,LOW,תאורה חלשה באזור הכניסה,במחסן,LOW,type_SAFETY selected_LOW location_במחסן תאורה חלשה באזור הכניסה
+CLEANLINESS,HIGH,אשפה מסוכנת מפוזרת בכניסה לבניין נא לטפל בהקדם,ליד המעלית,HIGH,type_CLEANLINESS selected_HIGH location_ליד המעלית אשפה מסוכנת מפוזרת בכניסה לבניין נא לטפל בהקדם
+SAFETY,HIGH,יש ניצוצות מארון החשמל בלובי,בקומה 1,HIGH,type_SAFETY selected_HIGH location_בקומה 1 יש ניצוצות מארון החשמל בלובי
+SAFETY,HIGH,יש סכנת התחשמלות הדיירים התלוננו על זה,בקומה 2,HIGH,type_SAFETY selected_HIGH location_בקומה 2 יש סכנת התחשמלות הדיירים התלוננו על זה
+SAFETY,LOW,מעקה מעט רופף אבל לא נראה מסוכן כרגע,ליד ארון החשמל,LOW,type_SAFETY selected_LOW location_ליד ארון החשמל מעקה מעט רופף אבל לא נראה מסוכן כרגע
+NOISE,HIGH,רעש קל מהחצר בשעות היום,בגינה,LOW,type_NOISE selected_HIGH location_בגינה רעש קל מהחצר בשעות היום
+NOISE,MEDIUM,מוזיקה חזקה מהדירה מעל כבר כמה שעות זה קורה כבר כמה פעמים,במחסן,MEDIUM,type_NOISE selected_MEDIUM location_במחסן מוזיקה חזקה מהדירה מעל כבר כמה שעות זה קורה כבר כמה פעמים
+NOISE,LOW,יש רעש חלש מדי פעם אבל לא דחוף,ליד ארון החשמל,LOW,type_NOISE selected_LOW location_ליד ארון החשמל יש רעש חלש מדי פעם אבל לא דחוף
+OTHER,MEDIUM,בעיה שחוזרת כמה פעמים ודורשת טיפול,ליד המעלית,MEDIUM,type_OTHER selected_MEDIUM location_ליד המעלית בעיה שחוזרת כמה פעמים ודורשת טיפול
+SAFETY,HIGH,מרצפת מעט עקומה ללא סכנה מיידית,בקומה 5,LOW,type_SAFETY selected_HIGH location_בקומה 5 מרצפת מעט עקומה ללא סכנה מיידית
+SAFETY,LOW,יש סכנת התחשמלות זה קורה כבר כמה פעמים,בלובי,HIGH,type_SAFETY selected_LOW location_בלובי יש סכנת התחשמלות זה קורה כבר כמה פעמים
+NOISE,HIGH,מטרד רעש קיצוני ומתמשך זה קורה כבר כמה פעמים הדיירים התלוננו על זה,בחדר מדרגות,HIGH,type_NOISE selected_HIGH location_בחדר מדרגות מטרד רעש קיצוני ומתמשך זה קורה כבר כמה פעמים הדיירים התלוננו על זה
+NOISE,LOW,רעש חריג מאוד באמצע הלילה עם צעקות חזקות,,HIGH,type_NOISE selected_LOW location_ רעש חריג מאוד באמצע הלילה עם צעקות חזקות
+CLEANLINESS,HIGH,ביוב עולה ויש ריח חריף מאוד זה קורה כבר כמה פעמים,בלובי,HIGH,type_CLEANLINESS selected_HIGH location_בלובי ביוב עולה ויש ריח חריף מאוד זה קורה כבר כמה פעמים
+CLEANLINESS,LOW,יש מעט אבק ליד הכניסה הדיירים התלוננו על זה,בחדר אשפה,LOW,type_CLEANLINESS selected_LOW location_בחדר אשפה יש מעט אבק ליד הכניסה הדיירים התלוננו על זה
+SAFETY,MEDIUM,זכוכית שבורה מסוכנת ליד הכניסה זה קורה כבר כמה פעמים,בכניסה לבניין,HIGH,type_SAFETY selected_MEDIUM location_בכניסה לבניין זכוכית שבורה מסוכנת ליד הכניסה זה קורה כבר כמה פעמים
+OTHER,LOW,בעיה שחוזרת כמה פעמים ודורשת טיפול,בגינה,MEDIUM,type_OTHER selected_LOW location_בגינה בעיה שחוזרת כמה פעמים ודורשת טיפול
+CLEANLINESS,HIGH,הצפה בחדר מדרגות ומים זורמים,בכניסה לבניין,HIGH,type_CLEANLINESS selected_HIGH location_בכניסה לבניין הצפה בחדר מדרגות ומים זורמים
+OTHER,LOW,אירוע חריג שמצריך תגובה מיידית זה קורה כבר כמה פעמים,,HIGH,type_OTHER selected_LOW location_ אירוע חריג שמצריך תגובה מיידית זה קורה כבר כמה פעמים
+SAFETY,LOW,תאורה לא עובדת בחדר מדרגות וזה מסוכן בלילה,בכניסה לבניין,MEDIUM,type_SAFETY selected_LOW location_בכניסה לבניין תאורה לא עובדת בחדר מדרגות וזה מסוכן בלילה
+SAFETY,MEDIUM,מרצפת מעט עקומה ללא סכנה מיידית,בחדר אשפה,LOW,type_SAFETY selected_MEDIUM location_בחדר אשפה מרצפת מעט עקומה ללא סכנה מיידית
+OTHER,LOW,בקשה כללית לבדיקה כשאפשר,בחניה,LOW,type_OTHER selected_LOW location_בחניה בקשה כללית לבדיקה כשאפשר
+SAFETY,LOW,תאורה חלשה באזור הכניסה,בקומה 1,LOW,type_SAFETY selected_LOW location_בקומה 1 תאורה חלשה באזור הכניסה
+SAFETY,MEDIUM,יש סכנת התחשמלות,בכניסה לבניין,HIGH,type_SAFETY selected_MEDIUM location_בכניסה לבניין יש סכנת התחשמלות
+SAFETY,HIGH,מעלית תקועה עם אנשים בפנים זה קורה כבר כמה פעמים,במחסן,HIGH,type_SAFETY selected_HIGH location_במחסן מעלית תקועה עם אנשים בפנים זה קורה כבר כמה פעמים
+SAFETY,HIGH,יש ריח שרוף ליד ארון החשמל,,HIGH,type_SAFETY selected_HIGH location_ יש ריח שרוף ליד ארון החשמל
+SAFETY,HIGH,ריח גז חזק בבניין זה קורה כבר כמה פעמים הדיירים התלוננו על זה,בקומה 5,HIGH,type_SAFETY selected_HIGH location_בקומה 5 ריח גז חזק בבניין זה קורה כבר כמה פעמים הדיירים התלוננו על זה
+OTHER,LOW,דיווח כללי ללא סכנה נא לטפל בהקדם,בחדר מדרגות,LOW,type_OTHER selected_LOW location_בחדר מדרגות דיווח כללי ללא סכנה נא לטפל בהקדם
+SAFETY,HIGH,יש ניצוצות מארון החשמל בלובי,בלובי,HIGH,type_SAFETY selected_HIGH location_בלובי יש ניצוצות מארון החשמל בלובי
+OTHER,MEDIUM,נדרש טיפול של ועד הבית בזמן הקרוב זה קורה כבר כמה פעמים,ליד המעלית,MEDIUM,type_OTHER selected_MEDIUM location_ליד המעלית נדרש טיפול של ועד הבית בזמן הקרוב זה קורה כבר כמה פעמים
+SAFETY,LOW,יש בורג חסר בשלט של הבניין זה קורה כבר כמה פעמים,ליד ארון החשמל,LOW,type_SAFETY selected_LOW location_ליד ארון החשמל יש בורג חסר בשלט של הבניין זה קורה כבר כמה פעמים
+SAFETY,HIGH,יש ריח שרוף ליד ארון החשמל,בגינה,HIGH,type_SAFETY selected_HIGH location_בגינה יש ריח שרוף ליד ארון החשמל
+OTHER,HIGH,מצב מסוכן שמצריך טיפול בהול,בחדר מדרגות,HIGH,type_OTHER selected_HIGH location_בחדר מדרגות מצב מסוכן שמצריך טיפול בהול
+NOISE,HIGH,רעש חזק מאוד שמונע מדיירים לישון כבר כמה לילות נא לטפל בהקדם,בקומה 1,HIGH,type_NOISE selected_HIGH location_בקומה 1 רעש חזק מאוד שמונע מדיירים לישון כבר כמה לילות נא לטפל בהקדם
+SAFETY,HIGH,מעלית תקועה עם אנשים בפנים נא לטפל בהקדם הדיירים התלוננו על זה,במחסן,HIGH,type_SAFETY selected_HIGH location_במחסן מעלית תקועה עם אנשים בפנים נא לטפל בהקדם הדיירים התלוננו על זה
+CLEANLINESS,LOW,נזילה קטנה שגרמה לרטיבות בקיר,במחסן,MEDIUM,type_CLEANLINESS selected_LOW location_במחסן נזילה קטנה שגרמה לרטיבות בקיר
+SAFETY,MEDIUM,תאורה לא עובדת בחדר מדרגות וזה מסוכן בלילה זה קורה כבר כמה פעמים,ליד ארון החשמל,MEDIUM,type_SAFETY selected_MEDIUM location_ליד ארון החשמל תאורה לא עובדת בחדר מדרגות וזה מסוכן בלילה זה קורה כבר כמה פעמים
+SAFETY,HIGH,מעקה רופף שצריך תיקון בהקדם זה קורה כבר כמה פעמים הדיירים התלוננו על זה,בקומה 1,MEDIUM,type_SAFETY selected_HIGH location_בקומה 1 מעקה רופף שצריך תיקון בהקדם זה קורה כבר כמה פעמים הדיירים התלוננו על זה
+NOISE,HIGH,מטרד רעש קיצוני ומתמשך נא לטפל בהקדם,בכניסה לבניין,HIGH,type_NOISE selected_HIGH location_בכניסה לבניין מטרד רעש קיצוני ומתמשך נא לטפל בהקדם
+SAFETY,HIGH,יש ניצוצות מארון החשמל בלובי נא לטפל בהקדם,בחדר אשפה,HIGH,type_SAFETY selected_HIGH location_בחדר אשפה יש ניצוצות מארון החשמל בלובי נא לטפל בהקדם
+OTHER,HIGH,אירוע חירום שדורש טיפול מיידי זה קורה כבר כמה פעמים,בחדר מדרגות,HIGH,type_OTHER selected_HIGH location_בחדר מדרגות אירוע חירום שדורש טיפול מיידי זה קורה כבר כמה פעמים
+NOISE,MEDIUM,רעש חזק בלילה שמפריע לדיירים הדיירים התלוננו על זה,בחניה,MEDIUM,type_NOISE selected_MEDIUM location_בחניה רעש חזק בלילה שמפריע לדיירים הדיירים התלוננו על זה
+NOISE,MEDIUM,מטרד רעש קיצוני ומתמשך זה קורה כבר כמה פעמים הדיירים התלוננו על זה,בקומה 1,HIGH,type_NOISE selected_MEDIUM location_בקומה 1 מטרד רעש קיצוני ומתמשך זה קורה כבר כמה פעמים הדיירים התלוננו על זה
+CLEANLINESS,LOW,פח קטן לא רוקן אבל לא דחוף נא לטפל בהקדם,בחניה,LOW,type_CLEANLINESS selected_LOW location_בחניה פח קטן לא רוקן אבל לא דחוף נא לטפל בהקדם
+SAFETY,HIGH,יש ניצוצות מארון החשמל בלובי,בגינה,HIGH,type_SAFETY selected_HIGH location_בגינה יש ניצוצות מארון החשמל בלובי
+SAFETY,MEDIUM,מרצפת שבורה שעלולה לגרום לנפילה,בקומה 1,MEDIUM,type_SAFETY selected_MEDIUM location_בקומה 1 מרצפת שבורה שעלולה לגרום לנפילה
+SAFETY,MEDIUM,מרצפת שבורה שעלולה לגרום לנפילה נא לטפל בהקדם,,MEDIUM,type_SAFETY selected_MEDIUM location_ מרצפת שבורה שעלולה לגרום לנפילה נא לטפל בהקדם
+SAFETY,LOW,דלת המחסן לא נסגרת טוב,,LOW,type_SAFETY selected_LOW location_ דלת המחסן לא נסגרת טוב
+CLEANLINESS,LOW,ביוב עולה ויש ריח חריף מאוד נא לטפל בהקדם,בקומה 5,HIGH,type_CLEANLINESS selected_LOW location_בקומה 5 ביוב עולה ויש ריח חריף מאוד נא לטפל בהקדם
+SAFETY,HIGH,מעלית תקועה עם אנשים בפנים,בחדר אשפה,HIGH,type_SAFETY selected_HIGH location_בחדר אשפה מעלית תקועה עם אנשים בפנים
+NOISE,MEDIUM,שיפוצים מרעישים בשעות לא מתאימות נא לטפל בהקדם,,MEDIUM,type_NOISE selected_MEDIUM location_ שיפוצים מרעישים בשעות לא מתאימות נא לטפל בהקדם
+NOISE,LOW,מטרד רעש קיצוני ומתמשך הדיירים התלוננו על זה,בלובי,HIGH,type_NOISE selected_LOW location_בלובי מטרד רעש קיצוני ומתמשך הדיירים התלוננו על זה
+CLEANLINESS,LOW,צריך ניקיון רגיל בחדר מדרגות,בכניסה לבניין,LOW,type_CLEANLINESS selected_LOW location_בכניסה לבניין צריך ניקיון רגיל בחדר מדרגות
+CLEANLINESS,MEDIUM,שקיות זבל נשארו ליד הכניסה זה קורה כבר כמה פעמים,בקומה 5,MEDIUM,type_CLEANLINESS selected_MEDIUM location_בקומה 5 שקיות זבל נשארו ליד הכניסה זה קורה כבר כמה פעמים
+NOISE,LOW,רעש קל מהחצר בשעות היום הדיירים התלוננו על זה,בחדר מדרגות,LOW,type_NOISE selected_LOW location_בחדר מדרגות רעש קל מהחצר בשעות היום הדיירים התלוננו על זה
+NOISE,LOW,רעש קל מהחצר בשעות היום זה קורה כבר כמה פעמים,ליד המעלית,LOW,type_NOISE selected_LOW location_ליד המעלית רעש קל מהחצר בשעות היום זה קורה כבר כמה פעמים
+OTHER,MEDIUM,יש בעיה מתמשכת בבניין זה קורה כבר כמה פעמים הדיירים התלוננו על זה,בקומה 2,MEDIUM,type_OTHER selected_MEDIUM location_בקומה 2 יש בעיה מתמשכת בבניין זה קורה כבר כמה פעמים הדיירים התלוננו על זה
+NOISE,HIGH,רעש חריג מאוד באמצע הלילה עם צעקות חזקות,ליד המעלית,HIGH,type_NOISE selected_HIGH location_ליד המעלית רעש חריג מאוד באמצע הלילה עם צעקות חזקות
+OTHER,HIGH,אירוע חריג שמצריך תגובה מיידית נא לטפל בהקדם הדיירים התלוננו על זה,בלובי,HIGH,type_OTHER selected_HIGH location_בלובי אירוע חריג שמצריך תגובה מיידית נא לטפל בהקדם הדיירים התלוננו על זה
+SAFETY,MEDIUM,תאורה לא עובדת בחדר מדרגות וזה מסוכן בלילה זה קורה כבר כמה פעמים,,MEDIUM,type_SAFETY selected_MEDIUM location_ תאורה לא עובדת בחדר מדרגות וזה מסוכן בלילה זה קורה כבר כמה פעמים
+NOISE,LOW,מטרד רעש קיצוני ומתמשך זה קורה כבר כמה פעמים,בחדר אשפה,HIGH,type_NOISE selected_LOW location_בחדר אשפה מטרד רעש קיצוני ומתמשך זה קורה כבר כמה פעמים
+OTHER,LOW,צריך לבדוק משהו לא דחוף נא לטפל בהקדם,,LOW,type_OTHER selected_LOW location_ צריך לבדוק משהו לא דחוף נא לטפל בהקדם
+NOISE,MEDIUM,רעש קל מהחצר בשעות היום,בלובי,LOW,type_NOISE selected_MEDIUM location_בלובי רעש קל מהחצר בשעות היום
+OTHER,LOW,דיווח כללי ללא סכנה,ליד ארון החשמל,LOW,type_OTHER selected_LOW location_ליד ארון החשמל דיווח כללי ללא סכנה
+SAFETY,MEDIUM,דלת כניסה לא נסגרת ויש חשש ביטחוני,בקומה 2,MEDIUM,type_SAFETY selected_MEDIUM location_בקומה 2 דלת כניסה לא נסגרת ויש חשש ביטחוני
+NOISE,HIGH,צעקות ורעש בחדר מדרגות זה קורה כבר כמה פעמים,בגינה,MEDIUM,type_NOISE selected_HIGH location_בגינה צעקות ורעש בחדר מדרגות זה קורה כבר כמה פעמים
+OTHER,HIGH,מצב מסוכן שמצריך טיפול בהול,בקומה 1,HIGH,type_OTHER selected_HIGH location_בקומה 1 מצב מסוכן שמצריך טיפול בהול
+OTHER,HIGH,דיווח כללי ללא סכנה,בחניה,LOW,type_OTHER selected_HIGH location_בחניה דיווח כללי ללא סכנה
+NOISE,HIGH,רעש חזק מאוד שמונע מדיירים לישון כבר כמה לילות נא לטפל בהקדם הדיירים התלוננו על זה,,HIGH,type_NOISE selected_HIGH location_ רעש חזק מאוד שמונע מדיירים לישון כבר כמה לילות נא לטפל בהקדם הדיירים התלוננו על זה
+OTHER,LOW,יש בעיה קטנה שאפשר לטפל בה בהמשך,בחניה,LOW,type_OTHER selected_LOW location_בחניה יש בעיה קטנה שאפשר לטפל בה בהמשך
+NOISE,LOW,רעש קל מהחצר בשעות היום,ליד המעלית,LOW,type_NOISE selected_LOW location_ליד המעלית רעש קל מהחצר בשעות היום
+SAFETY,HIGH,חוטי חשמל חשופים ליד הכניסה,בכניסה לבניין,HIGH,type_SAFETY selected_HIGH location_בכניסה לבניין חוטי חשמל חשופים ליד הכניסה
+NOISE,LOW,רעש חזק מאוד שמונע מדיירים לישון כבר כמה לילות,בקומה 5,HIGH,type_NOISE selected_LOW location_בקומה 5 רעש חזק מאוד שמונע מדיירים לישון כבר כמה לילות
+SAFETY,LOW,תאורה חלשה באזור הכניסה זה קורה כבר כמה פעמים,במחסן,LOW,type_SAFETY selected_LOW location_במחסן תאורה חלשה באזור הכניסה זה קורה כבר כמה פעמים
+CLEANLINESS,HIGH,לכלוך חמור שעלול לגרום לסכנה בריאותית,ליד ארון החשמל,HIGH,type_CLEANLINESS selected_HIGH location_ליד ארון החשמל לכלוך חמור שעלול לגרום לסכנה בריאותית
+SAFETY,HIGH,שריפה קטנה בלובי,בחדר אשפה,HIGH,type_SAFETY selected_HIGH location_בחדר אשפה שריפה קטנה בלובי
+OTHER,LOW,בקשה כללית לבדיקה כשאפשר,במחסן,LOW,type_OTHER selected_LOW location_במחסן בקשה כללית לבדיקה כשאפשר
+SAFETY,LOW,מרצפת מעט עקומה ללא סכנה מיידית,במחסן,LOW,type_SAFETY selected_LOW location_במחסן מרצפת מעט עקומה ללא סכנה מיידית
+OTHER,HIGH,בעיה חמורה שמסכנת דיירים נא לטפל בהקדם,בכניסה לבניין,HIGH,type_OTHER selected_HIGH location_בכניסה לבניין בעיה חמורה שמסכנת דיירים נא לטפל בהקדם
+SAFETY,HIGH,מעלית תקועה עם אנשים בפנים זה קורה כבר כמה פעמים,בכניסה לבניין,HIGH,type_SAFETY selected_HIGH location_בכניסה לבניין מעלית תקועה עם אנשים בפנים זה קורה כבר כמה פעמים
+NOISE,HIGH,רעש חירום חזק מהחניה בשעות הלילה נא לטפל בהקדם,ליד ארון החשמל,HIGH,type_NOISE selected_HIGH location_ליד ארון החשמל רעש חירום חזק מהחניה בשעות הלילה נא לטפל בהקדם
+SAFETY,LOW,דלת המחסן לא נסגרת טוב,בכניסה לבניין,LOW,type_SAFETY selected_LOW location_בכניסה לבניין דלת המחסן לא נסגרת טוב
+NOISE,HIGH,מוזיקה חזקה מהדירה מעל כבר כמה שעות,ליד המעלית,MEDIUM,type_NOISE selected_HIGH location_ליד המעלית מוזיקה חזקה מהדירה מעל כבר כמה שעות
+NOISE,LOW,שומעים מעט רעש מהשכנים במהלך היום,בחניה,LOW,type_NOISE selected_LOW location_בחניה שומעים מעט רעש מהשכנים במהלך היום
+OTHER,HIGH,מצב מסוכן שמצריך טיפול בהול נא לטפל בהקדם,בחדר אשפה,HIGH,type_OTHER selected_HIGH location_בחדר אשפה מצב מסוכן שמצריך טיפול בהול נא לטפל בהקדם
+SAFETY,MEDIUM,דלת כניסה לא נסגרת ויש חשש ביטחוני הדיירים התלוננו על זה,ליד המעלית,MEDIUM,type_SAFETY selected_MEDIUM location_ליד המעלית דלת כניסה לא נסגרת ויש חשש ביטחוני הדיירים התלוננו על זה
+SAFETY,MEDIUM,יש ונדליזם ליד המעלית זה קורה כבר כמה פעמים,ליד המעלית,MEDIUM,type_SAFETY selected_MEDIUM location_ליד המעלית יש ונדליזם ליד המעלית זה קורה כבר כמה פעמים
+CLEANLINESS,LOW,יש כמה ניירות על הרצפה זה קורה כבר כמה פעמים,ליד המעלית,LOW,type_CLEANLINESS selected_LOW location_ליד המעלית יש כמה ניירות על הרצפה זה קורה כבר כמה פעמים
+NOISE,MEDIUM,רעש חירום חזק מהחניה בשעות הלילה,ליד ארון החשמל,HIGH,type_NOISE selected_MEDIUM location_ליד ארון החשמל רעש חירום חזק מהחניה בשעות הלילה
+NOISE,HIGH,קולות חזקים של שבירה ואלימות מהדירה,,HIGH,type_NOISE selected_HIGH location_ קולות חזקים של שבירה ואלימות מהדירה
+OTHER,MEDIUM,תקלה לא מסוכנת אבל מפריעה לדיירים,ליד המעלית,MEDIUM,type_OTHER selected_MEDIUM location_ליד המעלית תקלה לא מסוכנת אבל מפריעה לדיירים
+SAFETY,MEDIUM,חוטי חשמל חשופים ליד הכניסה,בקומה 5,HIGH,type_SAFETY selected_MEDIUM location_בקומה 5 חוטי חשמל חשופים ליד הכניסה
+OTHER,HIGH,בעיה חמורה שמסכנת דיירים,בלובי,HIGH,type_OTHER selected_HIGH location_בלובי בעיה חמורה שמסכנת דיירים
+SAFETY,HIGH,יש ריח שרוף ליד ארון החשמל,בקומה 2,HIGH,type_SAFETY selected_HIGH location_בקומה 2 יש ריח שרוף ליד ארון החשמל
+OTHER,LOW,דיווח כללי ללא סכנה נא לטפל בהקדם,,LOW,type_OTHER selected_LOW location_ דיווח כללי ללא סכנה נא לטפל בהקדם
+SAFETY,MEDIUM,יש ונדליזם ליד המעלית זה קורה כבר כמה פעמים הדיירים התלוננו על זה,בקומה 2,MEDIUM,type_SAFETY selected_MEDIUM location_בקומה 2 יש ונדליזם ליד המעלית זה קורה כבר כמה פעמים הדיירים התלוננו על זה
+SAFETY,MEDIUM,דלת כניסה לא נסגרת ויש חשש ביטחוני זה קורה כבר כמה פעמים,בחדר אשפה,MEDIUM,type_SAFETY selected_MEDIUM location_בחדר אשפה דלת כניסה לא נסגרת ויש חשש ביטחוני זה קורה כבר כמה פעמים
+SAFETY,LOW,תאורה חלשה באזור הכניסה הדיירים התלוננו על זה,בחדר מדרגות,LOW,type_SAFETY selected_LOW location_בחדר מדרגות תאורה חלשה באזור הכניסה הדיירים התלוננו על זה
+NOISE,HIGH,רעש חריג מאוד באמצע הלילה עם צעקות חזקות,בחדר אשפה,HIGH,type_NOISE selected_HIGH location_בחדר אשפה רעש חריג מאוד באמצע הלילה עם צעקות חזקות
+CLEANLINESS,LOW,ביוב עולה ויש ריח חריף מאוד,בחדר אשפה,HIGH,type_CLEANLINESS selected_LOW location_בחדר אשפה ביוב עולה ויש ריח חריף מאוד
+CLEANLINESS,HIGH,ביוב עולה ויש ריח חריף מאוד,ליד המעלית,HIGH,type_CLEANLINESS selected_HIGH location_ליד המעלית ביוב עולה ויש ריח חריף מאוד
+NOISE,MEDIUM,צעקות ורעש בחדר מדרגות,בקומה 5,MEDIUM,type_NOISE selected_MEDIUM location_בקומה 5 צעקות ורעש בחדר מדרגות
+OTHER,MEDIUM,אירוע חריג שמצריך תגובה מיידית,בקומה 2,HIGH,type_OTHER selected_MEDIUM location_בקומה 2 אירוע חריג שמצריך תגובה מיידית
+NOISE,LOW,רעש קל מהחצר בשעות היום הדיירים התלוננו על זה,בגינה,LOW,type_NOISE selected_LOW location_בגינה רעש קל מהחצר בשעות היום הדיירים התלוננו על זה
+OTHER,LOW,יש בעיה קטנה שאפשר לטפל בה בהמשך הדיירים התלוננו על זה,בחדר אשפה,LOW,type_OTHER selected_LOW location_בחדר אשפה יש בעיה קטנה שאפשר לטפל בה בהמשך הדיירים התלוננו על זה
+SAFETY,MEDIUM,יש ריח שרוף ליד ארון החשמל,בלובי,HIGH,type_SAFETY selected_MEDIUM location_בלובי יש ריח שרוף ליד ארון החשמל
+OTHER,HIGH,אירוע חריג שמצריך תגובה מיידית,ליד המעלית,HIGH,type_OTHER selected_HIGH location_ליד המעלית אירוע חריג שמצריך תגובה מיידית
+CLEANLINESS,HIGH,לכלוך חמור שעלול לגרום לסכנה בריאותית זה קורה כבר כמה פעמים נא לטפל בהקדם,בכניסה לבניין,HIGH,type_CLEANLINESS selected_HIGH location_בכניסה לבניין לכלוך חמור שעלול לגרום לסכנה בריאותית זה קורה כבר כמה פעמים נא לטפל בהקדם
+CLEANLINESS,HIGH,לכלוך חמור שעלול לגרום לסכנה בריאותית,בקומה 2,HIGH,type_CLEANLINESS selected_HIGH location_בקומה 2 לכלוך חמור שעלול לגרום לסכנה בריאותית
+OTHER,HIGH,תקלה דחופה מאוד בבניין,בקומה 5,HIGH,type_OTHER selected_HIGH location_בקומה 5 תקלה דחופה מאוד בבניין
+NOISE,HIGH,רעש חירום חזק מהחניה בשעות הלילה נא לטפל בהקדם,בחניה,HIGH,type_NOISE selected_HIGH location_בחניה רעש חירום חזק מהחניה בשעות הלילה נא לטפל בהקדם
+NOISE,LOW,יש רעש חלש מדי פעם אבל לא דחוף,במחסן,LOW,type_NOISE selected_LOW location_במחסן יש רעש חלש מדי פעם אבל לא דחוף
+CLEANLINESS,LOW,פח קטן לא רוקן אבל לא דחוף,בחניה,LOW,type_CLEANLINESS selected_LOW location_בחניה פח קטן לא רוקן אבל לא דחוף
+CLEANLINESS,HIGH,פח קטן לא רוקן אבל לא דחוף,בחדר אשפה,LOW,type_CLEANLINESS selected_HIGH location_בחדר אשפה פח קטן לא רוקן אבל לא דחוף
+NOISE,MEDIUM,צעקות ורעש בחדר מדרגות,ליד המעלית,MEDIUM,type_NOISE selected_MEDIUM location_ליד המעלית צעקות ורעש בחדר מדרגות
+OTHER,LOW,יש הערה קטנה לגבי תחזוקה נא לטפל בהקדם,בלובי,LOW,type_OTHER selected_LOW location_בלובי יש הערה קטנה לגבי תחזוקה נא לטפל בהקדם
+CLEANLINESS,HIGH,הצפה בחדר מדרגות ומים זורמים,,HIGH,type_CLEANLINESS selected_HIGH location_ הצפה בחדר מדרגות ומים זורמים
+SAFETY,LOW,יש בורג חסר בשלט של הבניין זה קורה כבר כמה פעמים,ליד ארון החשמל,LOW,type_SAFETY selected_LOW location_ליד ארון החשמל יש בורג חסר בשלט של הבניין זה קורה כבר כמה פעמים
+NOISE,LOW,שיפוצים מרעישים בשעות לא מתאימות,ליד ארון החשמל,MEDIUM,type_NOISE selected_LOW location_ליד ארון החשמל שיפוצים מרעישים בשעות לא מתאימות
+CLEANLINESS,HIGH,פח קטן לא רוקן אבל לא דחוף זה קורה כבר כמה פעמים,,LOW,type_CLEANLINESS selected_HIGH location_ פח קטן לא רוקן אבל לא דחוף זה קורה כבר כמה פעמים
+OTHER,HIGH,תקלה דחופה מאוד בבניין,,HIGH,type_OTHER selected_HIGH location_ תקלה דחופה מאוד בבניין
+SAFETY,LOW,דלת המחסן לא נסגרת טוב נא לטפל בהקדם הדיירים התלוננו על זה,בכניסה לבניין,LOW,type_SAFETY selected_LOW location_בכניסה לבניין דלת המחסן לא נסגרת טוב נא לטפל בהקדם הדיירים התלוננו על זה
+CLEANLINESS,LOW,יש מעט אבק ליד הכניסה נא לטפל בהקדם הדיירים התלוננו על זה,בגינה,LOW,type_CLEANLINESS selected_LOW location_בגינה יש מעט אבק ליד הכניסה נא לטפל בהקדם הדיירים התלוננו על זה
+CLEANLINESS,HIGH,נזילה חזקה שגורמת להצפה,בחניה,HIGH,type_CLEANLINESS selected_HIGH location_בחניה נזילה חזקה שגורמת להצפה
+SAFETY,HIGH,זכוכית שבורה מסוכנת ליד הכניסה נא לטפל בהקדם,בחדר מדרגות,HIGH,type_SAFETY selected_HIGH location_בחדר מדרגות זכוכית שבורה מסוכנת ליד הכניסה נא לטפל בהקדם
+OTHER,MEDIUM,מצב מסוכן שמצריך טיפול בהול הדיירים התלוננו על זה,בגינה,HIGH,type_OTHER selected_MEDIUM location_בגינה מצב מסוכן שמצריך טיפול בהול הדיירים התלוננו על זה
+SAFETY,MEDIUM,תאורה לא עובדת בחדר מדרגות וזה מסוכן בלילה,בקומה 5,MEDIUM,type_SAFETY selected_MEDIUM location_בקומה 5 תאורה לא עובדת בחדר מדרגות וזה מסוכן בלילה
+OTHER,MEDIUM,יש בעיה מתמשכת בבניין,,MEDIUM,type_OTHER selected_MEDIUM location_ יש בעיה מתמשכת בבניין
+OTHER,MEDIUM,תקלה לא מסוכנת אבל מפריעה לדיירים,במחסן,MEDIUM,type_OTHER selected_MEDIUM location_במחסן תקלה לא מסוכנת אבל מפריעה לדיירים
+NOISE,HIGH,רעש חריג מאוד באמצע הלילה עם צעקות חזקות זה קורה כבר כמה פעמים נא לטפל בהקדם,בקומה 1,HIGH,type_NOISE selected_HIGH location_בקומה 1 רעש חריג מאוד באמצע הלילה עם צעקות חזקות זה קורה כבר כמה פעמים נא לטפל בהקדם
+CLEANLINESS,LOW,יש ריח לא נעים בלובי כבר יומיים הדיירים התלוננו על זה,בחניה,MEDIUM,type_CLEANLINESS selected_LOW location_בחניה יש ריח לא נעים בלובי כבר יומיים הדיירים התלוננו על זה
+SAFETY,LOW,יש בורג חסר בשלט של הבניין,בקומה 2,LOW,type_SAFETY selected_LOW location_בקומה 2 יש בורג חסר בשלט של הבניין
+SAFETY,MEDIUM,תאורה לא עובדת בחדר מדרגות וזה מסוכן בלילה,בקומה 2,MEDIUM,type_SAFETY selected_MEDIUM location_בקומה 2 תאורה לא עובדת בחדר מדרגות וזה מסוכן בלילה
+NOISE,MEDIUM,שיפוצים מרעישים בשעות לא מתאימות,בכניסה לבניין,MEDIUM,type_NOISE selected_MEDIUM location_בכניסה לבניין שיפוצים מרעישים בשעות לא מתאימות
+OTHER,MEDIUM,נדרש טיפול של ועד הבית בזמן הקרוב הדיירים התלוננו על זה,ליד המעלית,MEDIUM,type_OTHER selected_MEDIUM location_ליד המעלית נדרש טיפול של ועד הבית בזמן הקרוב הדיירים התלוננו על זה
+OTHER,HIGH,מצב מסוכן שמצריך טיפול בהול,ליד המעלית,HIGH,type_OTHER selected_HIGH location_ליד המעלית מצב מסוכן שמצריך טיפול בהול
+SAFETY,HIGH,קיר או תקרה נראים לפני קריסה זה קורה כבר כמה פעמים,בחדר אשפה,HIGH,type_SAFETY selected_HIGH location_בחדר אשפה קיר או תקרה נראים לפני קריסה זה קורה כבר כמה פעמים
+NOISE,LOW,רעש חזק בלילה שמפריע לדיירים זה קורה כבר כמה פעמים,בחדר אשפה,MEDIUM,type_NOISE selected_LOW location_בחדר אשפה רעש חזק בלילה שמפריע לדיירים זה קורה כבר כמה פעמים
+CLEANLINESS,HIGH,לכלוך חריג בחדר מדרגות זה קורה כבר כמה פעמים,בחניה,MEDIUM,type_CLEANLINESS selected_HIGH location_בחניה לכלוך חריג בחדר מדרגות זה קורה כבר כמה פעמים
+NOISE,LOW,שומעים מעט רעש מהשכנים במהלך היום,בלובי,LOW,type_NOISE selected_LOW location_בלובי שומעים מעט רעש מהשכנים במהלך היום
+SAFETY,LOW,דלת המחסן לא נסגרת טוב,בחדר אשפה,LOW,type_SAFETY selected_LOW location_בחדר אשפה דלת המחסן לא נסגרת טוב
+OTHER,MEDIUM,תקלה שמשפיעה על כמה דיירים,בקומה 1,MEDIUM,type_OTHER selected_MEDIUM location_בקומה 1 תקלה שמשפיעה על כמה דיירים
+OTHER,HIGH,אירוע חריג שמצריך תגובה מיידית,,HIGH,type_OTHER selected_HIGH location_ אירוע חריג שמצריך תגובה מיידית
+SAFETY,MEDIUM,דלת כניסה לא נסגרת ויש חשש ביטחוני זה קורה כבר כמה פעמים,בגינה,MEDIUM,type_SAFETY selected_MEDIUM location_בגינה דלת כניסה לא נסגרת ויש חשש ביטחוני זה קורה כבר כמה פעמים
+SAFETY,MEDIUM,קיר או תקרה נראים לפני קריסה נא לטפל בהקדם,בלובי,HIGH,type_SAFETY selected_MEDIUM location_בלובי קיר או תקרה נראים לפני קריסה נא לטפל בהקדם
+CLEANLINESS,HIGH,אשפה מסוכנת מפוזרת בכניסה לבניין זה קורה כבר כמה פעמים,בקומה 2,HIGH,type_CLEANLINESS selected_HIGH location_בקומה 2 אשפה מסוכנת מפוזרת בכניסה לבניין זה קורה כבר כמה פעמים
+SAFETY,LOW,מרצפת מעט עקומה ללא סכנה מיידית זה קורה כבר כמה פעמים,ליד המעלית,LOW,type_SAFETY selected_LOW location_ליד המעלית מרצפת מעט עקומה ללא סכנה מיידית זה קורה כבר כמה פעמים
+CLEANLINESS,HIGH,לכלוך חמור שעלול לגרום לסכנה בריאותית זה קורה כבר כמה פעמים,בלובי,HIGH,type_CLEANLINESS selected_HIGH location_בלובי לכלוך חמור שעלול לגרום לסכנה בריאותית זה קורה כבר כמה פעמים
+CLEANLINESS,LOW,לכלוך חריג בחדר מדרגות,בכניסה לבניין,MEDIUM,type_CLEANLINESS selected_LOW location_בכניסה לבניין לכלוך חריג בחדר מדרגות
+SAFETY,HIGH,קיר או תקרה נראים לפני קריסה הדיירים התלוננו על זה,ליד ארון החשמל,HIGH,type_SAFETY selected_HIGH location_ליד ארון החשמל קיר או תקרה נראים לפני קריסה הדיירים התלוננו על זה
+CLEANLINESS,MEDIUM,יש ריח לא נעים בלובי כבר יומיים,בקומה 5,MEDIUM,type_CLEANLINESS selected_MEDIUM location_בקומה 5 יש ריח לא נעים בלובי כבר יומיים
+OTHER,HIGH,אירוע חריג שמצריך תגובה מיידית נא לטפל בהקדם,בגינה,HIGH,type_OTHER selected_HIGH location_בגינה אירוע חריג שמצריך תגובה מיידית נא לטפל בהקדם
+NOISE,MEDIUM,רעש חזק מאוד שמונע מדיירים לישון כבר כמה לילות,ליד המעלית,HIGH,type_NOISE selected_MEDIUM location_ליד המעלית רעש חזק מאוד שמונע מדיירים לישון כבר כמה לילות
+CLEANLINESS,HIGH,שקיות זבל נשארו ליד הכניסה זה קורה כבר כמה פעמים,בכניסה לבניין,MEDIUM,type_CLEANLINESS selected_HIGH location_בכניסה לבניין שקיות זבל נשארו ליד הכניסה זה קורה כבר כמה פעמים
+SAFETY,HIGH,קיר או תקרה נראים לפני קריסה זה קורה כבר כמה פעמים נא לטפל בהקדם,,HIGH,type_SAFETY selected_HIGH location_ קיר או תקרה נראים לפני קריסה זה קורה כבר כמה פעמים נא לטפל בהקדם
+CLEANLINESS,MEDIUM,יש קצת לכלוך בלובי,בחדר מדרגות,LOW,type_CLEANLINESS selected_MEDIUM location_בחדר מדרגות יש קצת לכלוך בלובי
+SAFETY,HIGH,ריח גז חזק בבניין,בקומה 1,HIGH,type_SAFETY selected_HIGH location_בקומה 1 ריח גז חזק בבניין
+NOISE,MEDIUM,רעש מתמשך מהחניה זה קורה כבר כמה פעמים,ליד ארון החשמל,MEDIUM,type_NOISE selected_MEDIUM location_ליד ארון החשמל רעש מתמשך מהחניה זה קורה כבר כמה פעמים
+CLEANLINESS,HIGH,צריך ניקיון רגיל בחדר מדרגות זה קורה כבר כמה פעמים הדיירים התלוננו על זה,בחדר אשפה,LOW,type_CLEANLINESS selected_HIGH location_בחדר אשפה צריך ניקיון רגיל בחדר מדרגות זה קורה כבר כמה פעמים הדיירים התלוננו על זה
+NOISE,MEDIUM,מוזיקה חזקה מהדירה מעל כבר כמה שעות,בחניה,MEDIUM,type_NOISE selected_MEDIUM location_בחניה מוזיקה חזקה מהדירה מעל כבר כמה שעות
+SAFETY,HIGH,שריפה קטנה בלובי,בחדר מדרגות,HIGH,type_SAFETY selected_HIGH location_בחדר מדרגות שריפה קטנה בלובי
+SAFETY,MEDIUM,מעקה מעט רופף אבל לא נראה מסוכן כרגע זה קורה כבר כמה פעמים נא לטפל בהקדם הדיירים התלוננו על זה,בחדר מדרגות,LOW,type_SAFETY selected_MEDIUM location_בחדר מדרגות מעקה מעט רופף אבל לא נראה מסוכן כרגע זה קורה כבר כמה פעמים נא לטפל בהקדם הדיירים התלוננו על זה
+SAFETY,MEDIUM,תאורה לא עובדת בחדר מדרגות וזה מסוכן בלילה,ליד המעלית,MEDIUM,type_SAFETY selected_MEDIUM location_ליד המעלית תאורה לא עובדת בחדר מדרגות וזה מסוכן בלילה
+CLEANLINESS,MEDIUM,יש ריח לא נעים בלובי כבר יומיים,במחסן,MEDIUM,type_CLEANLINESS selected_MEDIUM location_במחסן יש ריח לא נעים בלובי כבר יומיים
+NOISE,HIGH,רעש חזק מאוד שמונע מדיירים לישון כבר כמה לילות נא לטפל בהקדם,בחניה,HIGH,type_NOISE selected_HIGH location_בחניה רעש חזק מאוד שמונע מדיירים לישון כבר כמה לילות נא לטפל בהקדם
+CLEANLINESS,MEDIUM,לכלוך חמור שעלול לגרום לסכנה בריאותית זה קורה כבר כמה פעמים הדיירים התלוננו על זה,בכניסה לבניין,HIGH,type_CLEANLINESS selected_MEDIUM location_בכניסה לבניין לכלוך חמור שעלול לגרום לסכנה בריאותית זה קורה כבר כמה פעמים הדיירים התלוננו על זה
+OTHER,LOW,יש הערה קטנה לגבי תחזוקה,בקומה 1,LOW,type_OTHER selected_LOW location_בקומה 1 יש הערה קטנה לגבי תחזוקה
+CLEANLINESS,LOW,צריך ניקיון רגיל בחדר מדרגות,בכניסה לבניין,LOW,type_CLEANLINESS selected_LOW location_בכניסה לבניין צריך ניקיון רגיל בחדר מדרגות
+NOISE,MEDIUM,רעש חזק בלילה שמפריע לדיירים,בחדר מדרגות,MEDIUM,type_NOISE selected_MEDIUM location_בחדר מדרגות רעש חזק בלילה שמפריע לדיירים
+CLEANLINESS,LOW,יש קצת לכלוך בלובי הדיירים התלוננו על זה,בקומה 5,LOW,type_CLEANLINESS selected_LOW location_בקומה 5 יש קצת לכלוך בלובי הדיירים התלוננו על זה
+SAFETY,HIGH,קיר או תקרה נראים לפני קריסה,בגינה,HIGH,type_SAFETY selected_HIGH location_בגינה קיר או תקרה נראים לפני קריסה
+NOISE,MEDIUM,רעש מתמשך מהחניה זה קורה כבר כמה פעמים,במחסן,MEDIUM,type_NOISE selected_MEDIUM location_במחסן רעש מתמשך מהחניה זה קורה כבר כמה פעמים
+OTHER,HIGH,מצב מסוכן שמצריך טיפול בהול,בחדר אשפה,HIGH,type_OTHER selected_HIGH location_בחדר אשפה מצב מסוכן שמצריך טיפול בהול
+SAFETY,HIGH,קיר או תקרה נראים לפני קריסה,,HIGH,type_SAFETY selected_HIGH location_ קיר או תקרה נראים לפני קריסה
+SAFETY,HIGH,שריפה קטנה בלובי,בחדר אשפה,HIGH,type_SAFETY selected_HIGH location_בחדר אשפה שריפה קטנה בלובי
+OTHER,MEDIUM,תקלה לא מסוכנת אבל מפריעה לדיירים,בקומה 1,MEDIUM,type_OTHER selected_MEDIUM location_בקומה 1 תקלה לא מסוכנת אבל מפריעה לדיירים
+CLEANLINESS,HIGH,ביוב עולה ויש ריח חריף מאוד,בקומה 2,HIGH,type_CLEANLINESS selected_HIGH location_בקומה 2 ביוב עולה ויש ריח חריף מאוד
+NOISE,HIGH,יש דיבורים בקומה אבל זה לא מפריע מאוד,במחסן,LOW,type_NOISE selected_HIGH location_במחסן יש דיבורים בקומה אבל זה לא מפריע מאוד
+CLEANLINESS,HIGH,אשפה מסוכנת מפוזרת בכניסה לבניין הדיירים התלוננו על זה,בקומה 1,HIGH,type_CLEANLINESS selected_HIGH location_בקומה 1 אשפה מסוכנת מפוזרת בכניסה לבניין הדיירים התלוננו על זה
+SAFETY,HIGH,זכוכית שבורה מסוכנת ליד הכניסה זה קורה כבר כמה פעמים,בלובי,HIGH,type_SAFETY selected_HIGH location_בלובי זכוכית שבורה מסוכנת ליד הכניסה זה קורה כבר כמה פעמים
+OTHER,LOW,בקשה כללית לבדיקה כשאפשר הדיירים התלוננו על זה,במחסן,LOW,type_OTHER selected_LOW location_במחסן בקשה כללית לבדיקה כשאפשר הדיירים התלוננו על זה
+CLEANLINESS,LOW,יש מעט אבק ליד הכניסה,בחניה,LOW,type_CLEANLINESS selected_LOW location_בחניה יש מעט אבק ליד הכניסה
+OTHER,LOW,יש הערה קטנה לגבי תחזוקה,בחדר אשפה,LOW,type_OTHER selected_LOW location_בחדר אשפה יש הערה קטנה לגבי תחזוקה
+NOISE,MEDIUM,רעש חזק בלילה שמפריע לדיירים,בקומה 5,MEDIUM,type_NOISE selected_MEDIUM location_בקומה 5 רעש חזק בלילה שמפריע לדיירים
+SAFETY,HIGH,ריח גז חזק בבניין זה קורה כבר כמה פעמים הדיירים התלוננו על זה,בחדר מדרגות,HIGH,type_SAFETY selected_HIGH location_בחדר מדרגות ריח גז חזק בבניין זה קורה כבר כמה פעמים הדיירים התלוננו על זה
+OTHER,LOW,יש בעיה קטנה שאפשר לטפל בה בהמשך זה קורה כבר כמה פעמים נא לטפל בהקדם,בגינה,LOW,type_OTHER selected_LOW location_בגינה יש בעיה קטנה שאפשר לטפל בה בהמשך זה קורה כבר כמה פעמים נא לטפל בהקדם
+OTHER,LOW,בקשה כללית לבדיקה כשאפשר,,LOW,type_OTHER selected_LOW location_ בקשה כללית לבדיקה כשאפשר
+SAFETY,MEDIUM,מרצפת מעט עקומה ללא סכנה מיידית,,LOW,type_SAFETY selected_MEDIUM location_ מרצפת מעט עקומה ללא סכנה מיידית
+SAFETY,LOW,תאורה חלשה באזור הכניסה זה קורה כבר כמה פעמים,בקומה 5,LOW,type_SAFETY selected_LOW location_בקומה 5 תאורה חלשה באזור הכניסה זה קורה כבר כמה פעמים
+NOISE,HIGH,רעש חירום חזק מהחניה בשעות הלילה זה קורה כבר כמה פעמים,,HIGH,type_NOISE selected_HIGH location_ רעש חירום חזק מהחניה בשעות הלילה זה קורה כבר כמה פעמים
+SAFETY,HIGH,שריפה קטנה בלובי נא לטפל בהקדם,ליד ארון החשמל,HIGH,type_SAFETY selected_HIGH location_ליד ארון החשמל שריפה קטנה בלובי נא לטפל בהקדם
+OTHER,MEDIUM,בעיה שחוזרת כמה פעמים ודורשת טיפול נא לטפל בהקדם,בחדר מדרגות,MEDIUM,type_OTHER selected_MEDIUM location_בחדר מדרגות בעיה שחוזרת כמה פעמים ודורשת טיפול נא לטפל בהקדם
+OTHER,LOW,יש בעיה קטנה שאפשר לטפל בה בהמשך נא לטפל בהקדם,ליד ארון החשמל,LOW,type_OTHER selected_LOW location_ליד ארון החשמל יש בעיה קטנה שאפשר לטפל בה בהמשך נא לטפל בהקדם
+CLEANLINESS,MEDIUM,נזילה קטנה שגרמה לרטיבות בקיר,בלובי,MEDIUM,type_CLEANLINESS selected_MEDIUM location_בלובי נזילה קטנה שגרמה לרטיבות בקיר
+OTHER,LOW,צריך לבדוק משהו לא דחוף,בגינה,LOW,type_OTHER selected_LOW location_בגינה צריך לבדוק משהו לא דחוף
+CLEANLINESS,MEDIUM,לכלוך חריג בחדר מדרגות זה קורה כבר כמה פעמים,ליד ארון החשמל,MEDIUM,type_CLEANLINESS selected_MEDIUM location_ליד ארון החשמל לכלוך חריג בחדר מדרגות זה קורה כבר כמה פעמים
+CLEANLINESS,LOW,יש כמה ניירות על הרצפה נא לטפל בהקדם,בגינה,LOW,type_CLEANLINESS selected_LOW location_בגינה יש כמה ניירות על הרצפה נא לטפל בהקדם
+CLEANLINESS,HIGH,ביוב עולה ויש ריח חריף מאוד,בחניה,HIGH,type_CLEANLINESS selected_HIGH location_בחניה ביוב עולה ויש ריח חריף מאוד
+CLEANLINESS,HIGH,הצפה בחדר מדרגות ומים זורמים,בקומה 1,HIGH,type_CLEANLINESS selected_HIGH location_בקומה 1 הצפה בחדר מדרגות ומים זורמים
+SAFETY,HIGH,יש ונדליזם ליד המעלית,בקומה 1,MEDIUM,type_SAFETY selected_HIGH location_בקומה 1 יש ונדליזם ליד המעלית
+SAFETY,HIGH,יש ריח שרוף ליד ארון החשמל,בכניסה לבניין,HIGH,type_SAFETY selected_HIGH location_בכניסה לבניין יש ריח שרוף ליד ארון החשמל
+CLEANLINESS,HIGH,אשפה מסוכנת מפוזרת בכניסה לבניין זה קורה כבר כמה פעמים הדיירים התלוננו על זה,בקומה 2,HIGH,type_CLEANLINESS selected_HIGH location_בקומה 2 אשפה מסוכנת מפוזרת בכניסה לבניין זה קורה כבר כמה פעמים הדיירים התלוננו על זה
+NOISE,LOW,שומעים מעט רעש מהשכנים במהלך היום זה קורה כבר כמה פעמים נא לטפל בהקדם,,LOW,type_NOISE selected_LOW location_ שומעים מעט רעש מהשכנים במהלך היום זה קורה כבר כמה פעמים נא לטפל בהקדם
+NOISE,LOW,רעש קל מהחצר בשעות היום,ליד ארון החשמל,LOW,type_NOISE selected_LOW location_ליד ארון החשמל רעש קל מהחצר בשעות היום
+SAFETY,LOW,מעקה מעט רופף אבל לא נראה מסוכן כרגע,בגינה,LOW,type_SAFETY selected_LOW location_בגינה מעקה מעט רופף אבל לא נראה מסוכן כרגע
+SAFETY,LOW,תאורה חלשה באזור הכניסה,במחסן,LOW,type_SAFETY selected_LOW location_במחסן תאורה חלשה באזור הכניסה
+CLEANLINESS,HIGH,נזילה חזקה שגורמת להצפה,בקומה 2,HIGH,type_CLEANLINESS selected_HIGH location_בקומה 2 נזילה חזקה שגורמת להצפה
+CLEANLINESS,HIGH,נזילה חזקה שגורמת להצפה זה קורה כבר כמה פעמים,,HIGH,type_CLEANLINESS selected_HIGH location_ נזילה חזקה שגורמת להצפה זה קורה כבר כמה פעמים
+NOISE,LOW,שומעים מעט רעש מהשכנים במהלך היום נא לטפל בהקדם,בחדר אשפה,LOW,type_NOISE selected_LOW location_בחדר אשפה שומעים מעט רעש מהשכנים במהלך היום נא לטפל בהקדם
+SAFETY,MEDIUM,דלת כניסה לא נסגרת ויש חשש ביטחוני,בקומה 5,MEDIUM,type_SAFETY selected_MEDIUM location_בקומה 5 דלת כניסה לא נסגרת ויש חשש ביטחוני
+SAFETY,LOW,שריפה קטנה בלובי,במחסן,HIGH,type_SAFETY selected_LOW location_במחסן שריפה קטנה בלובי
+SAFETY,HIGH,זכוכית שבורה מסוכנת ליד הכניסה זה קורה כבר כמה פעמים,בקומה 1,HIGH,type_SAFETY selected_HIGH location_בקומה 1 זכוכית שבורה מסוכנת ליד הכניסה זה קורה כבר כמה פעמים
+CLEANLINESS,MEDIUM,יש הרבה אשפה בחדר אשפה וריח רע,בגינה,MEDIUM,type_CLEANLINESS selected_MEDIUM location_בגינה יש הרבה אשפה בחדר אשפה וריח רע
+SAFETY,LOW,תאורה חלשה באזור הכניסה נא לטפל בהקדם הדיירים התלוננו על זה,בקומה 5,LOW,type_SAFETY selected_LOW location_בקומה 5 תאורה חלשה באזור הכניסה נא לטפל בהקדם הדיירים התלוננו על זה
+SAFETY,HIGH,חוטי חשמל חשופים ליד הכניסה זה קורה כבר כמה פעמים,בקומה 1,HIGH,type_SAFETY selected_HIGH location_בקומה 1 חוטי חשמל חשופים ליד הכניסה זה קורה כבר כמה פעמים
+CLEANLINESS,MEDIUM,יש הרבה אשפה בחדר אשפה וריח רע הדיירים התלוננו על זה,,MEDIUM,type_CLEANLINESS selected_MEDIUM location_ יש הרבה אשפה בחדר אשפה וריח רע הדיירים התלוננו על זה
+CLEANLINESS,HIGH,ביוב עולה ויש ריח חריף מאוד,בקומה 5,HIGH,type_CLEANLINESS selected_HIGH location_בקומה 5 ביוב עולה ויש ריח חריף מאוד
+SAFETY,HIGH,יש ונדליזם ליד המעלית זה קורה כבר כמה פעמים הדיירים התלוננו על זה,בחדר אשפה,MEDIUM,type_SAFETY selected_HIGH location_בחדר אשפה יש ונדליזם ליד המעלית זה קורה כבר כמה פעמים הדיירים התלוננו על זה
+SAFETY,LOW,יש בורג חסר בשלט של הבניין,בכניסה לבניין,LOW,type_SAFETY selected_LOW location_בכניסה לבניין יש בורג חסר בשלט של הבניין
+OTHER,LOW,יש בעיה קטנה שאפשר לטפל בה בהמשך נא לטפל בהקדם הדיירים התלוננו על זה,ליד ארון החשמל,LOW,type_OTHER selected_LOW location_ליד ארון החשמל יש בעיה קטנה שאפשר לטפל בה בהמשך נא לטפל בהקדם הדיירים התלוננו על זה
+CLEANLINESS,HIGH,הצפה בחדר מדרגות ומים זורמים זה קורה כבר כמה פעמים,בחניה,HIGH,type_CLEANLINESS selected_HIGH location_בחניה הצפה בחדר מדרגות ומים זורמים זה קורה כבר כמה פעמים
+SAFETY,LOW,מרצפת מעט עקומה ללא סכנה מיידית נא לטפל בהקדם,בחדר מדרגות,LOW,type_SAFETY selected_LOW location_בחדר מדרגות מרצפת מעט עקומה ללא סכנה מיידית נא לטפל בהקדם
+NOISE,HIGH,רעש חריג מאוד באמצע הלילה עם צעקות חזקות,בגינה,HIGH,type_NOISE selected_HIGH location_בגינה רעש חריג מאוד באמצע הלילה עם צעקות חזקות
+NOISE,MEDIUM,מישהו הזיז רהיטים לזמן קצר זה קורה כבר כמה פעמים,ליד ארון החשמל,LOW,type_NOISE selected_MEDIUM location_ליד ארון החשמל מישהו הזיז רהיטים לזמן קצר זה קורה כבר כמה פעמים
+SAFETY,HIGH,עשן יוצא מחדר החשמל,בגינה,HIGH,type_SAFETY selected_HIGH location_בגינה עשן יוצא מחדר החשמל
+SAFETY,MEDIUM,יש ונדליזם ליד המעלית הדיירים התלוננו על זה,בכניסה לבניין,MEDIUM,type_SAFETY selected_MEDIUM location_בכניסה לבניין יש ונדליזם ליד המעלית הדיירים התלוננו על זה
+SAFETY,MEDIUM,מרצפת שבורה שעלולה לגרום לנפילה זה קורה כבר כמה פעמים,בחדר מדרגות,MEDIUM,type_SAFETY selected_MEDIUM location_בחדר מדרגות מרצפת שבורה שעלולה לגרום לנפילה זה קורה כבר כמה פעמים
+OTHER,LOW,נדרש טיפול של ועד הבית בזמן הקרוב זה קורה כבר כמה פעמים,ליד המעלית,MEDIUM,type_OTHER selected_LOW location_ליד המעלית נדרש טיפול של ועד הבית בזמן הקרוב זה קורה כבר כמה פעמים
+NOISE,MEDIUM,רעש מתמשך מהחניה זה קורה כבר כמה פעמים נא לטפל בהקדם,בחדר מדרגות,MEDIUM,type_NOISE selected_MEDIUM location_בחדר מדרגות רעש מתמשך מהחניה זה קורה כבר כמה פעמים נא לטפל בהקדם
+CLEANLINESS,LOW,יש כמה ניירות על הרצפה,,LOW,type_CLEANLINESS selected_LOW location_ יש כמה ניירות על הרצפה
+SAFETY,HIGH,יש ניצוצות מארון החשמל בלובי,בכניסה לבניין,HIGH,type_SAFETY selected_HIGH location_בכניסה לבניין יש ניצוצות מארון החשמל בלובי
+CLEANLINESS,LOW,יש הרבה אשפה בחדר אשפה וריח רע הדיירים התלוננו על זה,במחסן,MEDIUM,type_CLEANLINESS selected_LOW location_במחסן יש הרבה אשפה בחדר אשפה וריח רע הדיירים התלוננו על זה
+SAFETY,HIGH,קיר או תקרה נראים לפני קריסה,בחדר אשפה,HIGH,type_SAFETY selected_HIGH location_בחדר אשפה קיר או תקרה נראים לפני קריסה
+NOISE,MEDIUM,רעש מתמשך מהחניה זה קורה כבר כמה פעמים הדיירים התלוננו על זה,בחניה,MEDIUM,type_NOISE selected_MEDIUM location_בחניה רעש מתמשך מהחניה זה קורה כבר כמה פעמים הדיירים התלוננו על זה
+CLEANLINESS,LOW,יש מעט אבק ליד הכניסה זה קורה כבר כמה פעמים,בחדר אשפה,LOW,type_CLEANLINESS selected_LOW location_בחדר אשפה יש מעט אבק ליד הכניסה זה קורה כבר כמה פעמים
+NOISE,HIGH,קולות חזקים של שבירה ואלימות מהדירה,בקומה 1,HIGH,type_NOISE selected_HIGH location_בקומה 1 קולות חזקים של שבירה ואלימות מהדירה
+SAFETY,MEDIUM,תאורה לא עובדת בחדר מדרגות וזה מסוכן בלילה,בגינה,MEDIUM,type_SAFETY selected_MEDIUM location_בגינה תאורה לא עובדת בחדר מדרגות וזה מסוכן בלילה
+CLEANLINESS,LOW,פח קטן לא רוקן אבל לא דחוף,,LOW,type_CLEANLINESS selected_LOW location_ פח קטן לא רוקן אבל לא דחוף
+SAFETY,LOW,יש סכנת התחשמלות,במחסן,HIGH,type_SAFETY selected_LOW location_במחסן יש סכנת התחשמלות
+NOISE,LOW,רעש קל מהחצר בשעות היום,בלובי,LOW,type_NOISE selected_LOW location_בלובי רעש קל מהחצר בשעות היום
+CLEANLINESS,MEDIUM,לכלוך חמור שעלול לגרום לסכנה בריאותית,בלובי,HIGH,type_CLEANLINESS selected_MEDIUM location_בלובי לכלוך חמור שעלול לגרום לסכנה בריאותית
+CLEANLINESS,LOW,יש קצת לכלוך בלובי,בלובי,LOW,type_CLEANLINESS selected_LOW location_בלובי יש קצת לכלוך בלובי
+SAFETY,HIGH,ריח גז חזק בבניין,בחדר מדרגות,HIGH,type_SAFETY selected_HIGH location_בחדר מדרגות ריח גז חזק בבניין
+OTHER,HIGH,בעיה חמורה שמסכנת דיירים,,HIGH,type_OTHER selected_HIGH location_ בעיה חמורה שמסכנת דיירים
+SAFETY,HIGH,חוטי חשמל חשופים ליד הכניסה הדיירים התלוננו על זה,,HIGH,type_SAFETY selected_HIGH location_ חוטי חשמל חשופים ליד הכניסה הדיירים התלוננו על זה
+NOISE,LOW,שומעים מעט רעש מהשכנים במהלך היום זה קורה כבר כמה פעמים הדיירים התלוננו על זה,במחסן,LOW,type_NOISE selected_LOW location_במחסן שומעים מעט רעש מהשכנים במהלך היום זה קורה כבר כמה פעמים הדיירים התלוננו על זה
+CLEANLINESS,HIGH,הצפה בחדר מדרגות ומים זורמים זה קורה כבר כמה פעמים הדיירים התלוננו על זה,בחדר מדרגות,HIGH,type_CLEANLINESS selected_HIGH location_בחדר מדרגות הצפה בחדר מדרגות ומים זורמים זה קורה כבר כמה פעמים הדיירים התלוננו על זה
+SAFETY,LOW,מעקה מעט רופף אבל לא נראה מסוכן כרגע נא לטפל בהקדם,במחסן,LOW,type_SAFETY selected_LOW location_במחסן מעקה מעט רופף אבל לא נראה מסוכן כרגע נא לטפל בהקדם
+SAFETY,HIGH,זכוכית שבורה מסוכנת ליד הכניסה הדיירים התלוננו על זה,בחדר אשפה,HIGH,type_SAFETY selected_HIGH location_בחדר אשפה זכוכית שבורה מסוכנת ליד הכניסה הדיירים התלוננו על זה
+SAFETY,MEDIUM,יש ונדליזם ליד המעלית זה קורה כבר כמה פעמים,בקומה 2,MEDIUM,type_SAFETY selected_MEDIUM location_בקומה 2 יש ונדליזם ליד המעלית זה קורה כבר כמה פעמים
+NOISE,LOW,יש רעש חלש מדי פעם אבל לא דחוף זה קורה כבר כמה פעמים,במחסן,LOW,type_NOISE selected_LOW location_במחסן יש רעש חלש מדי פעם אבל לא דחוף זה קורה כבר כמה פעמים
+CLEANLINESS,MEDIUM,לכלוך חריג בחדר מדרגות,במחסן,MEDIUM,type_CLEANLINESS selected_MEDIUM location_במחסן לכלוך חריג בחדר מדרגות
+OTHER,MEDIUM,תקלה שמשפיעה על כמה דיירים הדיירים התלוננו על זה,ליד המעלית,MEDIUM,type_OTHER selected_MEDIUM location_ליד המעלית תקלה שמשפיעה על כמה דיירים הדיירים התלוננו על זה
+SAFETY,MEDIUM,מעקה רופף שצריך תיקון בהקדם,בחניה,MEDIUM,type_SAFETY selected_MEDIUM location_בחניה מעקה רופף שצריך תיקון בהקדם
+SAFETY,HIGH,מעלית תקועה עם אנשים בפנים הדיירים התלוננו על זה,במחסן,HIGH,type_SAFETY selected_HIGH location_במחסן מעלית תקועה עם אנשים בפנים הדיירים התלוננו על זה
+OTHER,MEDIUM,יש בעיה מתמשכת בבניין נא לטפל בהקדם,ליד ארון החשמל,MEDIUM,type_OTHER selected_MEDIUM location_ליד ארון החשמל יש בעיה מתמשכת בבניין נא לטפל בהקדם
+SAFETY,MEDIUM,יש ונדליזם ליד המעלית הדיירים התלוננו על זה,ליד המעלית,MEDIUM,type_SAFETY selected_MEDIUM location_ליד המעלית יש ונדליזם ליד המעלית הדיירים התלוננו על זה
+SAFETY,HIGH,מעקה רופף שצריך תיקון בהקדם,בחניה,MEDIUM,type_SAFETY selected_HIGH location_בחניה מעקה רופף שצריך תיקון בהקדם

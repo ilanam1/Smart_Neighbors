@@ -5,6 +5,7 @@ from dateutil.relativedelta import relativedelta
 import numpy as np
 import pandas as pd
 from supabase import create_client, Client
+from dotenv import load_dotenv
 
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
@@ -15,12 +16,14 @@ from sklearn.metrics import classification_report, roc_auc_score, accuracy_score
 from sklearn.model_selection import train_test_split
 import joblib
 
+load_dotenv()
+
 
 # =========================================================
 # הגדרות בסיס
 # =========================================================
 SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")  # חשוב: service role
+SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
 MODEL_PATH = "weekly_disturbance_model.joblib"
 
 DISTURBANCE_TYPES = ["NOISE", "CLEANLINESS", "SAFETY", "OTHER"]
@@ -35,20 +38,43 @@ def get_supabase() -> Client:
 # =========================================================
 # שליפה מה-DB
 # =========================================================
-def fetch_table_paginated(supabase: Client, table_name: str, select_query: str = "*", page_size: int = 1000):
+def fetch_table_paginated(
+    supabase: Client,
+    table_name: str,
+    select_query: str = "*",
+    page_size: int = 1000,
+    optional: bool = False
+):
     all_rows = []
     start = 0
 
     while True:
         end = start + page_size - 1
-        response = supabase.table(table_name).select(select_query).range(start, end).execute()
-        rows = response.data or []
-        all_rows.extend(rows)
 
-        if len(rows) < page_size:
-            break
+        try:
+            response = (
+                supabase
+                .table(table_name)
+                .select(select_query)
+                .range(start, end)
+                .execute()
+            )
 
-        start += page_size
+            rows = response.data or []
+            all_rows.extend(rows)
+
+            if len(rows) < page_size:
+                break
+
+            start += page_size
+
+        except Exception as e:
+            if optional:
+                print(f"Optional table '{table_name}' was not found or could not be loaded.")
+                print("Continuing without this table.")
+                return pd.DataFrame()
+
+            raise e
 
     return pd.DataFrame(all_rows)
 
@@ -65,7 +91,8 @@ def fetch_data():
     assignments = fetch_table_paginated(
         supabase,
         "disturbance_assignments",
-        "id, report_id, provider_id, status, created_by, created_at, updated_at, last_update_note, building_id"
+        "id, report_id, provider_id, status, created_by, created_at, updated_at, last_update_note, building_id",
+        optional=True
     )
 
     return reports, assignments
@@ -512,6 +539,246 @@ def save_predictions_to_supabase(predictions_df: pd.DataFrame):
     print(f"Saved {len(payload)} predictions to Supabase.")
 
 
+
+# =========================================================
+# תחזית עומס תחזוקתי לפי בניין עבור נותני שירות
+# =========================================================
+
+TYPE_LABELS_HE = {
+    "NOISE": "רעש",
+    "CLEANLINESS": "ניקיון / אשפה",
+    "SAFETY": "בטיחות",
+    "OTHER": "אחר",
+}
+
+
+def load_score_to_level(score: float) -> str:
+    """
+    המרה של ציון עומס מספרי לרמת עומס.
+    """
+    if score >= 0.67:
+        return "HIGH"
+
+    if score >= 0.34:
+        return "MEDIUM"
+
+    return "LOW"
+
+
+def estimate_staff_members(load_level: str, high_risk_count: int, predicted_issues_count: int) -> int:
+    """
+    הערכת כמות אנשי צוות מומלצת לפי רמת עומס.
+    """
+    if load_level == "HIGH":
+        if high_risk_count >= 2 or predicted_issues_count >= 3:
+            return 3
+
+        return 2
+
+    if load_level == "MEDIUM":
+        return 2
+
+    return 1
+
+
+def build_building_load_explanation(
+    expected_issue_types,
+    high_risk_count: int,
+    medium_risk_count: int,
+    predicted_issues_count: int,
+    total_load_score: float
+) -> str:
+    """
+    יצירת הסבר מילולי לנותן השירות / חברת הניהול.
+    """
+    reasons = []
+
+    if predicted_issues_count > 0:
+        issue_labels = [
+            TYPE_LABELS_HE.get(issue_type, issue_type)
+            for issue_type in expected_issue_types
+        ]
+
+        reasons.append(
+            "זוהו תחומי טיפול צפויים לשבוע הקרוב: " + ", ".join(issue_labels)
+        )
+
+    if high_risk_count > 0:
+        reasons.append(f"קיימים {high_risk_count} תחומים ברמת סיכון גבוהה")
+
+    if medium_risk_count > 0:
+        reasons.append(f"קיימים {medium_risk_count} תחומים ברמת סיכון בינונית")
+
+    if total_load_score >= 0.67:
+        reasons.append("ציון העומס הכולל מצביע על עומס תחזוקתי משמעותי")
+    elif total_load_score >= 0.34:
+        reasons.append("ציון העומס הכולל מצביע על עומס תחזוקתי בינוני")
+    else:
+        reasons.append("לא זוהה עומס תחזוקתי חריג לשבוע הקרוב")
+
+    return ". ".join(reasons) + "."
+
+
+def build_staffing_recommendation(load_level: str, estimated_staff_members: int) -> str:
+    """
+    יצירת המלצה לתכנון משמרות.
+    """
+    if load_level == "HIGH":
+        return (
+            f"עומס גבוה: מומלץ לשבץ לפחות {estimated_staff_members} אנשי צוות זמינים, "
+            "לתעדף טיפול במפגעים פתוחים ולהיערך לקריאות שירות נוספות במהלך השבוע."
+        )
+
+    if load_level == "MEDIUM":
+        return (
+            f"עומס בינוני: מומלץ לשבץ כ-{estimated_staff_members} אנשי צוות, "
+            "לבצע מעקב יזום אחר הבניין ולהיערך לטיפול נקודתי לפי צורך."
+        )
+
+    return (
+        f"עומס נמוך: ניתן להסתפק באיש צוות אחד למעקב שוטף, "
+        "ללא צורך בתגבור מיוחד בשלב זה."
+    )
+
+
+def build_building_maintenance_load_predictions(predictions_df: pd.DataFrame) -> pd.DataFrame:
+    """
+    הפונקציה מקבלת את התחזיות השבועיות הקיימות לפי:
+    building_id + disturbance_type
+
+    ומחזירה תחזית עומס אחת לכל בניין:
+    building_id -> total_load_score / load_level / estimated_staff_members
+    """
+    if predictions_df.empty:
+        return pd.DataFrame()
+
+    rows = []
+
+    grouped = predictions_df.groupby("building_id")
+
+    for building_id, group in grouped:
+        max_probability = float(group["probability"].max())
+        avg_probability = float(group["probability"].mean())
+
+        high_risk_count = int((group["risk_level"] == "HIGH").sum())
+        medium_risk_count = int((group["risk_level"] == "MEDIUM").sum())
+
+        predicted_group = group[
+            (group["predicted_label"] == True) |
+            (group["risk_level"].isin(["HIGH", "MEDIUM"]))
+        ]
+
+        predicted_issues_count = int(len(predicted_group))
+
+        expected_issue_types = (
+            predicted_group["disturbance_type"]
+            .dropna()
+            .unique()
+            .tolist()
+        )
+
+        # ציון עומס משוקלל:
+        # 55% - ההסתברות הגבוהה ביותר בבניין
+        # 30% - ממוצע הסתברויות כל סוגי המטרדים בבניין
+        # 15% - כמות תחומים בסיכון גבוה
+        total_load_score = (
+            0.55 * max_probability +
+            0.30 * avg_probability +
+            0.15 * min(high_risk_count / len(DISTURBANCE_TYPES), 1)
+        )
+
+        total_load_score = min(total_load_score, 1.0)
+        load_level = load_score_to_level(total_load_score)
+
+        estimated_staff = estimate_staff_members(
+            load_level=load_level,
+            high_risk_count=high_risk_count,
+            predicted_issues_count=predicted_issues_count
+        )
+
+        explanation = build_building_load_explanation(
+            expected_issue_types=expected_issue_types,
+            high_risk_count=high_risk_count,
+            medium_risk_count=medium_risk_count,
+            predicted_issues_count=predicted_issues_count,
+            total_load_score=total_load_score
+        )
+
+        recommended_action = build_staffing_recommendation(
+            load_level=load_level,
+            estimated_staff_members=estimated_staff
+        )
+
+        row = {
+            "building_id": building_id,
+            "prediction_date": pd.Timestamp.now(tz="UTC").date().isoformat(),
+            "target_week_start": group["target_week_start"].iloc[0],
+            "target_week_end": group["target_week_end"].iloc[0],
+            "total_load_score": round(total_load_score, 5),
+            "load_level": load_level,
+            "expected_issue_types": expected_issue_types,
+            "high_risk_count": high_risk_count,
+            "medium_risk_count": medium_risk_count,
+            "predicted_issues_count": predicted_issues_count,
+            "estimated_staff_members": estimated_staff,
+            "explanation": explanation,
+            "recommended_staffing_action": recommended_action,
+            "model_name": "RandomForestClassifier_AggregatedBuildingLoad",
+            "model_version": "v1",
+        }
+
+        rows.append(row)
+
+    result = pd.DataFrame(rows)
+
+    if result.empty:
+        return result
+
+    load_order = {
+        "HIGH": 3,
+        "MEDIUM": 2,
+        "LOW": 1,
+    }
+
+    result["load_order"] = result["load_level"].map(load_order).fillna(0)
+
+    result = (
+        result
+        .sort_values(["load_order", "total_load_score"], ascending=[False, False])
+        .drop(columns=["load_order"])
+        .reset_index(drop=True)
+    )
+
+    return result
+
+
+def save_building_load_predictions_to_supabase(load_df: pd.DataFrame):
+    """
+    שמירת תחזיות העומס לטבלה החדשה.
+    מוחק קודם תחזיות קיימות לאותו שבוע כדי לא ליצור כפילויות.
+    """
+    if load_df.empty:
+        print("No building maintenance load predictions to save.")
+        return
+
+    supabase = get_supabase()
+
+    target_week_start = load_df["target_week_start"].iloc[0]
+
+    (
+        supabase.table("building_maintenance_load_predictions")
+        .delete()
+        .eq("target_week_start", target_week_start)
+        .execute()
+    )
+
+    payload = load_df.to_dict(orient="records")
+
+    supabase.table("building_maintenance_load_predictions").insert(payload).execute()
+
+    print(f"Saved {len(payload)} building maintenance load predictions to Supabase.")
+
+
 def main():
     print("Fetching data from Supabase...")
     reports, assignments = fetch_data()
@@ -578,8 +845,18 @@ def main():
     print("\nSample predictions:")
     print(predictions.head(10))
 
-    print("\nSaving predictions...")
+    print("\nSaving weekly disturbance predictions...")
     save_predictions_to_supabase(predictions)
+
+    print("\nBuilding maintenance load predictions...")
+    building_load_predictions = build_building_maintenance_load_predictions(predictions)
+
+    print("\nSample building load predictions:")
+    print(building_load_predictions.head(10))
+
+    print("\nSaving building maintenance load predictions...")
+    save_building_load_predictions_to_supabase(building_load_predictions)
+
     print("Done.")
 
 

@@ -64,7 +64,7 @@ import BuildingCalendarScreen from "./screens/BuildingCalendarScreen";
 import AdminLoadMonitoringScreen from './screens/AdminLoadMonitoringScreen';
 import AdminEquipmentBuildingsSelectorScreen from "./screens/AdminEquipmentBuildingsSelectorScreen";
 import AdminEquipmentPopularityReportScreen from "./screens/AdminEquipmentPopularityReportScreen";
-
+import EmployeeMaintenanceLoadScreen from './screens/EmployeeMaintenanceLoadScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -456,6 +456,13 @@ export default function App() {
               name="EmployeePeriodicInspections"
               component={EmployeePeriodicInspectionsScreen}
               options={{ headerShown: false }}
+            />
+
+
+            <Stack.Screen
+                name="EmployeeMaintenanceLoad"
+                component={EmployeeMaintenanceLoadScreen}
+                options={{ title: 'עומס תחזוקתי צפוי' }}
             />
 
             <Stack.Screen

@@ -3,6 +3,8 @@
 // מותאם לעבודה לפי building_id של המשתמש המחובר
 
 import { getSupabase } from '../DataBase/supabase';
+
+import { predictDisturbanceSeverity } from './disturbanceSeverityPredictionApi';
 const supabase = getSupabase();
 
 async function getCurrentUserWithBuilding() {
@@ -51,6 +53,7 @@ async function getCurrentUserWithBuilding() {
 
 /**
  * יצירת דיווח מטרד חדש
+ * כולל שכבת חיזוי חכמה להמלצת חומרה
  */
 export async function createDisturbanceReport({
   type,
@@ -60,6 +63,13 @@ export async function createDisturbanceReport({
   location = null,
 }) {
   const { user, buildingId } = await getCurrentUserWithBuilding();
+
+  const prediction = predictDisturbanceSeverity({
+    type,
+    selectedSeverity: severity,
+    description,
+    location,
+  });
 
   const { data, error } = await supabase
     .from('disturbance_reports')
@@ -72,6 +82,13 @@ export async function createDisturbanceReport({
         description,
         occurred_at: occurredAt,
         location,
+
+        // שדות חיזוי חכם
+        predicted_severity: prediction.predicted_severity,
+        severity_confidence: prediction.severity_confidence,
+        severity_recommendation_reason:
+          prediction.severity_recommendation_reason,
+        severity_model_version: prediction.severity_model_version,
       },
     ])
     .select()

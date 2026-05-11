@@ -1,10 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert, FlatList, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { LogOut, Building, ClipboardList, Bell, CheckCircle, ShieldCheck, FileText } from 'lucide-react-native';import { getSupabase } from '../DataBase/supabase';
+import {
+    LogOut,
+    Building,
+    ClipboardList,
+    Bell,
+    CheckCircle,
+    ShieldCheck,
+    FileText,
+    BarChart3,
+} from 'lucide-react-native';
 import NotificationsModal from '../components/NotificationsModal';
 import { getMyNotifications } from '../API/notificationsApi';
 import { getEmployeeOpenJobs } from '../API/jobRequestsApi';
+import { getSupabase } from '../DataBase/supabase';
 
 export default function EmployeeHomeScreen({ user, onSignOut }) {
     const navigation = useNavigation();
@@ -144,6 +154,23 @@ export default function EmployeeHomeScreen({ user, onSignOut }) {
                         </View>
                         <Text style={styles.actionTitle}>דו"ח חודשי</Text>
                         <Text style={styles.actionDesc}>תקלות ועבודות שבוצעו החודש</Text>
+                    </TouchableOpacity>
+
+
+                    <TouchableOpacity
+                        style={[styles.actionCard, { marginTop: 16, width: '100%' }]}
+                        onPress={() =>
+                            navigation.navigate('EmployeeMaintenanceLoad', {
+                                employeeId: user.id,
+                                employeeName: user.full_name,
+                            })
+                        }
+                    >
+                        <View style={[styles.iconCircle, { backgroundColor: '#e0f2fe' }]}>
+                            <BarChart3 size={24} color="#0284c7" />
+                        </View>
+                        <Text style={styles.actionTitle}>עומס תחזוקתי צפוי</Text>
+                        <Text style={styles.actionDesc}>תחזית עומסים ותכנון משמרות</Text>
                     </TouchableOpacity>
 
                     

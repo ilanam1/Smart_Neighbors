@@ -1,0 +1,26 @@
+Smart Neighbors - Disturbance Severity ML Model
+============================================================
+Model version: ml-severity-logreg-v1.0
+Training rows: 780
+Train rows: 608
+Test rows: 172
+Accuracy: 1.0000
+Macro F1: 1.0000
+
+Classification Report:
+              precision    recall  f1-score   support
+
+        HIGH       1.00      1.00      1.00        66
+         LOW       1.00      1.00      1.00        53
+      MEDIUM       1.00      1.00      1.00        53
+
+    accuracy                           1.00       172
+   macro avg       1.00      1.00      1.00       172
+weighted avg       1.00      1.00      1.00       172
+
+
+Confusion Matrix:
+        HIGH  LOW  MEDIUM
+HIGH      66    0       0
+LOW        0   53       0
+MEDIUM     0    0      53
