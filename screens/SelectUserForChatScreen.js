@@ -43,6 +43,8 @@ export default function SelectUserForChatScreen({ navigation, route }) {
                 navigation.navigate('ChatRoom', {
                     conversationId: chat.id,
                     chatName: titleStr || otherUser.email,
+                    chatPhotoUrl: otherUser.photo_url,
+                    chatUserId: otherUser.auth_uid || otherUser.id,
                     isGroup: false,
                     user: user
                 });

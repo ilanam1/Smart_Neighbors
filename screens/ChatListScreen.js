@@ -1,8 +1,9 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, StatusBar } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, StatusBar, Image, Alert } from 'react-native';
 import Svg, { Defs, RadialGradient, Stop, Rect } from 'react-native-svg';
 import { useFocusEffect } from '@react-navigation/native';
 import { getUserConversations, getBuildingGroupChat } from '../API/chatApi';
+import RNFS from 'react-native-fs';
 
 export default function ChatListScreen({ navigation, route }) {
     const { user } = route.params;
@@ -26,8 +27,33 @@ export default function ChatListScreen({ navigation, route }) {
             // Then fetch all conversations
             const convos = await getUserConversations(user.id);
             
+            // Filter out hidden chats
+            const hiddenChatsPath = `${RNFS.DocumentDirectoryPath}/hidden_chats_${user.id}.json`;
+            let hiddenChats = {};
+            try {
+                const exists = await RNFS.exists(hiddenChatsPath);
+                if (exists) {
+                    const hiddenChatsJson = await RNFS.readFile(hiddenChatsPath, 'utf8');
+                    hiddenChats = JSON.parse(hiddenChatsJson);
+                }
+            } catch (e) {
+                console.log('No hidden chats file or error reading', e);
+            }
+
+            const visibleConvos = convos.filter(chat => {
+                if (chat.is_group) return true; // never hide group chats
+                const hiddenAtStr = hiddenChats[chat.id];
+                if (!hiddenAtStr) return true;
+
+                const hiddenAt = new Date(hiddenAtStr).getTime();
+                const updatedAt = new Date(chat.updated_at || chat.created_at).getTime();
+
+                // If the chat has been updated AFTER it was hidden, show it again
+                return updatedAt > hiddenAt;
+            });
+
             // Sort conversations: group chat first, then by updated_at (newest first)
-            const sortedConvos = convos.sort((a, b) => {
+            const sortedConvos = visibleConvos.sort((a, b) => {
                 if (a.is_group && !b.is_group) return -1;
                 if (!a.is_group && b.is_group) return 1;
                 
@@ -47,13 +73,17 @@ export default function ChatListScreen({ navigation, route }) {
 
     const handlePressChat = (chat) => {
         let chatName = 'קבוצת הבניין';
+        let chatPhotoUrl = null;
+        let chatUserId = null;
         if (!chat.is_group) {
             // Find the other participant's name
-            const otherParticipant = chat.conversation_participants.find(p => p.profile_id !== user.id);
+            const otherParticipant = chat.conversation_participants.find(p => p.profiles?.auth_uid !== (user.auth_uid || user.id));
             if (otherParticipant && otherParticipant.profiles) {
                 const fName = otherParticipant.profiles.first_name || '';
                 const lName = otherParticipant.profiles.last_name || '';
                 chatName = `${fName} ${lName}`.trim() || otherParticipant.profiles.email;
+                chatPhotoUrl = otherParticipant.profiles.photo_url;
+                chatUserId = otherParticipant.profiles.auth_uid;
             } else {
                 chatName = 'שיחה פרטית';
             }
@@ -62,31 +92,84 @@ export default function ChatListScreen({ navigation, route }) {
         navigation.navigate('ChatRoom', { 
             conversationId: chat.id, 
             chatName: chatName,
+            chatPhotoUrl: chatPhotoUrl,
+            chatUserId: chatUserId,
             isGroup: chat.is_group,
             user: user 
         });
     };
 
+    const hideChat = async (chat) => {
+        try {
+            const hiddenChatsPath = `${RNFS.DocumentDirectoryPath}/hidden_chats_${user.id}.json`;
+            let hiddenChats = {};
+            const exists = await RNFS.exists(hiddenChatsPath);
+            if (exists) {
+                const hiddenChatsJson = await RNFS.readFile(hiddenChatsPath, 'utf8');
+                hiddenChats = JSON.parse(hiddenChatsJson);
+            }
+            
+            // Store the current updated_at so we know when it was hidden
+            hiddenChats[chat.id] = chat.updated_at || chat.created_at;
+            
+            await RNFS.writeFile(hiddenChatsPath, JSON.stringify(hiddenChats), 'utf8');
+            
+            // Re-filter conversations
+            fetchChats();
+        } catch (error) {
+            console.error('Error hiding chat:', error);
+            Alert.alert('שגיאה', 'שגיאה במחיקת השיחה');
+        }
+    };
+
+    const handleLongPressChat = (chat) => {
+        if (chat.is_group) return; // Cannot delete group chat
+
+        Alert.alert(
+            "מחיקת שיחה",
+            "האם אתה בטוח שברצונך למחוק שיחה זו?\n\nהשיחה תיעלם מהרשימה שלך, אבל תישמר אצל הצד השני. אם הוא ישלח הודעה חדשה, היא תחזור להופיע.",
+            [
+                { text: "ביטול", style: "cancel" },
+                { 
+                    text: "מחק", 
+                    style: "destructive",
+                    onPress: () => hideChat(chat)
+                }
+            ]
+        );
+    };
+
     const renderItem = ({ item }) => {
         let chatTitle = 'קבוצת הבניין';
         let subTitle = 'צ\'אט כללי לכל הבניין';
+        let chatPhotoUrl = null;
         
         if (!item.is_group) {
-            const otherParticipant = item.conversation_participants?.find(p => p.profile_id !== user.id);
+            const otherParticipant = item.conversation_participants?.find(p => p.profiles?.auth_uid !== (user.auth_uid || user.id));
             if (otherParticipant && otherParticipant.profiles) {
                 const fName = otherParticipant.profiles.first_name || '';
                 const lName = otherParticipant.profiles.last_name || '';
                 chatTitle = `${fName} ${lName}`.trim() || 'שכן ללא שם';
                 subTitle = 'שיחה פרטית';
+                chatPhotoUrl = otherParticipant.profiles.photo_url;
             } else {
                 chatTitle = 'שיחה פרטית';
             }
         }
 
         return (
-            <TouchableOpacity style={styles.chatCard} onPress={() => handlePressChat(item)}>
+            <TouchableOpacity 
+                style={styles.chatCard} 
+                onPress={() => handlePressChat(item)}
+                onLongPress={() => handleLongPressChat(item)}
+                delayLongPress={500}
+            >
                <View style={styles.chatIconPlaceholder}>
-                   <Text style={styles.chatIconText}>{item.is_group ? '🏢' : '👤'}</Text>
+                   {chatPhotoUrl ? (
+                       <Image source={{ uri: chatPhotoUrl }} style={{ width: '100%', height: '100%', borderRadius: 25 }} />
+                   ) : (
+                       <Text style={styles.chatIconText}>{item.is_group ? '🏢' : '👤'}</Text>
+                   )}
                </View>
                <View style={styles.chatInfo}>
                     <Text style={styles.chatTitle}>{chatTitle}</Text>

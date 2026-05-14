@@ -40,9 +40,11 @@ export const getUserConversations = async (userId) => {
                     profile_id,
                     profiles (
                         id,
+                        auth_uid,
                         first_name,
                         last_name,
-                        email
+                        email,
+                        photo_url
                     )
                 )
             `)
@@ -207,7 +209,8 @@ export const getMessages = async (conversationId) => {
                 profiles (
                    first_name,
                    last_name,
-                   auth_uid
+                   auth_uid,
+                   photo_url
                 )
             `)
             .eq('conversation_id', conversationId)
@@ -349,7 +352,7 @@ export const getBuildingResidents = async (buildingId, excludeUserId) => {
          const supabase = getSupabase();
          const { data, error } = await supabase
             .from('profiles')
-            .select('id, first_name, last_name, email')
+            .select('id, auth_uid, first_name, last_name, email, photo_url')
             .eq('building_id', buildingId)
             .neq('auth_uid', excludeUserId);
             

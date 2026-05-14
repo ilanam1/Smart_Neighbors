@@ -46,6 +46,7 @@ import IncomingLoanRequestsScreen from './screens/IncomingLoanRequestsScreen';
 import ChatListScreen from './screens/ChatListScreen';
 import ChatRoomScreen from './screens/ChatRoomScreen';
 import SelectUserForChatScreen from './screens/SelectUserForChatScreen';
+import PublicProfileScreen from './screens/PublicProfileScreen';
 import CommitteeWeeklyForecastScreen from "./screens/CommitteeWeeklyForecastScreen";
 import EmployeeHomeScreen from './screens/EmployeeHomeScreen';
 import EmployeeBuildingsScreen from './screens/EmployeeBuildingsScreen';
@@ -351,9 +352,13 @@ export default function App() {
             <Stack.Screen
               name="ChatRoom"
               component={ChatRoomScreen}
-              options={{ title: 'שיחה' }}
+              options={{ title: 'שיחה', headerBackTitleVisible: false }}
             />
-
+            <Stack.Screen
+              name="PublicProfile"
+              component={PublicProfileScreen}
+              options={{ title: 'פרופיל', headerBackTitleVisible: false }}
+            />
             <Stack.Screen
               name="SelectUserForChat"
               component={SelectUserForChatScreen}

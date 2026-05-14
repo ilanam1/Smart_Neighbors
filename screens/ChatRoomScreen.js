@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, StyleSheet, FlatList, TextInput, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView, Platform, StatusBar } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TextInput, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView, Platform, StatusBar, Image } from 'react-native';
 import Svg, { Defs, RadialGradient, Stop, Rect } from 'react-native-svg';
 import { getMessages, sendMessage, editMessage, toggleMessageReaction } from '../API/chatApi';
 import { getSupabase } from '../DataBase/supabase';
@@ -7,7 +7,7 @@ import { getSupabase } from '../DataBase/supabase';
 const EMOJIS = ['👍', '❤️', '😂', '😮', '😢', '👏'];
 
 export default function ChatRoomScreen({ navigation, route }) {
-    const { conversationId, chatName, isGroup, user } = route.params;
+    const { conversationId, chatName, chatPhotoUrl, chatUserId, isGroup, user } = route.params;
     const [messages, setMessages] = useState([]);
     const [inputText, setInputText] = useState('');
     const [loading, setLoading] = useState(true);
@@ -16,7 +16,34 @@ export default function ChatRoomScreen({ navigation, route }) {
     const flatListRef = useRef();
 
     useEffect(() => {
-        navigation.setOptions({ title: chatName });
+        navigation.setOptions({
+            headerTitle: '',
+            headerRight: () => {
+                const content = (
+                    <View style={{ flexDirection: 'row-reverse', alignItems: 'center', paddingRight: 15 }}>
+                        {chatPhotoUrl ? (
+                            <Image source={{ uri: chatPhotoUrl }} style={{ width: 32, height: 32, borderRadius: 16, marginLeft: 10 }} />
+                        ) : (
+                            <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(0, 0, 0, 0.1)', alignItems: 'center', justifyContent: 'center', marginLeft: 10 }}>
+                                <Text style={{ fontSize: 14 }}>{isGroup ? '🏢' : (chatName ? chatName.charAt(0) : '👤')}</Text>
+                            </View>
+                        )}
+                        <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#0F172A' }} numberOfLines={1}>
+                            {chatName}
+                        </Text>
+                    </View>
+                );
+
+                if (!isGroup && chatUserId) {
+                    return (
+                        <TouchableOpacity onPress={() => navigation.navigate('PublicProfile', { authUid: chatUserId })}>
+                            {content}
+                        </TouchableOpacity>
+                    );
+                }
+                return content;
+            },
+        });
         fetchMessages();
         
         // Subscribe to real-time changes
@@ -134,23 +161,38 @@ export default function ChatRoomScreen({ navigation, route }) {
             );
         }
 
+        const profilePhotoUrl = item.profiles?.photo_url;
+
         return (
             <View style={[styles.messageBubbleContainer, isMyMessage ? styles.myMessageContainer : styles.otherMessageContainer]}>
-                {isGroup && !isMyMessage && (
-                    <Text style={styles.senderName}>{senderName}</Text>
-                )}
-                <BubbleComponent 
-                    style={[styles.messageBubble, isMyMessage ? styles.myBubble : styles.otherBubble]}
-                    onLongPress={isMyMessage ? () => handleLongPressMessage(item) : () => handleLongPressOtherMessage(item)}
-                    delayLongPress={300}
-                    activeOpacity={0.8}
-                >
-                    <Text style={[styles.messageText, isMyMessage ? styles.myMessageText : styles.otherMessageText]}>{item.content}</Text>
-                    <Text style={styles.timeText}>
-                        {new Date(item.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                    </Text>
-                </BubbleComponent>
-                {reactionsDisplay}
+                <View style={{ flexDirection: 'row-reverse', alignItems: 'flex-end' }}>
+                    <View style={{ flexShrink: 1 }}>
+                        <BubbleComponent 
+                            style={[styles.messageBubble, isMyMessage ? styles.myBubble : styles.otherBubble]}
+                            onLongPress={isMyMessage ? () => handleLongPressMessage(item) : () => handleLongPressOtherMessage(item)}
+                            delayLongPress={300}
+                            activeOpacity={0.8}
+                        >
+                            {isGroup && !isMyMessage && (
+                                <Text style={styles.senderNameInsideBubble}>{senderName}</Text>
+                            )}
+                            <Text style={[styles.messageText, isMyMessage ? styles.myMessageText : styles.otherMessageText]}>{item.content}</Text>
+                            <Text style={styles.timeText}>
+                                {new Date(item.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                            </Text>
+                        </BubbleComponent>
+                        {reactionsDisplay}
+                    </View>
+                    {!isMyMessage && (
+                        <View style={styles.chatRoomAvatarContainer}>
+                            {profilePhotoUrl ? (
+                                <Image source={{ uri: profilePhotoUrl }} style={styles.chatRoomAvatar} />
+                            ) : (
+                                <Text style={styles.chatRoomAvatarText}>{fName ? fName.charAt(0) : '👤'}</Text>
+                            )}
+                        </View>
+                    )}
+                </View>
             </View>
         );
     };
@@ -275,6 +317,13 @@ const styles = StyleSheet.create({
         color: '#94a3b8',
         marginBottom: 4,
         marginRight: 4,
+        textAlign: 'right', // RTL
+    },
+    senderNameInsideBubble: {
+        fontSize: 15,
+        fontWeight: 'bold',
+        color: '#0ea5e9', // Sky blue for names to stand out
+        marginBottom: 6,
         textAlign: 'right', // RTL
     },
     messageBubble: {
@@ -409,5 +458,24 @@ const styles = StyleSheet.create({
     },
     reactionOptionText: {
         fontSize: 28,
+    },
+    chatRoomAvatarContainer: {
+        width: 32,
+        height: 32,
+        borderRadius: 16,
+        backgroundColor: 'rgba(148, 163, 184, 0.2)',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: 8,
+        overflow: 'hidden',
+    },
+    chatRoomAvatar: {
+        width: '100%',
+        height: '100%',
+    },
+    chatRoomAvatarText: {
+        fontSize: 14,
+        color: '#10b981',
+        fontWeight: 'bold',
     }
 });
