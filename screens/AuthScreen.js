@@ -15,7 +15,7 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import Svg, { Defs, RadialGradient, Stop, Rect } from 'react-native-svg';
 import { LogIn, UserPlus, Eye, EyeOff } from 'lucide-react-native';
-//import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { getSupabase } from '../DataBase/supabase.js';
 import RNFS from "react-native-fs";
@@ -47,10 +47,7 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
   const [address, setAddress] = useState('');
   const [idNumber, setIdNumber] = useState('');
   const [dob, setDob] = useState(new Date(2000, 0, 1));
-//const [showDatePicker, setShowDatePicker] = useState(false);
-  const [birthDay, setBirthDay] = useState('');
-  const [birthMonth, setBirthMonth] = useState('');
-  const [birthYear, setBirthYear] = useState('');
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
 
 
@@ -205,10 +202,7 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
         if (!zip.trim()) return setError("Zip code is required");
         if (!address.trim()) return setError("Address is required");
         if (!idNumber.trim()) return setError("ID number is required");
-        //if (!dob) return setError("Date of birth is required");
-        if (!birthDay.trim() || !birthMonth.trim() || !birthYear.trim()) {
-            return setError("Date of birth is required");
-}
+        if (!dob) return setError("Date of birth is required");
 
         // PHONE NUMBER VALIDATION (Exactly 10 digits, numbers only)
         if (!/^\d{10}$/.test(phone.trim())) {
@@ -234,30 +228,7 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
         }
 
         // Format Date of Birth for Supabase (YYYY-MM-DD)
-        const day = parseInt(birthDay, 10);
-const month = parseInt(birthMonth, 10);
-const year = parseInt(birthYear, 10);
-
-if (
-  isNaN(day) || isNaN(month) || isNaN(year) ||
-  day < 1 || day > 31 ||
-  month < 1 || month > 12 ||
-  year < 1900 || year > new Date().getFullYear()
-) {
-  return setError("Invalid date of birth");
-}
-
-const dobDate = new Date(year, month - 1, day);
-
-if (
-  dobDate.getFullYear() !== year ||
-  dobDate.getMonth() !== month - 1 ||
-  dobDate.getDate() !== day
-) {
-  return setError("Invalid date of birth");
-}
-
-const formattedDob = dobDate.toISOString().split('T')[0];
+        const formattedDob = dob.toISOString().split('T')[0];
 
         // CREATE AUTH USER
         const { data, error } = await supabase.auth.signUp({
@@ -486,38 +457,35 @@ const formattedDob = dobDate.toISOString().split('T')[0];
             <TextInput placeholderTextColor="#9ca3af" placeholder="תעודת זהות (9 ספרות) *" value={idNumber} onChangeText={setIdNumber} keyboardType="number-pad" style={styles.input} textAlign="right" />
             
             {/* DATE PICKER */}
-<View style={{ flexDirection: 'row-reverse', gap: 8, marginTop: 10 }}>
-  <TextInput
-    placeholderTextColor="#9ca3af"
-    placeholder="יום"
-    value={birthDay}
-    onChangeText={setBirthDay}
-    keyboardType="number-pad"
-    maxLength={2}
-    style={[styles.input, { flex: 1, marginTop: 0 }]}
-    textAlign="center"
-  />
-  <TextInput
-    placeholderTextColor="#9ca3af"
-    placeholder="חודש"
-    value={birthMonth}
-    onChangeText={setBirthMonth}
-    keyboardType="number-pad"
-    maxLength={2}
-    style={[styles.input, { flex: 1, marginTop: 0 }]}
-    textAlign="center"
-  />
-  <TextInput
-    placeholderTextColor="#9ca3af"
-    placeholder="שנה"
-    value={birthYear}
-    onChangeText={setBirthYear}
-    keyboardType="number-pad"
-    maxLength={4}
-    style={[styles.input, { flex: 2, marginTop: 0 }]}
-    textAlign="center"
-  />
-</View>
+            <Text style={{ color: '#9ca3af', textAlign: 'right', marginTop: 10, marginRight: 4 }}>תאריך לידה *</Text>
+            <TouchableOpacity 
+              style={[styles.input, { justifyContent: 'center' }]} 
+              onPress={() => setShowDatePicker(true)}
+            >
+              <Text style={{ color: '#f8fafc', textAlign: 'right' }}>
+                {dob.toLocaleDateString('he-IL')}
+              </Text>
+            </TouchableOpacity>
+
+            {showDatePicker && (
+              <View style={Platform.OS === 'ios' ? styles.iosPickerContainer : null}>
+                <DateTimePicker
+                  value={dob}
+                  mode="date"
+                  display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                  onChange={(event, selectedDate) => {
+                    if (Platform.OS === 'android') setShowDatePicker(false);
+                    if (selectedDate) setDob(selectedDate);
+                  }}
+                  maximumDate={new Date()}
+                />
+                {Platform.OS === 'ios' && (
+                  <TouchableOpacity style={styles.iosDoneButton} onPress={() => setShowDatePicker(false)}>
+                    <Text style={styles.iosDoneText}>סיום</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+            )}
 
             {/* BUILDING SELECTION */}
             <TouchableOpacity
@@ -836,4 +804,22 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#e5e7eb',
   },
+  iosPickerContainer: {
+    backgroundColor: '#1f2937',
+    borderRadius: 10,
+    marginTop: 10,
+    overflow: 'hidden',
+  },
+  iosDoneButton: {
+    padding: 12,
+    alignItems: 'center',
+    backgroundColor: '#374151',
+    borderTopWidth: 1,
+    borderColor: '#111827',
+  },
+  iosDoneText: {
+    color: '#f8fafc',
+    fontWeight: 'bold',
+    fontSize: 16,
+  }
 });

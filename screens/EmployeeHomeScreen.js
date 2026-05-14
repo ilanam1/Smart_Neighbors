@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, FlatList, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, FlatList, ActivityIndicator, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import {
     LogOut,
@@ -94,7 +94,7 @@ export default function EmployeeHomeScreen({ user, onSignOut }) {
                 <Text style={styles.headerTitle}>אזור נותני השירות</Text>
             </View>
 
-            <View style={styles.content}>
+            <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
                 <View style={styles.card}>
                     <Text style={styles.welcomeText}>שלום, {user?.full_name}!</Text>
                     <Text style={styles.subText}>הנך מחובר למערכת כנותן שירות.</Text>
@@ -190,7 +190,7 @@ export default function EmployeeHomeScreen({ user, onSignOut }) {
                     <Text style={[styles.welcomeText, { fontSize: 16, marginBottom: 10 }]}>הודעות מערכת</Text>
                     <Text style={styles.infoText}>אין הודעות מערכת חדשות.</Text>
                 </View>
-            </View>
+            </ScrollView>
 
             <NotificationsModal 
                 visible={showNotifications} 
