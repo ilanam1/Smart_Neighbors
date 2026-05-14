@@ -16,7 +16,18 @@ import {
 import { getSupabase } from "../DataBase/supabase";
 import { useFocusEffect } from "@react-navigation/native";
 import { listMfaFactors, unenrollMfa } from "../API/mfaApi";
-import { Eye, EyeOff, Lock } from "lucide-react-native";
+import { Eye, EyeOff, Lock, Camera } from "lucide-react-native";
+import { launchImageLibrary } from 'react-native-image-picker';
+import RNFS from "react-native-fs";
+import { decode as atob } from "base-64";
+
+async function getRealPath(uri) {
+  if (uri.startsWith("content://")) {
+    const stat = await RNFS.stat(uri);
+    return stat.path;
+  }
+  return uri;
+}
 
 // --- Masking Utils ---
 const maskEmail = (email) => {
@@ -44,6 +55,7 @@ export default function ProfilePageScreen({ navigation }) {
   const [currentUserEmail, setCurrentUserEmail] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
   
   const [mfaFactor, setMfaFactor] = useState(null);
   const [mfaLoading, setMfaLoading] = useState(false);
@@ -79,7 +91,10 @@ export default function ProfilePageScreen({ navigation }) {
             date_of_birth,
             id_number,
             photo_url,
-            is_house_committee
+            is_house_committee,
+            buildings (
+              name
+            )
           `
           )
           .eq("auth_uid", user.id)
@@ -97,6 +112,107 @@ export default function ProfilePageScreen({ navigation }) {
     loadProfile();
     return () => (mounted = false);
   }, []);
+
+  const handleRemovePhoto = async () => {
+    try {
+      setUploadingPhoto(true);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("No user found");
+
+      const { error: updateError } = await supabase
+        .from("profiles")
+        .update({ photo_url: null })
+        .eq("auth_uid", user.id);
+
+      if (updateError) throw updateError;
+
+      setProfile(prev => ({ ...prev, photo_url: null }));
+      Alert.alert("הצלחה", "תמונת הפרופיל הוסרה בהצלחה!");
+    } catch (err) {
+      console.log(err);
+      Alert.alert("שגיאה", "לא הצלחנו להסיר את התמונה.");
+    } finally {
+      setUploadingPhoto(false);
+    }
+  };
+
+  const handlePickPhoto = async () => {
+    try {
+      const result = await launchImageLibrary({
+        mediaType: 'photo',
+        includeBase64: true,
+        maxWidth: 512,
+        maxHeight: 512,
+        quality: 0.8,
+      });
+
+      if (result.didCancel || result.errorCode) {
+        return;
+      }
+
+      const photo = result.assets && result.assets[0];
+      if (!photo) return;
+
+      setUploadingPhoto(true);
+
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("No user found");
+
+      const fileExt = (photo.fileName && photo.fileName.split(".").pop()) || "jpg";
+      const fileName = `${user.id}-${Date.now()}.${fileExt}`;
+      const filePath = `avatars/${fileName}`;
+
+      const realPath = await getRealPath(photo.uri);
+      const base64File = await RNFS.readFile(realPath, "base64");
+      const binary = Uint8Array.from(atob(base64File), c => c.charCodeAt(0));
+
+      const { error: uploadError } = await supabase.storage
+        .from("profile-photos")
+        .upload(filePath, binary, {
+          contentType: photo.type || "image/jpeg",
+          upsert: true,
+        });
+
+      if (uploadError) throw uploadError;
+
+      const { data: publicData } = supabase.storage
+        .from("profile-photos")
+        .getPublicUrl(filePath);
+
+      const uploadedPhotoUrl = publicData.publicUrl;
+
+      const { error: updateError } = await supabase
+        .from("profiles")
+        .update({ photo_url: uploadedPhotoUrl })
+        .eq("auth_uid", user.id);
+
+      if (updateError) throw updateError;
+
+      setProfile(prev => ({ ...prev, photo_url: uploadedPhotoUrl }));
+      Alert.alert("הצלחה", "תמונת הפרופיל עודכנה בהצלחה!");
+    } catch (err) {
+      console.log(err);
+      Alert.alert("שגיאה", "לא הצלחנו לעדכן את תמונת הפרופיל.");
+    } finally {
+      setUploadingPhoto(false);
+    }
+  };
+
+  const handleAvatarPress = () => {
+    if (profile?.photo_url) {
+      Alert.alert(
+        "תמונת פרופיל",
+        "בחר מה ברצונך לעשות:",
+        [
+          { text: "ביטול", style: "cancel" },
+          { text: "הסר תמונה", onPress: handleRemovePhoto, style: "destructive" },
+          { text: "החלף תמונה", onPress: handlePickPhoto }
+        ]
+      );
+    } else {
+      handlePickPhoto();
+    }
+  };
 
   const handleUnlockInfo = async () => {
     if (!unlockPassword) return;
@@ -184,15 +300,26 @@ export default function ProfilePageScreen({ navigation }) {
       <ScrollView contentContainerStyle={styles.screen}>
         {/* AVATAR */}
         <View style={styles.avatarContainer}>
-          {profile?.photo_url ? (
-            <Image source={{ uri: profile.photo_url }} style={styles.avatar} />
-          ) : (
-            <View style={styles.avatarPlaceholder}>
-              <Text style={styles.avatarInitials}>
-                {profile?.first_name?.[0] || "?"}
-              </Text>
-            </View>
-          )}
+          <TouchableOpacity onPress={handleAvatarPress} disabled={uploadingPhoto}>
+            {profile?.photo_url ? (
+              <Image source={{ uri: profile.photo_url }} style={styles.avatar} />
+            ) : (
+              <View style={styles.avatarPlaceholder}>
+                <Text style={styles.avatarInitials}>
+                  {profile?.first_name?.[0] || "?"}
+                </Text>
+              </View>
+            )}
+            {uploadingPhoto ? (
+              <View style={styles.avatarOverlay}>
+                <ActivityIndicator color="#fff" />
+              </View>
+            ) : (
+              <View style={styles.editAvatarBadge}>
+                <Camera size={16} color="#fff" />
+              </View>
+            )}
+          </TouchableOpacity>
         </View>
 
         {/* NAME */}
@@ -205,11 +332,20 @@ export default function ProfilePageScreen({ navigation }) {
           {isUnlocked ? profile?.email : maskEmail(profile?.email)}
         </Text>
 
-        {/* ROLE */}
-        <View style={styles.badge}>
-          <Text style={styles.badgeText}>
-            {profile?.is_house_committee ? "חבר ועד בית" : "דייר"}
-          </Text>
+        {/* ROLE & BUILDING */}
+        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 10, marginTop: 12 }}>
+          <View style={[styles.badge, { marginTop: 0 }]}>
+            <Text style={styles.badgeText}>
+              {profile?.is_house_committee ? "חבר ועד בית" : "דייר"}
+            </Text>
+          </View>
+          {profile?.buildings?.name && (
+            <View style={[styles.badge, { backgroundColor: '#059669', marginTop: 0 }]}>
+              <Text style={styles.badgeText}>
+                {profile.buildings.name}
+              </Text>
+            </View>
+          )}
         </View>
 
         {/* SECTION: PERSONAL INFO */}
@@ -372,6 +508,26 @@ const styles = StyleSheet.create({
     fontSize: 36,
     fontWeight: "700",
     color: "#e5e7eb",
+  },
+  avatarOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: 60,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  editAvatarBadge: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    backgroundColor: '#3b82f6',
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 3,
+    borderColor: '#0F172A',
   },
 
   /* ---------- HEADER TEXT ---------- */

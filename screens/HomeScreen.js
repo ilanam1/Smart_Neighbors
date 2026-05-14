@@ -130,44 +130,46 @@ export default function HomeScreen({ navigation, user }) {
   }, []);
 
   // ===== LOAD USER PROFILE =====
-  useEffect(() => {
-    if (!user?.id) return;
-    let mounted = true;
-    async function loadProfile() {
-      try {
-        setProfileLoading(true);
-        const { data, error } = await supabase
-          .from("profiles")
-          .select("first_name, last_name, email, photo_url, is_house_committee, building_id")
-          .eq("auth_uid", user.id)
-          .maybeSingle();
-
-        if (error) throw error;
-        if (mounted) {
-          setProfile(data);
-          const isC = !!data?.is_house_committee;
-          setIsCommittee(isC);
-        }
-      } catch (e) {
-        console.error(e.message);
-      } finally {
-        if (mounted) setProfileLoading(false);
-      }
-    }
-    
-    async function loadNotifications() {
+  useFocusEffect(
+    useCallback(() => {
+      if (!user?.id) return;
+      let mounted = true;
+      async function loadProfile() {
         try {
-            const notifs = await getMyNotifications(user.id);
-            if (mounted) {
-               setUnreadCount(notifs.filter(n => !n.is_read).length);
-            }
-        } catch (e) {}
-    }
+          setProfileLoading(true);
+          const { data, error } = await supabase
+            .from("profiles")
+            .select("first_name, last_name, email, photo_url, is_house_committee, building_id")
+            .eq("auth_uid", user.id)
+            .maybeSingle();
 
-    loadProfile();
-    loadNotifications();
-    return () => (mounted = false);
-  }, [user?.id]);
+          if (error) throw error;
+          if (mounted) {
+            setProfile(data);
+            const isC = !!data?.is_house_committee;
+            setIsCommittee(isC);
+          }
+        } catch (e) {
+          console.error(e.message);
+        } finally {
+          if (mounted) setProfileLoading(false);
+        }
+      }
+      
+      async function loadNotifications() {
+          try {
+              const notifs = await getMyNotifications(user.id);
+              if (mounted) {
+                 setUnreadCount(notifs.filter(n => !n.is_read).length);
+              }
+          } catch (e) {}
+      }
+
+      loadProfile();
+      loadNotifications();
+      return () => { mounted = false; };
+    }, [user?.id])
+  );
 
   const handleCloseNotifications = async () => {
       setShowNotifications(false);
