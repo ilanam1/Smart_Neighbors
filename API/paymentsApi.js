@@ -72,7 +72,7 @@ export async function getCurrentBuildingCharge(monthYear = getCurrentMonthYear()
     throw new Error('למשתמש אין בניין משויך');
   }
 
-  const { data, error } = await supabase
+  let { data, error } = await supabase
     .from('house_fee_charges')
     .select('*')
     .eq('building_id', profile.building_id)
@@ -82,6 +82,19 @@ export async function getCurrentBuildingCharge(monthYear = getCurrentMonthYear()
   if (error) {
     console.error('Error fetching building charge:', error);
     throw new Error('שגיאה בשליפת החיוב החודשי');
+  }
+
+  if (!data && monthYear !== 'GLOBAL') {
+    const { data: globalData, error: globalError } = await supabase
+      .from('house_fee_charges')
+      .select('*')
+      .eq('building_id', profile.building_id)
+      .eq('month_year', 'GLOBAL')
+      .maybeSingle();
+      
+    if (!globalError && globalData) {
+      data = globalData;
+    }
   }
 
   return data;

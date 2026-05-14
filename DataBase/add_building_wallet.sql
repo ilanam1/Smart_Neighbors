@@ -68,12 +68,12 @@ CREATE POLICY "Admins see all wallets"
     (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin'
   );
 
--- 4. פונקציה שמוסיפה לקופת הבניין כשתשלום הופך ל-PAID
+-- 4. פונקציה שמוסיפה לקופת הבניין כשתשלום הופך ל-PAID (רק אשראי - STRIPE)
 CREATE OR REPLACE FUNCTION public.update_building_wallet_on_payment()
 RETURNS TRIGGER LANGUAGE plpgsql SECURITY DEFINER AS $$
 BEGIN
-  -- רק כשמצב השתנה ל-PAID
-  IF NEW.status = 'PAID' AND (OLD.status IS DISTINCT FROM 'PAID') THEN
+  -- רק כשמצב השתנה ל-PAID ורק אם שיטת התשלום היא STRIPE
+  IF NEW.status = 'PAID' AND (OLD.status IS DISTINCT FROM 'PAID') AND NEW.payment_method = 'STRIPE' THEN
     -- הוסף / עדכן שורת קופה לבניין
     INSERT INTO public.building_wallets (building_id, total_collected, updated_at)
     VALUES (NEW.building_id, NEW.amount, timezone('utc', now()))
@@ -82,8 +82,8 @@ BEGIN
           updated_at      = timezone('utc', now());
   END IF;
 
-  -- אם תשלום ש-PAID חזר ל-FAILED – הפחת מהקופה
-  IF OLD.status = 'PAID' AND NEW.status = 'FAILED' THEN
+  -- אם תשלום אשראי ש-PAID חזר ל-FAILED – הפחת מהקופה
+  IF OLD.status = 'PAID' AND NEW.status = 'FAILED' AND OLD.payment_method = 'STRIPE' THEN
     UPDATE public.building_wallets
     SET total_collected = GREATEST(0, total_collected - OLD.amount),
         updated_at      = timezone('utc', now())

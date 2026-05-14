@@ -8,7 +8,10 @@ import {
   ActivityIndicator,
   Alert,
   ScrollView,
-  TextInput,
+  Platform,
+  Modal,
+  FlatList,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import {
   getBuildingPaymentsForMonth,
@@ -54,6 +57,20 @@ function getStatusLabel(status) {
   }
 }
 
+const generateRecentMonths = () => {
+  const months = [];
+  const now = new Date();
+  for (let i = 0; i < 24; i++) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    months.push(`${year}-${month}`);
+  }
+  return months;
+};
+
+const RECENT_MONTHS = generateRecentMonths();
+
 export default function CommitteePaymentsManagementScreen() {
   const [monthYear, setMonthYear]         = useState(getCurrentMonthYear());
   const [payments, setPayments]           = useState([]);
@@ -61,6 +78,7 @@ export default function CommitteePaymentsManagementScreen() {
   const [monthlySummary, setMonthlySummary] = useState(null);
   const [loading, setLoading]             = useState(true);
   const [actionLoadingId, setActionLoadingId] = useState(null);
+  const [showMonthPicker, setShowMonthPicker] = useState(false);
 
   useEffect(() => {
     loadAll();
@@ -136,6 +154,11 @@ export default function CommitteePaymentsManagementScreen() {
     return `${p.first_name || ''} ${p.last_name || ''}`.trim() || 'דייר';
   }
 
+  const handleSelectMonth = (selectedMonth) => {
+    setMonthYear(selectedMonth);
+    setShowMonthPicker(false);
+  };
+
   if (loading) {
     return (
       <View style={styles.centered}>
@@ -150,11 +173,11 @@ export default function CommitteePaymentsManagementScreen() {
 
       {/* ═══ כרטיס קופת הבניין הכוללת ═════════════════════════ */}
       <View style={styles.walletCard}>
-        <Text style={styles.walletLabel}>קופת הבניין – סה"כ נגבה</Text>
+        <Text style={styles.walletLabel}>קופת הבניין הדיגיטלית (אשראי בלבד)</Text>
         <Text style={styles.walletAmount}>
           {wallet ? `${Number(wallet.total_collected).toLocaleString('he-IL')} ₪` : '0 ₪'}
         </Text>
-        <Text style={styles.walletNote}>* מצטבר מכל החודשים</Text>
+        <Text style={styles.walletNote}>* מצטבר מכל התשלומים באשראי (STRIPE)</Text>
       </View>
 
       {/* ═══ סיכום חודשי ══════════════════════════════════════ */}
@@ -181,18 +204,62 @@ export default function CommitteePaymentsManagementScreen() {
       </View>
 
       {/* ═══ בחירת חודש ═══════════════════════════════════════ */}
-      <Text style={styles.label}>חודש להצגה (YYYY-MM)</Text>
-      <TextInput
-        style={styles.input}
-        value={monthYear}
-        onChangeText={setMonthYear}
-        textAlign="right"
-        placeholder="2026-05"
-        placeholderTextColor="#94a3b8"
-      />
+      <Text style={styles.label}>חודש להצגה</Text>
+      <TouchableOpacity 
+        style={styles.input} 
+        onPress={() => setShowMonthPicker(true)}
+      >
+        <Text style={{ color: '#F8FAFC', textAlign: 'right', fontSize: 15 }}>
+          {formatMonthHebrew(monthYear)}
+        </Text>
+      </TouchableOpacity>
+
+      <Modal
+        visible={showMonthPicker}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setShowMonthPicker(false)}
+      >
+        <TouchableWithoutFeedback onPress={() => setShowMonthPicker(false)}>
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>בחר חודש</Text>
+              <FlatList
+                data={RECENT_MONTHS}
+                keyExtractor={(item) => item}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    style={[
+                      styles.monthOption,
+                      monthYear === item && styles.monthOptionSelected,
+                    ]}
+                    onPress={() => handleSelectMonth(item)}
+                  >
+                    <Text
+                      style={[
+                        styles.monthOptionText,
+                        monthYear === item && styles.monthOptionTextSelected,
+                      ]}
+                    >
+                      {formatMonthHebrew(item)}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+                style={styles.monthList}
+              />
+              <TouchableOpacity
+                style={styles.modalCancelButton}
+                onPress={() => setShowMonthPicker(false)}
+              >
+                <Text style={styles.modalCancelText}>ביטול</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
 
       <TouchableOpacity style={styles.reloadButton} onPress={loadPayments}>
-        <Text style={styles.reloadText}>טען תשלומים</Text>
+        <Text style={styles.reloadText}>טען תשלומים לחודש זה</Text>
       </TouchableOpacity>
 
       {/* ═══ רשימת תשלומים ════════════════════════════════════ */}
@@ -432,5 +499,59 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: '700',
     fontSize: 14,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: '#1E293B',
+    borderRadius: 16,
+    width: '85%',
+    maxHeight: '70%',
+    padding: 20,
+    borderWidth: 1,
+    borderColor: '#334155',
+  },
+  modalTitle: {
+    color: '#F8FAFC',
+    fontSize: 18,
+    fontWeight: '800',
+    textAlign: 'center',
+    marginBottom: 15,
+  },
+  monthList: {
+    marginBottom: 10,
+  },
+  monthOption: {
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: '#334155',
+  },
+  monthOptionSelected: {
+    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+  },
+  monthOptionText: {
+    color: '#CBD5E1',
+    fontSize: 16,
+    textAlign: 'center',
+  },
+  monthOptionTextSelected: {
+    color: '#10b981',
+    fontWeight: '800',
+  },
+  modalCancelButton: {
+    marginTop: 10,
+    paddingVertical: 14,
+    backgroundColor: '#334155',
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  modalCancelText: {
+    color: '#F8FAFC',
+    fontSize: 16,
+    fontWeight: '700',
   },
 });

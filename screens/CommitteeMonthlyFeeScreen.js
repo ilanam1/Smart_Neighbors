@@ -13,22 +13,11 @@ import {
   getCurrentUserProfile,
   getCurrentBuildingCharge,
   upsertBuildingCharge,
-  getBuildingChargesHistory,
 } from '../API/paymentsApi';
 
-function getCurrentMonthYear() {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  return `${year}-${month}`;
-}
-
 export default function CommitteeMonthlyFeeScreen() {
-  const [monthYear, setMonthYear] = useState(getCurrentMonthYear());
   const [amount, setAmount] = useState('');
   const [notes, setNotes] = useState('');
-  const [currentCharge, setCurrentCharge] = useState(null);
-  const [history, setHistory] = useState([]);
   const [loadingPage, setLoadingPage] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -46,43 +35,15 @@ export default function CommitteeMonthlyFeeScreen() {
         return;
       }
 
-      const [charge, chargeHistory] = await Promise.all([
-        getCurrentBuildingCharge(monthYear),
-        getBuildingChargesHistory(12),
-      ]);
-
-      setCurrentCharge(charge || null);
+      const charge = await getCurrentBuildingCharge('GLOBAL');
 
       if (charge) {
         setAmount(String(charge.amount));
         setNotes(charge.notes || '');
       }
-
-      setHistory(chargeHistory || []);
     } catch (err) {
       console.error(err);
-      Alert.alert('שגיאה', err.message || 'שגיאה בטעינת נתוני החיובים');
-    } finally {
-      setLoadingPage(false);
-    }
-  }
-
-  async function handleLoadSelectedMonth() {
-    try {
-      setLoadingPage(true);
-      const charge = await getCurrentBuildingCharge(monthYear);
-      setCurrentCharge(charge || null);
-
-      if (charge) {
-        setAmount(String(charge.amount));
-        setNotes(charge.notes || '');
-      } else {
-        setAmount('');
-        setNotes('');
-      }
-    } catch (err) {
-      console.error(err);
-      Alert.alert('שגיאה', err.message || 'שגיאה בטעינת החודש שנבחר');
+      Alert.alert('שגיאה', err.message || 'שגיאה בטעינת נתוני החיוב');
     } finally {
       setLoadingPage(false);
     }
@@ -90,11 +51,6 @@ export default function CommitteeMonthlyFeeScreen() {
 
   async function handleSaveCharge() {
     try {
-      if (!monthYear.trim()) {
-        Alert.alert('שגיאה', 'יש להזין חודש בפורמט YYYY-MM');
-        return;
-      }
-
       if (!amount.trim()) {
         Alert.alert('שגיאה', 'יש להזין סכום');
         return;
@@ -102,18 +58,13 @@ export default function CommitteeMonthlyFeeScreen() {
 
       setSaving(true);
 
-      const saved = await upsertBuildingCharge({
-        monthYear,
+      await upsertBuildingCharge({
+        monthYear: 'GLOBAL',
         amount,
         notes,
       });
 
-      setCurrentCharge(saved);
-
-      const updatedHistory = await getBuildingChargesHistory(12);
-      setHistory(updatedHistory || []);
-
-      Alert.alert('הצלחה', 'הסכום החודשי נשמר בהצלחה');
+      Alert.alert('הצלחה', 'הסכום החודשי נשמר בהצלחה והוא חל על כל דיירי הבניין');
     } catch (err) {
       console.error(err);
       Alert.alert('שגיאה', err.message || 'שגיאה בשמירת הסכום החודשי');
@@ -132,23 +83,15 @@ export default function CommitteeMonthlyFeeScreen() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 30 }}>
-      <Text style={styles.header}>ניהול סכום חודשי לוועד הבית</Text>
+      <Text style={styles.header}>קביעת סכום חודשי קבוע לבניין</Text>
 
-      <Text style={styles.label}>חודש לחיוב (YYYY-MM)</Text>
-      <TextInput
-        style={styles.input}
-        value={monthYear}
-        onChangeText={setMonthYear}
-        placeholder="2026-04"
-        placeholderTextColor="#94a3b8"
-        textAlign="right"
-      />
+      <View style={styles.card}>
+        <Text style={styles.infoText}>
+          הסכום שיוזן כאן יהווה את דמי ועד הבית הקבועים שכל דייר בבניין יתבקש לשלם בכל חודש.
+        </Text>
+      </View>
 
-      <TouchableOpacity style={styles.secondaryButton} onPress={handleLoadSelectedMonth}>
-        <Text style={styles.secondaryButtonText}>טען נתונים לחודש זה</Text>
-      </TouchableOpacity>
-
-      <Text style={styles.label}>סכום חודשי</Text>
+      <Text style={styles.label}>סכום לחיוב (₪)</Text>
       <TextInput
         style={styles.input}
         value={amount}
@@ -178,37 +121,9 @@ export default function CommitteeMonthlyFeeScreen() {
         {saving ? (
           <ActivityIndicator color="#fff" />
         ) : (
-          <Text style={styles.saveButtonText}>שמור / עדכן סכום חודשי</Text>
+          <Text style={styles.saveButtonText}>שמור סכום חודשי</Text>
         )}
       </TouchableOpacity>
-
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>חיוב נוכחי לחודש שנבחר</Text>
-        {currentCharge ? (
-          <>
-            <Text style={styles.cardText}>חודש: {currentCharge.month_year}</Text>
-            <Text style={styles.cardText}>סכום: {currentCharge.amount} ₪</Text>
-            <Text style={styles.cardText}>הערות: {currentCharge.notes || 'ללא'}</Text>
-          </>
-        ) : (
-          <Text style={styles.emptyText}>אין חיוב שמור עבור החודש שנבחר</Text>
-        )}
-      </View>
-
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>היסטוריית חיובים</Text>
-        {history.length === 0 ? (
-          <Text style={styles.emptyText}>אין היסטוריית חיובים להצגה</Text>
-        ) : (
-          history.map(item => (
-            <View key={item.id} style={styles.historyRow}>
-              <Text style={styles.historyText}>חודש: {item.month_year}</Text>
-              <Text style={styles.historyText}>סכום: {item.amount} ₪</Text>
-              <Text style={styles.historyText}>הערות: {item.notes || 'ללא'}</Text>
-            </View>
-          ))
-        )}
-      </View>
     </ScrollView>
   );
 }
@@ -231,6 +146,20 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     textAlign: 'right',
     marginBottom: 20,
+  },
+  card: {
+    backgroundColor: '#1E293B',
+    borderRadius: 14,
+    padding: 14,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: '#334155',
+  },
+  infoText: {
+    color: '#94A3B8',
+    fontSize: 15,
+    textAlign: 'right',
+    lineHeight: 22,
   },
   label: {
     color: '#E2E8F0',
@@ -255,7 +184,7 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
   },
   saveButton: {
-    marginTop: 20,
+    marginTop: 30,
     backgroundColor: '#16a34a',
     paddingVertical: 14,
     borderRadius: 12,
@@ -266,51 +195,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontSize: 16,
   },
-  secondaryButton: {
-    marginTop: 10,
-    backgroundColor: '#334155',
-    paddingVertical: 12,
-    borderRadius: 10,
-    alignItems: 'center',
-  },
-  secondaryButtonText: {
-    color: '#F8FAFC',
-    fontWeight: '600',
-  },
   buttonDisabled: {
     opacity: 0.7,
-  },
-  card: {
-    marginTop: 20,
-    backgroundColor: '#1E293B',
-    borderRadius: 14,
-    padding: 14,
-  },
-  cardTitle: {
-    color: '#fff',
-    fontWeight: '700',
-    fontSize: 16,
-    marginBottom: 10,
-    textAlign: 'right',
-  },
-  cardText: {
-    color: '#CBD5E1',
-    fontSize: 14,
-    marginBottom: 6,
-    textAlign: 'right',
-  },
-  emptyText: {
-    color: '#94A3B8',
-    textAlign: 'right',
-  },
-  historyRow: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#334155',
-    paddingVertical: 10,
-  },
-  historyText: {
-    color: '#CBD5E1',
-    textAlign: 'right',
-    marginBottom: 4,
   },
 });
