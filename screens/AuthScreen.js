@@ -69,11 +69,6 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
 
   const [photo, setPhoto] = useState(null);
   
-  // MFA
-  const [mfaFactorId, setMfaFactorId] = useState(null);
-  const [mfaCode, setMfaCode] = useState('');
-  const [mfaPendingUser, setMfaPendingUser] = useState(null);
-  const [verifyingMfa, setVerifyingMfa] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
 
   const supabase = getSupabase();
@@ -418,8 +413,7 @@ const formattedDob = dobDate.toISOString().split('T')[0];
             const factors = await supabase.auth.mfa.listFactors();
             const totpFactor = factors.data?.totp?.find(f => f.status === 'verified');
             if (totpFactor) {
-              setMfaFactorId(totpFactor.id);
-              setMfaPendingUser(user);
+              // StandaloneMfaChallengeScreen will be handled by App.js onAuthStateChange
               setLoading(false);
               return;
             }
@@ -441,29 +435,6 @@ const formattedDob = dobDate.toISOString().split('T')[0];
     navigation.navigate("VerifyEmail", { emailForReset: sanitized });
   }
 
-  async function handleVerifyMfa() {
-    if (!mfaCode || mfaCode.length < 6) {
-      setError("אנא הזן קוד חוקי בן 6 ספרות");
-      return;
-    }
-    setVerifyingMfa(true);
-    setError(null);
-    try {
-      const challenge = await supabase.auth.mfa.challenge({ factorId: mfaFactorId });
-      const verifyRes = await supabase.auth.mfa.verify({
-        factorId: mfaFactorId,
-        challengeId: challenge.data.id,
-        code: mfaCode
-      });
-      if (verifyRes.error) throw verifyRes.error;
-      
-      onSignIn && onSignIn(mfaPendingUser);
-    } catch (e) {
-      setError("קוד האימות שגוי. אנא נסה שנית.");
-    } finally {
-      setVerifyingMfa(false);
-    }
-  }
 
   return (
     <>
@@ -499,37 +470,6 @@ const formattedDob = dobDate.toISOString().split('T')[0];
         >
           <View style={styles.card}>
 
-        {/* MFA CHALLENGE VIEW */}
-        {mfaFactorId ? (
-          <>
-            <Text style={styles.title}>אימות דו-שלבי</Text>
-            <Text style={{ textAlign: 'center', color: '#9ca3af', marginBottom: 20 }}>
-              החשבון שלך מוגן באימות כפול. פתח את אפליקציית Authenticator והזן את הקוד:
-            </Text>
-            <TextInput
-              placeholderTextColor="#9ca3af"
-              placeholder="000000"
-              value={mfaCode}
-              onChangeText={setMfaCode}
-              style={[styles.input, { fontSize: 24, letterSpacing: 8, textAlign: 'center', fontWeight: 'bold' }]}
-              keyboardType="number-pad"
-              maxLength={6}
-            />
-            {error ? <Text style={styles.error}>{error}</Text> : null}
-            
-            <TouchableOpacity style={styles.primaryButtonWrapper} onPress={handleVerifyMfa} disabled={verifyingMfa} activeOpacity={0.9}>
-              <LinearGradient colors={['#10b981', '#059669']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.gradientBorder}>
-                <View style={[styles.primaryButtonInner, { backgroundColor: '#0f172a' }]}>
-                  {verifyingMfa ? <ActivityIndicator color="#10b981" /> : <Text style={styles.primaryButtonText}>אמת עכשיו והתחבר</Text>}
-                </View>
-              </LinearGradient>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => { setMfaFactorId(null); setMfaCode(''); supabase.auth.signOut(); }} style={{ marginTop: 20 }}>
-              <Text style={{ textAlign: 'center', color: '#ef4444', fontWeight: 'bold' }}>ביטול וחזרה להתחברות</Text>
-            </TouchableOpacity>
-          </>
-        ) : (
           <>
             <Text style={styles.title}>
               {mode === 'signup' ? 'צור חשבון' : 'ברוך שובך'}
@@ -724,7 +664,6 @@ const formattedDob = dobDate.toISOString().split('T')[0];
         </TouchableOpacity>
 
           </>
-        )}
 
       </View>
     </ScrollView>

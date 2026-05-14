@@ -8,10 +8,13 @@ import {
   ActivityIndicator,
   Alert,
   Clipboard,
+  ScrollView,
 } from 'react-native';
+import QRCode from 'react-native-qrcode-svg';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ShieldCheck, Copy, ArrowRight } from 'lucide-react-native';
 import { enrollMfa, challengeMfa, verifyMfa } from '../API/mfaApi';
+import { getSupabase } from '../DataBase/supabase';
 
 export default function MfaSetupScreen({ navigation }) {
   const [loading, setLoading] = useState(true);
@@ -20,6 +23,7 @@ export default function MfaSetupScreen({ navigation }) {
 
   const [factorId, setFactorId] = useState(null);
   const [secret, setSecret] = useState(null);
+  const [qrUri, setQrUri] = useState(null);
   
   const [code, setCode] = useState('');
 
@@ -30,11 +34,23 @@ export default function MfaSetupScreen({ navigation }) {
         setLoading(true);
         setError(null);
         
-        // 1. Enroll
+        const supabase = getSupabase();
+        // 1. Unenroll any existing unverified factors to prevent "already exists" errors
+        const factorsData = await supabase.auth.mfa.listFactors();
+        if (factorsData && factorsData.data && factorsData.data.totp) {
+          for (const factor of factorsData.data.totp) {
+            if (factor.status === 'unverified') {
+              await supabase.auth.mfa.unenroll({ factorId: factor.id });
+            }
+          }
+        }
+
+        // 2. Enroll
         const enrollData = await enrollMfa();
         if (mounted) {
           setFactorId(enrollData.id);
           setSecret(enrollData.totp.secret);
+          setQrUri(enrollData.totp.uri);
         }
       } catch (err) {
         if (mounted) setError(err.message || 'שגיאה ביצירת אימות דו-שלבי');
@@ -90,7 +106,7 @@ export default function MfaSetupScreen({ navigation }) {
         <Text style={styles.headerTitle}>הגדרת אימות דו-שלבי</Text>
       </View>
 
-      <View style={styles.content}>
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.iconContainer}>
           <ShieldCheck size={64} color="#10b981" />
         </View>
@@ -109,7 +125,17 @@ export default function MfaSetupScreen({ navigation }) {
               1. הורד את אפליקציית Google Authenticator למכשירך.
             </Text>
             <Text style={styles.instructionText}>
-              2. בחר באפשרות ״הזנת מפתח הגדרה״ (Enter a setup key) והכנס את הקוד הבא:
+              2. סרוק את קוד ה-QR הבא באמצעות האפליקציה:
+            </Text>
+
+            {qrUri ? (
+              <View style={{ alignItems: 'center', marginVertical: 16, backgroundColor: '#fff', padding: 16, borderRadius: 12 }}>
+                <QRCode value={qrUri} size={200} />
+              </View>
+            ) : null}
+
+            <Text style={styles.instructionText}>
+              או לחלופין, בחר באפשרות ״הזנת מפתח הגדרה״ (Enter a setup key) והכנס את הקוד הבא:
             </Text>
             
             <TouchableOpacity style={styles.secretBox} onPress={handleCopy}>
@@ -146,7 +172,7 @@ export default function MfaSetupScreen({ navigation }) {
             </TouchableOpacity>
           </View>
         )}
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
