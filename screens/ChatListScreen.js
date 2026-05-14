@@ -42,6 +42,10 @@ export default function ChatListScreen({ navigation, route }) {
 
             const visibleConvos = convos.filter(chat => {
                 if (chat.is_group) return true; // never hide group chats
+
+                // Filter out private chats that have NO messages yet
+                if (chat.updated_at === chat.created_at) return false;
+
                 const hiddenAtStr = hiddenChats[chat.id];
                 if (!hiddenAtStr) return true;
 

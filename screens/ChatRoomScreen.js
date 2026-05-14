@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, StyleSheet, FlatList, TextInput, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView, Platform, StatusBar, Image } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TextInput, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView, Platform, StatusBar, Image, Alert, Modal, TouchableWithoutFeedback } from 'react-native';
 import Svg, { Defs, RadialGradient, Stop, Rect } from 'react-native-svg';
 import { getMessages, sendMessage, editMessage, toggleMessageReaction } from '../API/chatApi';
 import { getSupabase } from '../DataBase/supabase';
@@ -13,6 +13,8 @@ export default function ChatRoomScreen({ navigation, route }) {
     const [loading, setLoading] = useState(true);
     const [editingMessageId, setEditingMessageId] = useState(null);
     const [reactionMessageId, setReactionMessageId] = useState(null);
+    const [replyingToMessage, setReplyingToMessage] = useState(null);
+    const [activeMessage, setActiveMessage] = useState(null);
     const flatListRef = useRef();
 
     useEffect(() => {
@@ -81,8 +83,24 @@ export default function ChatRoomScreen({ navigation, route }) {
     const handleSend = async () => {
         if (!inputText.trim()) return;
         
-        const textToSend = inputText.trim();
+        let textToSend = inputText.trim();
         setInputText(''); // Clear input optimistically
+        
+        if (replyingToMessage) {
+            const fName = replyingToMessage.profiles?.first_name || '';
+            const lName = replyingToMessage.profiles?.last_name || '';
+            const senderName = `${fName} ${lName}`.trim() || 'שכן';
+            
+            let pureText = replyingToMessage.content;
+            const replyMatch = pureText.match(/^\[REPLY::(.*?)::(.*?)\] (.*)$/s);
+            if (replyMatch) {
+                pureText = replyMatch[3];
+            }
+            
+            const snippet = pureText.length > 50 ? pureText.substring(0, 50) + '...' : pureText;
+            textToSend = `[REPLY::${senderName}::${snippet}] ${textToSend}`;
+            setReplyingToMessage(null);
+        }
         
         if (editingMessageId) {
             try {
@@ -107,18 +125,30 @@ export default function ChatRoomScreen({ navigation, route }) {
         }
     };
 
+    const deleteMessage = async (item) => {
+        try {
+            await editMessage(item.id, "הודעה זו נמחקה");
+            await fetchMessages();
+        } catch (error) {
+            console.error('Error deleting message:', error);
+            Alert.alert('שגיאה', 'שגיאה במחיקת ההודעה. נסה שוב.');
+        }
+    };
+
     const handleLongPressMessage = (item) => {
-        setEditingMessageId(item.id);
-        setInputText(item.content);
+        if (item.content === 'הודעה זו נמחקה') return;
+        setActiveMessage(item);
     };
 
     const cancelEdit = () => {
         setEditingMessageId(null);
+        setReplyingToMessage(null);
         setInputText('');
     };
 
     const handleLongPressOtherMessage = (item) => {
-        setReactionMessageId(item.id);
+        if (item.content === 'הודעה זו נמחקה') return;
+        setActiveMessage(item);
     };
 
     const handleSelectReaction = async (emoji) => {
@@ -163,6 +193,19 @@ export default function ChatRoomScreen({ navigation, route }) {
 
         const profilePhotoUrl = item.profiles?.photo_url;
 
+        let actualContent = item.content;
+        let isReply = false;
+        let replySender = '';
+        let replyText = '';
+
+        const replyMatch = actualContent.match(/^\[REPLY::(.*?)::(.*?)\] (.*)$/s);
+        if (replyMatch) {
+            isReply = true;
+            replySender = replyMatch[1];
+            replyText = replyMatch[2];
+            actualContent = replyMatch[3];
+        }
+
         return (
             <View style={[styles.messageBubbleContainer, isMyMessage ? styles.myMessageContainer : styles.otherMessageContainer]}>
                 <View style={{ flexDirection: 'row-reverse', alignItems: 'flex-end' }}>
@@ -176,7 +219,18 @@ export default function ChatRoomScreen({ navigation, route }) {
                             {isGroup && !isMyMessage && (
                                 <Text style={styles.senderNameInsideBubble}>{senderName}</Text>
                             )}
-                            <Text style={[styles.messageText, isMyMessage ? styles.myMessageText : styles.otherMessageText]}>{item.content}</Text>
+                            
+                            {isReply && (
+                                <View style={styles.bubbleReplyContainer}>
+                                    <View style={styles.bubbleReplyBorder} />
+                                    <View style={styles.bubbleReplyContent}>
+                                        <Text style={styles.bubbleReplySender}>{replySender}</Text>
+                                        <Text style={styles.bubbleReplyText} numberOfLines={2}>{replyText}</Text>
+                                    </View>
+                                </View>
+                            )}
+                            
+                            <Text style={[styles.messageText, isMyMessage ? styles.myMessageText : styles.otherMessageText]}>{actualContent}</Text>
                             <Text style={styles.timeText}>
                                 {new Date(item.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                             </Text>
@@ -267,6 +321,23 @@ export default function ChatRoomScreen({ navigation, route }) {
                 </TouchableOpacity>
             )}
 
+            {replyingToMessage && (
+                <View style={styles.replyPreviewContainer}>
+                    <View style={styles.replyPreviewBorder} />
+                    <View style={styles.replyPreviewContent}>
+                        <Text style={styles.replyPreviewSender}>
+                            {`${replyingToMessage.profiles?.first_name || ''} ${replyingToMessage.profiles?.last_name || ''}`.trim() || 'שכן'}
+                        </Text>
+                        <Text style={styles.replyPreviewText} numberOfLines={1}>
+                            {replyingToMessage.content.replace(/^\[REPLY::(.*?)::(.*?)\] /s, '')}
+                        </Text>
+                    </View>
+                    <TouchableOpacity onPress={() => setReplyingToMessage(null)} style={styles.replyPreviewClose}>
+                        <Text style={styles.replyPreviewCloseText}>✕</Text>
+                    </TouchableOpacity>
+                </View>
+            )}
+
             {editingMessageId && (
                 <View style={styles.editBanner}>
                     <Text style={styles.editBannerText}>עורך הודעה...</Text>
@@ -289,6 +360,79 @@ export default function ChatRoomScreen({ navigation, route }) {
                     <Text style={styles.sendButtonText}>שלח</Text>
                 </TouchableOpacity>
             </View>
+
+            <Modal
+                visible={!!activeMessage}
+                transparent={true}
+                animationType="slide"
+                onRequestClose={() => setActiveMessage(null)}
+            >
+                <TouchableWithoutFeedback onPress={() => setActiveMessage(null)}>
+                    <View style={styles.modalOverlay}>
+                        <TouchableWithoutFeedback>
+                            <View style={styles.modalContent}>
+                                <Text style={styles.modalTitle}>אפשרויות הודעה</Text>
+                                
+                                <TouchableOpacity 
+                                    style={styles.modalOption} 
+                                    onPress={() => {
+                                        setReplyingToMessage(activeMessage);
+                                        setActiveMessage(null);
+                                    }}
+                                >
+                                    <Text style={styles.modalOptionText}>הגב</Text>
+                                </TouchableOpacity>
+
+                                {activeMessage?.profiles?.auth_uid !== (user.auth_uid || user.id) && (
+                                    <TouchableOpacity 
+                                        style={styles.modalOption} 
+                                        onPress={() => {
+                                            setReactionMessageId(activeMessage.id);
+                                            setActiveMessage(null);
+                                        }}
+                                    >
+                                        <Text style={styles.modalOptionText}>הוסף אימוג'י</Text>
+                                    </TouchableOpacity>
+                                )}
+
+                                {activeMessage?.profiles?.auth_uid === (user.auth_uid || user.id) && (
+                                    <>
+                                        <TouchableOpacity 
+                                            style={styles.modalOption} 
+                                            onPress={() => {
+                                                setEditingMessageId(activeMessage.id);
+                                                const cleanText = activeMessage.content.replace(/^\[REPLY::(.*?)::(.*?)\] /s, '');
+                                                setInputText(cleanText);
+                                                setActiveMessage(null);
+                                            }}
+                                        >
+                                            <Text style={styles.modalOptionText}>עריכה</Text>
+                                        </TouchableOpacity>
+
+                                        <TouchableOpacity 
+                                            style={[styles.modalOption, styles.modalOptionDestructive]} 
+                                            onPress={() => {
+                                                deleteMessage(activeMessage);
+                                                setActiveMessage(null);
+                                            }}
+                                        >
+                                            <Text style={styles.modalOptionTextDestructive}>מחק</Text>
+                                        </TouchableOpacity>
+                                    </>
+                                )}
+
+                                <TouchableOpacity 
+                                    style={[styles.modalOption, styles.modalOptionCancel]} 
+                                    onPress={() => setActiveMessage(null)}
+                                >
+                                    <Text style={styles.modalOptionTextCancel}>ביטול</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </TouchableWithoutFeedback>
+                    </View>
+                </TouchableWithoutFeedback>
+            </Modal>
+
         </KeyboardAvoidingView>
     );
 }
@@ -476,6 +620,128 @@ const styles = StyleSheet.create({
     chatRoomAvatarText: {
         fontSize: 14,
         color: '#10b981',
+        fontWeight: 'bold',
+    },
+    replyPreviewContainer: {
+        flexDirection: 'row-reverse',
+        backgroundColor: '#1e293b',
+        borderTopLeftRadius: 15,
+        borderTopRightRadius: 15,
+        padding: 10,
+        marginHorizontal: 15,
+        marginBottom: -10, // overlap slightly with input container
+        borderBottomWidth: 1,
+        borderBottomColor: '#334155',
+        zIndex: 1
+    },
+    replyPreviewBorder: {
+        width: 4,
+        backgroundColor: '#10b981',
+        borderRadius: 2,
+        marginLeft: 10
+    },
+    replyPreviewContent: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'flex-end',
+    },
+    replyPreviewSender: {
+        color: '#10b981',
+        fontWeight: 'bold',
+        fontSize: 13,
+        marginBottom: 2
+    },
+    replyPreviewText: {
+        color: '#94a3b8',
+        fontSize: 13
+    },
+    replyPreviewClose: {
+        padding: 5,
+        justifyContent: 'center'
+    },
+    replyPreviewCloseText: {
+        color: '#94a3b8',
+        fontSize: 18,
+        fontWeight: 'bold'
+    },
+    bubbleReplyContainer: {
+        flexDirection: 'row-reverse',
+        backgroundColor: 'rgba(0,0,0,0.15)',
+        borderRadius: 8,
+        padding: 6,
+        marginBottom: 5,
+        overflow: 'hidden'
+    },
+    bubbleReplyBorder: {
+        width: 3,
+        backgroundColor: '#10b981',
+        borderRadius: 2,
+        marginLeft: 8
+    },
+    bubbleReplyContent: {
+        alignItems: 'flex-end',
+        flexShrink: 1,
+    },
+    bubbleReplySender: {
+        color: '#10b981',
+        fontWeight: 'bold',
+        fontSize: 12,
+        marginBottom: 2,
+        textAlign: 'right'
+    },
+    bubbleReplyText: {
+        color: '#e2e8f0',
+        fontSize: 12,
+        textAlign: 'right'
+    },
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        justifyContent: 'flex-end',
+    },
+    modalContent: {
+        backgroundColor: '#1e293b',
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+        padding: 20,
+        paddingBottom: Platform.OS === 'ios' ? 40 : 20,
+    },
+    modalTitle: {
+        color: '#94a3b8',
+        fontSize: 16,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        marginBottom: 15,
+    },
+    modalOption: {
+        paddingVertical: 15,
+        borderBottomWidth: 1,
+        borderBottomColor: '#334155',
+        alignItems: 'center',
+    },
+    modalOptionText: {
+        color: '#f8fafc',
+        fontSize: 18,
+    },
+    modalOptionDestructive: {
+        borderBottomWidth: 0,
+    },
+    modalOptionTextDestructive: {
+        color: '#ef4444',
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+    modalOptionCancel: {
+        marginTop: 10,
+        backgroundColor: 'rgba(51, 65, 85, 0.5)',
+        borderRadius: 10,
+        borderBottomWidth: 0,
+        paddingVertical: 15,
+        alignItems: 'center',
+    },
+    modalOptionTextCancel: {
+        color: '#f8fafc',
+        fontSize: 18,
         fontWeight: 'bold',
     }
 });
