@@ -5,13 +5,16 @@ import {
   ActivityIndicator,
   FlatList,
   StyleSheet,
+  TouchableOpacity,
+  Alert,
 } from 'react-native';
-import { getPublicRequests } from '../API/requestsApi';
+import { getPublicRequests, completeRequest } from '../API/requestsApi';
 
 export default function PublicRequestsScreen() {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [completingId, setCompletingId] = useState(null);
 
   useEffect(() => {
     let mounted = true;
@@ -19,33 +22,127 @@ export default function PublicRequestsScreen() {
     async function load() {
       try {
         setLoading(true);
+        setError(null);
+
         const data = await getPublicRequests();
-        if (mounted) setRequests(data || []);
+
+        if (mounted) {
+          setRequests(data || []);
+        }
       } catch (e) {
-        if (mounted) setError(e.message || 'שגיאה בטעינת הבקשות');
+        console.error(e);
+
+        if (mounted) {
+          setError(e.message || 'שגיאה בטעינת הבקשות');
+        }
       } finally {
-        if (mounted) setLoading(false);
+        if (mounted) {
+          setLoading(false);
+        }
       }
     }
 
     load();
+
     return () => {
       mounted = false;
     };
   }, []);
 
-  if (loading)
-    return <ActivityIndicator style={{ marginTop: 20 }} />;
+  function formatCategory(category) {
+    switch (category) {
+      case 'PHYSICAL_HELP':
+        return 'עזרה פיזית';
+      case 'INFO':
+        return 'מידע / שאלה';
+      case 'MAINTENANCE':
+        return 'תחזוקה';
+      case 'CLEANING':
+        return 'ניקיון';
+      case 'NOISE':
+        return 'רעש';
+      case 'SAFETY':
+        return 'בטיחות';
+      case 'OTHER':
+        return 'אחר';
+      default:
+        return category || 'לא ידוע';
+    }
+  }
 
-  if (error)
+  function formatUrgency(urgency) {
+    switch (urgency) {
+      case 'LOW':
+        return 'נמוכה';
+      case 'MEDIUM':
+        return 'בינונית';
+      case 'HIGH':
+        return 'גבוהה';
+      default:
+        return urgency || 'לא ידוע';
+    }
+  }
+
+  function formatDate(date) {
+    try {
+      return new Date(date).toLocaleString('he-IL');
+    } catch {
+      return date;
+    }
+  }
+
+  async function handleCompleteRequest(requestId) {
+    try {
+      setCompletingId(requestId);
+
+      await completeRequest(requestId);
+
+      Alert.alert('הצלחה', 'הבקשה סומנה כטופלה.');
+
+      setRequests((prev) => prev.filter((item) => item.id !== requestId));
+    } catch (e) {
+      console.error(e);
+      Alert.alert('שגיאה', e.message || 'לא ניתן היה לסמן את הבקשה כטופלה');
+    } finally {
+      setCompletingId(null);
+    }
+  }
+
+  function confirmCompleteRequest(requestId) {
+    Alert.alert(
+      'סימון בקשה כטופלה',
+      'האם אתה בטוח שברצונך לסמן את הבקשה הזאת כטופלה?',
+      [
+        { text: 'ביטול', style: 'cancel' },
+        {
+          text: 'כן',
+          onPress: () => handleCompleteRequest(requestId),
+        },
+      ]
+    );
+  }
+
+  if (loading) {
+    return (
+      <ActivityIndicator
+        style={{ marginTop: 20 }}
+        size="large"
+        color="#38bdf8"
+      />
+    );
+  }
+
+  if (error) {
     return <Text style={styles.error}>שגיאה: {error}</Text>;
+  }
 
-  if (!requests.length)
+  if (!requests.length) {
     return (
       <Text style={styles.empty}>
         אין כרגע בקשות פתוחות מהשכנים.
       </Text>
     );
+  }
 
   return (
     <View style={styles.container}>
@@ -56,10 +153,39 @@ export default function PublicRequestsScreen() {
         renderItem={({ item }) => (
           <View style={styles.card}>
             <Text style={styles.title}>{item.title}</Text>
+
             <Text style={styles.body}>{item.description}</Text>
+
             <Text style={styles.meta}>
-              דחיפות: {item.urgency} | קטגוריה: {item.category}
+              מבקש: {item.requester_name || 'דייר לא ידוע'}
             </Text>
+
+            <Text style={styles.meta}>
+              קטגוריה: {formatCategory(item.category)}
+            </Text>
+
+            <Text style={styles.meta}>
+              דחיפות: {formatUrgency(item.urgency)}
+            </Text>
+
+            <Text style={styles.meta}>
+              נוצר בתאריך: {formatDate(item.created_at)}
+            </Text>
+
+            <TouchableOpacity
+              style={[
+                styles.completeButton,
+                completingId === item.id && styles.completeButtonDisabled,
+              ]}
+              onPress={() => confirmCompleteRequest(item.id)}
+              disabled={completingId === item.id}
+            >
+              {completingId === item.id ? (
+                <ActivityIndicator size="small" color="#fff" />
+              ) : (
+                <Text style={styles.completeButtonText}>סמן כטופלה</Text>
+              )}
+            </TouchableOpacity>
           </View>
         )}
       />
@@ -72,7 +198,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#0F172A',
   },
-  list: { padding: 16 },
+  list: {
+    padding: 16,
+  },
   card: {
     backgroundColor: '#1e293b',
     padding: 12,
@@ -81,9 +209,46 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#334155',
   },
-  title: { fontWeight: '700', fontSize: 16, color: '#f8fafc' },
-  body: { marginTop: 4, color: '#e2e8f0' },
-  meta: { marginTop: 6, fontSize: 12, color: '#94a3b8' },
-  error: { marginTop: 20, textAlign: 'center', color: '#f87171' },
-  empty: { marginTop: 20, textAlign: 'center', color: '#94a3b8' },
+  title: {
+    fontWeight: '700',
+    fontSize: 16,
+    color: '#f8fafc',
+    textAlign: 'right',
+  },
+  body: {
+    marginTop: 4,
+    color: '#e2e8f0',
+    textAlign: 'right',
+  },
+  meta: {
+    marginTop: 6,
+    fontSize: 12,
+    color: '#94a3b8',
+    textAlign: 'right',
+  },
+  completeButton: {
+    marginTop: 12,
+    backgroundColor: '#16a34a',
+    borderRadius: 8,
+    paddingVertical: 10,
+    alignItems: 'center',
+  },
+  completeButtonDisabled: {
+    opacity: 0.7,
+  },
+  completeButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  error: {
+    marginTop: 20,
+    textAlign: 'center',
+    color: '#f87171',
+  },
+  empty: {
+    marginTop: 20,
+    textAlign: 'center',
+    color: '#94a3b8',
+  },
 });

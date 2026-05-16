@@ -1,7 +1,13 @@
+// serviceEmployeeMaintenanceLoadApi.js
+// API לתחזית עומס תחזוקתי עבור נותן שירות
+
 import { getSupabase } from "../DataBase/supabase";
 
 const supabase = getSupabase();
 
+/**
+ * בדיקה שנותן השירות קיים ותקין
+ */
 async function validateServiceEmployee(employeeId) {
   if (!employeeId) {
     throw new Error("לא התקבל מזהה עובד שירות");
@@ -9,8 +15,7 @@ async function validateServiceEmployee(employeeId) {
 
   const { data, error } = await supabase
     .from("service_employees")
-    .select(
-      `
+    .select(`
       id,
       company_id,
       employee_number,
@@ -21,8 +26,7 @@ async function validateServiceEmployee(employeeId) {
         name,
         service_type
       )
-    `
-    )
+    `)
     .eq("id", employeeId)
     .maybeSingle();
 
@@ -42,13 +46,42 @@ async function validateServiceEmployee(employeeId) {
   return data;
 }
 
-export async function getServiceEmployeeBuildingLoadPredictions(employeeId) {
+/**
+ * שליפת מזהי הבניינים שמשויכים לנותן השירות
+ */
+export async function getServiceEmployeeBuildingIds(employeeId) {
   await validateServiceEmployee(employeeId);
 
   const { data, error } = await supabase
+    .from("employee_buildings")
+    .select("building_id")
+    .eq("employee_id", employeeId);
+
+  if (error) {
+    console.error("Error fetching employee buildings:", error.message);
+    throw new Error("שגיאה בשליפת הבניינים המשויכים לנותן השירות");
+  }
+
+  return (data || [])
+    .map((row) => row.building_id)
+    .filter(Boolean);
+}
+
+/**
+ * שליפת תחזית עומס תחזוקתי רק לבניינים שמשויכים לנותן השירות
+ */
+export async function getServiceEmployeeBuildingLoadPredictions(employeeId) {
+  await validateServiceEmployee(employeeId);
+
+  const buildingIds = await getServiceEmployeeBuildingIds(employeeId);
+
+  if (!buildingIds.length) {
+    return [];
+  }
+
+  const { data, error } = await supabase
     .from("building_maintenance_load_predictions")
-    .select(
-      `
+    .select(`
       id,
       building_id,
       prediction_date,
@@ -72,8 +105,8 @@ export async function getServiceEmployeeBuildingLoadPredictions(employeeId) {
         address,
         city
       )
-    `
-    )
+    `)
+    .in("building_id", buildingIds)
     .order("target_week_start", { ascending: false })
     .order("total_load_score", { ascending: false });
 
@@ -93,6 +126,9 @@ export async function getServiceEmployeeBuildingLoadPredictions(employeeId) {
     .sort((a, b) => Number(b.total_load_score) - Number(a.total_load_score));
 }
 
+/**
+ * סיכום תחזית עבור נותן שירות
+ */
 export async function getServiceEmployeeLoadSummary(employeeId) {
   const predictions = await getServiceEmployeeBuildingLoadPredictions(employeeId);
 

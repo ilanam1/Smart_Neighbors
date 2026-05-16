@@ -14,9 +14,12 @@ import {
 import { createRequest } from '../API/requestsApi';
 
 const CATEGORIES = [
-  { key: 'ITEM_LOAN', label: 'השאלת ציוד' },
   { key: 'PHYSICAL_HELP', label: 'עזרה פיזית' },
-  { key: 'INFO', label: 'מידע' },
+  { key: 'INFO', label: 'מידע / שאלה' },
+  { key: 'MAINTENANCE', label: 'תחזוקה' },
+  { key: 'CLEANING', label: 'ניקיון' },
+  { key: 'NOISE', label: 'רעש' },
+  { key: 'SAFETY', label: 'בטיחות' },
   { key: 'OTHER', label: 'אחר' },
 ];
 
@@ -31,12 +34,12 @@ const DEFAULT_EXPIRE_HOURS = 24;
 export default function CreateRequestScreen({ navigation }) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [category, setCategory] = useState('ITEM_LOAN');
+  const [category, setCategory] = useState('PHYSICAL_HELP');
   const [urgency, setUrgency] = useState('MEDIUM');
   const [loading, setLoading] = useState(false);
 
-  // NEW: למי הבקשה מופיעה? 'ALL' או 'COMMITTEE'
-  const [visibility, setVisibility] = useState('ALL'); // 'ALL' | 'COMMITTEE'
+  // למי הבקשה מופיעה? ALL = לכל הדיירים, COMMITTEE = רק לוועד הבית
+  const [visibility, setVisibility] = useState('ALL');
 
   const computeExpiresAt = () => {
     const now = new Date();
@@ -51,10 +54,22 @@ export default function CreateRequestScreen({ navigation }) {
       Alert.alert('שגיאה', 'נא למלא כותרת לבקשה.');
       return false;
     }
+
     if (!description.trim()) {
       Alert.alert('שגיאה', 'נא למלא תיאור מפורט לבקשה.');
       return false;
     }
+
+    if (!category) {
+      Alert.alert('שגיאה', 'נא לבחור קטגוריה.');
+      return false;
+    }
+
+    if (!urgency) {
+      Alert.alert('שגיאה', 'נא לבחור רמת דחיפות.');
+      return false;
+    }
+
     return true;
   };
 
@@ -63,8 +78,8 @@ export default function CreateRequestScreen({ navigation }) {
 
     try {
       setLoading(true);
-      const expiresAt = computeExpiresAt();
 
+      const expiresAt = computeExpiresAt();
       const isCommitteeOnly = visibility === 'COMMITTEE';
 
       const newRequest = await createRequest({
@@ -84,7 +99,7 @@ export default function CreateRequestScreen({ navigation }) {
           onPress: () => {
             setTitle('');
             setDescription('');
-            setCategory('ITEM_LOAN');
+            setCategory('PHYSICAL_HELP');
             setUrgency('MEDIUM');
             setVisibility('ALL');
           },
@@ -102,29 +117,28 @@ export default function CreateRequestScreen({ navigation }) {
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.header}>פרסום בקשה חדשה</Text>
 
-      {/* כותרת */}
       <Text style={styles.label}>כותרת הבקשה *</Text>
       <TextInput
         style={styles.input}
-        placeholderTextColor="#FFFFFF"
-        placeholder="לדוגמה: מי יכול להשאיל לי מקדחה?"
+        placeholderTextColor="#94a3b8"
+        placeholder="לדוגמה: צריך עזרה בהעברת משהו כבד"
         value={title}
         onChangeText={setTitle}
+        textAlign="right"
       />
 
-      {/* תיאור */}
       <Text style={styles.label}>תיאור מפורט *</Text>
       <TextInput
         style={[styles.input, styles.textArea]}
-        placeholderTextColor="#FFFFFF"
+        placeholderTextColor="#94a3b8"
         placeholder="תאר בקצרה מה אתה צריך, מתי, ואם יש פרטים חשובים..."
         value={description}
         onChangeText={setDescription}
         multiline
         numberOfLines={4}
+        textAlign="right"
       />
 
-      {/* קטגוריה */}
       <Text style={styles.label}>קטגוריה</Text>
       <View style={styles.chipsRow}>
         {CATEGORIES.map((cat) => (
@@ -148,7 +162,6 @@ export default function CreateRequestScreen({ navigation }) {
         ))}
       </View>
 
-      {/* רמת דחיפות */}
       <Text style={styles.label}>רמת דחיפות</Text>
       <View style={styles.chipsRow}>
         {URGENCIES.map((urg) => (
@@ -172,7 +185,6 @@ export default function CreateRequestScreen({ navigation }) {
         ))}
       </View>
 
-      {/* NEW: למי הבקשה מופיעה */}
       <Text style={styles.label}>למי הבקשה תופיע?</Text>
       <View style={styles.chipsRow}>
         <TouchableOpacity
@@ -210,7 +222,6 @@ export default function CreateRequestScreen({ navigation }) {
         </TouchableOpacity>
       </View>
 
-      {/* כפתור שליחה */}
       <TouchableOpacity
         style={[styles.button, loading && styles.buttonDisabled]}
         onPress={handleSubmit}
@@ -230,7 +241,6 @@ export default function CreateRequestScreen({ navigation }) {
   );
 }
 
-// styles – כמו שהיו אצלך, לא חייב לשנות
 const styles = StyleSheet.create({
   container: {
     padding: 16,

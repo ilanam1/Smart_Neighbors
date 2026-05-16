@@ -78,6 +78,13 @@ export default function EquipmentDetailsScreen({ navigation, route }) {
           <Text style={styles.category}>
             קטגוריה: {item.equipment_categories?.name || "ללא קטגוריה"}
           </Text>
+
+          <Text style={styles.ownerText}>
+            משאיל:{" "}
+            {`${item.owner_profile?.first_name || ""} ${item.owner_profile?.last_name || ""}`.trim() ||
+              item.owner_profile?.email ||
+              "דייר מהבניין"}
+          </Text>
           <Text style={styles.status}>
             סטטוס: {item.is_available ? "זמין להשאלה" : "לא זמין כרגע"}
           </Text>
@@ -206,5 +213,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: "center",
     marginTop: 40,
+  },
+  ownerText: {
+  color: "#cbd5e1",
+  fontSize: 14,
+  marginBottom: 6,
+  textAlign: "right",
   },
 });

@@ -1,7 +1,16 @@
+// jobRequestsApi.js
+// API לקריאות עבודה של נותני שירות + העלאת אסמכתאות
+
 import { getSupabase } from "../DataBase/supabase";
 import { createNotification } from "./notificationsApi";
+import ReactNativeBlobUtil from "react-native-blob-util";
+import { decode } from "base64-arraybuffer";
 
 const JOB_COMPLETION_BUCKET = "job-completion-documents";
+
+/* =========================================================
+   פונקציות עזר
+   ========================================================= */
 
 async function getCurrentUserWithBuilding() {
   const supabase = getSupabase();
@@ -39,15 +48,152 @@ function getFileExtension(fileName = "") {
   return parts.length > 1 ? parts.pop().toLowerCase() : "file";
 }
 
-async function uriToBlob(uri) {
-  const response = await fetch(uri);
-
-  if (!response.ok) {
-    throw new Error("לא ניתן לקרוא את הקובץ שנבחר");
+async function uriToArrayBuffer(file) {
+  if (!file?.uri) {
+    throw new Error("לא נמצא נתיב לקובץ שנבחר");
   }
 
-  return await response.blob();
+  try {
+    const base64Data = await ReactNativeBlobUtil.fs.readFile(file.uri, "base64");
+
+    if (!base64Data) {
+      throw new Error("הקובץ שנבחר ריק או לא ניתן לקריאה");
+    }
+
+    return decode(base64Data);
+  } catch (error) {
+    console.error("Error reading local file as base64:", {
+      message: error?.message,
+      uri: file?.uri,
+      name: file?.name,
+      type: file?.type,
+    });
+
+    throw new Error(
+      "לא ניתן לקרוא את הקובץ שנבחר מהמכשיר. נסה לבחור קובץ אחר או תמונה מהגלריה."
+    );
+  }
 }
+
+/**
+ * בדיקה שעובד השירות קיים
+ */
+async function validateServiceEmployee(employeeId) {
+  const supabase = getSupabase();
+
+  if (!employeeId) {
+    throw new Error("חסר מזהה עובד שירות");
+  }
+
+  const { data, error } = await supabase
+    .from("service_employees")
+    .select("id, full_name, phone, company_id")
+    .eq("id", employeeId)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Error validating service employee:", error.message);
+    throw new Error("שגיאה באימות נותן השירות");
+  }
+
+  if (!data) {
+    throw new Error("נותן השירות לא נמצא במערכת");
+  }
+
+  return data;
+}
+
+/**
+ * שליפת קריאת עבודה לפי מזהה
+ */
+async function getJobById(jobId) {
+  const supabase = getSupabase();
+
+  if (!jobId) {
+    throw new Error("חסר מזהה קריאת עבודה");
+  }
+
+  const { data, error } = await supabase
+    .from("employee_job_requests")
+    .select(`
+      id,
+      report_id,
+      employee_id,
+      building_id,
+      manager_uid,
+      instructions,
+      schedule_time,
+      status,
+      created_at,
+      updated_at,
+      buildings (
+        id,
+        name,
+        address,
+        city
+      ),
+      disturbance_reports (
+        id,
+        auth_user_id,
+        type,
+        severity,
+        description,
+        location,
+        status
+      )
+    `)
+    .eq("id", jobId)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Error fetching job by id:", error.message);
+    throw new Error("שגיאה בשליפת קריאת העבודה");
+  }
+
+  if (!data) {
+    throw new Error("קריאת העבודה לא נמצאה");
+  }
+
+  return data;
+}
+
+/**
+ * מחזיר מזהה עובד בטוח.
+ * אם המסך לא העביר employeeId, ננסה להשלים מתוך job.employee_id או מהטבלה.
+ */
+async function resolveEmployeeIdForJob(job, employeeId) {
+  if (employeeId) {
+    return employeeId;
+  }
+
+  if (job?.employee_id) {
+    return job.employee_id;
+  }
+
+  if (job?.id) {
+    const dbJob = await getJobById(job.id);
+    return dbJob.employee_id;
+  }
+
+  throw new Error("חסר מזהה עובד שירות");
+}
+
+/**
+ * בדיקה שהמשימה באמת שייכת לעובד הזה
+ */
+async function validateJobBelongsToEmployee(jobId, employeeId) {
+  const job = await getJobById(jobId);
+
+  if (job.employee_id !== employeeId) {
+    throw new Error("קריאת העבודה אינה משויכת לנותן השירות המחובר");
+  }
+
+  return job;
+}
+
+/* =========================================================
+   יצירת קריאת עבודה על ידי ועד/מנהל
+   ========================================================= */
 
 export async function createJobRequest({
   reportId,
@@ -57,6 +203,8 @@ export async function createJobRequest({
 }) {
   const supabase = getSupabase();
   const { user, profile } = await getCurrentUserWithBuilding();
+
+  await validateServiceEmployee(employeeId);
 
   const { data: reportData } = await supabase
     .from("disturbance_reports")
@@ -100,18 +248,27 @@ export async function createJobRequest({
     related_data: {
       job_id: job.id,
       report_id: reportId,
+
+      // זה התיקון החשוב ביותר עבור העלאת אסמכתא
+      employee_id: employeeId,
+
       tenant_id: reportData?.auth_user_id,
       report_type: reportData?.type,
       building_id: profile.building_id,
       building_name: profile.buildings?.name,
+      manager_uid: user.id,
       manager_name: profile.first_name || "נציג ועד",
-      instructions,
-      schedule_time: scheduleTime,
+      instructions: instructions || "אין תיאור",
+      schedule_time: scheduleTime || "בהקדם אפשרי",
     },
   });
 
   return job;
 }
+
+/* =========================================================
+   שליפות עבור ועד הבית
+   ========================================================= */
 
 export async function getJobsForReport(reportId) {
   const supabase = getSupabase();
@@ -147,8 +304,14 @@ export async function getJobsForReport(reportId) {
   return data || [];
 }
 
+/* =========================================================
+   שליפות עבור נותן שירות
+   ========================================================= */
+
 export async function getEmployeeOpenJobs(employeeId) {
   const supabase = getSupabase();
+
+  await validateServiceEmployee(employeeId);
 
   const { data, error } = await supabase
     .from("employee_job_requests")
@@ -171,12 +334,12 @@ export async function getEmployeeOpenJobs(employeeId) {
       )
     `)
     .eq("employee_id", employeeId)
-    .in("status", ["PENDING", "ACCEPTED", "IN_PROGRESS"])
+    .in("status", ["PENDING", "ACCEPTED"])
     .order("created_at", { ascending: false });
 
   if (error) {
     console.error("Error fetching employee jobs:", error.message);
-    return [];
+    throw new Error("שגיאה בשליפת בקשות פתוחות");
   }
 
   return data || [];
@@ -184,6 +347,8 @@ export async function getEmployeeOpenJobs(employeeId) {
 
 export async function getEmployeeCompletedJobs(employeeId) {
   const supabase = getSupabase();
+
+  await validateServiceEmployee(employeeId);
 
   const { data, error } = await supabase
     .from("employee_job_requests")
@@ -194,6 +359,15 @@ export async function getEmployeeCompletedJobs(employeeId) {
         name,
         address,
         city
+      ),
+      disturbance_reports (
+        id,
+        auth_user_id,
+        type,
+        severity,
+        description,
+        location,
+        status
       ),
       job_completion_documents (
         id,
@@ -212,11 +386,15 @@ export async function getEmployeeCompletedJobs(employeeId) {
 
   if (error) {
     console.error("Error fetching completed jobs:", error.message);
-    return [];
+    throw new Error("שגיאה בשליפת היסטוריית המשימות");
   }
 
   return data || [];
 }
+
+/* =========================================================
+   העלאת אסמכתא
+   ========================================================= */
 
 export async function uploadJobCompletionDocument({
   job,
@@ -231,9 +409,8 @@ export async function uploadJobCompletionDocument({
     throw new Error("חסר מזהה קריאת עבודה");
   }
 
-  if (!employeeId) {
-    throw new Error("חסר מזהה עובד שירות");
-  }
+  const resolvedEmployeeId = await resolveEmployeeIdForJob(job, employeeId);
+  const fullJob = await validateJobBelongsToEmployee(job.id, resolvedEmployeeId);
 
   if (!file?.uri) {
     throw new Error("לא נבחר קובץ להעלאה");
@@ -245,15 +422,15 @@ export async function uploadJobCompletionDocument({
 
   const filePath = [
     "jobs",
-    String(job.id),
+    String(fullJob.id),
     `${Date.now()}_${Math.random().toString(36).slice(2)}.${extension}`,
   ].join("/");
 
-  const blob = await uriToBlob(file.uri);
+  const fileArrayBuffer = await uriToArrayBuffer(file);
 
   const { error: uploadError } = await supabase.storage
     .from(JOB_COMPLETION_BUCKET)
-    .upload(filePath, blob, {
+    .upload(filePath, fileArrayBuffer, {
       contentType: file.type || "application/octet-stream",
       upsert: false,
     });
@@ -267,10 +444,10 @@ export async function uploadJobCompletionDocument({
     .from("job_completion_documents")
     .insert([
       {
-        job_id: job.id,
-        report_id: job.report_id || null,
-        employee_id: employeeId,
-        building_id: job.building_id || null,
+        job_id: fullJob.id,
+        report_id: fullJob.report_id || null,
+        employee_id: resolvedEmployeeId,
+        building_id: fullJob.building_id || null,
         file_name: originalName,
         file_type: file.type || null,
         file_size: file.size || null,
@@ -295,15 +472,28 @@ export async function uploadJobCompletionDocument({
   return docData;
 }
 
+/* =========================================================
+   סיום / דחייה של קריאת עבודה
+   ========================================================= */
+
 export async function markJobAsDone(
   jobId,
   reportId,
   committeeUid,
   employeeName,
   tenantId,
-  reportType
+  reportType,
+  employeeId = null
 ) {
   const supabase = getSupabase();
+
+  let fullJob = null;
+
+  if (employeeId) {
+    fullJob = await validateJobBelongsToEmployee(jobId, employeeId);
+  } else {
+    fullJob = await getJobById(jobId);
+  }
 
   const { error } = await supabase
     .from("employee_job_requests")
@@ -311,7 +501,8 @@ export async function markJobAsDone(
       status: "DONE",
       updated_at: new Date().toISOString(),
     })
-    .eq("id", jobId);
+    .eq("id", jobId)
+    .eq("employee_id", fullJob.employee_id);
 
   if (error) {
     throw new Error("שגיאה בסגירת תהליך העבודה");
@@ -326,20 +517,23 @@ export async function markJobAsDone(
     throw new Error("שגיאה בסגירת התקלה במערכת");
   }
 
-  await createNotification({
-    recipient_id: committeeUid,
-    sender_id: "system",
-    title: "קריאת השירות טופלה! ✅",
-    message: `נותן השירות ${
-      employeeName || ""
-    } ציין כי המטרד טופל בהצלחה ונשמרה אסמכתא לתיקון.`,
-    type: "general",
-    related_data: {
-      job_id: jobId,
-      report_id: reportId,
-      has_completion_document: true,
-    },
-  });
+  if (committeeUid) {
+    await createNotification({
+      recipient_id: committeeUid,
+      sender_id: "system",
+      title: "קריאת השירות טופלה! ✅",
+      message: `נותן השירות ${
+        employeeName || ""
+      } ציין כי המטרד טופל בהצלחה ונשמרה אסמכתא לתיקון.`,
+      type: "general",
+      related_data: {
+        job_id: jobId,
+        report_id: reportId,
+        employee_id: fullJob.employee_id,
+        has_completion_document: true,
+      },
+    });
+  }
 
   if (tenantId) {
     const reportTitle = reportType || "בבניין";
@@ -376,26 +570,38 @@ export async function markJobAsDoneWithDocument({
     throw new Error("יש להעלות חשבונית או אסמכתא לפני סיום העבודה");
   }
 
+  const resolvedEmployeeId = await resolveEmployeeIdForJob(job, employeeId);
+  const fullJob = await validateJobBelongsToEmployee(job.id, resolvedEmployeeId);
+
   await uploadJobCompletionDocument({
-    job,
-    employeeId,
+    job: fullJob,
+    employeeId: resolvedEmployeeId,
     file,
     documentType,
     note,
   });
 
   return await markJobAsDone(
-    job.id,
-    job.report_id,
-    committeeUid,
+    fullJob.id,
+    fullJob.report_id,
+    committeeUid || fullJob.manager_uid,
     employeeName,
     tenantId,
-    reportType
+    reportType,
+    resolvedEmployeeId
   );
 }
 
-export async function rejectJob(jobId, committeeUid, employeeName) {
+export async function rejectJob(jobId, committeeUid, employeeName, employeeId = null) {
   const supabase = getSupabase();
+
+  let fullJob = null;
+
+  if (employeeId) {
+    fullJob = await validateJobBelongsToEmployee(jobId, employeeId);
+  } else {
+    fullJob = await getJobById(jobId);
+  }
 
   const { error } = await supabase
     .from("employee_job_requests")
@@ -403,25 +609,35 @@ export async function rejectJob(jobId, committeeUid, employeeName) {
       status: "REJECTED",
       updated_at: new Date().toISOString(),
     })
-    .eq("id", jobId);
+    .eq("id", jobId)
+    .eq("employee_id", fullJob.employee_id);
 
   if (error) {
     throw new Error("שגיאה בדחיית הקריאה");
   }
 
-  await createNotification({
-    recipient_id: committeeUid,
-    sender_id: "system",
-    title: "קריאת השירות נדחתה ❌",
-    message: `נותן השירות ${
-      employeeName || ""
-    } ציין כי אינו יכול לטפל במטרד. אנא הקצה ספק אחר.`,
-    type: "general",
-    related_data: { job_id: jobId },
-  });
+  if (committeeUid) {
+    await createNotification({
+      recipient_id: committeeUid,
+      sender_id: "system",
+      title: "קריאת השירות נדחתה ❌",
+      message: `נותן השירות ${
+        employeeName || ""
+      } ציין כי אינו יכול לטפל במטרד. אנא הקצה ספק אחר.`,
+      type: "general",
+      related_data: {
+        job_id: jobId,
+        employee_id: fullJob.employee_id,
+      },
+    });
+  }
 
   return true;
 }
+
+/* =========================================================
+   אסמכתאות
+   ========================================================= */
 
 export async function getJobCompletionDocuments(jobId) {
   const supabase = getSupabase();
@@ -459,8 +675,14 @@ export async function createJobCompletionDocumentSignedUrl(filePath) {
   return data?.signedUrl;
 }
 
+/* =========================================================
+   דוח חודשי
+   ========================================================= */
+
 export async function getEmployeeMonthlyReport(employeeId, year, month) {
   const supabase = getSupabase();
+
+  await validateServiceEmployee(employeeId);
 
   const startDate = new Date(year, month - 1, 1, 0, 0, 0, 0);
   const endDate = new Date(year, month, 1, 0, 0, 0, 0);

@@ -1,44 +1,103 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
-  TextInput,
   Alert,
   ActivityIndicator,
   ScrollView,
+  Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { requestEquipmentLoan } from "../API/equipmentLoansApi";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { CalendarDays } from "lucide-react-native";
+
+import { requestEquipmentLoan, validateLoanDates } from "../API/equipmentLoansApi";
+
+function formatDate(date) {
+  if (!date) return "";
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
+function formatDateForDisplay(date) {
+  if (!date) return "בחר תאריך";
+
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = date.getFullYear();
+
+  return `${day}/${month}/${year}`;
+}
+
+function getTodayWithoutTime() {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return today;
+}
 
 export default function RequestLoanScreen({ navigation, route }) {
   const { equipmentId, equipmentTitle, buildingId, ownerId, user } = route.params || {};
 
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [showPicker, setShowPicker] = useState(null);
   const [saving, setSaving] = useState(false);
 
-  function isValidDateFormat(value) {
-    return /^\d{4}-\d{2}-\d{2}$/.test(value);
+  const today = useMemo(() => getTodayWithoutTime(), []);
+
+  function handleDateChange(event, selectedDate) {
+    if (Platform.OS === "android") {
+      setShowPicker(null);
+    }
+
+    if (event?.type === "dismissed") {
+      return;
+    }
+
+    if (!selectedDate) {
+      return;
+    }
+
+    const cleanDate = new Date(selectedDate);
+    cleanDate.setHours(0, 0, 0, 0);
+
+    if (showPicker === "start") {
+      setStartDate(cleanDate);
+
+      if (endDate && endDate < cleanDate) {
+        setEndDate(cleanDate);
+      }
+    }
+
+    if (showPicker === "end") {
+      setEndDate(cleanDate);
+    }
   }
 
   async function handleSubmitRequest() {
     try {
-      if (!startDate || !endDate) {
-        Alert.alert("שגיאה", "יש להזין תאריך התחלה ותאריך סיום.");
+      if (!user?.id) {
+        Alert.alert("שגיאה", "לא זוהה משתמש מחובר.");
         return;
       }
 
-      if (!isValidDateFormat(startDate) || !isValidDateFormat(endDate)) {
-        Alert.alert("שגיאה", "פורמט התאריך חייב להיות YYYY-MM-DD.");
+      if (!equipmentId || !buildingId || !ownerId) {
+        Alert.alert("שגיאה", "חסרים נתונים עבור בקשת ההשאלה.");
         return;
       }
 
-      if (endDate < startDate) {
-        Alert.alert("שגיאה", "תאריך הסיום חייב להיות אחרי תאריך ההתחלה.");
+      if (ownerId === user.id) {
+        Alert.alert("שגיאה", "לא ניתן להשאיל פריט שהעלית בעצמך.");
         return;
       }
+
+      const normalized = validateLoanDates(formatDate(startDate), formatDate(endDate));
 
       setSaving(true);
 
@@ -46,9 +105,9 @@ export default function RequestLoanScreen({ navigation, route }) {
         buildingId,
         equipmentId,
         ownerId,
-        borrowerId: user?.id,
-        startDate,
-        endDate,
+        borrowerId: user.id,
+        startDate: normalized.startDate,
+        endDate: normalized.endDate,
       });
 
       Alert.alert("הצלחה", "בקשת ההשאלה נשלחה בהצלחה.", [
@@ -65,6 +124,8 @@ export default function RequestLoanScreen({ navigation, route }) {
     }
   }
 
+  const minimumEndDate = startDate || today;
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
@@ -80,29 +141,45 @@ export default function RequestLoanScreen({ navigation, route }) {
 
         <View style={styles.section}>
           <Text style={styles.label}>תאריך התחלה</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="YYYY-MM-DD"
-            placeholderTextColor="#64748b"
-            value={startDate}
-            onChangeText={setStartDate}
-            autoCapitalize="none"
-            keyboardType="numbers-and-punctuation"
-          />
+          <TouchableOpacity style={styles.dateButton} onPress={() => setShowPicker("start")}>
+            <CalendarDays size={18} color="#10b981" />
+            <Text style={styles.dateButtonText}>{formatDateForDisplay(startDate)}</Text>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.section}>
           <Text style={styles.label}>תאריך סיום</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="YYYY-MM-DD"
-            placeholderTextColor="#64748b"
-            value={endDate}
-            onChangeText={setEndDate}
-            autoCapitalize="none"
-            keyboardType="numbers-and-punctuation"
-          />
+          <TouchableOpacity style={styles.dateButton} onPress={() => setShowPicker("end")}>
+            <CalendarDays size={18} color="#10b981" />
+            <Text style={styles.dateButtonText}>{formatDateForDisplay(endDate)}</Text>
+          </TouchableOpacity>
         </View>
+
+        <View style={styles.validationBox}>
+          <Text style={styles.validationText}>• לא ניתן לבחור תאריך שכבר עבר</Text>
+          <Text style={styles.validationText}>• תאריך הסיום חייב להיות אחרי או שווה לתאריך ההתחלה</Text>
+          <Text style={styles.validationText}>• משך ההשאלה מוגבל עד 30 ימים</Text>
+        </View>
+
+        {showPicker && (
+          <DateTimePicker
+            value={
+              showPicker === "start"
+                ? startDate || today
+                : endDate || minimumEndDate
+            }
+            mode="date"
+            display={Platform.OS === "ios" ? "spinner" : "default"}
+            minimumDate={showPicker === "start" ? today : minimumEndDate}
+            onChange={handleDateChange}
+          />
+        )}
+
+        {Platform.OS === "ios" && showPicker && (
+          <TouchableOpacity style={styles.closePickerButton} onPress={() => setShowPicker(null)}>
+            <Text style={styles.closePickerText}>סיום בחירה</Text>
+          </TouchableOpacity>
+        )}
 
         <TouchableOpacity
           style={[styles.submitButton, saving && { opacity: 0.7 }]}
@@ -125,7 +202,7 @@ const styles = StyleSheet.create({
   content: { padding: 16, paddingBottom: 40 },
   header: { alignItems: "flex-end", marginBottom: 24 },
   title: { color: "#f8fafc", fontSize: 26, fontWeight: "800" },
-  subtitle: { color: "#94a3b8", fontSize: 13, marginTop: 4 },
+  subtitle: { color: "#94a3b8", fontSize: 13, marginTop: 4, textAlign: "right" },
   itemCard: {
     backgroundColor: "rgba(30, 41, 59, 0.6)",
     borderWidth: 1,
@@ -154,15 +231,47 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     textAlign: "right",
   },
-  input: {
+  dateButton: {
     backgroundColor: "rgba(30, 41, 59, 0.65)",
     borderWidth: 1,
     borderColor: "rgba(51, 65, 85, 0.8)",
     borderRadius: 18,
     paddingHorizontal: 14,
     paddingVertical: 14,
+    flexDirection: "row-reverse",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  dateButtonText: {
     color: "#f8fafc",
-    fontSize: 14,
+    fontSize: 15,
+    fontWeight: "700",
+  },
+  validationBox: {
+    backgroundColor: "rgba(59, 130, 246, 0.1)",
+    borderWidth: 1,
+    borderColor: "rgba(59, 130, 246, 0.25)",
+    borderRadius: 18,
+    padding: 14,
+    marginBottom: 18,
+    alignItems: "flex-end",
+  },
+  validationText: {
+    color: "#bfdbfe",
+    fontSize: 12,
+    lineHeight: 20,
+    textAlign: "right",
+  },
+  closePickerButton: {
+    backgroundColor: "rgba(148, 163, 184, 0.18)",
+    borderRadius: 14,
+    paddingVertical: 12,
+    alignItems: "center",
+    marginBottom: 14,
+  },
+  closePickerText: {
+    color: "#f8fafc",
+    fontWeight: "800",
   },
   submitButton: {
     backgroundColor: "#10b981",

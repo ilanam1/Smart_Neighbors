@@ -9,11 +9,14 @@ import {
   TextInput,
   Alert,
   ActivityIndicator,
+  Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Calendar } from "react-native-calendars";
-import { ArrowRight, CalendarPlus } from "lucide-react-native";
+import { ArrowRight, CalendarPlus, CalendarDays, Clock } from "lucide-react-native";
 import { useNavigation } from "@react-navigation/native";
+import DateTimePicker from "@react-native-community/datetimepicker";
+
 import { getBuildingInspections } from "../API/inspectionsApi";
 import {
   createBuildingEvent,
@@ -48,8 +51,16 @@ export default function BuildingCalendarScreen() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [location, setLocation] = useState("");
-  const [startAt, setStartAt] = useState("");
-  const [endAt, setEndAt] = useState("");
+
+  // במקום לשמור תאריך כמחרוזת, שומרים אובייקטי Date תקינים
+  const [startAt, setStartAt] = useState(new Date());
+  const [endAt, setEndAt] = useState(null);
+
+  // שליטה על פתיחת בוחר תאריך/שעה להתחלה ולסיום
+  const [showStartDatePicker, setShowStartDatePicker] = useState(false);
+  const [showStartTimePicker, setShowStartTimePicker] = useState(false);
+  const [showEndDatePicker, setShowEndDatePicker] = useState(false);
+  const [showEndTimePicker, setShowEndTimePicker] = useState(false);
 
   const loadAll = async () => {
     try {
@@ -143,15 +154,125 @@ export default function BuildingCalendarScreen() {
 
   const openCreateModal = () => {
     const now = new Date();
-    const rounded = new Date(now.getTime() + 60 * 60 * 1000);
-    const defaultStart = rounded.toISOString().slice(0, 16);
+
+    // ברירת מחדל: התחלה בעוד שעה
+    const defaultStart = new Date(now.getTime() + 60 * 60 * 1000);
+
+    // ברירת מחדל: סיום שעתיים אחרי עכשיו
+    const defaultEnd = new Date(now.getTime() + 2 * 60 * 60 * 1000);
 
     setTitle("");
     setDescription("");
     setLocation("");
     setStartAt(defaultStart);
-    setEndAt("");
+    setEndAt(defaultEnd);
+
+    setShowStartDatePicker(false);
+    setShowStartTimePicker(false);
+    setShowEndDatePicker(false);
+    setShowEndTimePicker(false);
+
     setOpen(true);
+  };
+
+  const handleStartDateChange = (event, selectedDateValue) => {
+    if (Platform.OS === "android") {
+      setShowStartDatePicker(false);
+    }
+
+    if (event?.type === "dismissed") {
+      return;
+    }
+
+    if (selectedDateValue) {
+      const updatedDate = new Date(startAt);
+
+      updatedDate.setFullYear(selectedDateValue.getFullYear());
+      updatedDate.setMonth(selectedDateValue.getMonth());
+      updatedDate.setDate(selectedDateValue.getDate());
+
+      setStartAt(updatedDate);
+
+      if (endAt && endAt <= updatedDate) {
+        const newEnd = new Date(updatedDate.getTime() + 60 * 60 * 1000);
+        setEndAt(newEnd);
+      }
+    }
+  };
+
+  const handleStartTimeChange = (event, selectedTimeValue) => {
+    if (Platform.OS === "android") {
+      setShowStartTimePicker(false);
+    }
+
+    if (event?.type === "dismissed") {
+      return;
+    }
+
+    if (selectedTimeValue) {
+      const updatedDate = new Date(startAt);
+
+      updatedDate.setHours(selectedTimeValue.getHours());
+      updatedDate.setMinutes(selectedTimeValue.getMinutes());
+      updatedDate.setSeconds(0);
+      updatedDate.setMilliseconds(0);
+
+      setStartAt(updatedDate);
+
+      if (endAt && endAt <= updatedDate) {
+        const newEnd = new Date(updatedDate.getTime() + 60 * 60 * 1000);
+        setEndAt(newEnd);
+      }
+    }
+  };
+
+  const handleEndDateChange = (event, selectedDateValue) => {
+    if (Platform.OS === "android") {
+      setShowEndDatePicker(false);
+    }
+
+    if (event?.type === "dismissed") {
+      return;
+    }
+
+    if (selectedDateValue) {
+      const currentEnd = endAt || new Date(startAt.getTime() + 60 * 60 * 1000);
+      const updatedDate = new Date(currentEnd);
+
+      updatedDate.setFullYear(selectedDateValue.getFullYear());
+      updatedDate.setMonth(selectedDateValue.getMonth());
+      updatedDate.setDate(selectedDateValue.getDate());
+
+      setEndAt(updatedDate);
+    }
+  };
+
+  const handleEndTimeChange = (event, selectedTimeValue) => {
+    if (Platform.OS === "android") {
+      setShowEndTimePicker(false);
+    }
+
+    if (event?.type === "dismissed") {
+      return;
+    }
+
+    if (selectedTimeValue) {
+      const currentEnd = endAt || new Date(startAt.getTime() + 60 * 60 * 1000);
+      const updatedDate = new Date(currentEnd);
+
+      updatedDate.setHours(selectedTimeValue.getHours());
+      updatedDate.setMinutes(selectedTimeValue.getMinutes());
+      updatedDate.setSeconds(0);
+      updatedDate.setMilliseconds(0);
+
+      setEndAt(updatedDate);
+    }
+  };
+
+  const clearEndDate = () => {
+    setEndAt(null);
+    setShowEndDatePicker(false);
+    setShowEndTimePicker(false);
   };
 
   const handleCreateEvent = async () => {
@@ -160,30 +281,31 @@ export default function BuildingCalendarScreen() {
       return;
     }
 
-    if (!startAt.trim()) {
-      Alert.alert("שגיאה", "יש להזין תאריך ושעה להתחלה");
+    const parsedStart = new Date(startAt);
+
+    if (isNaN(parsedStart.getTime())) {
+      Alert.alert("שגיאה", "תאריך התחלת האירוע אינו תקין");
       return;
+    }
+
+    let parsedEnd = null;
+
+    if (endAt) {
+      parsedEnd = new Date(endAt);
+
+      if (isNaN(parsedEnd.getTime())) {
+        Alert.alert("שגיאה", "תאריך סיום האירוע אינו תקין");
+        return;
+      }
+
+      if (parsedEnd <= parsedStart) {
+        Alert.alert("שגיאה", "תאריך הסיום חייב להיות אחרי תאריך ההתחלה");
+        return;
+      }
     }
 
     try {
       setLoading(true);
-
-      const parsedStart = new Date(startAt);
-      if (isNaN(parsedStart.getTime())) {
-        throw new Error("פורמט תאריך התחלה לא תקין");
-      }
-
-      let parsedEnd = null;
-      if (endAt.trim()) {
-        parsedEnd = new Date(endAt);
-        if (isNaN(parsedEnd.getTime())) {
-          throw new Error("פורמט תאריך סיום לא תקין");
-        }
-
-        if (parsedEnd <= parsedStart) {
-          throw new Error("תאריך הסיום חייב להיות אחרי תאריך ההתחלה");
-        }
-      }
 
       await createBuildingEvent({
         title,
@@ -209,9 +331,19 @@ export default function BuildingCalendarScreen() {
     const isInspection = item.type === "inspection";
 
     return (
-      <View style={[styles.card, isInspection ? styles.inspectionCard : styles.eventCard]}>
+      <View
+        style={[
+          styles.card,
+          isInspection ? styles.inspectionCard : styles.eventCard,
+        ]}
+      >
         <View style={styles.badgeRow}>
-          <View style={[styles.badge, isInspection ? styles.inspectionBadge : styles.eventBadge]}>
+          <View
+            style={[
+              styles.badge,
+              isInspection ? styles.inspectionBadge : styles.eventBadge,
+            ]}
+          >
             <Text style={styles.badgeText}>
               {isInspection ? "ביקורת" : "אירוע"}
             </Text>
@@ -251,6 +383,7 @@ export default function BuildingCalendarScreen() {
             <TouchableOpacity onPress={() => navigation.goBack()}>
               <ArrowRight size={24} color="#f8fafc" />
             </TouchableOpacity>
+
             <Text style={styles.header}>לוח אירועי הבניין</Text>
           </View>
 
@@ -270,6 +403,11 @@ export default function BuildingCalendarScreen() {
               markedDates={markedDates}
               markingType="multi-dot"
               onDayPress={(day) => setSelectedDate(day.dateString)}
+              renderArrow={(direction) => (
+                <Text style={styles.calendarArrow}>
+                  {direction === "left" ? "‹" : "›"}
+                </Text>
+              )}
               theme={{
                 calendarBackground: "#1e293b",
                 dayTextColor: "#f8fafc",
@@ -277,7 +415,17 @@ export default function BuildingCalendarScreen() {
                 textSectionTitleColor: "#cbd5e1",
                 selectedDayTextColor: "#ffffff",
                 todayTextColor: "#38bdf8",
-                arrowColor: "#38bdf8",
+
+                // תיקון צבעי החצים כדי שלא ייעלמו ברקע
+                arrowColor: "#ffffff",
+                arrowStyle: {
+                  padding: 8,
+                },
+
+                textDisabledColor: "#64748b",
+                textDayFontWeight: "600",
+                textMonthFontWeight: "900",
+                textDayHeaderFontWeight: "800",
               }}
               style={styles.calendar}
             />
@@ -335,32 +483,118 @@ export default function BuildingCalendarScreen() {
                 textAlign="right"
               />
 
-              <Text style={styles.label}>תחילת אירוע (YYYY-MM-DDTHH:MM)</Text>
-              <TextInput
-                style={styles.input}
-                value={startAt}
-                onChangeText={setStartAt}
-                placeholder="2026-05-10T18:00"
-                placeholderTextColor="#94a3b8"
-                textAlign="right"
-              />
+              <Text style={styles.label}>תחילת אירוע</Text>
 
-              <Text style={styles.label}>סיום אירוע (אופציונלי)</Text>
-              <TextInput
-                style={styles.input}
-                value={endAt}
-                onChangeText={setEndAt}
-                placeholder="2026-05-10T20:00"
-                placeholderTextColor="#94a3b8"
-                textAlign="right"
-              />
+              <View style={styles.dateActionsRow}>
+                <TouchableOpacity
+                  style={styles.datePickerButton}
+                  onPress={() => setShowStartDatePicker(true)}
+                >
+                  <CalendarDays size={18} color="#38bdf8" />
+                  <Text style={styles.datePickerButtonText}>
+                    {startAt.toLocaleDateString("he-IL")}
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.datePickerButton}
+                  onPress={() => setShowStartTimePicker(true)}
+                >
+                  <Clock size={18} color="#38bdf8" />
+                  <Text style={styles.datePickerButtonText}>
+                    {startAt.toLocaleTimeString("he-IL", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              {showStartDatePicker && (
+                <DateTimePicker
+                  value={startAt}
+                  mode="date"
+                  display="calendar"
+                  onChange={handleStartDateChange}
+                />
+              )}
+
+              {showStartTimePicker && (
+                <DateTimePicker
+                  value={startAt}
+                  mode="time"
+                  display="clock"
+                  onChange={handleStartTimeChange}
+                />
+              )}
+
+              <View style={styles.endHeaderRow}>
+                <Text style={styles.label}>סיום אירוע</Text>
+
+                <TouchableOpacity onPress={clearEndDate}>
+                  <Text style={styles.clearEndText}>ללא שעת סיום</Text>
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.dateActionsRow}>
+                <TouchableOpacity
+                  style={styles.datePickerButton}
+                  onPress={() => setShowEndDatePicker(true)}
+                >
+                  <CalendarDays size={18} color="#38bdf8" />
+                  <Text style={styles.datePickerButtonText}>
+                    {endAt
+                      ? endAt.toLocaleDateString("he-IL")
+                      : "בחר תאריך"}
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.datePickerButton}
+                  onPress={() => setShowEndTimePicker(true)}
+                >
+                  <Clock size={18} color="#38bdf8" />
+                  <Text style={styles.datePickerButtonText}>
+                    {endAt
+                      ? endAt.toLocaleTimeString("he-IL", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })
+                      : "בחר שעה"}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              {showEndDatePicker && (
+                <DateTimePicker
+                  value={endAt || new Date(startAt.getTime() + 60 * 60 * 1000)}
+                  mode="date"
+                  display="calendar"
+                  onChange={handleEndDateChange}
+                />
+              )}
+
+              {showEndTimePicker && (
+                <DateTimePicker
+                  value={endAt || new Date(startAt.getTime() + 60 * 60 * 1000)}
+                  mode="time"
+                  display="clock"
+                  onChange={handleEndTimeChange}
+                />
+              )}
 
               <View style={styles.modalBtnsRow}>
-                <TouchableOpacity style={styles.secondaryBtn} onPress={() => setOpen(false)}>
+                <TouchableOpacity
+                  style={styles.secondaryBtn}
+                  onPress={() => setOpen(false)}
+                >
                   <Text style={styles.secondaryBtnText}>ביטול</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.primaryBtn} onPress={handleCreateEvent}>
+                <TouchableOpacity
+                  style={styles.primaryBtn}
+                  onPress={handleCreateEvent}
+                >
                   <Text style={styles.primaryBtnText}>שמור</Text>
                 </TouchableOpacity>
               </View>
@@ -373,24 +607,38 @@ export default function BuildingCalendarScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: "#0F172A" },
-  container: { flex: 1, padding: 16, backgroundColor: "#0F172A" },
+  safe: {
+    flex: 1,
+    backgroundColor: "#0F172A",
+  },
+
+  container: {
+    flex: 1,
+    padding: 16,
+    backgroundColor: "#0F172A",
+  },
+
   headerRow: {
     flexDirection: "row-reverse",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 12,
+    gap: 10,
   },
+
   headerRight: {
     flexDirection: "row-reverse",
     alignItems: "center",
     gap: 8,
+    flexShrink: 1,
   },
+
   header: {
     fontSize: 20,
     fontWeight: "800",
     color: "#f8fafc",
   },
+
   primaryBtn: {
     backgroundColor: "#2563eb",
     paddingVertical: 10,
@@ -400,15 +648,29 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 8,
   },
+
   primaryBtnText: {
     color: "#fff",
     fontWeight: "800",
   },
+
   calendar: {
     borderRadius: 16,
     overflow: "hidden",
     marginBottom: 16,
+    borderWidth: 1,
+    borderColor: "#334155",
   },
+
+  calendarArrow: {
+    color: "#ffffff",
+    fontSize: 34,
+    fontWeight: "900",
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    lineHeight: 34,
+  },
+
   selectedDateTitle: {
     color: "#f8fafc",
     fontWeight: "800",
@@ -416,43 +678,57 @@ const styles = StyleSheet.create({
     textAlign: "right",
     marginBottom: 10,
   },
+
   empty: {
     marginTop: 10,
     textAlign: "center",
     color: "#94a3b8",
   },
+
   card: {
     borderWidth: 1,
     borderRadius: 12,
     padding: 14,
     marginBottom: 12,
   },
+
   inspectionCard: {
     backgroundColor: "#3b2f12",
     borderColor: "#f59e0b",
   },
+
   eventCard: {
     backgroundColor: "#172554",
     borderColor: "#3b82f6",
   },
+
   badgeRow: {
     flexDirection: "row-reverse",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 8,
   },
+
   badge: {
     borderRadius: 8,
     paddingHorizontal: 8,
     paddingVertical: 4,
   },
-  inspectionBadge: { backgroundColor: "#f59e0b" },
-  eventBadge: { backgroundColor: "#2563eb" },
+
+  inspectionBadge: {
+    backgroundColor: "#f59e0b",
+  },
+
+  eventBadge: {
+    backgroundColor: "#2563eb",
+  },
+
   badgeText: {
     color: "#fff",
     fontSize: 12,
     fontWeight: "800",
   },
+
   cardTitle: {
     color: "#f8fafc",
     fontSize: 16,
@@ -461,18 +737,21 @@ const styles = StyleSheet.create({
     flex: 1,
     marginRight: 8,
   },
+
   cardText: {
     color: "#e2e8f0",
     textAlign: "right",
     marginTop: 5,
     lineHeight: 21,
   },
+
   modalBackdrop: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.7)",
     justifyContent: "center",
     padding: 16,
   },
+
   modalCard: {
     backgroundColor: "#1e293b",
     borderRadius: 16,
@@ -480,6 +759,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#334155",
   },
+
   modalTitle: {
     color: "#f8fafc",
     fontSize: 18,
@@ -487,6 +767,7 @@ const styles = StyleSheet.create({
     textAlign: "right",
     marginBottom: 10,
   },
+
   label: {
     color: "#e2e8f0",
     textAlign: "right",
@@ -494,6 +775,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 6,
   },
+
   input: {
     backgroundColor: "#0f172a",
     borderWidth: 1,
@@ -503,17 +785,60 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     color: "#f8fafc",
   },
+
+  dateActionsRow: {
+    flexDirection: "row-reverse",
+    gap: 10,
+    marginTop: 4,
+  },
+
+  datePickerButton: {
+    flex: 1,
+    backgroundColor: "#0f172a",
+    borderWidth: 1,
+    borderColor: "#334155",
+    borderRadius: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    flexDirection: "row-reverse",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+  },
+
+  datePickerButtonText: {
+    color: "#f8fafc",
+    fontWeight: "800",
+    textAlign: "center",
+  },
+
+  endHeaderRow: {
+    flexDirection: "row-reverse",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginTop: 10,
+  },
+
+  clearEndText: {
+    color: "#38bdf8",
+    fontWeight: "800",
+    marginTop: 10,
+    marginBottom: 6,
+  },
+
   modalBtnsRow: {
     flexDirection: "row-reverse",
     gap: 10,
     marginTop: 18,
   },
+
   secondaryBtn: {
     backgroundColor: "#334155",
     paddingVertical: 10,
     paddingHorizontal: 14,
     borderRadius: 12,
   },
+
   secondaryBtnText: {
     color: "#f8fafc",
     fontWeight: "800",

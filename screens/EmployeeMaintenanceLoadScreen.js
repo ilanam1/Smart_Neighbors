@@ -33,6 +33,12 @@ export default function EmployeeMaintenanceLoadScreen({ route }) {
   const [error, setError] = useState(null);
 
   const loadPredictions = async () => {
+    if (!employeeId) {
+      setError("לא התקבל מזהה נותן שירות.");
+      setLoading(false);
+      return;
+    }
+
     setError(null);
     setLoading(true);
 
@@ -63,8 +69,10 @@ export default function EmployeeMaintenanceLoadScreen({ route }) {
   };
 
   useEffect(() => {
-    loadPredictions();
-  }, []);
+    if (employeeId) {
+      loadPredictions();
+    }
+  }, [employeeId]);
 
   const filteredItems = useMemo(() => {
     if (selectedFilter === "ALL") {

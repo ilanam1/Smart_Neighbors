@@ -53,13 +53,19 @@ export default function EmployeeJobRequestScreen({ route, navigation }) {
   const [completionNote, setCompletionNote] = useState("");
   const [documentType, setDocumentType] = useState("REPAIR_PROOF");
 
-  const employeeId = notification.recipient_id;
+  const employeeId =
+    related_data.employee_id ||
+    related_data.service_employee_id ||
+    notification.recipient_id ||
+    related_data.assigned_employee_id ||
+    null;
 
   const buildJobObject = () => {
     return {
       id: related_data.job_id,
       report_id: related_data.report_id,
       building_id: related_data.building_id,
+      employee_id: employeeId,
     };
   };
 
@@ -113,6 +119,14 @@ export default function EmployeeJobRequestScreen({ route, navigation }) {
       return;
     }
 
+    if (!employeeId) {
+      Alert.alert(
+        "שגיאה",
+        "לא נמצא מזהה עובד שירות עבור הקריאה. יש לפתוח את הקריאה מתוך רשימת המשימות של נותן השירות או ליצור את הקריאה מחדש."
+      );
+      return;
+    }
+
     try {
       setLoading(true);
 
@@ -136,6 +150,7 @@ export default function EmployeeJobRequestScreen({ route, navigation }) {
           is_read: true,
           related_data: {
             ...related_data,
+            employee_id: employeeId,
             is_handled: true,
             resolution: "done",
             has_completion_document: true,
@@ -167,7 +182,12 @@ export default function EmployeeJobRequestScreen({ route, navigation }) {
             try {
               setLoading(true);
 
-              await rejectJob(related_data.job_id, notification.sender_id, null);
+              await rejectJob(
+                related_data.job_id,
+                notification.sender_id || related_data.manager_uid,
+                null,
+                employeeId
+              );
 
               const supabase = getSupabase();
 

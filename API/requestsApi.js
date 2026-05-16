@@ -30,7 +30,6 @@ async function getCurrentUserWithBuilding() {
     .select('building_id, is_blocked')
     .eq('auth_uid', user.id)
     .maybeSingle();
-    
 
   if (profileError) {
     console.error('Error fetching profile:', profileError.message);
@@ -46,13 +45,80 @@ async function getCurrentUserWithBuilding() {
   }
 
   if (profile.is_blocked) {
-  throw new Error('המשתמש חסום זמנית מפעילות במערכת');
+    throw new Error('המשתמש חסום זמנית מפעילות במערכת');
   }
 
   return {
     user,
     buildingId: profile.building_id,
   };
+}
+
+/**
+ * מוסיף לכל בקשה את שם המבקש מתוך טבלת profiles.
+ * בגלל שהבקשה שומרת auth_user_id, אנחנו מחפשים profiles.auth_uid.
+ */
+async function attachRequesterNames(requests) {
+  if (!requests || requests.length === 0) {
+    return [];
+  }
+
+  const authUserIds = [
+    ...new Set(
+      requests
+        .map((request) => request.auth_user_id)
+        .filter(Boolean)
+    ),
+  ];
+
+  if (authUserIds.length === 0) {
+    return requests.map((request) => ({
+      ...request,
+      requester_name: 'דייר לא ידוע',
+    }));
+  }
+
+  const { data: profiles, error } = await supabase
+    .from('profiles')
+    .select('auth_uid, first_name, last_name, email, phone')
+    .in('auth_uid', authUserIds);
+
+  if (error) {
+    console.error('Error fetching requester profiles:', error.message);
+
+    return requests.map((request) => ({
+      ...request,
+      requester_name: 'דייר לא ידוע',
+    }));
+  }
+
+  const profileByAuthUid = {};
+
+  (profiles || []).forEach((profile) => {
+    const firstName = profile.first_name || '';
+    const lastName = profile.last_name || '';
+
+    const fullName = `${firstName} ${lastName}`.trim();
+
+    profileByAuthUid[profile.auth_uid] = {
+      ...profile,
+      requester_name:
+        fullName ||
+        profile.email ||
+        profile.phone ||
+        'דייר לא ידוע',
+    };
+  });
+
+  return requests.map((request) => {
+    const requesterProfile = profileByAuthUid[request.auth_user_id];
+
+    return {
+      ...request,
+      requester_profile: requesterProfile || null,
+      requester_name: requesterProfile?.requester_name || 'דייר לא ידוע',
+    };
+  });
 }
 
 /**
@@ -94,8 +160,9 @@ export async function createRequest({
 }
 
 /**
- * קבלת כל הבקשות הפתוחות של הבניין של המשתמש המחובר
- * מתאים במיוחד למסך ועד הבית
+ * קבלת בקשות פתוחות שמיועדות לוועד הבית בלבד.
+ * תיקון לפי הדרישה:
+ * בקשות לכל הדיירים לא צריכות להופיע גם במסך ועד הבית.
  */
 export async function getOpenRequests() {
   const { buildingId } = await getCurrentUserWithBuilding();
@@ -105,19 +172,20 @@ export async function getOpenRequests() {
     .select('*')
     .eq('building_id', buildingId)
     .eq('status', 'OPEN')
+    .eq('is_committee_only', true)
     .order('created_at', { ascending: false });
 
   if (error) {
-    console.error('Error fetching open requests:', error.message);
-    throw new Error('שגיאה בשליפת הבקשות');
+    console.error('Error fetching open committee requests:', error.message);
+    throw new Error('שגיאה בשליפת הבקשות לוועד הבית');
   }
 
-  return data || [];
+  return attachRequesterNames(data || []);
 }
 
 /**
- * קבלת בקשות פתוחות לצפייה של דיירים רגילים
- * כלומר: רק של הבניין שלהם ורק כאלה שלא מיועדות לוועד בלבד
+ * קבלת בקשות פתוחות לצפייה של דיירים רגילים.
+ * כלומר: רק של הבניין שלהם ורק כאלה שלא מיועדות לוועד בלבד.
  */
 export async function getPublicRequests() {
   const { buildingId } = await getCurrentUserWithBuilding();
@@ -135,7 +203,7 @@ export async function getPublicRequests() {
     throw new Error('שגיאה בשליפת הבקשות הפתוחות לדיירים');
   }
 
-  return data || [];
+  return attachRequesterNames(data || []);
 }
 
 /**
@@ -203,7 +271,7 @@ export async function cancelRequest(id) {
 
 /**
  * סימון בקשה כטופלה
- * משנה סטטוס ל-COMPLETED רק אם הבקשה שייכת לבניין של המשתמש
+ * עובד גם עבור ועד הבית וגם עבור בקשות ציבוריות בין דיירים.
  */
 export async function completeRequest(id) {
   const { buildingId } = await getCurrentUserWithBuilding();
@@ -228,11 +296,9 @@ export async function completeRequest(id) {
   return data;
 }
 
-
-
 /**
- * קבלת כל הבקשות של הבניין של המשתמש המחובר
- * מיועד למסך סטטיסטיקות / ניתוחים עבור ועד הבית
+ * קבלת כל הבקשות של הבניין של המשתמש המחובר.
+ * מיועד למסך סטטיסטיקות / ניתוחים עבור ועד הבית.
  */
 export async function getAllBuildingRequests() {
   const { buildingId } = await getCurrentUserWithBuilding();
@@ -248,5 +314,5 @@ export async function getAllBuildingRequests() {
     throw new Error('שגיאה בשליפת כל הבקשות של הבניין');
   }
 
-  return data || [];
+  return attachRequesterNames(data || []);
 }

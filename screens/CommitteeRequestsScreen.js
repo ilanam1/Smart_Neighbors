@@ -50,12 +50,18 @@ export default function CommitteeRequestsScreen() {
 
   function formatCategory(category) {
     switch (category) {
-      case "ITEM_LOAN":
-        return "השאלת ציוד";
       case "PHYSICAL_HELP":
         return "עזרה פיזית";
       case "INFO":
-        return "מידע";
+        return "מידע / שאלה";
+      case "MAINTENANCE":
+        return "תחזוקה";
+      case "CLEANING":
+        return "ניקיון";
+      case "NOISE":
+        return "רעש";
+      case "SAFETY":
+        return "בטיחות";
       case "OTHER":
         return "אחר";
       default:
@@ -132,7 +138,7 @@ export default function CommitteeRequestsScreen() {
   if (!requests.length) {
     return (
       <Text style={styles.empty}>
-        אין עדיין בקשות פתוחות מהדיירים בבניין שלך.
+        אין כרגע בקשות פתוחות שמיועדות לוועד הבית.
       </Text>
     );
   }
@@ -150,6 +156,10 @@ export default function CommitteeRequestsScreen() {
             <Text style={styles.body}>{item.description}</Text>
 
             <Text style={styles.meta}>
+              מבקש: {item.requester_name || "דייר לא ידוע"}
+            </Text>
+
+            <Text style={styles.meta}>
               קטגוריה: {formatCategory(item.category)}
             </Text>
 
@@ -158,7 +168,7 @@ export default function CommitteeRequestsScreen() {
             </Text>
 
             <Text style={styles.meta}>
-              מיועד ל: {item.is_committee_only ? "ועד הבית בלבד" : "כל הדיירים"}
+              מיועד ל: ועד הבית בלבד
             </Text>
 
             <Text style={styles.meta}>

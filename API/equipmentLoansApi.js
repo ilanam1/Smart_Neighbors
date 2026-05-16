@@ -5,10 +5,86 @@ import { getSupabase } from "../DataBase/supabase";
 import { createNotification } from "./notificationsApi";
 
 /**
+ * המרת תאריך לפורמט YYYY-MM-DD
+ */
+function normalizeDate(value) {
+  if (!value) return null;
+
+  if (typeof value === "string") {
+    return value.slice(0, 10);
+  }
+
+  const year = value.getFullYear();
+  const month = String(value.getMonth() + 1).padStart(2, "0");
+  const day = String(value.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
+/**
+ * בדיקת תקינות בסיסית לטווח תאריכים
+ */
+export function validateLoanDates(startDate, endDate) {
+  const start = normalizeDate(startDate);
+  const end = normalizeDate(endDate);
+  const today = normalizeDate(new Date());
+
+  if (!start || !end) {
+    throw new Error("יש לבחור תאריך התחלה ותאריך סיום.");
+  }
+
+  if (start < today) {
+    throw new Error("לא ניתן לבחור תאריך התחלה שכבר עבר.");
+  }
+
+  if (end < start) {
+    throw new Error("תאריך הסיום חייב להיות זהה או מאוחר מתאריך ההתחלה.");
+  }
+
+  const startObj = new Date(`${start}T00:00:00`);
+  const endObj = new Date(`${end}T00:00:00`);
+  const diffInDays = Math.round((endObj - startObj) / (1000 * 60 * 60 * 24)) + 1;
+
+  if (diffInDays > 30) {
+    throw new Error("לא ניתן לבקש השאלה ליותר מ-30 ימים.");
+  }
+
+  return {
+    startDate: start,
+    endDate: end,
+  };
+}
+
+/**
  * בדיקה האם יש חפיפה עם השאלות מאושרות / ממתינות
  */
-export async function checkEquipmentAvailability(equipmentId, startDate, endDate) {
+export async function checkEquipmentAvailability(equipmentId, startDate, endDate, excludeLoanId = null) {
   const supabase = getSupabase();
+
+  const normalized = validateLoanDates(startDate, endDate);
+
+  const { data: equipment, error: equipmentError } = await supabase
+    .from("building_equipment")
+    .select("id, is_available")
+    .eq("id", equipmentId)
+    .maybeSingle();
+
+  if (equipmentError) {
+    console.error("Error checking equipment status:", equipmentError);
+    throw equipmentError;
+  }
+
+  if (!equipment) {
+    throw new Error("הפריט לא נמצא במערכת.");
+  }
+
+  if (!equipment.is_available) {
+    return {
+      isAvailable: false,
+      conflicts: [],
+      reason: "הפריט כבר לא זמין להשאלה.",
+    };
+  }
 
   const { data, error } = await supabase
     .from("equipment_loans")
@@ -21,13 +97,21 @@ export async function checkEquipmentAvailability(equipmentId, startDate, endDate
     throw error;
   }
 
-  const hasOverlap = (data || []).some((loan) => {
-    return !(endDate < loan.start_date || startDate > loan.end_date);
+  const conflicts = (data || []).filter((loan) => {
+    if (excludeLoanId && loan.id === excludeLoanId) {
+      return false;
+    }
+
+    return !(
+      normalized.endDate < loan.start_date ||
+      normalized.startDate > loan.end_date
+    );
   });
 
   return {
-    isAvailable: !hasOverlap,
-    conflicts: hasOverlap ? data : [],
+    isAvailable: conflicts.length === 0,
+    conflicts,
+    reason: conflicts.length > 0 ? "קיימת בקשה חופפת בטווח התאריכים שנבחר." : null,
   };
 }
 
@@ -44,10 +128,24 @@ export async function requestEquipmentLoan({
 }) {
   const supabase = getSupabase();
 
-  const availability = await checkEquipmentAvailability(equipmentId, startDate, endDate);
+  if (!buildingId || !equipmentId || !ownerId || !borrowerId) {
+    throw new Error("חסרים נתונים לשליחת בקשת ההשאלה.");
+  }
+
+  if (ownerId === borrowerId) {
+    throw new Error("לא ניתן להשאיל פריט שהעלית בעצמך.");
+  }
+
+  const normalized = validateLoanDates(startDate, endDate);
+
+  const availability = await checkEquipmentAvailability(
+    equipmentId,
+    normalized.startDate,
+    normalized.endDate
+  );
 
   if (!availability.isAvailable) {
-    throw new Error("הציוד אינו זמין בטווח התאריכים שנבחר.");
+    throw new Error(availability.reason || "הציוד אינו זמין בטווח התאריכים שנבחר.");
   }
 
   const payload = {
@@ -55,8 +153,8 @@ export async function requestEquipmentLoan({
     equipment_id: equipmentId,
     owner_id: ownerId,
     borrower_id: borrowerId,
-    start_date: startDate,
-    end_date: endDate,
+    start_date: normalized.startDate,
+    end_date: normalized.endDate,
     status: "pending",
   };
 
@@ -71,7 +169,6 @@ export async function requestEquipmentLoan({
     throw error;
   }
 
-  // יצירת התראה לבעל הציוד
   await createNotification({
     recipient_id: ownerId,
     sender_id: borrowerId,
@@ -84,8 +181,8 @@ export async function requestEquipmentLoan({
       building_id: buildingId,
       owner_id: ownerId,
       borrower_id: borrowerId,
-      start_date: startDate,
-      end_date: endDate,
+      start_date: normalized.startDate,
+      end_date: normalized.endDate,
     },
   });
 
@@ -94,6 +191,7 @@ export async function requestEquipmentLoan({
 
 /**
  * שליפת כל הבקשות שמשתמש מסוים שלח
+ * כולל פרטי המשאיל, כדי שהמושאל יראה ממי הוא משאיל.
  */
 export async function getMyBorrowRequests(borrowerId) {
   const supabase = getSupabase();
@@ -126,11 +224,37 @@ export async function getMyBorrowRequests(borrowerId) {
     throw error;
   }
 
-  return data || [];
+  const requests = data || [];
+  const ownerIds = [...new Set(requests.map((item) => item.owner_id).filter(Boolean))];
+
+  if (!ownerIds.length) {
+    return requests;
+  }
+
+  const { data: profilesData, error: profilesError } = await supabase
+    .from("profiles")
+    .select("auth_uid, first_name, last_name, email, phone")
+    .in("auth_uid", ownerIds);
+
+  if (profilesError) {
+    console.warn("Could not fetch owner profiles:", profilesError);
+    return requests;
+  }
+
+  const profilesMap = {};
+  (profilesData || []).forEach((profile) => {
+    profilesMap[profile.auth_uid] = profile;
+  });
+
+  return requests.map((request) => ({
+    ...request,
+    owner_profile: profilesMap[request.owner_id] || null,
+  }));
 }
 
 /**
  * שליפת כל הבקשות שהגיעו אליי כבעל ציוד
+ * כולל פרטי המבקש.
  */
 export async function getIncomingLoanRequests(ownerId) {
   const supabase = getSupabase();
@@ -163,11 +287,40 @@ export async function getIncomingLoanRequests(ownerId) {
     throw error;
   }
 
-  return data || [];
+  const requests = data || [];
+  const borrowerIds = [...new Set(requests.map((item) => item.borrower_id).filter(Boolean))];
+
+  if (!borrowerIds.length) {
+    return requests;
+  }
+
+  const { data: profilesData, error: profilesError } = await supabase
+    .from("profiles")
+    .select("auth_uid, first_name, last_name, email, phone")
+    .in("auth_uid", borrowerIds);
+
+  if (profilesError) {
+    console.warn("Could not fetch borrower profiles:", profilesError);
+    return requests;
+  }
+
+  const profilesMap = {};
+  (profilesData || []).forEach((profile) => {
+    profilesMap[profile.auth_uid] = profile;
+  });
+
+  return requests.map((request) => ({
+    ...request,
+    borrower_profile: profilesMap[request.borrower_id] || null,
+  }));
 }
 
 /**
  * אישור בקשת השאלה
+ * שינוי חשוב:
+ * 1. מאשרים את הבקשה.
+ * 2. מסמנים את הפריט כלא זמין.
+ * 3. דוחים אוטומטית בקשות pending אחרות על אותו פריט, כדי למנוע כפילויות.
  */
 export async function approveLoanRequest(loanId) {
   const supabase = getSupabase();
@@ -184,32 +337,48 @@ export async function approveLoanRequest(loanId) {
   }
 
   if (loan.status !== "pending") {
-    throw new Error("רק בקשה במצב pending ניתנת לאישור.");
+    throw new Error("רק בקשה במצב ממתין ניתנת לאישור.");
   }
 
   const availability = await checkEquipmentAvailability(
     loan.equipment_id,
     loan.start_date,
-    loan.end_date
+    loan.end_date,
+    loanId
   );
 
-  const realConflicts = (availability.conflicts || []).filter((item) => item.id !== loanId);
-
-  if (realConflicts.length > 0) {
-    throw new Error("לא ניתן לאשר את הבקשה כי נוצרה חפיפה עם בקשה אחרת.");
+  if (!availability.isAvailable) {
+    throw new Error(availability.reason || "לא ניתן לאשר את הבקשה כי הפריט אינו זמין.");
   }
 
-  const { data, error } = await supabase
+  const { data: approvedLoan, error: approveError } = await supabase
     .from("equipment_loans")
     .update({ status: "approved" })
     .eq("id", loanId)
     .select()
     .single();
 
-  if (error) {
-    console.error("Error approving loan request:", error);
-    throw error;
+  if (approveError) {
+    console.error("Error approving loan request:", approveError);
+    throw approveError;
   }
+
+  const { error: equipmentError } = await supabase
+    .from("building_equipment")
+    .update({ is_available: false })
+    .eq("id", loan.equipment_id);
+
+  if (equipmentError) {
+    console.error("Error marking equipment unavailable:", equipmentError);
+    throw equipmentError;
+  }
+
+  await supabase
+    .from("equipment_loans")
+    .update({ status: "rejected" })
+    .eq("equipment_id", loan.equipment_id)
+    .eq("status", "pending")
+    .neq("id", loanId);
 
   await createNotification({
     recipient_id: loan.borrower_id,
@@ -228,7 +397,7 @@ export async function approveLoanRequest(loanId) {
     },
   });
 
-  return data;
+  return approvedLoan;
 }
 
 /**
@@ -249,7 +418,7 @@ export async function rejectLoanRequest(loanId) {
   }
 
   if (loan.status !== "pending") {
-    throw new Error("רק בקשה במצב pending ניתנת לדחייה.");
+    throw new Error("רק בקשה במצב ממתין ניתנת לדחייה.");
   }
 
   const { data, error } = await supabase
@@ -286,9 +455,25 @@ export async function rejectLoanRequest(loanId) {
 
 /**
  * סימון ציוד כהוחזר
+ * לאחר החזרה, הפריט חוזר להיות זמין בלוח ההשאלות.
  */
 export async function markLoanAsReturned(loanId) {
   const supabase = getSupabase();
+
+  const { data: loan, error: loanError } = await supabase
+    .from("equipment_loans")
+    .select("id, equipment_id, status")
+    .eq("id", loanId)
+    .single();
+
+  if (loanError) {
+    console.error("Error fetching loan before return:", loanError);
+    throw loanError;
+  }
+
+  if (loan.status !== "approved") {
+    throw new Error("ניתן לסמן כהוחזר רק בקשה שאושרה.");
+  }
 
   const { data, error } = await supabase
     .from("equipment_loans")
@@ -302,6 +487,16 @@ export async function markLoanAsReturned(loanId) {
     throw error;
   }
 
+  const { error: equipmentError } = await supabase
+    .from("building_equipment")
+    .update({ is_available: true })
+    .eq("id", loan.equipment_id);
+
+  if (equipmentError) {
+    console.error("Error marking equipment available:", equipmentError);
+    throw equipmentError;
+  }
+
   return data;
 }
 
@@ -311,6 +506,21 @@ export async function markLoanAsReturned(loanId) {
 export async function cancelLoanRequest(loanId) {
   const supabase = getSupabase();
 
+  const { data: loan, error: loanError } = await supabase
+    .from("equipment_loans")
+    .select("id, equipment_id, status")
+    .eq("id", loanId)
+    .single();
+
+  if (loanError) {
+    console.error("Error fetching loan before cancel:", loanError);
+    throw loanError;
+  }
+
+  if (loan.status !== "pending") {
+    throw new Error("ניתן לבטל רק בקשה שעדיין ממתינה לאישור.");
+  }
+
   const { data, error } = await supabase
     .from("equipment_loans")
     .update({ status: "cancelled" })
@@ -319,20 +529,15 @@ export async function cancelLoanRequest(loanId) {
     .single();
 
   if (error) {
-    console.error("Error cancelling loan request:", error);
+    console.error("Error cancelling equipment loan request:", error);
     throw error;
   }
 
   return data;
 }
 
-
 /**
  * שליפת קטגוריות מומלצות למשתמש לפי היסטוריית השאלות שלו
- * כלל עסקי:
- * - נספר רק השאלות בסטטוס approved / returned
- * - רק עבור אותו בניין
- * - רק קטגוריות עם minBorrowCount ומעלה ייחשבו כמומלצות
  */
 export async function getRecommendedEquipmentCategories({
   buildingId,

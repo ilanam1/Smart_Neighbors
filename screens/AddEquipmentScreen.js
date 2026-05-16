@@ -8,11 +8,18 @@ import {
   ActivityIndicator,
   ScrollView,
   Alert,
+  Image,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { launchImageLibrary } from "react-native-image-picker";
+import { ImagePlus, X } from "lucide-react-native";
+
 import { getSupabase } from "../DataBase/supabase";
 import { getEquipmentCategories } from "../API/equipmentCategoriesApi";
-import { createEquipmentItem } from "../API/buildingEquipmentApi";
+import {
+  createEquipmentItem,
+  uploadEquipmentImageFromUri,
+} from "../API/buildingEquipmentApi";
 
 export default function AddEquipmentScreen({ navigation, route }) {
   const { buildingId, user, preselectedCategoryId = null } = route.params || {};
@@ -24,7 +31,7 @@ export default function AddEquipmentScreen({ navigation, route }) {
   const [profile, setProfile] = useState(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [itemImageUrl, setItemImageUrl] = useState("");
+  const [selectedImage, setSelectedImage] = useState(null);
   const [selectedCategoryId, setSelectedCategoryId] = useState(preselectedCategoryId);
 
   const supabase = getSupabase();
@@ -66,10 +73,44 @@ export default function AddEquipmentScreen({ navigation, route }) {
     };
   }, [supabase, user?.id]);
 
+  async function handlePickImage() {
+    try {
+      const result = await launchImageLibrary({
+        mediaType: "photo",
+        quality: 0.8,
+        selectionLimit: 1,
+      });
+
+      if (result.didCancel) return;
+
+      const asset = result.assets?.[0];
+
+      if (!asset?.uri) {
+        Alert.alert("שגיאה", "לא נבחרה תמונה תקינה.");
+        return;
+      }
+
+      if (asset.fileSize && asset.fileSize > 5 * 1024 * 1024) {
+        Alert.alert("שגיאה", "גודל התמונה חייב להיות עד 5MB.");
+        return;
+      }
+
+      setSelectedImage(asset);
+    } catch (err) {
+      console.error("Pick image error:", err);
+      Alert.alert("שגיאה", "לא ניתן היה לבחור תמונה.");
+    }
+  }
+
   async function handleCreateEquipment() {
     try {
       if (!title.trim()) {
         Alert.alert("שגיאה", "יש להזין שם לפריט.");
+        return;
+      }
+
+      if (title.trim().length < 2) {
+        Alert.alert("שגיאה", "שם הפריט חייב להכיל לפחות 2 תווים.");
         return;
       }
 
@@ -84,15 +125,34 @@ export default function AddEquipmentScreen({ navigation, route }) {
         return;
       }
 
+      const finalBuildingId = buildingId || profile?.building_id;
+
+      if (!finalBuildingId) {
+        Alert.alert("שגיאה", "לא זוהה בניין עבור המשתמש.");
+        return;
+      }
+
       setSaving(true);
 
+      let uploadedImageUrl = null;
+
+      if (selectedImage?.uri) {
+        uploadedImageUrl = await uploadEquipmentImageFromUri({
+          imageUri: selectedImage.uri,
+          fileName: selectedImage.fileName,
+          mimeType: selectedImage.type,
+          buildingId: finalBuildingId,
+          ownerId,
+        });
+      }
+
       await createEquipmentItem({
-        buildingId,
+        buildingId: finalBuildingId,
         ownerId,
         categoryId: selectedCategoryId,
         title: title.trim(),
         description: description.trim() || null,
-        itemImageUrl: itemImageUrl.trim() || null,
+        itemImageUrl: uploadedImageUrl,
       });
 
       Alert.alert("הצלחה", "הציוד נוסף בהצלחה למערכת.", [
@@ -151,16 +211,25 @@ export default function AddEquipmentScreen({ navigation, route }) {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.label}>קישור לתמונה של הפריט (לא חובה)</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="https://..."
-            placeholderTextColor="#64748b"
-            value={itemImageUrl}
-            onChangeText={setItemImageUrl}
-            textAlign="left"
-            autoCapitalize="none"
-          />
+          <Text style={styles.label}>תמונה של הפריט</Text>
+
+          {selectedImage?.uri ? (
+            <View style={styles.imagePreviewBox}>
+              <Image source={{ uri: selectedImage.uri }} style={styles.previewImage} />
+
+              <TouchableOpacity
+                style={styles.removeImageButton}
+                onPress={() => setSelectedImage(null)}
+              >
+                <X size={18} color="#fff" />
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <TouchableOpacity style={styles.imagePickerButton} onPress={handlePickImage}>
+              <ImagePlus size={22} color="#10b981" />
+              <Text style={styles.imagePickerText}>בחר תמונה מהגלריה</Text>
+            </TouchableOpacity>
+          )}
         </View>
 
         <View style={styles.section}>
@@ -168,6 +237,7 @@ export default function AddEquipmentScreen({ navigation, route }) {
           <View style={styles.categoriesWrap}>
             {categories.map((category) => {
               const isSelected = selectedCategoryId === category.id;
+
               return (
                 <TouchableOpacity
                   key={category.id}
@@ -232,6 +302,42 @@ const styles = StyleSheet.create({
     minHeight: 110,
     textAlignVertical: "top",
   },
+  imagePickerButton: {
+    minHeight: 120,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderStyle: "dashed",
+    borderColor: "rgba(16, 185, 129, 0.65)",
+    backgroundColor: "rgba(16, 185, 129, 0.08)",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+  },
+  imagePickerText: {
+    color: "#10b981",
+    fontWeight: "800",
+    fontSize: 14,
+  },
+  imagePreviewBox: {
+    position: "relative",
+    borderRadius: 18,
+    overflow: "hidden",
+    borderWidth: 1,
+    borderColor: "rgba(51, 65, 85, 0.8)",
+  },
+  previewImage: {
+    width: "100%",
+    height: 210,
+    resizeMode: "cover",
+  },
+  removeImageButton: {
+    position: "absolute",
+    top: 10,
+    left: 10,
+    backgroundColor: "rgba(15, 23, 42, 0.85)",
+    borderRadius: 999,
+    padding: 8,
+  },
   categoriesWrap: {
     flexDirection: "row-reverse",
     flexWrap: "wrap",
@@ -261,7 +367,7 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     paddingVertical: 16,
     alignItems: "center",
-    marginTop: 12,
+    marginTop: 8,
   },
   submitButtonText: {
     color: "#0f172a",

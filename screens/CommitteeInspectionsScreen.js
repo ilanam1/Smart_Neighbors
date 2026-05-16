@@ -8,11 +8,13 @@ import {
   ActivityIndicator,
   Alert,
   Modal,
-  TextInput,
+  Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ArrowRight, CalendarDays, ShieldCheck } from "lucide-react-native";
+import { ArrowRight, CalendarDays, Clock } from "lucide-react-native";
 import { useNavigation } from "@react-navigation/native";
+import DateTimePicker from "@react-native-community/datetimepicker";
+
 import { listProviders } from "../API/serviceProvidersApi";
 import {
   listInspectionTemplates,
@@ -44,11 +46,18 @@ export default function CommitteeInspectionsScreen() {
   const [open, setOpen] = useState(false);
   const [selectedTemplateId, setSelectedTemplateId] = useState("");
   const [selectedEmployeeId, setSelectedEmployeeId] = useState("");
-  const [dueDate, setDueDate] = useState("");
+
+  // במקום לשמור תאריך כמחרוזת, שומרים אותו כאובייקט Date תקין
+  const [dueDate, setDueDate] = useState(new Date());
+
+  // שליטה על פתיחת לוח התאריכים ובוחר השעה
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
 
   const loadAll = async () => {
     try {
       setLoading(true);
+
       const [inspectionsData, templatesData, employeesData] = await Promise.all([
         getBuildingInspections(),
         listInspectionTemplates(),
@@ -80,9 +89,55 @@ export default function CommitteeInspectionsScreen() {
 
   const openCreate = () => {
     const now = new Date();
+
+    // ברירת מחדל: תאריך יעד בעוד 3 ימים, בדיוק כמו שהיה אצלך
     const defaultDate = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
-    setDueDate(defaultDate.toISOString().slice(0, 16));
+
+    setDueDate(defaultDate);
+    setShowDatePicker(false);
+    setShowTimePicker(false);
     setOpen(true);
+  };
+
+  const handleDateChange = (event, selectedDate) => {
+    if (Platform.OS === "android") {
+      setShowDatePicker(false);
+    }
+
+    if (event?.type === "dismissed") {
+      return;
+    }
+
+    if (selectedDate) {
+      const updatedDate = new Date(dueDate);
+
+      updatedDate.setFullYear(selectedDate.getFullYear());
+      updatedDate.setMonth(selectedDate.getMonth());
+      updatedDate.setDate(selectedDate.getDate());
+
+      setDueDate(updatedDate);
+    }
+  };
+
+  const handleTimeChange = (event, selectedTime) => {
+    if (Platform.OS === "android") {
+      setShowTimePicker(false);
+    }
+
+    if (event?.type === "dismissed") {
+      return;
+    }
+
+    if (selectedTime) {
+      const updatedDate = new Date(dueDate);
+
+      updatedDate.setHours(selectedTime.getHours());
+      updatedDate.setMinutes(selectedTime.getMinutes());
+      updatedDate.setSeconds(0);
+      updatedDate.setMilliseconds(0);
+
+      setDueDate(updatedDate);
+    }
   };
 
   const handleCreate = async () => {
@@ -96,18 +151,15 @@ export default function CommitteeInspectionsScreen() {
       return;
     }
 
-    if (!dueDate.trim()) {
-      Alert.alert("שגיאה", "יש להזין תאריך יעד");
+    const parsedDueDate = new Date(dueDate);
+
+    if (isNaN(parsedDueDate.getTime())) {
+      Alert.alert("שגיאה", "תאריך היעד אינו תקין");
       return;
     }
 
     try {
       setLoading(true);
-
-      const parsedDueDate = new Date(dueDate);
-      if (isNaN(parsedDueDate.getTime())) {
-        throw new Error("פורמט תאריך לא תקין");
-      }
 
       await createBuildingInspection({
         templateId: selectedTemplateId,
@@ -142,10 +194,14 @@ export default function CommitteeInspectionsScreen() {
               effectiveStatus === "SKIPPED" && styles.statusSkipped,
             ]}
           >
-            <Text style={styles.statusText}>{STATUS_LABELS[effectiveStatus] || effectiveStatus}</Text>
+            <Text style={styles.statusText}>
+              {STATUS_LABELS[effectiveStatus] || effectiveStatus}
+            </Text>
           </View>
 
-          <Text style={styles.cardTitle}>{template?.name || "ביקורת ללא שם"}</Text>
+          <Text style={styles.cardTitle}>
+            {template?.name || "ביקורת ללא שם"}
+          </Text>
         </View>
 
         <Text style={styles.cardText}>
@@ -153,11 +209,14 @@ export default function CommitteeInspectionsScreen() {
         </Text>
 
         <Text style={styles.cardText}>
-          עדיפות: {PRIORITY_LABELS[template?.priority] || template?.priority || "לא ידוע"}
+          עדיפות:{" "}
+          {PRIORITY_LABELS[template?.priority] ||
+            template?.priority ||
+            "לא ידוע"}
         </Text>
 
         <Text style={styles.cardText}>
-          עובד אחראי: {employee?.full_name || "לא שויך"}
+          עובד אחראי: {employee?.full_name || employee?.name || "לא שויך"}
         </Text>
 
         <Text style={styles.cardText}>
@@ -165,9 +224,7 @@ export default function CommitteeInspectionsScreen() {
         </Text>
 
         {item.notes ? (
-          <Text style={styles.cardText}>
-            הערות אחרונות: {item.notes}
-          </Text>
+          <Text style={styles.cardText}>הערות אחרונות: {item.notes}</Text>
         ) : null}
       </View>
     );
@@ -177,10 +234,17 @@ export default function CommitteeInspectionsScreen() {
     <SafeAreaView style={styles.safe}>
       <View style={styles.container}>
         <View style={styles.headerRow}>
-          <View style={{ flexDirection: "row-reverse", alignItems: "center", gap: 8 }}>
+          <View
+            style={{
+              flexDirection: "row-reverse",
+              alignItems: "center",
+              gap: 8,
+            }}
+          >
             <TouchableOpacity onPress={() => navigation.goBack()}>
               <ArrowRight size={24} color="#f8fafc" />
             </TouchableOpacity>
+
             <Text style={styles.header}>ביקורות תקופתיות</Text>
           </View>
 
@@ -188,16 +252,12 @@ export default function CommitteeInspectionsScreen() {
             <Text style={styles.primaryBtnText}>+ ביקורת חדשה</Text>
           </TouchableOpacity>
 
-
-
-
           <TouchableOpacity
             style={[styles.primaryBtn, { backgroundColor: "#0ea5e9" }]}
             onPress={() => navigation.navigate("BuildingCalendar")}
           >
             <Text style={styles.primaryBtnText}>לוח אירועים</Text>
           </TouchableOpacity>
-          
         </View>
 
         {loading ? (
@@ -219,6 +279,7 @@ export default function CommitteeInspectionsScreen() {
               <Text style={styles.modalTitle}>הוספת ביקורת תקופתית</Text>
 
               <Text style={styles.label}>1. בחר סוג ביקורת</Text>
+
               <View style={styles.chipsWrap}>
                 {templates.map((t) => (
                   <TouchableOpacity
@@ -242,6 +303,7 @@ export default function CommitteeInspectionsScreen() {
               </View>
 
               <Text style={styles.label}>2. בחר עובד אחראי</Text>
+
               <View style={styles.chipsWrap}>
                 {employees.map((e) => (
                   <TouchableOpacity
@@ -258,24 +320,64 @@ export default function CommitteeInspectionsScreen() {
                         selectedEmployeeId === e.id && styles.chipTextSelected,
                       ]}
                     >
-                      {e.name}
+                      {e.full_name || e.name || "עובד ללא שם"}
                     </Text>
                   </TouchableOpacity>
                 ))}
               </View>
 
-              <Text style={styles.label}>3. תאריך יעד (YYYY-MM-DDTHH:MM)</Text>
-              <TextInput
-                style={styles.input}
-                value={dueDate}
-                onChangeText={setDueDate}
-                placeholder="2026-04-20T10:00"
-                placeholderTextColor="#94a3b8"
-                textAlign="right"
-              />
+              <Text style={styles.label}>3. תאריך ושעת יעד</Text>
+
+              <View style={styles.dateActionsRow}>
+                <TouchableOpacity
+                  style={styles.datePickerButton}
+                  onPress={() => setShowDatePicker(true)}
+                >
+                  <CalendarDays size={18} color="#38bdf8" />
+
+                  <Text style={styles.datePickerButtonText}>
+                    {dueDate.toLocaleDateString("he-IL")}
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.datePickerButton}
+                  onPress={() => setShowTimePicker(true)}
+                >
+                  <Clock size={18} color="#38bdf8" />
+
+                  <Text style={styles.datePickerButtonText}>
+                    {dueDate.toLocaleTimeString("he-IL", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              {showDatePicker && (
+                <DateTimePicker
+                  value={dueDate}
+                  mode="date"
+                  display="calendar"
+                  onChange={handleDateChange}
+                />
+              )}
+
+              {showTimePicker && (
+                <DateTimePicker
+                  value={dueDate}
+                  mode="time"
+                  display="clock"
+                  onChange={handleTimeChange}
+                />
+              )}
 
               <View style={styles.modalBtnsRow}>
-                <TouchableOpacity style={styles.secondaryBtn} onPress={() => setOpen(false)}>
+                <TouchableOpacity
+                  style={styles.secondaryBtn}
+                  onPress={() => setOpen(false)}
+                >
                   <Text style={styles.secondaryBtnText}>ביטול</Text>
                 </TouchableOpacity>
 
@@ -296,36 +398,44 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#0F172A",
   },
+
   container: {
     flex: 1,
     padding: 16,
     backgroundColor: "#0F172A",
   },
+
   headerRow: {
     flexDirection: "row-reverse",
     justifyContent: "space-between",
     alignItems: "center",
+    gap: 8,
   },
+
   header: {
     fontSize: 20,
     fontWeight: "800",
     color: "#f8fafc",
   },
+
   primaryBtn: {
     backgroundColor: "#2563eb",
     paddingVertical: 10,
     paddingHorizontal: 14,
     borderRadius: 12,
   },
+
   primaryBtnText: {
     color: "#fff",
     fontWeight: "800",
   },
+
   empty: {
     marginTop: 20,
     textAlign: "center",
     color: "#94a3b8",
   },
+
   card: {
     backgroundColor: "#1e293b",
     borderWidth: 1,
@@ -334,49 +444,59 @@ const styles = StyleSheet.create({
     padding: 14,
     marginBottom: 12,
   },
+
   rowBetween: {
     flexDirection: "row-reverse",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 8,
   },
+
   cardTitle: {
     color: "#f8fafc",
     fontSize: 17,
     fontWeight: "800",
     textAlign: "right",
   },
+
   cardText: {
     color: "#cbd5e1",
     textAlign: "right",
     marginTop: 5,
   },
+
   statusBadge: {
     backgroundColor: "#334155",
     borderRadius: 8,
     paddingHorizontal: 8,
     paddingVertical: 4,
   },
+
   statusCompleted: {
     backgroundColor: "#166534",
   },
+
   statusOverdue: {
     backgroundColor: "#991b1b",
   },
+
   statusSkipped: {
     backgroundColor: "#92400e",
   },
+
   statusText: {
     color: "#fff",
     fontSize: 12,
     fontWeight: "700",
   },
+
   modalBackdrop: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.7)",
     justifyContent: "center",
     padding: 16,
   },
+
   modalCard: {
     backgroundColor: "#1e293b",
     borderRadius: 16,
@@ -384,6 +504,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#334155",
   },
+
   modalTitle: {
     color: "#f8fafc",
     fontSize: 18,
@@ -391,6 +512,7 @@ const styles = StyleSheet.create({
     textAlign: "right",
     marginBottom: 10,
   },
+
   label: {
     color: "#e2e8f0",
     textAlign: "right",
@@ -398,11 +520,13 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 6,
   },
+
   chipsWrap: {
     flexDirection: "row-reverse",
     flexWrap: "wrap",
     gap: 8,
   },
+
   chip: {
     borderWidth: 1,
     borderColor: "#475569",
@@ -410,37 +534,60 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     paddingHorizontal: 10,
   },
+
   chipSelected: {
     backgroundColor: "#2563eb",
     borderColor: "#2563eb",
   },
+
   chipText: {
     color: "#e2e8f0",
     fontWeight: "700",
   },
+
   chipTextSelected: {
     color: "#fff",
   },
-  input: {
+
+  dateActionsRow: {
+    flexDirection: "row-reverse",
+    gap: 10,
+    marginTop: 4,
+  },
+
+  datePickerButton: {
+    flex: 1,
     backgroundColor: "#0f172a",
     borderWidth: 1,
     borderColor: "#334155",
     borderRadius: 10,
-    paddingHorizontal: 10,
-    paddingVertical: 10,
-    color: "#f8fafc",
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    flexDirection: "row-reverse",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
   },
+
+  datePickerButtonText: {
+    color: "#f8fafc",
+    fontWeight: "800",
+    textAlign: "center",
+  },
+
   modalBtnsRow: {
     flexDirection: "row-reverse",
     gap: 10,
     marginTop: 18,
   },
+
   secondaryBtn: {
     backgroundColor: "#334155",
     paddingVertical: 10,
     paddingHorizontal: 14,
     borderRadius: 12,
   },
+
   secondaryBtnText: {
     color: "#f8fafc",
     fontWeight: "800",
