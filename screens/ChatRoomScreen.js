@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, FlatList, TextInput, TouchableOpacity, Activity
 import Svg, { Defs, RadialGradient, Stop, Rect } from 'react-native-svg';
 import { getMessages, sendMessage, editMessage, toggleMessageReaction } from '../API/chatApi';
 import { getSupabase } from '../DataBase/supabase';
+import { markChatNotificationsAsRead } from '../API/notificationsApi';
 
 const EMOJIS = ['👍', '❤️', '😂', '😮', '😢', '👏'];
 
@@ -48,6 +49,10 @@ export default function ChatRoomScreen({ navigation, route }) {
         });
         fetchMessages();
         
+        if (user) {
+            markChatNotificationsAsRead(conversationId, user.id || user.auth_uid);
+        }
+        
         // Subscribe to real-time changes
         const supabase = getSupabase();
         const subscription = supabase
@@ -61,6 +66,9 @@ export default function ChatRoomScreen({ navigation, route }) {
                 // When a new message arrives, add it to the state (if we didn't send it, although if we sent it we might add it twice if not careful, handled below via fetch)
                 // For simplicity, re-fetch to get profile joins, or ideally join locally. Let's re-fetch for safety.
                 fetchMessages();
+                if (user) {
+                    markChatNotificationsAsRead(conversationId, user.id || user.auth_uid);
+                }
             })
             .subscribe();
 

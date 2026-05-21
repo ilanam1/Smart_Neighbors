@@ -3,6 +3,7 @@ import {
   requestEmployeeAssignment,
   respondToAssignmentRequest,
   createBuildingMaintenanceNotification,
+  markChatNotificationsAsRead,
 } from '../../../API/notificationsApi';
 import { mockSupabase } from '../../__mocks__/@supabase/supabase-js';
 
@@ -116,6 +117,32 @@ describe('notificationsApi', () => {
 
        // Since u1 is excluded, it should insert only 1 notice for u2
        expect(mockSupabase.from).toHaveBeenCalledWith('app_notifications');
+    });
+  });
+
+  describe('markChatNotificationsAsRead', () => {
+    it('updates notifications of type chat_message and conversation_id to is_read = true', async () => {
+      const mockUpdate = jest.fn().mockReturnThis();
+      const mockEq = jest.fn().mockReturnThis();
+      
+      mockSupabase.from.mockImplementation((tableName) => {
+         if (tableName === 'app_notifications') {
+            return {
+               update: mockUpdate,
+               eq: mockEq
+            };
+         }
+         return {};
+      });
+
+      await markChatNotificationsAsRead('convo1', 'user1');
+
+      expect(mockSupabase.from).toHaveBeenCalledWith('app_notifications');
+      expect(mockUpdate).toHaveBeenCalledWith({ is_read: true });
+      expect(mockEq).toHaveBeenCalledWith('recipient_id', 'user1');
+      expect(mockEq).toHaveBeenCalledWith('type', 'chat_message');
+      expect(mockEq).toHaveBeenCalledWith('related_data->>conversation_id', 'convo1');
+      expect(mockEq).toHaveBeenCalledWith('is_read', false);
     });
   });
 });

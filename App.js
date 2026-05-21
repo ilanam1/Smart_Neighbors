@@ -66,6 +66,7 @@ import AdminLoadMonitoringScreen from './screens/AdminLoadMonitoringScreen';
 import AdminEquipmentBuildingsSelectorScreen from "./screens/AdminEquipmentBuildingsSelectorScreen";
 import AdminEquipmentPopularityReportScreen from "./screens/AdminEquipmentPopularityReportScreen";
 import EmployeeMaintenanceLoadScreen from './screens/EmployeeMaintenanceLoadScreen';
+import { navigationRef } from './utils/navigation';
 
 const Stack = createNativeStackNavigator();
 
@@ -165,7 +166,7 @@ export default function App() {
       merchantIdentifier="com.smartneighbors"
     >
       <SafeAreaProvider>
-        <NavigationContainer>
+        <NavigationContainer ref={navigationRef}>
         {mfaChallengeConfig ? (
           <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name="StandaloneMfaChallenge">
@@ -197,7 +198,8 @@ export default function App() {
           </Stack.Navigator>
         ) : user && user.role !== 'admin' && user.role !== 'employee' ? (
           // --------- המשתמש מחובר ---------
-          <Stack.Navigator initialRouteName={isRecovering ? "ChangePassword" : "Home"}>
+          <>
+            <Stack.Navigator initialRouteName={isRecovering ? "ChangePassword" : "Home"}>
             <Stack.Screen
               name="Home"
               options={{ title: 'Smart Neighbors', headerShown: false }}
@@ -409,6 +411,7 @@ export default function App() {
             />
 
           </Stack.Navigator>
+          </>
         ) : user?.role === 'admin' ? (
           // --------- ADMIN ---------
           <Stack.Navigator screenOptions={{ headerShown: false }}>

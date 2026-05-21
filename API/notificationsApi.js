@@ -272,3 +272,18 @@ export async function notifyCommitteeAboutLinkPaymentCompleted({
     },
   });
 }
+
+export async function markChatNotificationsAsRead(conversationId, userId) {
+  const supabase = getSupabase();
+  const { error } = await supabase
+    .from("app_notifications")
+    .update({ is_read: true })
+    .eq("recipient_id", userId)
+    .eq("type", "chat_message")
+    .eq("related_data->>conversation_id", conversationId)
+    .eq("is_read", false);
+
+  if (error) {
+    console.error("Error marking chat notifications read:", error.message);
+  }
+}

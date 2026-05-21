@@ -9,7 +9,7 @@ import {
     ActivityIndicator,
     Alert
 } from 'react-native';
-import { Bell, X, CheckCircle, Info, CheckCheck } from 'lucide-react-native';
+import { Bell, X, CheckCircle, Info, CheckCheck, MessageSquare } from 'lucide-react-native';
 import {
     getMyNotifications,
     markNotificationAsRead,
@@ -123,6 +123,16 @@ export default function NotificationsModal({ visible, onClose, userId, navigatio
             );
 
 
+        } else if (item.type === 'chat_message') {
+            onClose();
+            navigation.navigate('ChatRoom', {
+                conversationId: item.related_data?.conversation_id,
+                chatName: item.related_data?.chat_name || 'צ\'אט',
+                chatPhotoUrl: item.related_data?.chat_photo_url || null,
+                chatUserId: item.related_data?.chat_user_id || null,
+                isGroup: item.related_data?.is_group || false,
+                user: { id: userId, auth_uid: userId }
+            });
         }
         else {
             // General notification - כבר סומן כנקרא למעלה אם היה צריך
@@ -180,6 +190,10 @@ export default function NotificationsModal({ visible, onClose, userId, navigatio
             return <CheckCircle size={20} color="#10b981" />;
         }
 
+        if (item.type === 'chat_message') {
+            return <MessageSquare size={20} color="#3b82f6" />;
+        }
+
         return <Info size={20} color="#3b82f6" />;
     };
 
@@ -219,6 +233,14 @@ export default function NotificationsModal({ visible, onClose, userId, navigatio
             return (
                 <Text style={styles.actionPrompt}>
                     לחצו לצפייה בפרטי התשלום שהושלם
+                </Text>
+            );
+        }
+
+        if (item.type === 'chat_message') {
+            return (
+                <Text style={styles.actionPrompt}>
+                    לחצו כדי לעבור לשיחה
                 </Text>
             );
         }
