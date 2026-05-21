@@ -19,7 +19,7 @@ begin
   select exists(
     select 1 from public.admins 
     where admin_number = admin_req_number 
-    and password = admin_req_password
+    and password = crypt(admin_req_password, password)
   ) into admin_exists;
 
   if not admin_exists then
@@ -38,7 +38,7 @@ begin
   values (
     target_company_id,
     emp_phone,
-    emp_password,
+    crypt(emp_password, gen_salt('bf')),
     emp_name,
     emp_phone
   )

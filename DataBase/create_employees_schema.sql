@@ -73,60 +73,60 @@ CREATE POLICY "Allow all to read service_companies"
 
 -- 1. לאה (מנקה)
 INSERT INTO public.service_employees (company_id, employee_number, password, full_name, phone)
-SELECT id, '0501111111', '12345678', 'לאה (מנקה)', '0501111111'
+SELECT id, '0501111111', crypt('12345678', gen_salt('bf')), 'לאה (מנקה)', '0501111111'
 FROM public.service_companies WHERE name = 'א.ד ניקיונות' LIMIT 1
 ON CONFLICT DO NOTHING;
 
 -- 2. סבטלנה (מנקה)
 INSERT INTO public.service_employees (company_id, employee_number, password, full_name, phone)
-SELECT id, '0502222222', '12345678', 'סבטלנה (מנקה)', '0502222222'
+SELECT id, '0502222222', crypt('12345678', gen_salt('bf')), 'סבטלנה (מנקה)', '0502222222'
 FROM public.service_companies WHERE name = 'א.ד ניקיונות' LIMIT 1
 ON CONFLICT DO NOTHING;
 
 -- 3. רוחמה (מנקה)
 INSERT INTO public.service_employees (company_id, employee_number, password, full_name, phone)
-SELECT id, '0503333333', '12345678', 'רוחמה (מנקה)', '0503333333'
+SELECT id, '0503333333', crypt('12345678', gen_salt('bf')), 'רוחמה (מנקה)', '0503333333'
 FROM public.service_companies WHERE name = 'א.ד ניקיונות' LIMIT 1
 ON CONFLICT DO NOTHING;
 
 -- 4. יוסי (חשמלאי)
 INSERT INTO public.service_employees (company_id, employee_number, password, full_name, phone)
-SELECT id, '0504444444', '12345678', 'יוסי (חשמלאי)', '0504444444'
+SELECT id, '0504444444', crypt('12345678', gen_salt('bf')), 'יוסי (חשמלאי)', '0504444444'
 FROM public.service_companies WHERE name = 'חשמל ישיר' LIMIT 1
 ON CONFLICT DO NOTHING;
 
 -- 5. מרים (מנקה)
 INSERT INTO public.service_employees (company_id, employee_number, password, full_name, phone)
-SELECT id, '0505555555', '12345678', 'מרים (מנקה)', '0505555555'
+SELECT id, '0505555555', crypt('12345678', gen_salt('bf')), 'מרים (מנקה)', '0505555555'
 FROM public.service_companies WHERE name = 'הברקה שירותי ניקיון' LIMIT 1
 ON CONFLICT DO NOTHING;
 
 -- 6. דני (חשמלאי)
 INSERT INTO public.service_employees (company_id, employee_number, password, full_name, phone)
-SELECT id, '0506666666', '12345678', 'דני (חשמלאי)', '0506666666'
+SELECT id, '0506666666', crypt('12345678', gen_salt('bf')), 'דני (חשמלאי)', '0506666666'
 FROM public.service_companies WHERE name = 'אור ופז חשמלאים' LIMIT 1
 ON CONFLICT DO NOTHING;
 
 -- 7. משה (מאבטח)
 INSERT INTO public.service_employees (company_id, employee_number, password, full_name, phone)
-SELECT id, '0507777777', '12345678', 'משה (מאבטח)', '0507777777'
+SELECT id, '0507777777', crypt('12345678', gen_salt('bf')), 'משה (מאבטח)', '0507777777'
 FROM public.service_companies WHERE name = 'השומר הבטחה' LIMIT 1
 ON CONFLICT DO NOTHING;
 
 -- 8. גיל (מאבטח)
 INSERT INTO public.service_employees (company_id, employee_number, password, full_name, phone)
-SELECT id, '0508888888', '12345678', 'גיל (מאבטח)', '0508888888'
+SELECT id, '0508888888', crypt('12345678', gen_salt('bf')), 'גיל (מאבטח)', '0508888888'
 FROM public.service_companies WHERE name = 'עין הנץ אבטחה' LIMIT 1
 ON CONFLICT DO NOTHING;
 
 -- 9. איתמר (אינסטלטור)
 INSERT INTO public.service_employees (company_id, employee_number, password, full_name, phone)
-SELECT id, '0509999999', '12345678', 'איתמר (אינסטלטור)', '0509999999'
+SELECT id, '0509999999', crypt('12345678', gen_salt('bf')), 'איתמר (אינסטלטור)', '0509999999'
 FROM public.service_companies WHERE name = 'צינורות המזרח' LIMIT 1
 ON CONFLICT DO NOTHING;
 
 -- 10. דוד (תחזוקה)
 INSERT INTO public.service_employees (company_id, employee_number, password, full_name, phone)
-SELECT id, '0501234567', '12345678', 'דוד (תחזוקה)', '0501234567'
+SELECT id, '0501234567', crypt('12345678', gen_salt('bf')), 'דוד (תחזוקה)', '0501234567'
 FROM public.service_companies WHERE name = 'אחזקות העיר' LIMIT 1
 ON CONFLICT DO NOTHING;

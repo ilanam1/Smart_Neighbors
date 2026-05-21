@@ -3,7 +3,7 @@
 
 import { getSupabase } from "../DataBase/supabase";
 import { createNotification } from "./notificationsApi";
-import ReactNativeBlobUtil from "react-native-blob-util";
+import RNFS from "react-native-fs";
 import { decode } from "base64-arraybuffer";
 
 const JOB_COMPLETION_BUCKET = "job-completion-documents";
@@ -48,13 +48,26 @@ function getFileExtension(fileName = "") {
   return parts.length > 1 ? parts.pop().toLowerCase() : "file";
 }
 
+async function getRealPath(uri) {
+  if (typeof uri === 'string' && uri.startsWith("content://")) {
+    try {
+      const stat = await RNFS.stat(uri);
+      return stat.path || uri;
+    } catch (e) {
+      return uri;
+    }
+  }
+  return uri;
+}
+
 async function uriToArrayBuffer(file) {
   if (!file?.uri) {
     throw new Error("לא נמצא נתיב לקובץ שנבחר");
   }
 
   try {
-    const base64Data = await ReactNativeBlobUtil.fs.readFile(file.uri, "base64");
+    const realPath = await getRealPath(file.uri);
+    const base64Data = await RNFS.readFile(realPath, "base64");
 
     if (!base64Data) {
       throw new Error("הקובץ שנבחר ריק או לא ניתן לקריאה");

@@ -148,11 +148,13 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
       if (!isEmail && mode === 'signin') {
         // Try Admin first
         const { data: adminData, error: adminError } = await supabase
-          .from('admins')
-          .select('*')
-          .eq('admin_number', sanitized)
-          .eq('password', password)
+          .rpc('login_admin', {
+            p_admin_number: sanitized,
+            p_password: password
+          })
           .single();
+
+        console.log("Admin Login Attempt:", { sanitized, password, adminData, adminError });
 
         if (!adminError && adminData) {
           const adminUser = { ...adminData, role: 'admin' };
@@ -162,10 +164,10 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
 
         // Try Employee if not Admin
         const { data: empData, error: empError } = await supabase
-          .from('service_employees')
-          .select('*')
-          .eq('employee_number', sanitized)
-          .eq('password', password)
+          .rpc('login_employee', {
+            p_employee_number: sanitized,
+            p_password: password
+          })
           .single();
 
         if (!empError && empData) {

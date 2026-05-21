@@ -1,3 +1,6 @@
+-- Enable pgcrypto for password hashing
+create extension if not exists pgcrypto;
+
 -- Create admins table
 create table if not exists public.admins (
   id uuid default gen_random_uuid() primary key,
@@ -21,5 +24,5 @@ create policy "Allow public read access"
 -- admin_number: 'admin123'
 -- password: 'password123'
 insert into public.admins (admin_number, password, full_name)
-values ('admin123', 'password123', 'System Administrator')
+values ('admin123', crypt('password123', gen_salt('bf')), 'System Administrator')
 on conflict (admin_number) do nothing;
