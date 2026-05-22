@@ -12,8 +12,8 @@ describe('AdminPendingCommitteesScreen', () => {
             if (rpcName === 'get_all_profiles_as_admin') {
                 return Promise.resolve({
                     data: [
-                        { id: '1', auth_uid: 'auth1', first_name: 'Boss', last_name: 'Man', is_house_committee: true, is_approved: false, building_id: 'b1' },
-                        { id: '2', auth_uid: 'auth2', first_name: 'Already', last_name: 'Approved', is_house_committee: true, is_approved: true, building_id: 'b1' }
+                        { id: '1', auth_uid: 'auth1', first_name: 'Boss', last_name: 'Man', is_house_committee: true, is_approved: false, building_id: 'b1', is_email_verified: true },
+                        { id: '2', auth_uid: 'auth2', first_name: 'Already', last_name: 'Approved', is_house_committee: true, is_approved: true, building_id: 'b1', is_email_verified: true }
                     ],
                     error: null
                 });

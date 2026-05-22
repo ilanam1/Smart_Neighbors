@@ -68,6 +68,20 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
   
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
 
+  const [emailVerificationRequired, setEmailVerificationRequired] = useState(false);
+  const [showResendBtn, setShowResendBtn] = useState(false);
+  const [resending, setResending] = useState(false);
+  const [resendMessage, setResendMessage] = useState(null);
+
+  const clearAuthStates = () => {
+    setError(null);
+    setInfo(null);
+    setEmailVerificationRequired(false);
+    setPostSignUpUser(null);
+    setShowResendBtn(false);
+    setResendMessage(null);
+  };
+
   const supabase = getSupabase();
 
   useEffect(() => {
@@ -322,6 +336,7 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
           photo_url: uploadedPhotoUrl,
         });
         // Build payload
+        const isEmailVerified = !!user.email_confirmed_at;
         const profilePayload = {
           auth_uid: user.id,
           email: sanitized,
@@ -335,6 +350,7 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
           is_house_committee: isCommittee,
           building_id: selectedBuildingId,
           is_approved: false, // Default to unapproved for Committee and Admins to vet
+          is_email_verified: isEmailVerified,
         };
 
         if (uploadedPhotoUrl) {
@@ -353,6 +369,11 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
           return;
         }
 
+        if (!isEmailVerified) {
+          setEmailVerificationRequired(true);
+          return;
+        }
+
         // Attach needs_approval immediately so App.js correctly restricts the new login
         user.needs_approval = true;
         setPostSignUpUser(user);
@@ -368,7 +389,12 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
         });
 
         if (error) {
-          setError(error.message);
+          if (error.message && error.message.toLowerCase().includes('email not confirmed')) {
+            setError('האימייל שלך טרם אומת. אנא אמת את חשבונך מהקישור שקיבלת באימייל.');
+            setShowResendBtn(true);
+          } else {
+            setError(error.message);
+          }
         } else {
           const user = data?.user || data?.session?.user || null;
           
@@ -399,6 +425,32 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
       setError(e.message || String(e));
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleResendVerification() {
+    setError(null);
+    setResendMessage(null);
+    setResending(true);
+    try {
+      const sanitized = sanitizeEmailInput(email);
+      if (!sanitized) {
+        setError('אנא הזן כתובת אימייל');
+        return;
+      }
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: sanitized,
+      });
+      if (error) {
+        setError(error.message);
+      } else {
+        setResendMessage('אימייל אימות נשלח שוב בהצלחה!');
+      }
+    } catch (e) {
+      setError(e.message || String(e));
+    } finally {
+      setResending(false);
     }
   }
 
@@ -442,200 +494,254 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
           style={{ width: '100%' }}
         >
           <View style={styles.card}>
+            {emailVerificationRequired ? (
+              <View style={{ alignItems: 'center', paddingVertical: 10 }}>
+                <Text style={styles.title}>אימות אימייל נדרש</Text>
+                
+                <Text style={{ color: '#f8fafc', fontSize: 16, textAlign: 'center', lineHeight: 24, marginVertical: 20 }}>
+                  נרשמת בהצלחה! שלחנו לך אימייל לאימות החשבון.{"\n"}
+                  אנא אמת את חשבונך מהקישור שקיבלת כדי שנוכל להעביר את בקשתך לאישור ועד הבית/אדמין.
+                </Text>
 
-          <>
-            <Text style={styles.title}>
-              {mode === 'signup' ? 'צור חשבון' : 'ברוך שובך'}
-            </Text>
-
-        {/* EXTRA FIELDS – SIGNUP ONLY */}
-        {mode === 'signup' && (
-          <>
-            <TextInput placeholderTextColor="#9ca3af" placeholder="שם פרטי *" value={firstName} onChangeText={setFirstName} style={styles.input} textAlign="right" />
-            <TextInput placeholderTextColor="#9ca3af" placeholder="שם משפחה *" value={lastName} onChangeText={setLastName} style={styles.input} textAlign="right" />
-            <TextInput placeholderTextColor="#9ca3af" placeholder="מס' טלפון (10 ספרות) *" value={phone} onChangeText={setPhone} keyboardType="phone-pad" style={styles.input} textAlign="right" />
-            <TextInput placeholderTextColor="#9ca3af" placeholder="מיקוד (7 ספרות) *" value={zip} onChangeText={setZip} keyboardType="number-pad" style={styles.input} textAlign="right" />
-            <TextInput placeholderTextColor="#9ca3af" placeholder="כתובת *" value={address} onChangeText={setAddress} style={styles.input} textAlign="right" />
-            <TextInput placeholderTextColor="#9ca3af" placeholder="תעודת זהות (9 ספרות) *" value={idNumber} onChangeText={setIdNumber} keyboardType="number-pad" style={styles.input} textAlign="right" />
-            
-            {/* DATE PICKER */}
-            <Text style={{ color: '#9ca3af', textAlign: 'right', marginTop: 10, marginRight: 4 }}>תאריך לידה *</Text>
-            <TouchableOpacity 
-              style={[styles.input, { justifyContent: 'center' }]} 
-              onPress={() => setShowDatePicker(true)}
-            >
-              <Text style={{ color: '#f8fafc', textAlign: 'right' }}>
-                {dob.toLocaleDateString('he-IL')}
-              </Text>
-            </TouchableOpacity>
-
-            {showDatePicker && (
-              <View style={Platform.OS === 'ios' ? styles.iosPickerContainer : null}>
-                <DateTimePicker
-                  value={dob}
-                  mode="date"
-                  display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                  onChange={(event, selectedDate) => {
-                    if (Platform.OS === 'android') setShowDatePicker(false);
-                    if (selectedDate) setDob(selectedDate);
+                <TouchableOpacity 
+                  style={styles.primaryButtonWrapper} 
+                  onPress={() => {
+                    clearAuthStates();
+                    setMode('signin');
                   }}
-                  maximumDate={new Date()}
-                />
-                {Platform.OS === 'ios' && (
-                  <TouchableOpacity style={styles.iosDoneButton} onPress={() => setShowDatePicker(false)}>
-                    <Text style={styles.iosDoneText}>סיום</Text>
-                  </TouchableOpacity>
-                )}
+                  activeOpacity={0.9}
+                >
+                  <LinearGradient
+                    colors={['#ff0080', '#00f2ff']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={styles.gradientBorder}
+                  >
+                    <View style={styles.primaryButtonInner}>
+                      <LogIn size={20} color="#ff0080" />
+                      <Text style={styles.primaryButtonText}>חזרה למסך התחברות</Text>
+                    </View>
+                  </LinearGradient>
+                </TouchableOpacity>
               </View>
-            )}
+            ) : (
+              <>
+                <Text style={styles.title}>
+                  {mode === 'signup' ? 'צור חשבון' : 'ברוך שובך'}
+                </Text>
 
-            {/* BUILDING SELECTION */}
-            <TouchableOpacity
-              style={[styles.input, { justifyContent: 'center' }]}
-              onPress={() => setShowBuildingModal(true)}
-            >
-              <Text style={{ color: selectedBuildingId ? '#f8fafc' : '#9ca3af', textAlign: 'right' }}>
-                {selectedBuildingId
-                  ? buildings.find(b => b.id === selectedBuildingId)?.name || 'נבחר'
-                  : 'בחר בניין *'}
-              </Text>
-            </TouchableOpacity>
+                {/* EXTRA FIELDS – SIGNUP ONLY */}
+                {mode === 'signup' && (
+                  <>
+                    <TextInput placeholderTextColor="#9ca3af" placeholder="שם פרטי *" value={firstName} onChangeText={setFirstName} style={styles.input} textAlign="right" />
+                    <TextInput placeholderTextColor="#9ca3af" placeholder="שם משפחה *" value={lastName} onChangeText={setLastName} style={styles.input} textAlign="right" />
+                    <TextInput placeholderTextColor="#9ca3af" placeholder="מס' טלפון (10 ספרות) *" value={phone} onChangeText={setPhone} keyboardType="phone-pad" style={styles.input} textAlign="right" />
+                    <TextInput placeholderTextColor="#9ca3af" placeholder="מיקוד (7 ספרות) *" value={zip} onChangeText={setZip} keyboardType="number-pad" style={styles.input} textAlign="right" />
+                    <TextInput placeholderTextColor="#9ca3af" placeholder="כתובת *" value={address} onChangeText={setAddress} style={styles.input} textAlign="right" />
+                    <TextInput placeholderTextColor="#9ca3af" placeholder="תעודת זהות (9 ספרות) *" value={idNumber} onChangeText={setIdNumber} keyboardType="number-pad" style={styles.input} textAlign="right" />
+                    
+                    {/* DATE PICKER */}
+                    <Text style={{ color: '#9ca3af', textAlign: 'right', marginTop: 10, marginRight: 4 }}>תאריך לידה *</Text>
+                    <TouchableOpacity 
+                      style={[styles.input, { justifyContent: 'center' }]} 
+                      onPress={() => setShowDatePicker(true)}
+                    >
+                      <Text style={{ color: '#f8fafc', textAlign: 'right' }}>
+                        {dob.toLocaleDateString('he-IL')}
+                      </Text>
+                    </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => setIsCommittee(!isCommittee)} style={{ marginTop: 10 }}>
-              <Text style={{ fontSize: 16, color: '#e2e8f0', textAlign: 'right' }}>
-                {isCommittee ? '☑ חבר ועד בית' : '☐ חבר ועד בית'}
-              </Text>
-            </TouchableOpacity>
+                    {showDatePicker && (
+                      <View style={Platform.OS === 'ios' ? styles.iosPickerContainer : null}>
+                        <DateTimePicker
+                          value={dob}
+                          mode="date"
+                          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                          onChange={(event, selectedDate) => {
+                            if (Platform.OS === 'android') setShowDatePicker(false);
+                            if (selectedDate) setDob(selectedDate);
+                          }}
+                          maximumDate={new Date()}
+                        />
+                        {Platform.OS === 'ios' && (
+                          <TouchableOpacity style={styles.iosDoneButton} onPress={() => setShowDatePicker(false)}>
+                            <Text style={styles.iosDoneText}>סיום</Text>
+                          </TouchableOpacity>
+                        )}
+                      </View>
+                    )}
 
-            <TouchableOpacity style={styles.photoButton} onPress={handlePickPhoto}>
-              <Text style={styles.photoButtonText}>
-                {photo ? 'שנה תמונת פרופיל' : 'בחר תמונת פרופיל (רשות)'}
-              </Text>
-            </TouchableOpacity>
+                    {/* BUILDING SELECTION */}
+                    <TouchableOpacity
+                      style={[styles.input, { justifyContent: 'center' }]}
+                      onPress={() => setShowBuildingModal(true)}
+                    >
+                      <Text style={{ color: selectedBuildingId ? '#f8fafc' : '#9ca3af', textAlign: 'right' }}>
+                        {selectedBuildingId
+                          ? buildings.find(b => b.id === selectedBuildingId)?.name || 'נבחר'
+                          : 'בחר בניין *'}
+                      </Text>
+                    </TouchableOpacity>
 
-            {photo && (
-              <Text style={{ fontSize: 12, color: '#6b7280', marginTop: 4, textAlign: 'right' }}>
-                נבחר: {photo.fileName || photo.uri}
-              </Text>
-            )}
+                    <TouchableOpacity onPress={() => setIsCommittee(!isCommittee)} style={{ marginTop: 10 }}>
+                      <Text style={{ fontSize: 16, color: '#e2e8f0', textAlign: 'right' }}>
+                        {isCommittee ? '☑ חבר ועד בית' : '☐ חבר ועד בית'}
+                      </Text>
+                    </TouchableOpacity>
 
-          </>
-        )}
+                    <TouchableOpacity style={styles.photoButton} onPress={handlePickPhoto}>
+                      <Text style={styles.photoButtonText}>
+                        {photo ? 'שנה תמונת פרופיל' : 'בחר תמונת פרופיל (רשות)'}
+                      </Text>
+                    </TouchableOpacity>
 
-        {/* COMMON EMAIL + PASSWORD */}
-        <TextInput
-          placeholderTextColor="#9ca3af"
-          placeholder="אימייל / מזהה משתמש"
-          value={email}
-          onChangeText={setEmail}
-          style={styles.input}
-          keyboardType="default"
-          autoCapitalize="none"
-          textAlign="right"
-        />
-        
-        <View style={styles.passwordContainer}>
-          <TextInput 
-            placeholderTextColor="#9ca3af" 
-            placeholder="סיסמה" 
-            value={password} 
-            onChangeText={setPassword} 
-            style={[styles.input, styles.passwordInputLayout]} 
-            secureTextEntry={!showPassword} 
-            textAlign="right" 
-          />
-          <TouchableOpacity 
-            style={styles.eyeIcon} 
-            onPress={() => setShowPassword(!showPassword)}
-          >
-            {showPassword ? <EyeOff size={20} color="#9ca3af" /> : <Eye size={20} color="#9ca3af" />}
-          </TouchableOpacity>
-        </View>
+                    {photo && (
+                      <Text style={{ fontSize: 12, color: '#6b7280', marginTop: 4, textAlign: 'right' }}>
+                        נבחר: {photo.fileName || photo.uri}
+                      </Text>
+                    )}
+                  </>
+                )}
 
-        {mode === 'signup' && (
-          <View style={styles.passwordContainer}>
-            <TextInput 
-              placeholderTextColor="#9ca3af" 
-              placeholder="אימות סיסמה" 
-              value={confirmPassword} 
-              onChangeText={setConfirmPassword} 
-              style={[styles.input, styles.passwordInputLayout]} 
-              secureTextEntry={!showConfirmPassword} 
-              textAlign="right" 
-            />
-            <TouchableOpacity 
-              style={styles.eyeIcon} 
-              onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-            >
-              {showConfirmPassword ? <EyeOff size={20} color="#9ca3af" /> : <Eye size={20} color="#9ca3af" />}
-            </TouchableOpacity>
-          </View>
-        )}
+                {/* COMMON EMAIL + PASSWORD */}
+                <TextInput
+                  placeholderTextColor="#9ca3af"
+                  placeholder="אימייל / מזהה משתמש"
+                  value={email}
+                  onChangeText={setEmail}
+                  style={styles.input}
+                  keyboardType="default"
+                  autoCapitalize="none"
+                  textAlign="right"
+                />
+                
+                <View style={styles.passwordContainer}>
+                  <TextInput 
+                    placeholderTextColor="#9ca3af" 
+                    placeholder="סיסמה" 
+                    value={password} 
+                    onChangeText={setPassword} 
+                    style={[styles.input, styles.passwordInputLayout]} 
+                    secureTextEntry={!showPassword} 
+                    textAlign="right" 
+                  />
+                  <TouchableOpacity 
+                    style={styles.eyeIcon} 
+                    onPress={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <EyeOff size={20} color="#9ca3af" /> : <Eye size={20} color="#9ca3af" />}
+                  </TouchableOpacity>
+                </View>
 
-        {error ? <Text style={styles.error}>{error}</Text> : null}
+                {mode === 'signup' && (
+                  <View style={styles.passwordContainer}>
+                    <TextInput 
+                      placeholderTextColor="#9ca3af" 
+                      placeholder="אימות סיסמה" 
+                      value={confirmPassword} 
+                      onChangeText={setConfirmPassword} 
+                      style={[styles.input, styles.passwordInputLayout]} 
+                      secureTextEntry={!showConfirmPassword} 
+                      textAlign="right" 
+                    />
+                    <TouchableOpacity 
+                      style={styles.eyeIcon} 
+                      onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                    >
+                      {showConfirmPassword ? <EyeOff size={20} color="#9ca3af" /> : <Eye size={20} color="#9ca3af" />}
+                    </TouchableOpacity>
+                  </View>
+                )}
 
-        <TouchableOpacity style={styles.primaryButtonWrapper} onPress={handleAuth} disabled={loading} activeOpacity={0.9}>
-          <LinearGradient
-            colors={['#ff0080', '#00f2ff']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            style={styles.gradientBorder}
-          >
-            <View style={styles.primaryButtonInner}>
-              {loading ? <ActivityIndicator color="#ff0080" /> : (
-                <>
-                  {mode === 'signup' ? <UserPlus size={20} color="#ff0080" /> : <LogIn size={20} color="#ff0080" />}
-                  <Text style={styles.primaryButtonText}>
-                    {mode === 'signup' ? 'הרשמה' : 'התחברות'}
+                {error ? <Text style={styles.error}>{error}</Text> : null}
+
+                <TouchableOpacity style={styles.primaryButtonWrapper} onPress={handleAuth} disabled={loading} activeOpacity={0.9}>
+                  <LinearGradient
+                    colors={['#ff0080', '#00f2ff']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={styles.gradientBorder}
+                  >
+                    <View style={styles.primaryButtonInner}>
+                      {loading ? <ActivityIndicator color="#ff0080" /> : (
+                        <>
+                          {mode === 'signup' ? <UserPlus size={20} color="#ff0080" /> : <LogIn size={20} color="#ff0080" />}
+                          <Text style={styles.primaryButtonText}>
+                            {mode === 'signup' ? 'הרשמה' : 'התחברות'}
+                          </Text>
+                        </>
+                      )}
+                    </View>
+                  </LinearGradient>
+                </TouchableOpacity>
+
+                {/* RESEND BUTTON */}
+                {showResendBtn && (
+                  <View style={{ marginTop: 16, width: '100%', alignItems: 'center' }}>
+                    {resendMessage ? (
+                      <Text style={{ color: '#10b981', textAlign: 'center', fontWeight: 'bold', marginBottom: 8 }}>
+                        {resendMessage}
+                      </Text>
+                    ) : null}
+                    <TouchableOpacity 
+                      style={[styles.photoButton, { width: '100%', backgroundColor: '#0284c7' }]} 
+                      onPress={handleResendVerification}
+                      disabled={resending}
+                    >
+                      {resending ? (
+                        <ActivityIndicator color="#ffffff" />
+                      ) : (
+                        <Text style={styles.photoButtonText}>שלח שוב אימייל אימות</Text>
+                      )}
+                    </TouchableOpacity>
+                  </View>
+                )}
+
+                {/* AFTER SIGNUP */}
+                {postSignUpUser && (
+                  <View style={{ marginTop: 12, alignItems: 'center' }}>
+                    <Text style={{ color: '#f8fafc', marginBottom: 8, textAlign: 'center' }}>
+                      החשבון נוצר! לחץ למטה להמשך.
+                    </Text>
+                    <TouchableOpacity
+                      style={{ backgroundColor: '#10b981', padding: 10, borderRadius: 8 }}
+                      onPress={() => {
+                        onSignIn && onSignIn(postSignUpUser);
+                        setPostSignUpUser(null);
+                      }}
+                    >
+                      <Text style={{ color: '#fff', fontWeight: 'bold' }}>המשך לאפליקציה</Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+
+                {/* TOGGLE TO SIGNIN/SIGNUP */}
+                <TouchableOpacity onPress={() => {
+                  clearAuthStates();
+                  setMode(mode === 'signup' ? 'signin' : 'signup');
+                }}>
+                  <Text style={styles.toggleText}>
+                    {mode === 'signup' ? 'יש לך כבר חשבון? התחבר' : 'אין לך חשבון? הרשם'}
                   </Text>
-                </>
-              )}
-            </View>
-          </LinearGradient>
-        </TouchableOpacity>
+                </TouchableOpacity>
 
-        {/* DEBUG INFO OMITTED */}
+                <TouchableOpacity onPress={handleResetPassword} disabled={loading}>
+                  <Text style={[styles.toggleText, { marginTop: 8 }]}>שכחתי סיסמה?</Text>
+                </TouchableOpacity>
 
-        {/* AFTER SIGNUP */}
-        {postSignUpUser && (
-          <View style={{ marginTop: 12, alignItems: 'center' }}>
-            <Text style={{ color: '#f8fafc', marginBottom: 8, textAlign: 'center' }}>
-              החשבון נוצר! לחץ למטה להמשך.
-            </Text>
-            <TouchableOpacity
-              style={{ backgroundColor: '#10b981', padding: 10, borderRadius: 8 }}
-              onPress={() => {
-                onSignIn && onSignIn(postSignUpUser);
-                setPostSignUpUser(null);
-              }}
-            >
-              <Text style={{ color: '#fff', fontWeight: 'bold' }}>המשך לאפליקציה</Text>
-            </TouchableOpacity>
+                {/* BACK BUTTON */}
+                <TouchableOpacity
+                  onPress={() => {
+                    clearAuthStates();
+                    navigation.navigate('Welcome');
+                  }}
+                  style={styles.secondaryButton}
+                >
+                  <Text style={styles.secondaryButtonText}>חזרה לעמוד הראשי</Text>
+                </TouchableOpacity>
+              </>
+            )}
           </View>
-        )}
-
-        {/* TOGGLE TO SIGNIN/SIGNUP */}
-        <TouchableOpacity onPress={() => setMode(mode === 'signup' ? 'signin' : 'signup')}>
-          <Text style={styles.toggleText}>
-            {mode === 'signup' ? 'יש לך כבר חשבון? התחבר' : 'אין לך חשבון? הרשם'}
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={handleResetPassword} disabled={loading}>
-          <Text style={[styles.toggleText, { marginTop: 8 }]}>שכחתי סיסמה?</Text>
-        </TouchableOpacity>
-
-        {/* BACK BUTTON */}
-        <TouchableOpacity
-          onPress={() => navigation.navigate('Welcome')}
-          style={styles.secondaryButton}
-        >
-          <Text style={styles.secondaryButtonText}>חזרה לעמוד הראשי</Text>
-        </TouchableOpacity>
-
-          </>
-
-      </View>
     </ScrollView>
   </KeyboardAvoidingView>
 

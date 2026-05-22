@@ -25,7 +25,7 @@ export default function AdminPendingCommitteesScreen({ route, navigation }) {
         
         let committees = [];
         if (!profilesError && profilesData) {
-            committees = profilesData.filter(p => p.is_house_committee === true && p.is_approved === false);
+            committees = profilesData.filter(p => p.is_house_committee === true && p.is_approved === false && p.is_email_verified === true);
         }
 
         // Attempt to fetch building names
