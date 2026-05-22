@@ -135,7 +135,12 @@ export default function NotificationsModal({ visible, onClose, userId, navigatio
             });
         }
         else {
-            // General notification - כבר סומן כנקרא למעלה אם היה צריך
+            // General notification / global announcement
+            onClose();
+            Alert.alert(
+                item.title || "הודעת מערכת",
+                item.message || ""
+            );
         }
     };
 

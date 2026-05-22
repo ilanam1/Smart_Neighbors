@@ -73,6 +73,42 @@ export default function EmployeeHomeScreen({ user, onSignOut }) {
         loadStats();
     }, []);
 
+    useEffect(() => {
+        if (!user?.id) return;
+
+        console.log(`[Realtime Employee Notification Sub] Subscribing for employee: ${user.id}`);
+        const channel = supabase
+            .channel(`employee-notifications-${user.id}`)
+            .on(
+                'postgres_changes',
+                {
+                    event: 'INSERT',
+                    schema: 'public',
+                    table: 'app_notifications',
+                    filter: `recipient_id=eq.${user.id}`,
+                },
+                (payload) => {
+                    console.log('[Realtime Employee Notification Sub] Received INSERT payload:', payload);
+                    const newNotif = payload.new;
+                    if (newNotif) {
+                        setUnreadCount(prev => prev + 1);
+                        Alert.alert(
+                            newNotif.title || "התראה חדשה",
+                            newNotif.message || ""
+                        );
+                    }
+                }
+            )
+            .subscribe((status, err) => {
+                console.log(`[Realtime Employee Notification Sub] Status: ${status}`, err ? `Error: ${JSON.stringify(err)}` : '');
+            });
+
+        return () => {
+            console.log(`[Realtime Employee Notification Sub] Unsubscribing for employee: ${user.id}`);
+            supabase.removeChannel(channel);
+        };
+    }, [user?.id]);
+
     return (
         <View style={styles.container}>
             <View style={styles.header}>

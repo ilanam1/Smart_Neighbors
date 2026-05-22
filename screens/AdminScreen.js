@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert, SafeAreaView, ScrollView } from 'react-native';
-import { LogOut, ShieldCheck, PlusCircle, Building2, LayoutDashboard, Users, Briefcase } from 'lucide-react-native';
+import { LogOut, ShieldCheck, PlusCircle, Building2, LayoutDashboard, Users, Briefcase, Megaphone } from 'lucide-react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { TriangleAlert } from 'lucide-react-native';
 import { BarChart3 } from "lucide-react-native";
@@ -135,36 +135,53 @@ export default function AdminScreen({ user, onSignOut, navigation }) {
                     </View>
                 </TouchableOpacity>
 
-
+                {/* Global Notification CTA */}
                 <TouchableOpacity
-                style={styles.actionCardHalf}
-                activeOpacity={0.8}
-                onPress={() => navigation.navigate('AdminLoadMonitoring', { adminUser: user })}
+                    style={styles.globalNotificationBtn}
+                    activeOpacity={0.8}
+                    onPress={() => navigation.navigate('AdminGlobalNotification', { adminUser: user })}
                 >
-                <View style={[styles.iconCircle, { backgroundColor: 'rgba(251, 191, 36, 0.1)' }]}>
-                    <TriangleAlert size={28} color="#f59e0b" />
-                </View>
-                <Text style={styles.actionTitle}>ניטור עומסים</Text>
-                <Text style={styles.actionDesc}>בקשות, מטרדים ומשתמשים חריגים</Text>
+                    <View style={styles.globalNotificationContent}>
+                        <View style={styles.textContainerReverse}>
+                            <Text style={styles.globalNotificationTitle}>שליחת הודעה לכלל הדיירים</Text>
+                            <Text style={styles.globalNotificationSubtitle}>פרסום הודעת תחזוקה, עדכון או התראה כללית</Text>
+                        </View>
+                        <View style={styles.globalNotificationIconWrapper}>
+                            <Megaphone size={28} color="#22d3ee" />
+                        </View>
+                    </View>
                 </TouchableOpacity>
 
+                {/* Additional Actions Grid */}
+                <View style={[styles.grid, { marginTop: 16 }]}>
+                    <TouchableOpacity
+                        style={styles.actionCardHalf}
+                        activeOpacity={0.8}
+                        onPress={() => navigation.navigate('AdminLoadMonitoring', { adminUser: user })}
+                    >
+                        <View style={[styles.iconCircle, { backgroundColor: 'rgba(251, 191, 36, 0.1)' }]}>
+                            <TriangleAlert size={28} color="#f59e0b" />
+                        </View>
+                        <Text style={styles.actionTitle}>ניטור עומסים</Text>
+                        <Text style={styles.actionDesc}>בקשות, מטרדים ומשתמשים חריגים</Text>
+                    </TouchableOpacity>
 
-
-                <TouchableOpacity
-                style={styles.actionCardHalf}
-                activeOpacity={0.8}
-                onPress={() =>
-                navigation.navigate("AdminEquipmentBuildingsSelector", {
-                    adminUser: user,
-                })
-                }
-                >
-                <View style={[styles.iconCircle, { backgroundColor: "rgba(34, 211, 238, 0.1)" }]}>
-                    <BarChart3 size={28} color="#22d3ee" />
+                    <TouchableOpacity
+                        style={styles.actionCardHalf}
+                        activeOpacity={0.8}
+                        onPress={() =>
+                            navigation.navigate("AdminEquipmentBuildingsSelector", {
+                                adminUser: user,
+                            })
+                        }
+                    >
+                        <View style={[styles.iconCircle, { backgroundColor: "rgba(34, 211, 238, 0.1)" }]}>
+                            <BarChart3 size={28} color="#22d3ee" />
+                        </View>
+                        <Text style={styles.actionTitle}>דוח ציוד פופולרי</Text>
+                        <Text style={styles.actionDesc}>חיזוי ביקוש לפי השאלות</Text>
+                    </TouchableOpacity>
                 </View>
-                <Text style={styles.actionTitle}>דוח ציוד פופולרי</Text>
-                <Text style={styles.actionDesc}>חיזוי ביקוש לפי השאלות</Text>
-                </TouchableOpacity>
 
             </ScrollView>
         </SafeAreaView>
@@ -372,6 +389,38 @@ const styles = StyleSheet.create({
     addBuildingIconWrapper: {
         padding: 14,
         backgroundColor: 'rgba(16, 185, 129, 0.2)',
+        borderRadius: 20,
+    },
+    globalNotificationBtn: {
+        backgroundColor: '#0c1f38',
+        borderRadius: 24,
+        borderWidth: 2,
+        borderColor: 'rgba(34, 211, 238, 0.3)',
+        padding: 20,
+        marginTop: 16,
+        shadowColor: '#22d3ee',
+        shadowOpacity: 0.1,
+        shadowRadius: 10,
+        elevation: 4,
+    },
+    globalNotificationContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+    },
+    globalNotificationTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#22d3ee',
+        marginBottom: 2,
+    },
+    globalNotificationSubtitle: {
+        fontSize: 13,
+        color: '#94a3b8',
+    },
+    globalNotificationIconWrapper: {
+        padding: 14,
+        backgroundColor: 'rgba(34, 211, 238, 0.2)',
         borderRadius: 20,
     }
 });

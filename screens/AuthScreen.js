@@ -171,7 +171,7 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
         console.log("Admin Login Attempt:", { sanitized, password, adminData, adminError });
 
         if (!adminError && adminData) {
-          const adminUser = { ...adminData, role: 'admin' };
+          const adminUser = { ...adminData, role: 'admin', password: password };
           onSignIn && onSignIn(adminUser);
           return;
         }
@@ -185,7 +185,7 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
           .single();
 
         if (!empError && empData) {
-          const empUser = { ...empData, role: 'employee' };
+          const empUser = { ...empData, role: 'employee', password: password };
           onSignIn && onSignIn(empUser);
           return;
         }

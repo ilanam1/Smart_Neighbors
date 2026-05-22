@@ -287,3 +287,52 @@ export async function markChatNotificationsAsRead(conversationId, userId) {
     console.error("Error marking chat notifications read:", error.message);
   }
 }
+
+export async function createGlobalNotification({ adminUser, title, message }) {
+  const supabase = getSupabase();
+  const senderId = adminUser?.id || adminUser?.auth_uid || 'system';
+
+  // 1. Fetch all profiles securely via get_all_profiles_as_admin RPC
+  const { data: profiles, error: fetchError } = await supabase.rpc('get_all_profiles_as_admin', {
+    admin_req_number: adminUser?.admin_number,
+    admin_req_password: adminUser?.password
+  });
+
+  if (fetchError) {
+    console.error("Error fetching profiles as admin:", fetchError.message);
+    throw new Error("שגיאה בשליפת רשימת המשתמשים: " + fetchError.message);
+  }
+
+  if (!profiles || profiles.length === 0) {
+    return true; // No users to notify
+  }
+
+  // 2. Prepare notifications for all profiles
+  const notifications = profiles
+    .map(profile => profile.auth_uid)
+    .filter(Boolean)
+    .map(uid => ({
+      recipient_id: uid,
+      sender_id: senderId,
+      title,
+      message,
+      type: 'global_announcement',
+      related_data: { global: true }
+    }));
+
+  // 3. Insert in chunks of 100
+  const chunkSize = 100;
+  for (let i = 0; i < notifications.length; i += chunkSize) {
+    const chunk = notifications.slice(i, i + chunkSize);
+    const { error: insertError } = await supabase
+      .from('app_notifications')
+      .insert(chunk);
+
+    if (insertError) {
+      console.error("Error inserting notification chunk:", insertError.message);
+      throw new Error("שגיאה בשמירת ההתראות במסד הנתונים: " + insertError.message);
+    }
+  }
+
+  return true;
+}

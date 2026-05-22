@@ -66,6 +66,7 @@ import AdminLoadMonitoringScreen from './screens/AdminLoadMonitoringScreen';
 import AdminEquipmentBuildingsSelectorScreen from "./screens/AdminEquipmentBuildingsSelectorScreen";
 import AdminEquipmentPopularityReportScreen from "./screens/AdminEquipmentPopularityReportScreen";
 import EmployeeMaintenanceLoadScreen from './screens/EmployeeMaintenanceLoadScreen';
+import AdminGlobalNotificationScreen from './screens/AdminGlobalNotificationScreen';
 import { navigationRef } from './utils/navigation';
 
 const Stack = createNativeStackNavigator();
@@ -440,6 +441,12 @@ export default function App() {
             <Stack.Screen
               name="AdminEquipmentPopularityReport"
               component={AdminEquipmentPopularityReportScreen}
+              options={{ headerShown: false }}
+            />
+
+            <Stack.Screen
+              name="AdminGlobalNotification"
+              component={AdminGlobalNotificationScreen}
               options={{ headerShown: false }}
             />
           </Stack.Navigator>

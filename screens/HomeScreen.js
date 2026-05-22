@@ -16,6 +16,7 @@ import {
   Dimensions,
   LayoutAnimation,
   UIManager,
+  Alert,
 } from "react-native";
 
 // Enable LayoutAnimation on Android
@@ -170,6 +171,43 @@ export default function HomeScreen({ navigation, user }) {
       return () => { mounted = false; };
     }, [user?.id])
   );
+
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const supabase = getSupabase();
+    console.log(`[Realtime Notification Sub] Subscribing for user: ${user.id}`);
+    const channel = supabase
+      .channel(`new-notifications-${user.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'app_notifications',
+          filter: `recipient_id=eq.${user.id}`,
+        },
+        (payload) => {
+          console.log('[Realtime Notification Sub] Received INSERT payload:', payload);
+          const newNotif = payload.new;
+          if (newNotif) {
+            setUnreadCount((prev) => prev + 1);
+            Alert.alert(
+              newNotif.title || "התראה חדשה",
+              newNotif.message || ""
+            );
+          }
+        }
+      )
+      .subscribe((status, err) => {
+        console.log(`[Realtime Notification Sub] Status: ${status}`, err ? `Error: ${JSON.stringify(err)}` : '');
+      });
+
+    return () => {
+      console.log(`[Realtime Notification Sub] Unsubscribing for user: ${user.id}`);
+      supabase.removeChannel(channel);
+    };
+  }, [user?.id]);
 
   const handleCloseNotifications = async () => {
       setShowNotifications(false);

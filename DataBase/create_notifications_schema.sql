@@ -29,5 +29,9 @@ CREATE POLICY "Users can update their own notifications" ON public.app_notificat
     SELECT id::text FROM public.service_employees
   ));
 
+-- Enable Realtime for app_notifications
+alter publication supabase_realtime add table public.app_notifications;
+
+
 -- Create an assignment request record to ensure we don't have multiple pending assign requests.
 -- Actually, we can just use related_data to check.
