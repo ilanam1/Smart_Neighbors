@@ -68,6 +68,10 @@ import AdminEquipmentPopularityReportScreen from "./screens/AdminEquipmentPopula
 import EmployeeMaintenanceLoadScreen from './screens/EmployeeMaintenanceLoadScreen';
 import AdminGlobalNotificationScreen from './screens/AdminGlobalNotificationScreen';
 import { navigationRef } from './utils/navigation';
+import {
+  saveFcmTokenToSupabase,
+  listenToForegroundFirebaseMessages,
+} from './API/pushNotificationsApi';
 
 const Stack = createNativeStackNavigator();
 
@@ -152,6 +156,46 @@ export default function App() {
       } catch { }
     };
   }, [supabase]);
+
+
+useEffect(() => {
+  if (!user?.id) return;
+
+  let isActive = true;
+
+  async function registerPushToken() {
+    try {
+      const role = user?.role || 'user';
+
+      console.log('Registering FCM token for user:', user.id, 'role:', role);
+
+      const token = await saveFcmTokenToSupabase(user.id, role);
+
+      if (isActive && token) {
+        console.log('Push token registered successfully');
+      }
+    } catch (error) {
+      console.error('Failed to register push token:', error);
+    }
+  }
+
+  registerPushToken();
+
+  return () => {
+    isActive = false;
+  };
+}, [user?.id, user?.role]);
+
+
+    useEffect(() => {
+    const unsubscribe = listenToForegroundFirebaseMessages();
+
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
+  }, []);
 
   if (authChecking) {
     return (

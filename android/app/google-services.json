@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "84307085525",
+    "project_id": "smart-neighbors-2d2fe",
+    "storage_bucket": "smart-neighbors-2d2fe.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:84307085525:android:d9a9ad5c3f2f17257b3a5c",
+        "android_client_info": {
+          "package_name": "com.smart_neighbors"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDIeCOA7YJhCITyO_yNeHl3GU8IazhTYEA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
