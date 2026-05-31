@@ -1,14 +1,5 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Alert,
-  ActivityIndicator,
-  Modal,
-  TextInput,
-} from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Alert, ActivityIndicator, Modal, TextInput, Image, Dimensions } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
   ChevronRight,
@@ -220,7 +211,19 @@ export default function EmployeeJobRequestScreen({ route, navigation }) {
   const isAlreadyHandled = notification.related_data?.is_handled || isHandledLocally;
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={{ flex: 1, backgroundColor: 'transparent' }}>
+      <Image
+        source={require('../assets/app_internal_bg.png')}
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          width: Dimensions.get('screen').width,
+          height: Dimensions.get('screen').height,
+        }}
+        resizeMode="cover"
+      />
+      <SafeAreaView style={styles.safeArea}>
       <View style={styles.headerRow}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <ChevronRight size={28} color="#f8fafc" />
@@ -396,6 +399,7 @@ export default function EmployeeJobRequestScreen({ route, navigation }) {
         </View>
       </Modal>
     </SafeAreaView>
+    </View>
   );
 }
 

@@ -1,16 +1,7 @@
 // CreateRequestScreen.js
 
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-  ActivityIndicator,
-  Alert,
-} from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, Alert, Image, Dimensions } from 'react-native';
 import { createRequest } from '../API/requestsApi';
 
 const CATEGORIES = [
@@ -114,7 +105,19 @@ export default function CreateRequestScreen({ navigation }) {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <View style={{ flex: 1, backgroundColor: 'transparent' }}>
+      <Image
+        source={require('../assets/app_internal_bg.png')}
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          width: Dimensions.get('screen').width,
+          height: Dimensions.get('screen').height,
+        }}
+        resizeMode="cover"
+      />
+      <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.header}>פרסום בקשה חדשה</Text>
 
       <Text style={styles.label}>כותרת הבקשה *</Text>
@@ -238,6 +241,7 @@ export default function CreateRequestScreen({ navigation }) {
         הבקשה תיסגר אוטומטית לאחר {DEFAULT_EXPIRE_HOURS} שעות אם לא תטופל.
       </Text>
     </ScrollView>
+    </View>
   );
 }
 
@@ -245,7 +249,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     paddingBottom: 32,
-    backgroundColor: '#0F172A',
+    backgroundColor: 'transparent',
     flexGrow: 1,
   },
   header: {

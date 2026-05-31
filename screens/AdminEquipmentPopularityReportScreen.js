@@ -1,12 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  ActivityIndicator,
-  ScrollView,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, StyleSheet, ActivityIndicator, ScrollView, TouchableOpacity, Image, Dimensions } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { BarChart3, TrendingUp, PackageSearch } from "lucide-react-native";
 import { getEquipmentPopularityForecast } from "../API/adminEquipmentReportsApi";
@@ -46,7 +39,19 @@ export default function AdminEquipmentPopularityReportScreen({ route }) {
   const topCategory = rows?.[0];
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={{ flex: 1, backgroundColor: 'transparent' }}>
+      <Image
+        source={require('../assets/app_internal_bg.png')}
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          width: Dimensions.get('screen').width,
+          height: Dimensions.get('screen').height,
+        }}
+        resizeMode="cover"
+      />
+      <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <BarChart3 size={28} color="#22d3ee" />
@@ -143,11 +148,12 @@ export default function AdminEquipmentPopularityReportScreen({ route }) {
         )}
       </ScrollView>
     </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#051121" },
+  container: { flex: 1, backgroundColor: 'transparent' },
   content: { padding: 18, paddingBottom: 40 },
 
   header: {

@@ -10,6 +10,8 @@ import {
   Alert,
   ActivityIndicator,
   Platform,
+  Image,
+  Dimensions,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Calendar } from "react-native-calendars";
@@ -376,8 +378,20 @@ export default function BuildingCalendarScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safe}>
-      <View style={styles.container}>
+    <View style={{ flex: 1, backgroundColor: '#0F172A' }}>
+      <Image
+        source={require('../assets/app_internal_bg.png')}
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          width: Dimensions.get('screen').width,
+          height: Dimensions.get('screen').height,
+        }}
+        resizeMode="cover"
+      />
+      <SafeAreaView style={styles.safe}>
+        <View style={styles.container}>
         <View style={styles.headerRow}>
           <View style={styles.headerRight}>
             <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -603,19 +617,20 @@ export default function BuildingCalendarScreen() {
         </Modal>
       </View>
     </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: "#0F172A",
+    backgroundColor: "transparent",
   },
 
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: "#0F172A",
+    backgroundColor: "transparent",
   },
 
   headerRow: {

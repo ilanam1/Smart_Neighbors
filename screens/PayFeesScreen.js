@@ -1,14 +1,6 @@
 // screens/PayFeesScreen.js
 import React, { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ActivityIndicator,
-  Alert,
-  ScrollView,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, ScrollView, Image, Dimensions } from 'react-native';
 import { useStripe } from '@stripe/stripe-react-native';
 import { createPaymentIntent } from '../API/stripeApi';
 import {
@@ -187,7 +179,19 @@ export default function PayFeesScreen() {
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 40 }}>
+    <View style={{ flex: 1, backgroundColor: 'transparent' }}>
+      <Image
+        source={require('../assets/app_internal_bg.png')}
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          width: Dimensions.get('screen').width,
+          height: Dimensions.get('screen').height,
+        }}
+        resizeMode="cover"
+      />
+      <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 40 }}>
       {/* ─── כותרת ─────────────────────────────────────── */}
       <Text style={styles.header}>תשלום מיסי ועד הבית</Text>
       <Text style={styles.subHeader}>{formatMonthHebrew(monthYear)}</Text>
@@ -278,6 +282,7 @@ export default function PayFeesScreen() {
         </Text>
       )}
     </ScrollView>
+    </View>
   );
 }
 
@@ -285,7 +290,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: '#0F172A',
+    backgroundColor: 'transparent',
   },
   centered: {
     flex: 1,

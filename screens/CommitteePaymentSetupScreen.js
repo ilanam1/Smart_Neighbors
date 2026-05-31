@@ -1,13 +1,6 @@
 // screens/CommitteePaymentSetupScreen.js
 import React, { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  ActivityIndicator,
-} from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, Image, Dimensions } from 'react-native';
 import { getSupabase } from '../DataBase/supabase';
 
 export default function CommitteePaymentSetupScreen({ navigation }) {
@@ -99,7 +92,19 @@ export default function CommitteePaymentSetupScreen({ navigation }) {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={{ flex: 1, backgroundColor: 'transparent' }}>
+      <Image
+        source={require('../assets/app_internal_bg.png')}
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          width: Dimensions.get('screen').width,
+          height: Dimensions.get('screen').height,
+        }}
+        resizeMode="cover"
+      />
+      <View style={styles.container}>
       <Text style={styles.title}>הגדרת קישור לתשלום ועד</Text>
       <Text style={styles.helper}>
         כאן תוכל להזין קישור לתשלום (למשל ביט / פייבוקס / לינק בנקאי).{"\n"}
@@ -129,16 +134,17 @@ export default function CommitteePaymentSetupScreen({ navigation }) {
         )}
       </TouchableOpacity>
     </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  center: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#0F172A' },
+  center: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'transparent' },
   container: {
     flex: 1,
     padding: 16,
     paddingTop: 40,
-    backgroundColor: '#0F172A',
+    backgroundColor: 'transparent',
   },
   title: {
     fontSize: 22,

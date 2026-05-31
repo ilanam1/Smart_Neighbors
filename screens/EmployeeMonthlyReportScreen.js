@@ -1,14 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ActivityIndicator,
-  FlatList,
-  Alert,
-  ScrollView,
-} from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, FlatList, Alert, ScrollView, Image, Dimensions } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ChevronRight, CalendarDays, FileText, Building2, Wrench } from "lucide-react-native";
 import { useNavigation } from "@react-navigation/native";
@@ -194,7 +185,19 @@ export default function EmployeeMonthlyReportScreen({ route }) {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={{ flex: 1, backgroundColor: 'transparent' }}>
+      <Image
+        source={require('../assets/app_internal_bg.png')}
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          width: Dimensions.get('screen').width,
+          height: Dimensions.get('screen').height,
+        }}
+        resizeMode="cover"
+      />
+      <SafeAreaView style={styles.safeArea}>
       <View style={styles.headerRow}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <ChevronRight size={28} color="#f8fafc" />
@@ -317,6 +320,7 @@ export default function EmployeeMonthlyReportScreen({ route }) {
         )}
       </ScrollView>
     </SafeAreaView>
+    </View>
   );
 }
 

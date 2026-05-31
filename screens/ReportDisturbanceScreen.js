@@ -1,15 +1,6 @@
 // screens/ReportDisturbanceScreen.js
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-  ActivityIndicator,
-  Alert,
-} from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, Alert, Image, Dimensions } from 'react-native';
 import { createDisturbanceReport } from '../API/disturbancesApi';
 
 // סוגי מטרד
@@ -83,7 +74,19 @@ export default function ReportDisturbanceScreen() {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <View style={{ flex: 1, backgroundColor: 'transparent' }}>
+      <Image
+        source={require('../assets/app_internal_bg.png')}
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          width: Dimensions.get('screen').width,
+          height: Dimensions.get('screen').height,
+        }}
+        resizeMode="cover"
+      />
+      <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.header}>דיווח על מטרד</Text>
 
       <Text style={styles.label}>סוג המטרד</Text>
@@ -165,6 +168,7 @@ export default function ReportDisturbanceScreen() {
         )}
       </TouchableOpacity>
     </ScrollView>
+    </View>
   );
 }
 
@@ -172,7 +176,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     paddingBottom: 32,
-    backgroundColor: '#0F172A',
+    backgroundColor: 'transparent',
     flexGrow: 1,
   },
   header: {

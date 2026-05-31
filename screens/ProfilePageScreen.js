@@ -11,7 +11,8 @@ import {
   TouchableOpacity,
   Alert,
   Modal,
-  TextInput
+  TextInput,
+  Dimensions
 } from "react-native";
 import { getSupabase } from "../DataBase/supabase";
 import { useFocusEffect } from "@react-navigation/native";
@@ -296,167 +297,180 @@ export default function ProfilePageScreen({ navigation }) {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <ScrollView contentContainerStyle={styles.screen}>
-        {/* AVATAR */}
-        <View style={styles.avatarContainer}>
-          <TouchableOpacity onPress={handleAvatarPress} disabled={uploadingPhoto}>
-            {profile?.photo_url ? (
-              <Image source={{ uri: profile.photo_url }} style={styles.avatar} />
-            ) : (
-              <View style={styles.avatarPlaceholder}>
-                <Text style={styles.avatarInitials}>
-                  {profile?.first_name?.[0] || "?"}
+    <View style={{ flex: 1, backgroundColor: '#0F172A' }}>
+      <Image
+        source={require('../assets/app_internal_bg.png')}
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          width: Dimensions.get('screen').width,
+          height: Dimensions.get('screen').height,
+        }}
+        resizeMode="cover"
+      />
+      <SafeAreaView style={{ flex: 1 }}>
+        <ScrollView contentContainerStyle={styles.screen}>
+          {/* AVATAR */}
+          <View style={styles.avatarContainer}>
+            <TouchableOpacity onPress={handleAvatarPress} disabled={uploadingPhoto}>
+              {profile?.photo_url ? (
+                <Image source={{ uri: profile.photo_url }} style={styles.avatar} />
+              ) : (
+                <View style={styles.avatarPlaceholder}>
+                  <Text style={styles.avatarInitials}>
+                    {profile?.first_name?.[0] || "?"}
+                  </Text>
+                </View>
+              )}
+              {uploadingPhoto ? (
+                <View style={styles.avatarOverlay}>
+                  <ActivityIndicator color="#fff" />
+                </View>
+              ) : (
+                <View style={styles.editAvatarBadge}>
+                  <Camera size={16} color="#fff" />
+                </View>
+              )}
+            </TouchableOpacity>
+          </View>
+
+          {/* NAME */}
+          <Text style={styles.name}>
+            {profile?.first_name} {profile?.last_name}
+          </Text>
+
+          {/* EMAIL */}
+          <Text style={styles.email}>
+            {isUnlocked ? profile?.email : maskEmail(profile?.email)}
+          </Text>
+
+          {/* ROLE & BUILDING */}
+          <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 10, marginTop: 12 }}>
+            <View style={[styles.badge, { marginTop: 0 }]}>
+              <Text style={styles.badgeText}>
+                {profile?.is_house_committee ? "חבר ועד בית" : "דייר"}
+              </Text>
+            </View>
+            {profile?.buildings?.name && (
+              <View style={[styles.badge, { backgroundColor: '#059669', marginTop: 0 }]}>
+                <Text style={styles.badgeText}>
+                  {profile.buildings.name}
                 </Text>
               </View>
             )}
-            {uploadingPhoto ? (
-              <View style={styles.avatarOverlay}>
-                <ActivityIndicator color="#fff" />
-              </View>
-            ) : (
-              <View style={styles.editAvatarBadge}>
-                <Camera size={16} color="#fff" />
-              </View>
-            )}
-          </TouchableOpacity>
-        </View>
-
-        {/* NAME */}
-        <Text style={styles.name}>
-          {profile?.first_name} {profile?.last_name}
-        </Text>
-
-        {/* EMAIL */}
-        <Text style={styles.email}>
-          {isUnlocked ? profile?.email : maskEmail(profile?.email)}
-        </Text>
-
-        {/* ROLE & BUILDING */}
-        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 10, marginTop: 12 }}>
-          <View style={[styles.badge, { marginTop: 0 }]}>
-            <Text style={styles.badgeText}>
-              {profile?.is_house_committee ? "חבר ועד בית" : "דייר"}
-            </Text>
           </View>
-          {profile?.buildings?.name && (
-            <View style={[styles.badge, { backgroundColor: '#059669', marginTop: 0 }]}>
-              <Text style={styles.badgeText}>
-                {profile.buildings.name}
-              </Text>
+
+          {/* SECTION: PERSONAL INFO */}
+          <View style={styles.section}>
+            <View style={styles.sectionHeaderRow}>
+              <Text style={styles.sectionTitle}>פרטים אישיים</Text>
+              <TouchableOpacity onPress={() => isUnlocked ? setIsUnlocked(false) : setUnlockModalVisible(true)} style={styles.unlockToggle}>
+                {isUnlocked ? <EyeOff size={20} color="#64748b" /> : <Eye size={20} color="#3b82f6" />}
+              </TouchableOpacity>
             </View>
-          )}
-        </View>
 
-        {/* SECTION: PERSONAL INFO */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeaderRow}>
-            <Text style={styles.sectionTitle}>פרטים אישיים</Text>
-            <TouchableOpacity onPress={() => isUnlocked ? setIsUnlocked(false) : setUnlockModalVisible(true)} style={styles.unlockToggle}>
-              {isUnlocked ? <EyeOff size={20} color="#64748b" /> : <Eye size={20} color="#3b82f6" />}
-            </TouchableOpacity>
+            <ProfileRow 
+              label="תעודת זהות" 
+              value={!profile?.id_number ? "—" : (isUnlocked ? profile.id_number : maskId(profile.id_number))} 
+            />
+            <ProfileRow 
+              label="טלפון" 
+              value={!profile?.phone ? "—" : (isUnlocked ? profile.phone : maskPhone(profile.phone))} 
+            />
+            <ProfileRow
+              label="תאריך לידה"
+              value={profile?.date_of_birth ? profile.date_of_birth.split('-').reverse().join('/') : "—"}
+            />
           </View>
 
-          <ProfileRow 
-            label="תעודת זהות" 
-            value={!profile?.id_number ? "—" : (isUnlocked ? profile.id_number : maskId(profile.id_number))} 
-          />
-          <ProfileRow 
-            label="טלפון" 
-            value={!profile?.phone ? "—" : (isUnlocked ? profile.phone : maskPhone(profile.phone))} 
-          />
-          <ProfileRow
-            label="תאריך לידה"
-            value={profile?.date_of_birth ? profile.date_of_birth.split('-').reverse().join('/') : "—"}
-          />
-        </View>
+          {/* SECTION: ADDRESS */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>כתובת</Text>
 
-        {/* SECTION: ADDRESS */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>כתובת</Text>
+            <ProfileRow label="כתובת" value={profile?.address || "—"} />
+            <ProfileRow label="מיקוד" value={profile?.zip_code || "—"} />
+          </View>
 
-          <ProfileRow label="כתובת" value={profile?.address || "—"} />
-          <ProfileRow label="מיקוד" value={profile?.zip_code || "—"} />
-        </View>
+          {/* SECTION: SECURITY */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>אבטחה</Text>
 
-        {/* SECTION: SECURITY */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>אבטחה</Text>
-
-          <TouchableOpacity
-            style={styles.securityRow}
-            onPress={() => navigation.navigate("VerifyEmail")}
-          >
-            <Text style={styles.securityRowText}>שינוי סיסמה</Text>
-            <Text style={styles.securityRowArrow}>{"<"}</Text>
-          </TouchableOpacity>
-          
-          {mfaFactor ? (
             <TouchableOpacity
               style={styles.securityRow}
-              onPress={handleDisableMfa}
-              disabled={mfaLoading}
+              onPress={() => navigation.navigate("VerifyEmail")}
             >
-              <Text style={[styles.securityRowText, { color: '#ef4444' }]}>ביטול אימות דו-שלבי (2FA)</Text>
-              {mfaLoading ? <ActivityIndicator size="small" color="#ef4444" /> : <Text style={styles.securityRowArrow}>{"<"}</Text>}
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity
-              style={styles.securityRow}
-              onPress={() => navigation.navigate("MfaSetupScreen")}
-            >
-              <Text style={[styles.securityRowText, { color: '#10b981' }]}>הגדר אימות דו-שלבי (2FA)</Text>
+              <Text style={styles.securityRowText}>שינוי סיסמה</Text>
               <Text style={styles.securityRowArrow}>{"<"}</Text>
             </TouchableOpacity>
-          )}
-        </View>
-
-
-      </ScrollView>
-
-      {/* Security Check Modal */}
-      <Modal
-        visible={unlockModalVisible}
-        transparent={true}
-        animationType="fade"
-        onRequestClose={() => setUnlockModalVisible(false)}
-      >
-        <View style={styles.modalBg}>
-          <View style={styles.modalContent}>
-            <View style={styles.modalHeader}>
-              <Lock size={24} color="#f59e0b" style={{ marginRight: 8 }} />
-              <Text style={styles.modalTitle}>אימות אבטחה</Text>
-            </View>
-            <Text style={styles.modalSubtitle}>הזן את סיסמת החשבון שלך כדי לחשוף את הפרטים הרגישים.</Text>
             
-            <TextInput
-              style={styles.modalInput}
-              placeholder="סיסמה"
-              placeholderTextColor="#64748b"
-              secureTextEntry
-              value={unlockPassword}
-              onChangeText={setUnlockPassword}
-              textAlign="right"
-              autoFocus
-            />
-
-            {unlockLoading ? (
-              <ActivityIndicator size="large" color="#3b82f6" style={{ marginVertical: 10 }} />
+            {mfaFactor ? (
+              <TouchableOpacity
+                style={styles.securityRow}
+                onPress={handleDisableMfa}
+                disabled={mfaLoading}
+              >
+                <Text style={[styles.securityRowText, { color: '#ef4444' }]}>ביטול אימות דו-שלבי (2FA)</Text>
+                {mfaLoading ? <ActivityIndicator size="small" color="#ef4444" /> : <Text style={styles.securityRowArrow}>{"<"}</Text>}
+              </TouchableOpacity>
             ) : (
-              <View style={styles.modalActions}>
-                <TouchableOpacity style={[styles.modalBtn, styles.modalBtnCancel]} onPress={() => { setUnlockModalVisible(false); setUnlockPassword(''); }}>
-                  <Text style={styles.modalBtnCancelText}>ביטול</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={[styles.modalBtn, styles.modalBtnSubmit]} onPress={handleUnlockInfo}>
-                  <Text style={styles.modalBtnSubmitText}>אמת וחשוף</Text>
-                </TouchableOpacity>
-              </View>
+              <TouchableOpacity
+                style={styles.securityRow}
+                onPress={() => navigation.navigate("MfaSetupScreen")}
+              >
+                <Text style={[styles.securityRowText, { color: '#10b981' }]}>הגדר אימות דו-שלבי (2FA)</Text>
+                <Text style={styles.securityRowArrow}>{"<"}</Text>
+              </TouchableOpacity>
             )}
           </View>
-        </View>
-      </Modal>
 
-    </SafeAreaView>
+
+        </ScrollView>
+
+        {/* Security Check Modal */}
+        <Modal
+          visible={unlockModalVisible}
+          transparent={true}
+          animationType="fade"
+          onRequestClose={() => setUnlockModalVisible(false)}
+        >
+          <View style={styles.modalBg}>
+            <View style={styles.modalContent}>
+              <View style={styles.modalHeader}>
+                <Lock size={24} color="#f59e0b" style={{ marginRight: 8 }} />
+                <Text style={styles.modalTitle}>אימות אבטחה</Text>
+              </View>
+              <Text style={styles.modalSubtitle}>הזן את סיסמת החשבון שלך כדי לחשוף את הפרטים הרגישים.</Text>
+              
+              <TextInput
+                style={styles.modalInput}
+                placeholder="סיסמה"
+                placeholderTextColor="#64748b"
+                secureTextEntry
+                value={unlockPassword}
+                onChangeText={setUnlockPassword}
+                textAlign="right"
+                autoFocus
+              />
+
+              {unlockLoading ? (
+                <ActivityIndicator size="large" color="#3b82f6" style={{ marginVertical: 10 }} />
+              ) : (
+                <View style={styles.modalActions}>
+                  <TouchableOpacity style={[styles.modalBtn, styles.modalBtnCancel]} onPress={() => { setUnlockModalVisible(false); setUnlockPassword(''); }}>
+                    <Text style={styles.modalBtnCancelText}>ביטול</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={[styles.modalBtn, styles.modalBtnSubmit]} onPress={handleUnlockInfo}>
+                    <Text style={styles.modalBtnSubmitText}>אמת וחשוף</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </View>
+          </View>
+        </Modal>
+
+      </SafeAreaView>
+    </View>
   );
 }
 
@@ -476,7 +490,7 @@ const styles = StyleSheet.create({
   screen: {
     flexGrow: 1,
     padding: 24,
-    backgroundColor: "#0F172A", // dark background
+    backgroundColor: "transparent", // dark background
   },
 
   center: {

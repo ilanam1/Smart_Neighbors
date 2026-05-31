@@ -1,12 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ActivityIndicator,
-  FlatList,
-} from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, FlatList, Image, Dimensions } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Building2, ChevronLeft } from "lucide-react-native";
 import { getSupabase } from "../DataBase/supabase";
@@ -87,7 +80,19 @@ export default function AdminEquipmentBuildingsSelectorScreen({ navigation, rout
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={{ flex: 1, backgroundColor: 'transparent' }}>
+      <Image
+        source={require('../assets/app_internal_bg.png')}
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          width: Dimensions.get('screen').width,
+          height: Dimensions.get('screen').height,
+        }}
+        resizeMode="cover"
+      />
+      <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>בחירת בניין לדוח ציוד</Text>
         <Text style={styles.subtitle}>
@@ -110,13 +115,14 @@ export default function AdminEquipmentBuildingsSelectorScreen({ navigation, rout
         />
       )}
     </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#051121",
+    backgroundColor: 'transparent',
     paddingHorizontal: 18,
   },
   header: {

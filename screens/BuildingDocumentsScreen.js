@@ -11,6 +11,8 @@ import {
   Alert,
   Linking,
   SafeAreaView,
+  Image,
+  Dimensions,
 } from "react-native";
 
 import { pick, types } from "@react-native-documents/picker";
@@ -156,72 +158,85 @@ export default function BuildingDocumentsScreen({ route }) {
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        {/* כותרת מסך + כפתור חזרה במרכז */}
-        <View style={styles.header}>
-          <Text style={styles.title}>מסמכי בניין</Text>
+    <View style={{ flex: 1, backgroundColor: '#0F172A' }}>
+      <Image
+        source={require('../assets/app_internal_bg.png')}
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          width: Dimensions.get('screen').width,
+          height: Dimensions.get('screen').height,
+        }}
+        resizeMode="cover"
+      />
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.container}>
+          {/* כותרת מסך + כפתור חזרה במרכז */}
+          <View style={styles.header}>
+            <Text style={styles.title}>מסמכי בניין</Text>
 
-          <TouchableOpacity
-            onPress={() => navigation.goBack()}
-            style={styles.backBtn}
-          >
-            <Text style={styles.backText}>חזרה למסך הקודם</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* כפתור העלאה באמצע למעלה */}
-        {isCommittee && (
-          <View style={styles.uploadWrapper}>
             <TouchableOpacity
-              style={styles.uploadBtn}
-              onPress={handleUpload}
-              disabled={uploading}
+              onPress={() => navigation.goBack()}
+              style={styles.backBtn}
             >
-              {uploading ? (
-                <ActivityIndicator size="small" color="#0f172a" />
-              ) : (
-                <>
-                  <Upload size={18} color="#0f172a" />
-                  <Text style={styles.uploadText}>העלאת מסמך</Text>
-                </>
-              )}
+              <Text style={styles.backText}>חזרה למסך הקודם</Text>
             </TouchableOpacity>
           </View>
-        )}
 
-        {/* תוכן המסמכים */}
-        {loading ? (
-          <ActivityIndicator
-            size="large"
-            color="#38bdf8"
-            style={{ marginTop: 20 }}
-          />
-        ) : error ? (
-          <Text style={styles.errorText}>שגיאה: {error}</Text>
-        ) : docs.length === 0 ? (
-          <Text style={styles.emptyText}>אין עדיין מסמכים לבניין.</Text>
-        ) : (
-          <FlatList
-            data={docs}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={renderItem}
-            contentContainerStyle={{ paddingVertical: 10 }}
-          />
-        )}
-      </View>
-    </SafeAreaView>
+          {/* כפתור העלאה באמצע למעלה */}
+          {isCommittee && (
+            <View style={styles.uploadWrapper}>
+              <TouchableOpacity
+                style={styles.uploadBtn}
+                onPress={handleUpload}
+                disabled={uploading}
+              >
+                {uploading ? (
+                  <ActivityIndicator size="small" color="#0f172a" />
+                ) : (
+                  <>
+                    <Upload size={18} color="#0f172a" />
+                    <Text style={styles.uploadText}>העלאת מסמך</Text>
+                  </>
+                )}
+              </TouchableOpacity>
+            </View>
+          )}
+
+          {/* תוכן המסמכים */}
+          {loading ? (
+            <ActivityIndicator
+              size="large"
+              color="#38bdf8"
+              style={{ marginTop: 20 }}
+            />
+          ) : error ? (
+            <Text style={styles.errorText}>שגיאה: {error}</Text>
+          ) : docs.length === 0 ? (
+            <Text style={styles.emptyText}>אין עדיין מסמכים לבניין.</Text>
+          ) : (
+            <FlatList
+              data={docs}
+              keyExtractor={(item) => item.id.toString()}
+              renderItem={renderItem}
+              contentContainerStyle={{ paddingVertical: 10 }}
+            />
+          )}
+        </View>
+      </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#0F172A",
+    backgroundColor: "transparent",
   },
   container: {
     flex: 1,
-    backgroundColor: "#0F172A",
+    backgroundColor: "transparent",
     paddingHorizontal: 16,
     paddingTop: 8,
   },

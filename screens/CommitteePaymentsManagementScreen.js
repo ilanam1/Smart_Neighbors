@@ -1,18 +1,6 @@
 // screens/CommitteePaymentsManagementScreen.js
 import React, { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ActivityIndicator,
-  Alert,
-  ScrollView,
-  Platform,
-  Modal,
-  FlatList,
-  TouchableWithoutFeedback,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, ScrollView, Platform, Modal, FlatList, TouchableWithoutFeedback, Image, Dimensions } from 'react-native';
 import {
   getBuildingPaymentsForMonth,
   getBuildingWallet,
@@ -168,7 +156,19 @@ export default function CommitteePaymentsManagementScreen() {
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 40 }}>
+    <View style={{ flex: 1, backgroundColor: 'transparent' }}>
+      <Image
+        source={require('../assets/app_internal_bg.png')}
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          width: Dimensions.get('screen').width,
+          height: Dimensions.get('screen').height,
+        }}
+        resizeMode="cover"
+      />
+      <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 40 }}>
       <Text style={styles.header}>ניהול תשלומי ועד הבית</Text>
 
       {/* ═══ כרטיס קופת הבניין הכוללת ═════════════════════════ */}
@@ -320,13 +320,14 @@ export default function CommitteePaymentsManagementScreen() {
         })
       )}
     </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0F172A',
+    backgroundColor: 'transparent',
     padding: 16,
   },
   centered: {

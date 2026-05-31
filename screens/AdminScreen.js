@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, SafeAreaView, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, SafeAreaView, ScrollView, Image, Dimensions } from 'react-native';
 import { LogOut, ShieldCheck, PlusCircle, Building2, LayoutDashboard, Users, Briefcase, Megaphone } from 'lucide-react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { TriangleAlert } from 'lucide-react-native';
@@ -19,7 +19,19 @@ export default function AdminScreen({ user, onSignOut, navigation }) {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
+    <View style={{ flex: 1, backgroundColor: 'transparent' }}>
+      <Image
+        source={require('../assets/app_internal_bg.png')}
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          width: Dimensions.get('screen').width,
+          height: Dimensions.get('screen').height,
+        }}
+        resizeMode="cover"
+      />
+      <SafeAreaView style={styles.container}>
             <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
                 
                 {/* Header */}
@@ -185,13 +197,14 @@ export default function AdminScreen({ user, onSignOut, navigation }) {
 
             </ScrollView>
         </SafeAreaView>
-    );
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#051121',
+        backgroundColor: 'transparent',
     },
     content: {
         paddingHorizontal: 20,

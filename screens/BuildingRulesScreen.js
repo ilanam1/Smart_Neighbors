@@ -1,17 +1,7 @@
 // screens/BuildingRulesScreen.js
 
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ActivityIndicator,
-  TextInput,
-  ScrollView,
-  Platform,
-  StatusBar,
-} from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, TextInput, ScrollView, Platform, StatusBar, Image, Dimensions } from 'react-native';
 import { useNavigation } from "@react-navigation/native";
 import { ShieldCheck, Save, ArrowRight } from "lucide-react-native";
 
@@ -79,7 +69,19 @@ export default function BuildingRulesScreen({ route }) {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={{ flex: 1, backgroundColor: 'transparent' }}>
+      <Image
+        source={require('../assets/app_internal_bg.png')}
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          width: Dimensions.get('screen').width,
+          height: Dimensions.get('screen').height,
+        }}
+        resizeMode="cover"
+      />
+      <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
@@ -174,13 +176,14 @@ export default function BuildingRulesScreen({ route }) {
         </>
       )}
     </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#0F172A",
+    backgroundColor: 'transparent',
     paddingHorizontal: 16,
     paddingTop:
       Platform.OS === "android"

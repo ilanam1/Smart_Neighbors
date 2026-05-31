@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, Alert, Image, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChevronRight, CheckCircle, XCircle, Building, CalendarCheck } from 'lucide-react-native';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
@@ -38,7 +38,19 @@ export default function EmployeeCompletedJobsScreen({ route }) {
     };
 
     return (
-        <SafeAreaView style={styles.safeArea}>
+    <View style={{ flex: 1, backgroundColor: 'transparent' }}>
+      <Image
+        source={require('../assets/app_internal_bg.png')}
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          width: Dimensions.get('screen').width,
+          height: Dimensions.get('screen').height,
+        }}
+        resizeMode="cover"
+      />
+      <SafeAreaView style={styles.safeArea}>
             <View style={styles.headerRow}>
                 <TouchableOpacity onPress={() => navigation.goBack()}>
                     <ChevronRight size={28} color="#f8fafc" />
@@ -89,7 +101,8 @@ export default function EmployeeCompletedJobsScreen({ route }) {
                 )}
             </View>
         </SafeAreaView>
-    );
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

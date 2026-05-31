@@ -1,14 +1,5 @@
 import React, { useState } from 'react';
-import { 
-    View, 
-    Text, 
-    TextInput, 
-    StyleSheet, 
-    TouchableOpacity, 
-    Alert, 
-    ActivityIndicator,
-    ScrollView
-} from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, ActivityIndicator, ScrollView, Image, Dimensions } from 'react-native';
 import { Briefcase, MapPin, PlusCircle, ArrowRight, CheckCircle2 } from 'lucide-react-native';
 import { getSupabase } from '../DataBase/supabase';
 
@@ -60,7 +51,19 @@ export default function AdminAddCompanyScreen({ route, navigation }) {
     };
 
     return (
-        <View style={styles.container}>
+    <View style={{ flex: 1, backgroundColor: 'transparent' }}>
+      <Image
+        source={require('../assets/app_internal_bg.png')}
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          width: Dimensions.get('screen').width,
+          height: Dimensions.get('screen').height,
+        }}
+        resizeMode="cover"
+      />
+      <View style={styles.container}>
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
                     <ArrowRight size={24} color="#f8fafc" />
@@ -126,11 +129,12 @@ export default function AdminAddCompanyScreen({ route, navigation }) {
                 </TouchableOpacity>
             </ScrollView>
         </View>
-    );
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#0F172A' },
+    container: { flex: 1, backgroundColor: 'transparent' },
     header: {
         flexDirection: 'row-reverse',
         alignItems: 'center',

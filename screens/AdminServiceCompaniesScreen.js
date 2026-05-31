@@ -1,13 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { 
-    View, 
-    Text, 
-    StyleSheet, 
-    FlatList, 
-    TouchableOpacity, 
-    ActivityIndicator,
-    TextInput
-} from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, TextInput, Image, Dimensions } from 'react-native';
 import { 
     Briefcase, 
     ArrowRight, 
@@ -98,7 +90,19 @@ export default function AdminServiceCompaniesScreen({ route, navigation }) {
     );
 
     return (
-        <View style={styles.container}>
+    <View style={{ flex: 1, backgroundColor: 'transparent' }}>
+      <Image
+        source={require('../assets/app_internal_bg.png')}
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          width: Dimensions.get('screen').width,
+          height: Dimensions.get('screen').height,
+        }}
+        resizeMode="cover"
+      />
+      <View style={styles.container}>
             {/* Header */}
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtnWrapper}>
@@ -149,13 +153,14 @@ export default function AdminServiceCompaniesScreen({ route, navigation }) {
                 <Plus size={28} color="#0f172a" strokeWidth={3} />
             </TouchableOpacity>
         </View>
-    );
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#051121',
+        backgroundColor: 'transparent',
     },
     header: {
         flexDirection: 'row-reverse',

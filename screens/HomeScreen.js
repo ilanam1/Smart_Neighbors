@@ -57,7 +57,7 @@ import { getSupabase } from "../DataBase/supabase";
 import { getRecentBuildingUpdates } from "../API/buildingUpdatesApi";
 import NotificationsModal from '../components/NotificationsModal';
 import { getMyNotifications } from '../API/notificationsApi';
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('screen');
 const SPACING = 16;
 const RADIUS = 24;
 export default function HomeScreen({ navigation, user }) {
@@ -264,17 +264,21 @@ export default function HomeScreen({ navigation, user }) {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <StatusBar barStyle="light-content" />
 
-      {/* Background Decor (Simulated) */}
-      <View style={styles.bgGlowTop} />
-      <View style={styles.bgGlowBottom} />
+      {/* Background Image */}
+      <Image
+        source={require('../assets/app_internal_bg.png')}
+        style={styles.backgroundImage}
+        resizeMode="cover"
+      />
 
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
+      <SafeAreaView style={{ flex: 1 }}>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
         {/* HEADER */}
         <View style={styles.header}>
           <View style={styles.userInfo}>
@@ -686,7 +690,8 @@ export default function HomeScreen({ navigation, user }) {
           userId={user?.id} 
           navigation={navigation} 
       />
-    </SafeAreaView>
+      </SafeAreaView>
+    </View>
   );
 }
 
@@ -1131,4 +1136,11 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
 
+  backgroundImage: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    width: width,
+    height: height,
+  },
 });

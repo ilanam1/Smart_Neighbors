@@ -1,13 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  ActivityIndicator,
-  FlatList,
-  StyleSheet,
-  TouchableOpacity,
-  RefreshControl,
-} from "react-native";
+import { View, Text, ActivityIndicator, FlatList, StyleSheet, TouchableOpacity, RefreshControl, Image, Dimensions } from 'react-native';
 import { getWeeklyDisturbancePredictions } from "../API/weeklyPredictionsApi";
 
 const TYPE_LABELS = {
@@ -93,7 +85,19 @@ export default function CommitteeWeeklyForecastScreen() {
   const weekEnd = items[0]?.target_week_end;
 
   return (
-    <View style={styles.container}>
+    <View style={{ flex: 1, backgroundColor: 'transparent' }}>
+      <Image
+        source={require('../assets/app_internal_bg.png')}
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          width: Dimensions.get('screen').width,
+          height: Dimensions.get('screen').height,
+        }}
+        resizeMode="cover"
+      />
+      <View style={styles.container}>
       <View style={styles.headerBox}>
         <Text style={styles.header}>תחזית שבועית למטרדים</Text>
         <Text style={styles.subHeader}>
@@ -132,13 +136,14 @@ export default function CommitteeWeeklyForecastScreen() {
         )}
       />
     </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#0F172A",
+    backgroundColor: 'transparent',
   },
   headerBox: {
     paddingHorizontal: 16,

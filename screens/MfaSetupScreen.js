@@ -1,15 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  ActivityIndicator,
-  Alert,
-  Clipboard,
-  ScrollView,
-} from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, Alert, Clipboard, ScrollView, Image, Dimensions } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ShieldCheck, Copy, ArrowRight } from 'lucide-react-native';
@@ -98,7 +88,19 @@ export default function MfaSetupScreen({ navigation }) {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={{ flex: 1, backgroundColor: 'transparent' }}>
+      <Image
+        source={require('../assets/app_internal_bg.png')}
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          width: Dimensions.get('screen').width,
+          height: Dimensions.get('screen').height,
+        }}
+        resizeMode="cover"
+      />
+      <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
           <ArrowRight size={24} color="#f8fafc" />
@@ -129,7 +131,7 @@ export default function MfaSetupScreen({ navigation }) {
             </Text>
 
             {qrUri ? (
-              <View style={{ alignItems: 'center', marginVertical: 16, backgroundColor: '#fff', padding: 16, borderRadius: 12 }}>
+              <View style={{ alignItems: 'center', marginVertical: 16, backgroundColor: 'transparent', padding: 16, borderRadius: 12 }}>
                 <QRCode value={qrUri} size={200} />
               </View>
             ) : null}
@@ -174,11 +176,12 @@ export default function MfaSetupScreen({ navigation }) {
         )}
       </ScrollView>
     </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0f172a' },
+  container: { flex: 1, backgroundColor: 'transparent' },
   header: {
     flexDirection: 'row-reverse',
     alignItems: 'center',

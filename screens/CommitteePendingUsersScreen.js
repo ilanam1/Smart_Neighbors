@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, FlatList, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, FlatList, Alert, Image, Dimensions } from 'react-native';
 import { getSupabase } from '../DataBase/supabase';
 import { Users, XCircle, UserCheck } from 'lucide-react-native';
 
@@ -83,7 +83,19 @@ export default function CommitteePendingUsersScreen({ route, navigation }) {
     );
 
     return (
-        <View style={styles.container}>
+    <View style={{ flex: 1, backgroundColor: 'transparent' }}>
+      <Image
+        source={require('../assets/app_internal_bg.png')}
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          width: Dimensions.get('screen').width,
+          height: Dimensions.get('screen').height,
+        }}
+        resizeMode="cover"
+      />
+      <View style={styles.container}>
             <View style={styles.header}>
                 <Users size={32} color="#f59e0b" />
                 <Text style={styles.headerTitle}>אישור דיירים חדשים</Text>
@@ -101,11 +113,12 @@ export default function CommitteePendingUsersScreen({ route, navigation }) {
                 />
             )}
         </View>
-    );
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#0f172a', padding: 16 },
+    container: { flex: 1, backgroundColor: 'transparent', padding: 16 },
     header: { flexDirection: 'row-reverse', alignItems: 'center', marginBottom: 20, paddingTop: 40 },
     headerTitle: { fontSize: 24, fontWeight: 'bold', color: '#f8fafc', marginRight: 10 },
     emptyText: { color: '#94a3b8', textAlign: 'center', marginTop: 40, fontSize: 16 },

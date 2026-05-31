@@ -1,16 +1,6 @@
 // screens/BuildingUpdatesScreen.js
 import React, { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  ActivityIndicator,
-  TextInput,
-  TouchableOpacity,
-  Alert,
-  Switch,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TextInput, TouchableOpacity, Alert, Switch, Image, Dimensions } from 'react-native';
 import {
   getWeeklyBuildingUpdates,
   createBuildingUpdate,
@@ -98,7 +88,19 @@ export default function BuildingUpdatesScreen({ route }) {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={{ flex: 1, backgroundColor: 'transparent' }}>
+      <Image
+        source={require('../assets/app_internal_bg.png')}
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          width: Dimensions.get('screen').width,
+          height: Dimensions.get('screen').height,
+        }}
+        resizeMode="cover"
+      />
+      <View style={styles.container}>
       <Text style={styles.title}>סיכום שבועי – עדכוני הבניין</Text>
 
       {/* אזור ניהול לוועד הבית בלבד */}
@@ -187,6 +189,7 @@ export default function BuildingUpdatesScreen({ route }) {
         ))}
       </ScrollView>
     </View>
+    </View>
   );
 }
 
@@ -194,7 +197,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: '#0F172A',
+    backgroundColor: 'transparent',
   },
   title: {
     fontSize: 20,

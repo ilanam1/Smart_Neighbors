@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, StatusBar } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, StatusBar, Image, Dimensions } from 'react-native';
 import Svg, { Defs, RadialGradient, Stop, Rect } from 'react-native-svg';
 import { getBuildingResidents, getOrCreatePrivateChat } from '../API/chatApi';
 
@@ -76,45 +76,21 @@ export default function SelectUserForChatScreen({ navigation, route }) {
     };
 
     return (
-        <View style={styles.container}>
+    <View style={{ flex: 1, backgroundColor: 'transparent' }}>
+      <Image
+        source={require('../assets/app_internal_bg.png')}
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          width: Dimensions.get('screen').width,
+          height: Dimensions.get('screen').height,
+        }}
+        resizeMode="cover"
+      />
+      <View style={styles.container}>
             <StatusBar barStyle="light-content" backgroundColor="#000000" />
             
-            {/* Background Glows */}
-            <View style={StyleSheet.absoluteFill}>
-                <Svg height="100%" width="100%">
-                <Defs>
-                    <RadialGradient
-                    id="topGlow"
-                    cx="100%"
-                    cy="0%"
-                    rx="60%"
-                    ry="40%"
-                    fx="100%"
-                    fy="0%"
-                    gradientUnits="userSpaceOnUse"
-                    >
-                    <Stop offset="0" stopColor="#ff0080" stopOpacity="0.3" />
-                    <Stop offset="1" stopColor="#000000" stopOpacity="0" />
-                    </RadialGradient>
-                    <RadialGradient
-                    id="bottomGlow"
-                    cx="0%"
-                    cy="100%"
-                    rx="60%"
-                    ry="40%"
-                    fx="0%"
-                    fy="100%"
-                    gradientUnits="userSpaceOnUse"
-                    >
-                    <Stop offset="0" stopColor="#00f2ff" stopOpacity="0.25" />
-                    <Stop offset="1" stopColor="#000000" stopOpacity="0" />
-                    </RadialGradient>
-                </Defs>
-                <Rect x="0" y="0" width="100%" height="100%" fill="url(#topGlow)" />
-                <Rect x="0" y="0" width="100%" height="100%" fill="url(#bottomGlow)" />
-                </Svg>
-            </View>
-
             <Text style={styles.title}>בחר שכן לשיחה</Text>
             
             {loading ? (
@@ -136,13 +112,14 @@ export default function SelectUserForChatScreen({ navigation, route }) {
                 </View>
             )}
         </View>
-    );
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#0F172A',
+        backgroundColor: 'transparent',
     },
     title: {
         fontSize: 22,

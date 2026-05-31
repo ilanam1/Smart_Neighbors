@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, ActivityIndicator, Alert, Image, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowRight, Building, User, MapPin } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -41,7 +41,19 @@ export default function EmployeeAssignmentRequestScreen({ route }) {
     };
 
     return (
-        <SafeAreaView style={styles.safe}>
+    <View style={{ flex: 1, backgroundColor: 'transparent' }}>
+      <Image
+        source={require('../assets/app_internal_bg.png')}
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          width: Dimensions.get('screen').width,
+          height: Dimensions.get('screen').height,
+        }}
+        resizeMode="cover"
+      />
+      <SafeAreaView style={styles.safe}>
             <View style={styles.container}>
                 <View style={styles.header}>
                     <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
@@ -105,7 +117,8 @@ export default function EmployeeAssignmentRequestScreen({ route }) {
                 </View>
             </View>
         </SafeAreaView>
-    );
+    </View>
+  );
 }
 
 const InfoIcon = ({ size, color }) => (

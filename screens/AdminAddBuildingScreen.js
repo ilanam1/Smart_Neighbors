@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, ActivityIndicator, Image, Dimensions } from 'react-native';
 import { Building, MapPin, PlusCircle, ArrowRight } from 'lucide-react-native';
 import { getSupabase } from '../DataBase/supabase';
 
@@ -45,7 +45,19 @@ export default function AdminAddBuildingScreen({ route, navigation }) {
     };
 
     return (
-        <View style={styles.container}>
+    <View style={{ flex: 1, backgroundColor: 'transparent' }}>
+      <Image
+        source={require('../assets/app_internal_bg.png')}
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          width: Dimensions.get('screen').width,
+          height: Dimensions.get('screen').height,
+        }}
+        resizeMode="cover"
+      />
+      <View style={styles.container}>
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
                     <ArrowRight size={24} color="#f8fafc" />
@@ -109,11 +121,12 @@ export default function AdminAddBuildingScreen({ route, navigation }) {
                 </TouchableOpacity>
             </View>
         </View>
-    );
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#0F172A' },
+    container: { flex: 1, backgroundColor: 'transparent' },
     header: {
         flexDirection: 'row-reverse',
         alignItems: 'center',

@@ -1,16 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  Alert,
-} from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView, Alert, Image, Dimensions } from 'react-native';
 import LinearGradient from "react-native-linear-gradient";
 import Svg, { Defs, RadialGradient, Stop, Rect } from "react-native-svg";
 import { getSupabase } from "../DataBase/supabase";
@@ -64,25 +53,22 @@ export default function ChangePasswordScreen({ navigation }) {
   }
 
   return (
-    <>
+    <View style={{ flex: 1, backgroundColor: 'transparent' }}>
+      <Image
+        source={require('../assets/app_internal_bg.png')}
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          width: Dimensions.get('screen').width,
+          height: Dimensions.get('screen').height,
+        }}
+        resizeMode="cover"
+      />
+      <>
       <View style={StyleSheet.absoluteFill}>
-        <View style={{ flex: 1, backgroundColor: "#0F172A" }} />
-        <View style={StyleSheet.absoluteFill}>
-          <Svg height="100%" width="100%">
-            <Defs>
-              <RadialGradient id="topGlow" cx="100%" cy="0%" rx="60%" ry="40%" fx="100%" fy="0%" gradientUnits="userSpaceOnUse">
-                <Stop offset="0" stopColor="#ff0080" stopOpacity="0.3" />
-                <Stop offset="1" stopColor="#000000" stopOpacity="0" />
-              </RadialGradient>
-              <RadialGradient id="bottomGlow" cx="0%" cy="100%" rx="60%" ry="40%" fx="0%" fy="100%" gradientUnits="userSpaceOnUse">
-                <Stop offset="0" stopColor="#00f2ff" stopOpacity="0.25" />
-                <Stop offset="1" stopColor="#000000" stopOpacity="0" />
-              </RadialGradient>
-            </Defs>
-            <Rect x="0" y="0" width="100%" height="100%" fill="url(#topGlow)" />
-            <Rect x="0" y="0" width="100%" height="100%" fill="url(#bottomGlow)" />
-          </Svg>
-        </View>
+        <View style={{ flex: 1, backgroundColor: 'transparent' }} />
+        
       </View>
 
       <KeyboardAvoidingView
@@ -157,6 +143,7 @@ export default function ChangePasswordScreen({ navigation }) {
       </ScrollView>
     </KeyboardAvoidingView>
     </>
+    </View>
   );
 }
 

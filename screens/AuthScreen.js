@@ -35,7 +35,7 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -65,7 +65,7 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
   const [postSignUpUser, setPostSignUpUser] = useState(null);
 
   const [photo, setPhoto] = useState(null);
-  
+
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
 
   const [emailVerificationRequired, setEmailVerificationRequired] = useState(false);
@@ -397,14 +397,14 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
           }
         } else {
           const user = data?.user || data?.session?.user || null;
-          
+
           // Check for Approval Database
           try {
             const { data: profile } = await supabase.from('profiles').select('is_approved, is_house_committee').eq('auth_uid', user.id).single();
             if (profile && profile.is_approved === false) {
               user.needs_approval = true;
             }
-          } catch(e) {}
+          } catch (e) { }
 
           // Check for MFA
           const { data: aalData, error: aalError } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
@@ -417,7 +417,7 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
               return;
             }
           }
-          
+
           onSignIn && onSignIn(user);
         }
       }
@@ -483,11 +483,11 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
         </View>
       </View>
 
-      <KeyboardAvoidingView 
-        style={styles.container} 
+      <KeyboardAvoidingView
+        style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        <ScrollView 
+        <ScrollView
           contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center', paddingVertical: 40 }}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
@@ -497,14 +497,14 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
             {emailVerificationRequired ? (
               <View style={{ alignItems: 'center', paddingVertical: 10 }}>
                 <Text style={styles.title}>אימות אימייל נדרש</Text>
-                
+
                 <Text style={{ color: '#f8fafc', fontSize: 16, textAlign: 'center', lineHeight: 24, marginVertical: 20 }}>
                   נרשמת בהצלחה! שלחנו לך אימייל לאימות החשבון.{"\n"}
                   אנא אמת את חשבונך מהקישור שקיבלת כדי שנוכל להעביר את בקשתך לאישור ועד הבית/אדמין.
                 </Text>
 
-                <TouchableOpacity 
-                  style={styles.primaryButtonWrapper} 
+                <TouchableOpacity
+                  style={styles.primaryButtonWrapper}
                   onPress={() => {
                     clearAuthStates();
                     setMode('signin');
@@ -539,11 +539,11 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
                     <TextInput placeholderTextColor="#9ca3af" placeholder="מיקוד (7 ספרות) *" value={zip} onChangeText={setZip} keyboardType="number-pad" style={styles.input} textAlign="right" />
                     <TextInput placeholderTextColor="#9ca3af" placeholder="כתובת *" value={address} onChangeText={setAddress} style={styles.input} textAlign="right" />
                     <TextInput placeholderTextColor="#9ca3af" placeholder="תעודת זהות (9 ספרות) *" value={idNumber} onChangeText={setIdNumber} keyboardType="number-pad" style={styles.input} textAlign="right" />
-                    
+
                     {/* DATE PICKER */}
                     <Text style={{ color: '#9ca3af', textAlign: 'right', marginTop: 10, marginRight: 4 }}>תאריך לידה *</Text>
-                    <TouchableOpacity 
-                      style={[styles.input, { justifyContent: 'center' }]} 
+                    <TouchableOpacity
+                      style={[styles.input, { justifyContent: 'center' }]}
                       onPress={() => setShowDatePicker(true)}
                     >
                       <Text style={{ color: '#f8fafc', textAlign: 'right' }}>
@@ -614,19 +614,19 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
                   autoCapitalize="none"
                   textAlign="right"
                 />
-                
+
                 <View style={styles.passwordContainer}>
-                  <TextInput 
-                    placeholderTextColor="#9ca3af" 
-                    placeholder="סיסמה" 
-                    value={password} 
-                    onChangeText={setPassword} 
-                    style={[styles.input, styles.passwordInputLayout]} 
-                    secureTextEntry={!showPassword} 
-                    textAlign="right" 
+                  <TextInput
+                    placeholderTextColor="#9ca3af"
+                    placeholder="סיסמה"
+                    value={password}
+                    onChangeText={setPassword}
+                    style={[styles.input, styles.passwordInputLayout]}
+                    secureTextEntry={!showPassword}
+                    textAlign="right"
                   />
-                  <TouchableOpacity 
-                    style={styles.eyeIcon} 
+                  <TouchableOpacity
+                    style={styles.eyeIcon}
                     onPress={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? <EyeOff size={20} color="#9ca3af" /> : <Eye size={20} color="#9ca3af" />}
@@ -635,17 +635,17 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
 
                 {mode === 'signup' && (
                   <View style={styles.passwordContainer}>
-                    <TextInput 
-                      placeholderTextColor="#9ca3af" 
-                      placeholder="אימות סיסמה" 
-                      value={confirmPassword} 
-                      onChangeText={setConfirmPassword} 
-                      style={[styles.input, styles.passwordInputLayout]} 
-                      secureTextEntry={!showConfirmPassword} 
-                      textAlign="right" 
+                    <TextInput
+                      placeholderTextColor="#9ca3af"
+                      placeholder="אימות סיסמה"
+                      value={confirmPassword}
+                      onChangeText={setConfirmPassword}
+                      style={[styles.input, styles.passwordInputLayout]}
+                      secureTextEntry={!showConfirmPassword}
+                      textAlign="right"
                     />
-                    <TouchableOpacity 
-                      style={styles.eyeIcon} 
+                    <TouchableOpacity
+                      style={styles.eyeIcon}
                       onPress={() => setShowConfirmPassword(!showConfirmPassword)}
                     >
                       {showConfirmPassword ? <EyeOff size={20} color="#9ca3af" /> : <Eye size={20} color="#9ca3af" />}
@@ -683,8 +683,8 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
                         {resendMessage}
                       </Text>
                     ) : null}
-                    <TouchableOpacity 
-                      style={[styles.photoButton, { width: '100%', backgroundColor: '#0284c7' }]} 
+                    <TouchableOpacity
+                      style={[styles.photoButton, { width: '100%', backgroundColor: '#0284c7' }]}
                       onPress={handleResendVerification}
                       disabled={resending}
                     >
@@ -742,10 +742,10 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
               </>
             )}
           </View>
-    </ScrollView>
-  </KeyboardAvoidingView>
+        </ScrollView>
+      </KeyboardAvoidingView>
 
-  <Modal visible={showBuildingModal} transparent animationType="slide">
+      <Modal visible={showBuildingModal} transparent animationType="slide">
         <View style={styles.modalBg}>
           <View style={styles.modalContent}>
             <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 12, color: '#111', textAlign: 'right' }}>בחר בניין</Text>

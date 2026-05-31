@@ -7,6 +7,8 @@ import {
   StyleSheet,
   TouchableOpacity,
   Alert,
+  Image,
+  Dimensions
 } from "react-native";
 import { getOpenRequests, completeRequest } from "../API/requestsApi";
 
@@ -123,75 +125,131 @@ export default function CommitteeRequestsScreen() {
 
   if (loading) {
     return (
-      <ActivityIndicator
-        style={{ marginTop: 20 }}
-        size="large"
-        color="#38bdf8"
-      />
+      <View style={{ flex: 1, backgroundColor: '#0F172A' }}>
+        <Image
+          source={require('../assets/app_internal_bg.png')}
+          style={{
+            position: 'absolute',
+            left: 0,
+            top: 0,
+            width: Dimensions.get('screen').width,
+            height: Dimensions.get('screen').height,
+          }}
+          resizeMode="cover"
+        />
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator size="large" color="#38bdf8" />
+        </View>
+      </View>
     );
   }
 
   if (error) {
-    return <Text style={styles.error}>שגיאה: {error}</Text>;
+    return (
+      <View style={{ flex: 1, backgroundColor: '#0F172A' }}>
+        <Image
+          source={require('../assets/app_internal_bg.png')}
+          style={{
+            position: 'absolute',
+            left: 0,
+            top: 0,
+            width: Dimensions.get('screen').width,
+            height: Dimensions.get('screen').height,
+          }}
+          resizeMode="cover"
+        />
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 }}>
+          <Text style={styles.error}>שגיאה: {error}</Text>
+        </View>
+      </View>
+    );
   }
 
   if (!requests.length) {
     return (
-      <Text style={styles.empty}>
-        אין כרגע בקשות פתוחות שמיועדות לוועד הבית.
-      </Text>
+      <View style={{ flex: 1, backgroundColor: '#0F172A' }}>
+        <Image
+          source={require('../assets/app_internal_bg.png')}
+          style={{
+            position: 'absolute',
+            left: 0,
+            top: 0,
+            width: Dimensions.get('screen').width,
+            height: Dimensions.get('screen').height,
+          }}
+          resizeMode="cover"
+        />
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 }}>
+          <Text style={styles.empty}>
+            אין כרגע בקשות פתוחות שמיועדות לוועד הבית.
+          </Text>
+        </View>
+      </View>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <FlatList
-        contentContainerStyle={styles.list}
-        data={requests}
-        keyExtractor={(item) => String(item.id)}
-        renderItem={({ item }) => (
-          <View style={styles.card}>
-            <Text style={styles.title}>{item.title}</Text>
-
-            <Text style={styles.body}>{item.description}</Text>
-
-            <Text style={styles.meta}>
-              מבקש: {item.requester_name || "דייר לא ידוע"}
-            </Text>
-
-            <Text style={styles.meta}>
-              קטגוריה: {formatCategory(item.category)}
-            </Text>
-
-            <Text style={styles.meta}>
-              דחיפות: {formatUrgency(item.urgency)}
-            </Text>
-
-            <Text style={styles.meta}>
-              מיועד ל: ועד הבית בלבד
-            </Text>
-
-            <Text style={styles.meta}>
-              נוצר בתאריך: {formatDate(item.created_at)}
-            </Text>
-
-            <TouchableOpacity
-              style={[
-                styles.completeButton,
-                completingId === item.id && styles.completeButtonDisabled,
-              ]}
-              onPress={() => confirmCompleteRequest(item.id)}
-              disabled={completingId === item.id}
-            >
-              {completingId === item.id ? (
-                <ActivityIndicator size="small" color="#fff" />
-              ) : (
-                <Text style={styles.completeButtonText}>סמן כטופלה</Text>
-              )}
-            </TouchableOpacity>
-          </View>
-        )}
+    <View style={{ flex: 1, backgroundColor: '#0F172A' }}>
+      <Image
+        source={require('../assets/app_internal_bg.png')}
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          width: Dimensions.get('screen').width,
+          height: Dimensions.get('screen').height,
+        }}
+        resizeMode="cover"
       />
+      <View style={styles.container}>
+        <FlatList
+          contentContainerStyle={styles.list}
+          data={requests}
+          keyExtractor={(item) => String(item.id)}
+          renderItem={({ item }) => (
+            <View style={styles.card}>
+              <Text style={styles.title}>{item.title}</Text>
+
+              <Text style={styles.body}>{item.description}</Text>
+
+              <Text style={styles.meta}>
+                מבקש: {item.requester_name || "דייר לא ידוע"}
+              </Text>
+
+              <Text style={styles.meta}>
+                קטגוריה: {formatCategory(item.category)}
+              </Text>
+
+              <Text style={styles.meta}>
+                דחיפות: {formatUrgency(item.urgency)}
+              </Text>
+
+              <Text style={styles.meta}>
+                מיועד ל: ועד הבית בלבד
+              </Text>
+
+              <Text style={styles.meta}>
+                נוצר בתאריך: {formatDate(item.created_at)}
+              </Text>
+
+              <TouchableOpacity
+                style={[
+                  styles.completeButton,
+                  completingId === item.id && styles.completeButtonDisabled,
+                ]}
+                onPress={() => confirmCompleteRequest(item.id)}
+                disabled={completingId === item.id}
+              >
+                {completingId === item.id ? (
+                  <ActivityIndicator size="small" color="#fff" />
+                ) : (
+                  <Text style={styles.completeButtonText}>סמן כטופלה</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          )}
+        />
+      </View>
     </View>
   );
 }
@@ -199,7 +257,7 @@ export default function CommitteeRequestsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#0F172A",
+    backgroundColor: "transparent",
   },
   list: {
     padding: 16,

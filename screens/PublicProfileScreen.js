@@ -1,6 +1,6 @@
 // screens/PublicProfileScreen.js
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, ActivityIndicator, Image, ScrollView, SafeAreaView, TouchableOpacity, Linking, StatusBar } from "react-native";
+import { View, Text, StyleSheet, ActivityIndicator, Image, ScrollView, SafeAreaView, TouchableOpacity, Linking, StatusBar, Dimensions } from 'react-native';
 import { getSupabase } from "../DataBase/supabase";
 import Svg, { Defs, RadialGradient, Stop, Rect } from 'react-native-svg';
 import { Phone, Mail } from "lucide-react-native";
@@ -60,20 +60,22 @@ export default function PublicProfileScreen({ navigation, route }) {
     const fullName = `${profile.first_name || ''} ${profile.last_name || ''}`.trim() || 'שכן ללא שם';
 
     return (
-        <SafeAreaView style={styles.container}>
+    <View style={{ flex: 1, backgroundColor: 'transparent' }}>
+      <Image
+        source={require('../assets/app_internal_bg.png')}
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          width: Dimensions.get('screen').width,
+          height: Dimensions.get('screen').height,
+        }}
+        resizeMode="cover"
+      />
+      <SafeAreaView style={styles.container}>
             <StatusBar barStyle="light-content" backgroundColor="#0f172a" />
             {/* Background */}
-            <View style={StyleSheet.absoluteFill}>
-                <Svg height="100%" width="100%">
-                <Defs>
-                    <RadialGradient id="topGlow" cx="100%" cy="0%" rx="60%" ry="40%" fx="100%" fy="0%" gradientUnits="userSpaceOnUse">
-                        <Stop offset="0" stopColor="#ff0080" stopOpacity="0.15" />
-                        <Stop offset="1" stopColor="#000000" stopOpacity="0" />
-                    </RadialGradient>
-                </Defs>
-                <Rect x="0" y="0" width="100%" height="100%" fill="url(#topGlow)" />
-                </Svg>
-            </View>
+            
 
             <ScrollView contentContainerStyle={styles.scrollContent}>
                 <View style={styles.avatarContainer}>
@@ -117,12 +119,13 @@ export default function PublicProfileScreen({ navigation, route }) {
                 </View>
             </ScrollView>
         </SafeAreaView>
-    );
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#0f172a' },
-    center: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#0f172a' },
+    container: { flex: 1, backgroundColor: 'transparent' },
+    center: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'transparent' },
     errorText: { color: '#ef4444', fontSize: 16 },
     scrollContent: { padding: 20, alignItems: 'center' },
     avatarContainer: { marginTop: 40, marginBottom: 20, alignItems: 'center', position: 'relative' },

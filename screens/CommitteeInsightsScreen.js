@@ -1,12 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  ActivityIndicator,
-  StyleSheet,
-  RefreshControl,
-} from "react-native";
+import { View, Text, ScrollView, ActivityIndicator, StyleSheet, RefreshControl, Image, Dimensions } from 'react-native';
 import { getBuildingDisturbanceReports } from "../API/disturbancesApi";
 import { getAllBuildingRequests } from "../API/requestsApi";
 
@@ -323,7 +316,19 @@ export default function CommitteeInsightsScreen() {
   }
 
   return (
-    <ScrollView
+    <View style={{ flex: 1, backgroundColor: 'transparent' }}>
+      <Image
+        source={require('../assets/app_internal_bg.png')}
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          width: Dimensions.get('screen').width,
+          height: Dimensions.get('screen').height,
+        }}
+        resizeMode="cover"
+      />
+      <ScrollView
       style={styles.container}
       contentContainerStyle={styles.content}
       refreshControl={
@@ -443,13 +448,14 @@ export default function CommitteeInsightsScreen() {
         })}
       />
     </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#0F172A",
+    backgroundColor: 'transparent',
   },
   content: {
     padding: 16,
@@ -457,7 +463,7 @@ const styles = StyleSheet.create({
   },
   center: {
     flex: 1,
-    backgroundColor: "#0F172A",
+    backgroundColor: 'transparent',
     alignItems: "center",
     justifyContent: "center",
     padding: 24,

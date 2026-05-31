@@ -1,14 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ActivityIndicator,
-  Image,
-  ScrollView,
-  Alert,
-} from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Image, ScrollView, Alert, Dimensions } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Package } from "lucide-react-native";
 import { getEquipmentItemById } from "../API/buildingEquipmentApi";
@@ -61,7 +52,19 @@ export default function EquipmentDetailsScreen({ navigation, route }) {
   const isOwner = item.owner_id === user?.id;
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={{ flex: 1, backgroundColor: 'transparent' }}>
+      <Image
+        source={require('../assets/app_internal_bg.png')}
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          width: Dimensions.get('screen').width,
+          height: Dimensions.get('screen').height,
+        }}
+        resizeMode="cover"
+      />
+      <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         {item.item_image_url ? (
           <Image source={{ uri: item.item_image_url }} style={styles.image} />
@@ -119,11 +122,12 @@ export default function EquipmentDetailsScreen({ navigation, route }) {
         )}
       </ScrollView>
     </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#0F172A" },
+  container: { flex: 1, backgroundColor: 'transparent' },
   content: { padding: 16, paddingBottom: 40 },
   image: {
     width: "100%",

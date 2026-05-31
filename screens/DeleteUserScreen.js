@@ -1,15 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import {
-    View,
-    Text,
-    StyleSheet,
-    FlatList,
-    ScrollView,
-    TouchableOpacity,
-    Alert,
-    ActivityIndicator,
-    TextInput
-} from 'react-native';
+import { View, Text, StyleSheet, FlatList, ScrollView, TouchableOpacity, Alert, ActivityIndicator, TextInput, Image, Dimensions } from 'react-native';
 import { Trash2, Search, ArrowRight, User, Mail, SearchX, MapPin, Building2, ShieldCheck } from 'lucide-react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { getSupabase } from '../DataBase/supabase';
@@ -184,7 +174,19 @@ export default function DeleteUserScreen({ navigation, route }) {
     );
 
     return (
-        <View style={styles.container}>
+    <View style={{ flex: 1, backgroundColor: 'transparent' }}>
+      <Image
+        source={require('../assets/app_internal_bg.png')}
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          width: Dimensions.get('screen').width,
+          height: Dimensions.get('screen').height,
+        }}
+        resizeMode="cover"
+      />
+      <View style={styles.container}>
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtnWrapper}>
                     <ArrowRight size={24} color="#cbd5e1" />
@@ -272,13 +274,14 @@ export default function DeleteUserScreen({ navigation, route }) {
                 />
             )}
         </View>
-    );
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#051121',
+        backgroundColor: 'transparent',
     },
     header: {
         flexDirection: 'row-reverse',

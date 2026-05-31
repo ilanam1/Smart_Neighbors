@@ -9,62 +9,31 @@ import {
   StatusBar,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import Svg, { Defs, RadialGradient, Stop, Rect } from 'react-native-svg';
-import { ArrowRight, UserPlus, LogIn } from 'lucide-react-native';
+import { UserPlus, LogIn } from 'lucide-react-native';
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 export default function WelcomeScreen({ navigation }) {
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#000000" />
+      <StatusBar barStyle="light-content" backgroundColor="#0A0E1A" />
 
-      {/* Background Glows */}
-      <View style={StyleSheet.absoluteFill}>
-        <Svg height="100%" width="100%">
-          <Defs>
-            <RadialGradient
-              id="topGlow"
-              cx="100%"
-              cy="0%"
-              rx="60%"
-              ry="40%"
-              fx="100%"
-              fy="0%"
-              gradientUnits="userSpaceOnUse"
-            >
-              <Stop offset="0" stopColor="#ff0080" stopOpacity="0.3" />
-              <Stop offset="1" stopColor="#000000" stopOpacity="0" />
-            </RadialGradient>
-            <RadialGradient
-              id="bottomGlow"
-              cx="0%"
-              cy="100%"
-              rx="60%"
-              ry="40%"
-              fx="0%"
-              fy="100%"
-              gradientUnits="userSpaceOnUse"
-            >
-              <Stop offset="0" stopColor="#00f2ff" stopOpacity="0.25" />
-              <Stop offset="1" stopColor="#000000" stopOpacity="0" />
-            </RadialGradient>
-          </Defs>
-          <Rect x="0" y="0" width="100%" height="100%" fill="url(#topGlow)" />
-          <Rect x="0" y="0" width="100%" height="100%" fill="url(#bottomGlow)" />
-        </Svg>
-      </View>
+      {/* Background Image */}
+      <Image
+        source={require('../assets/welcome_bg_generated.png')}
+        style={styles.backgroundImage}
+        resizeMode="cover"
+      />
 
       {/* Main Content */}
       <View style={styles.contentContainer}>
-
         {/* Top Section: Logo & Titles */}
         <View style={styles.topSection}>
           {/* Logo Container */}
           <View style={styles.logoWrapper}>
             {/* Glow behind logo */}
             <LinearGradient
-              colors={['#ff0080', '#00f2ff']}
+              colors={['#7c3aed', '#db2777']}
               style={styles.logoGlow}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
@@ -87,7 +56,7 @@ export default function WelcomeScreen({ navigation }) {
             </Text>
             {/* Divider Line */}
             <LinearGradient
-              colors={['transparent', '#ff0080', 'transparent']}
+              colors={['transparent', '#7c3aed', 'transparent']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               style={styles.divider}
@@ -96,36 +65,33 @@ export default function WelcomeScreen({ navigation }) {
           </View>
         </View>
 
-        {/* Bottom Section: Buttons */}
+        {/* Bottom Section: Buttons (Positioned significantly higher) */}
         <View style={styles.bottomSection}>
-
-          {/* Sign Up Button (Gradient Border) */}
+          {/* Sign Up Button (Vibrant Gradient) */}
           <TouchableOpacity
-            style={styles.primaryButtonWrapper}
+            style={styles.primaryButton}
             activeOpacity={0.9}
             onPress={() => navigation.navigate('Signup')}
           >
             <LinearGradient
-              colors={['#ff0080', '#00f2ff']}
+              colors={['#7c3aed', '#db2777']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
-              style={styles.gradientBorder}
+              style={styles.primaryGradient}
             >
-              <View style={styles.primaryButtonInner}>
-                <UserPlus size={20} color="#ff0080" />
-                <Text style={styles.primaryButtonText}>הרשמה</Text>
-              </View>
+              <UserPlus size={19} color="#ffffff" />
+              <Text style={styles.primaryButtonText}>הרשמה למערכת</Text>
             </LinearGradient>
           </TouchableOpacity>
 
-          {/* Login Button (Outline-ish) */}
+          {/* Login Button (Sleek Glass Outline) */}
           <TouchableOpacity
             style={styles.secondaryButton}
             activeOpacity={0.8}
             onPress={() => navigation.navigate('Login')}
           >
-            <LogIn size={20} color="#9ca3af" />
-            <Text style={styles.secondaryButtonText}>כניסה</Text>
+            <LogIn size={19} color="#00f2ff" />
+            <Text style={styles.secondaryButtonText}>כניסה לחשבון קיים</Text>
           </TouchableOpacity>
 
           {/* Forgot Password */}
@@ -135,7 +101,6 @@ export default function WelcomeScreen({ navigation }) {
           >
             <Text style={styles.forgotPasswordText}>שכחתי סיסמה</Text>
           </TouchableOpacity>
-
         </View>
       </View>
     </View>
@@ -145,41 +110,45 @@ export default function WelcomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0F172A', // Slate 900
+    backgroundColor: '#0A0E1A',
+  },
+  backgroundImage: {
+    ...StyleSheet.absoluteFillObject,
+    width: '100%',
+    height: '100%',
   },
   contentContainer: {
     flex: 1,
     paddingHorizontal: 24,
-    justifyContent: 'space-between',
-    paddingVertical: 60,
+    justifyContent: 'flex-start', // Align items to the top to control layout flow
+    paddingTop: 100,
     zIndex: 10,
   },
   topSection: {
     alignItems: 'center',
-    marginTop: 40,
   },
   logoWrapper: {
-    width: 130,
-    height: 130,
+    width: 120,
+    height: 120,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 32,
+    marginBottom: 24,
   },
   logoGlow: {
     position: 'absolute',
-    width: 132, // Reduced from 140 to make frame narrower
-    height: 132,
-    borderRadius: 45, // Adjusted for new size
+    width: 124,
+    height: 124,
+    borderRadius: 38,
     opacity: 0.6,
     transform: [{ scale: 1.05 }],
   },
   imageContainer: {
-    width: 128,
-    height: 128,
-    borderRadius: 40,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    width: 120,
+    height: 120,
+    borderRadius: 36,
+    backgroundColor: 'rgba(10, 14, 26, 0.8)',
+    borderWidth: 1.5,
+    borderColor: 'rgba(255, 255, 255, 0.15)',
     overflow: 'hidden',
     justifyContent: 'center',
     alignItems: 'center',
@@ -192,99 +161,82 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   mainTitle: {
-    fontSize: 48,
+    fontSize: 44,
     fontWeight: '900',
-    fontStyle: 'italic',
-    letterSpacing: -2,
-    lineHeight: 60,
+    letterSpacing: -1,
+    lineHeight: 52,
     textAlign: 'center',
   },
   textWhite: {
     color: '#ffffff',
   },
   textPink: {
-    color: '#ff0080', // Fallback for gradient text
+    color: '#db2777', // Magenta 600
   },
   divider: {
     height: 2,
-    width: 100,
+    width: 120,
     marginTop: 16,
-    opacity: 0.5,
+    opacity: 0.6,
   },
   subtitle: {
-    marginTop: 24,
-    color: '#9ca3af',
-    fontSize: 14,
-    letterSpacing: 4,
-    fontWeight: '300',
+    marginTop: 16,
+    color: '#94a3b8', // Slate 400
+    fontSize: 15,
+    letterSpacing: 3,
+    fontWeight: '600',
     textTransform: 'uppercase',
   },
   bottomSection: {
     width: '100%',
+    maxWidth: 350, // Slightly wider for elegance
+    alignSelf: 'center',
     alignItems: 'center',
-    gap: 16,
-    marginBottom: 100, // Increased from 20 to move buttons up
+    marginTop: 120, // Pushed back to the middle of the screen
   },
-  primaryButtonWrapper: {
+  primaryButton: {
     width: '100%',
-    maxWidth: 350,
-    height: 60,
-    borderRadius: 16,
+    height: 52, // Slightly taller
+    borderRadius: 12,
     overflow: 'hidden',
-    // Shadow simulation
-    shadowColor: '#ff0080',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.4,
-    shadowRadius: 10,
-    elevation: 5,
+    marginBottom: 12,
   },
-  gradientBorder: {
+  primaryGradient: {
     flex: 1,
-    padding: 2, // Border width
-    borderRadius: 16,
-  },
-  primaryButtonInner: {
-    flex: 1,
-    backgroundColor: '#000000', // Inner fill
-    borderRadius: 14, // Slightly less than outer
-    flexDirection: 'row',
+    flexDirection: 'row-reverse',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 12,
+    gap: 8,
   },
   primaryButtonText: {
     color: '#ffffff',
-    fontSize: 18,
-    fontWeight: 'bold',
-    letterSpacing: 0.5,
+    fontSize: 16, // Slightly larger text
+    fontWeight: '700',
   },
   secondaryButton: {
     width: '100%',
-    maxWidth: 350,
-    height: 60,
-    borderRadius: 16,
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    height: 52, // Slightly taller
+    borderRadius: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
-    flexDirection: 'row',
+    borderColor: 'rgba(0, 242, 255, 0.25)',
+    flexDirection: 'row-reverse',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 12,
+    gap: 8,
+    marginBottom: 14,
   },
   secondaryButtonText: {
-    color: '#d1d5db',
-    fontSize: 18,
-    fontWeight: '600',
+    color: '#00f2ff',
+    fontSize: 16, // Slightly larger text
+    fontWeight: '700',
   },
   forgotPasswordButton: {
-    marginTop: 8,
-    padding: 8,
+    padding: 2,
   },
   forgotPasswordText: {
-    color: '#9ca3af',
-    fontSize: 14,
+    color: '#94a3b8',
+    fontSize: 13,
     textDecorationLine: 'underline',
   },
-
 });
-

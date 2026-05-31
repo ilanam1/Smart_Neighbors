@@ -1,13 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import {
-  View,
-  Text,
-  ActivityIndicator,
-  FlatList,
-  StyleSheet,
-  RefreshControl,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, ActivityIndicator, FlatList, StyleSheet, RefreshControl, TouchableOpacity, Image, Dimensions } from 'react-native';
 import { getServiceEmployeeBuildingLoadPredictions } from "../API/serviceEmployeeMaintenanceLoadApi";
 
 const LOAD_LABELS = {
@@ -167,7 +159,19 @@ export default function EmployeeMaintenanceLoadScreen({ route }) {
   const weekEnd = items[0]?.target_week_end;
 
   return (
-    <View style={styles.container}>
+    <View style={{ flex: 1, backgroundColor: 'transparent' }}>
+      <Image
+        source={require('../assets/app_internal_bg.png')}
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          width: Dimensions.get('screen').width,
+          height: Dimensions.get('screen').height,
+        }}
+        resizeMode="cover"
+      />
+      <View style={styles.container}>
       <View style={styles.headerBox}>
         <Text style={styles.title}>תחזית עומס תחזוקתי</Text>
 
@@ -317,6 +321,7 @@ export default function EmployeeMaintenanceLoadScreen({ route }) {
         }}
       />
     </View>
+    </View>
   );
 }
 
@@ -341,7 +346,7 @@ function FilterButton({ label, active, onPress }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#0F172A",
+    backgroundColor: 'transparent',
   },
 
   centerContainer: {
