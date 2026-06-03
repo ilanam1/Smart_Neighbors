@@ -3,19 +3,21 @@ CREATE TABLE IF NOT EXISTS public.service_companies (
     id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
     name text NOT NULL,
     service_type text NOT NULL,
+    price numeric DEFAULT 0 NOT NULL,
+    balance numeric DEFAULT 0 NOT NULL,
     created_at timestamptz NOT NULL DEFAULT now()
 );
 
 -- Insert 8 fixed companies
-INSERT INTO public.service_companies (name, service_type) VALUES
-    ('א.ד ניקיונות', 'CLEANING'),
-    ('הברקה שירותי ניקיון', 'CLEANING'),
-    ('חשמל ישיר', 'ELECTRICIAN'),
-    ('אור ופז חשמלאים', 'ELECTRICIAN'),
-    ('השומר הבטחה', 'SECURITY'),
-    ('עין הנץ אבטחה', 'SECURITY'),
-    ('צינורות המזרח', 'PLUMBER'),
-    ('אחזקות העיר', 'GENERAL')
+INSERT INTO public.service_companies (name, service_type, price) VALUES
+    ('א.ד ניקיונות', 'CLEANING', 450),
+    ('הברקה שירותי ניקיון', 'CLEANING', 500),
+    ('חשמל ישיר', 'ELECTRICIAN', 350),
+    ('אור ופז חשמלאים', 'ELECTRICIAN', 400),
+    ('השומר הבטחה', 'SECURITY', 800),
+    ('עין הנץ אבטחה', 'SECURITY', 900),
+    ('צינורות המזרח', 'PLUMBER', 600),
+    ('אחזקות העיר', 'GENERAL', 550)
 ON CONFLICT DO NOTHING;
 
 -- Create service employees table (Custom Auth like admins)

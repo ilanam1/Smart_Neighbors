@@ -3,7 +3,8 @@ create or replace function public.admin_add_service_company(
   admin_req_number text,
   admin_req_password text,
   company_name text,
-  company_type text
+  company_type text,
+  company_price numeric DEFAULT 0
 )
 returns public.service_companies
 language plpgsql
@@ -25,8 +26,8 @@ begin
   end if;
 
   -- 2. Insert the company and return it
-  insert into public.service_companies (name, service_type)
-  values (company_name, company_type)
+  insert into public.service_companies (name, service_type, price)
+  values (company_name, company_type, company_price)
   returning * into new_company;
 
   return new_company;

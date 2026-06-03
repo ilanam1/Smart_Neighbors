@@ -16,6 +16,7 @@ import { getSupabase } from '../DataBase/supabase';
 
 export default function AdminCompanyDetailsScreen({ route, navigation }) {
     const { adminUser, company } = route.params || {};
+    const [companyDetails, setCompanyDetails] = useState(company);
     const [employees, setEmployees] = useState([]);
     const [loading, setLoading] = useState(true);
     
@@ -33,9 +34,25 @@ export default function AdminCompanyDetailsScreen({ route, navigation }) {
         useCallback(() => {
             if (company?.id) {
                 fetchEmployees();
+                fetchCompanyDetails();
             }
         }, [company?.id])
     );
+
+    async function fetchCompanyDetails() {
+        try {
+            const { data, error } = await supabase
+                .from('service_companies')
+                .select('*')
+                .eq('id', company.id)
+                .single();
+            if (!error && data) {
+                setCompanyDetails(data);
+            }
+        } catch (e) {
+            console.error("Error fetching company details:", e);
+        }
+    }
 
     async function fetchEmployees() {
         setLoading(true);
@@ -180,7 +197,7 @@ export default function AdminCompanyDetailsScreen({ route, navigation }) {
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtnWrapper}>
                     <ArrowRight size={24} color="#cbd5e1" />
                 </TouchableOpacity>
-                <Text style={styles.headerTitle} numberOfLines={1}>{company?.name}</Text>
+                <Text style={styles.headerTitle} numberOfLines={1}>{companyDetails?.name}</Text>
                 <View style={{ width: 40 }} />
             </View>
 
@@ -203,7 +220,9 @@ export default function AdminCompanyDetailsScreen({ route, navigation }) {
                     ListHeaderComponent={
                         <View style={styles.companyHeaderBox}>
                             <Briefcase size={32} color="#06b6d4" />
-                            <Text style={styles.companyInfoText}>ניהול עובדי {company?.name}</Text>
+                            <Text style={styles.companyInfoText}>ניהול עובדי {companyDetails?.name}</Text>
+                            <Text style={styles.companyDetailsText}>תעריף חודשי לעובד: {Number(companyDetails?.price || 0).toLocaleString('he-IL')} ₪</Text>
+                            <Text style={styles.companyDetailsText}>יתרת קופה: {Number(companyDetails?.balance || 0).toLocaleString('he-IL')} ₪</Text>
                         </View>
                     }
                 />
@@ -247,7 +266,7 @@ export default function AdminCompanyDetailsScreen({ route, navigation }) {
                         </View>
                         <Text style={styles.modalTitle}>אזהרה - מחיקת חברה</Text>
                         <Text style={styles.modalDesc}>
-                            האם אתה בטוח שברצונך למחוק את {company?.name}?
+                            האם אתה בטוח שברצונך למחוק את {companyDetails?.name}?
                             כלל העובדים בחברה ימחקו גם הם וייסרו מכל הבניינים.
                         </Text>
                         
@@ -330,6 +349,12 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: '#f8fafc',
         fontWeight: 'bold'
+    },
+    companyDetailsText: {
+        marginTop: 6,
+        fontSize: 15,
+        color: '#cbd5e1',
+        fontWeight: '500'
     },
     listContent: {
         paddingHorizontal: 16,

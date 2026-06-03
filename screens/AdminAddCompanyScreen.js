@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, ActivityIndicator, ScrollView, Image, Dimensions } from 'react-native';
-import { Briefcase, MapPin, PlusCircle, ArrowRight, CheckCircle2 } from 'lucide-react-native';
+import { Briefcase, PlusCircle, ArrowRight, CheckCircle2 } from 'lucide-react-native';
 import { getSupabase } from '../DataBase/supabase';
 
 const SERVICE_TYPES = [
@@ -14,6 +14,7 @@ const SERVICE_TYPES = [
 export default function AdminAddCompanyScreen({ route, navigation }) {
     const { adminUser } = route.params || {};
     const [name, setName] = useState('');
+    const [price, setPrice] = useState('');
     const [selectedType, setSelectedType] = useState('GENERAL');
     const [loading, setLoading] = useState(false);
     const supabase = getSupabase();
@@ -21,6 +22,12 @@ export default function AdminAddCompanyScreen({ route, navigation }) {
     const handleAddCompany = async () => {
         if (!name.trim()) {
             Alert.alert('שגיאה', 'אנא הזן את שם החברה');
+            return;
+        }
+
+        const numericPrice = Number(price);
+        if (price.trim() === '' || isNaN(numericPrice) || numericPrice < 0) {
+            Alert.alert('שגיאה', 'אנא הזן מחיר חודשי תקין (גדול או שווה ל-0)');
             return;
         }
 
@@ -35,7 +42,8 @@ export default function AdminAddCompanyScreen({ route, navigation }) {
             admin_req_number: adminUser.admin_number,
             admin_req_password: adminUser.password,
             company_name: name.trim(),
-            company_type: selectedType
+            company_type: selectedType,
+            company_price: numericPrice
         });
 
         setLoading(false);
@@ -81,6 +89,20 @@ export default function AdminAddCompanyScreen({ route, navigation }) {
                         placeholderTextColor="#64748b"
                         value={name}
                         onChangeText={setName}
+                        textAlign="right"
+                    />
+                </View>
+
+                <Text style={styles.label}>מחיר חודשי לעובד (₪)</Text>
+                <View style={styles.inputContainer}>
+                    <Briefcase size={20} color="#9ca3af" />
+                    <TextInput 
+                        style={styles.input}
+                        placeholder="לדוגמה: 500"
+                        placeholderTextColor="#64748b"
+                        value={price}
+                        onChangeText={setPrice}
+                        keyboardType="numeric"
                         textAlign="right"
                     />
                 </View>
