@@ -464,16 +464,16 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
   return (
     <>
       <View style={StyleSheet.absoluteFill}>
-        <View style={{ flex: 1, backgroundColor: '#0F172A' }} />
+        <View style={{ flex: 1, backgroundColor: '#0A0E1A' }} />
         <View style={StyleSheet.absoluteFill}>
           <Svg height="100%" width="100%">
             <Defs>
               <RadialGradient id="topGlow" cx="100%" cy="0%" rx="60%" ry="40%" fx="100%" fy="0%" gradientUnits="userSpaceOnUse">
-                <Stop offset="0" stopColor="#ff0080" stopOpacity="0.3" />
+                <Stop offset="0" stopColor="#f97316" stopOpacity="0.25" />
                 <Stop offset="1" stopColor="#000000" stopOpacity="0" />
               </RadialGradient>
               <RadialGradient id="bottomGlow" cx="0%" cy="100%" rx="60%" ry="40%" fx="0%" fy="100%" gradientUnits="userSpaceOnUse">
-                <Stop offset="0" stopColor="#00f2ff" stopOpacity="0.25" />
+                <Stop offset="0" stopColor="#f59e0b" stopOpacity="0.2" />
                 <Stop offset="1" stopColor="#000000" stopOpacity="0" />
               </RadialGradient>
             </Defs>
@@ -509,18 +509,16 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
                     clearAuthStates();
                     setMode('signin');
                   }}
-                  activeOpacity={0.9}
+                  activeOpacity={0.95}
                 >
                   <LinearGradient
-                    colors={['#ff0080', '#00f2ff']}
+                    colors={['#f97316', '#f59e0b']}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 0 }}
-                    style={styles.gradientBorder}
+                    style={styles.primaryGradient}
                   >
-                    <View style={styles.primaryButtonInner}>
-                      <LogIn size={20} color="#ff0080" />
-                      <Text style={styles.primaryButtonText}>חזרה למסך התחברות</Text>
-                    </View>
+                    <LogIn size={20} color="#ffffff" />
+                    <Text style={styles.primaryButtonText}>חזרה למסך התחברות</Text>
                   </LinearGradient>
                 </TouchableOpacity>
               </View>
@@ -533,23 +531,58 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
                 {/* EXTRA FIELDS – SIGNUP ONLY */}
                 {mode === 'signup' && (
                   <>
-                    <TextInput placeholderTextColor="#9ca3af" placeholder="שם פרטי *" value={firstName} onChangeText={setFirstName} style={styles.input} textAlign="right" />
-                    <TextInput placeholderTextColor="#9ca3af" placeholder="שם משפחה *" value={lastName} onChangeText={setLastName} style={styles.input} textAlign="right" />
-                    <TextInput placeholderTextColor="#9ca3af" placeholder="מס' טלפון (10 ספרות) *" value={phone} onChangeText={setPhone} keyboardType="phone-pad" style={styles.input} textAlign="right" />
-                    <TextInput placeholderTextColor="#9ca3af" placeholder="מיקוד (7 ספרות) *" value={zip} onChangeText={setZip} keyboardType="number-pad" style={styles.input} textAlign="right" />
-                    <TextInput placeholderTextColor="#9ca3af" placeholder="כתובת *" value={address} onChangeText={setAddress} style={styles.input} textAlign="right" />
-                    <TextInput placeholderTextColor="#9ca3af" placeholder="תעודת זהות (9 ספרות) *" value={idNumber} onChangeText={setIdNumber} keyboardType="number-pad" style={styles.input} textAlign="right" />
+                    {/* Row 1: שם פרטי + שם משפחה */}
+                    <View style={styles.row}>
+                      <View style={styles.col}>
+                        <TextInput placeholderTextColor="#9ca3af" placeholder="שם פרטי *" value={firstName} onChangeText={setFirstName} style={styles.rowInput} textAlign="right" />
+                      </View>
+                      <View style={styles.col}>
+                        <TextInput placeholderTextColor="#9ca3af" placeholder="שם משפחה *" value={lastName} onChangeText={setLastName} style={styles.rowInput} textAlign="right" />
+                      </View>
+                    </View>
 
-                    {/* DATE PICKER */}
-                    <Text style={{ color: '#9ca3af', textAlign: 'right', marginTop: 10, marginRight: 4 }}>תאריך לידה *</Text>
-                    <TouchableOpacity
-                      style={[styles.input, { justifyContent: 'center' }]}
-                      onPress={() => setShowDatePicker(true)}
-                    >
-                      <Text style={{ color: '#f8fafc', textAlign: 'right' }}>
-                        {dob.toLocaleDateString('he-IL')}
-                      </Text>
-                    </TouchableOpacity>
+                    {/* Row 2: מס' טלפון + תעודת זהות */}
+                    <View style={styles.row}>
+                      <View style={styles.col}>
+                        <TextInput placeholderTextColor="#9ca3af" placeholder="מס' טלפון *" value={phone} onChangeText={setPhone} keyboardType="phone-pad" style={styles.rowInput} textAlign="right" />
+                      </View>
+                      <View style={styles.col}>
+                        <TextInput placeholderTextColor="#9ca3af" placeholder="ת. זהות *" value={idNumber} onChangeText={setIdNumber} keyboardType="number-pad" style={styles.rowInput} textAlign="right" />
+                      </View>
+                    </View>
+
+                    {/* Row 3: כתובת + מיקוד */}
+                    <View style={styles.row}>
+                      <View style={styles.col}>
+                        <TextInput placeholderTextColor="#9ca3af" placeholder="כתובת *" value={address} onChangeText={setAddress} style={styles.rowInput} textAlign="right" />
+                      </View>
+                      <View style={styles.col}>
+                        <TextInput placeholderTextColor="#9ca3af" placeholder="מיקוד *" value={zip} onChangeText={setZip} keyboardType="number-pad" style={styles.rowInput} textAlign="right" />
+                      </View>
+                    </View>
+
+                    {/* Row 4: תאריך לידה + בחר בניין */}
+                    <View style={styles.row}>
+                      <TouchableOpacity
+                        style={[styles.col, styles.rowButton]}
+                        onPress={() => setShowDatePicker(true)}
+                      >
+                        <Text style={{ color: '#f8fafc', textAlign: 'right', fontSize: 14 }} numberOfLines={1}>
+                          {`ת. לידה: ${dob.toLocaleDateString('he-IL')}`}
+                        </Text>
+                      </TouchableOpacity>
+
+                      <TouchableOpacity
+                        style={[styles.col, styles.rowButton]}
+                        onPress={() => setShowBuildingModal(true)}
+                      >
+                        <Text style={{ color: selectedBuildingId ? '#f8fafc' : '#9ca3af', textAlign: 'right', fontSize: 14 }} numberOfLines={1}>
+                          {selectedBuildingId
+                            ? `${buildings.find(b => b.id === selectedBuildingId)?.name || 'נבחר'}`
+                            : 'בחר בניין *'}
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
 
                     {showDatePicker && (
                       <View style={Platform.OS === 'ios' ? styles.iosPickerContainer : null}>
@@ -571,33 +604,30 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
                       </View>
                     )}
 
-                    {/* BUILDING SELECTION */}
-                    <TouchableOpacity
-                      style={[styles.input, { justifyContent: 'center' }]}
-                      onPress={() => setShowBuildingModal(true)}
-                    >
-                      <Text style={{ color: selectedBuildingId ? '#f8fafc' : '#9ca3af', textAlign: 'right' }}>
-                        {selectedBuildingId
-                          ? buildings.find(b => b.id === selectedBuildingId)?.name || 'נבחר'
-                          : 'בחר בניין *'}
-                      </Text>
-                    </TouchableOpacity>
+                    {/* Row 5: חבר ועד בית + תמונת פרופיל */}
+                    <View style={styles.row}>
+                      <TouchableOpacity
+                        onPress={() => setIsCommittee(!isCommittee)}
+                        style={[styles.col, styles.rowButton, { alignItems: 'center', justifyContent: 'center' }]}
+                      >
+                        <Text style={{ fontSize: 14, color: '#fbbf24', fontWeight: '600' }} numberOfLines={1}>
+                          {isCommittee ? '☑ ועד בית' : '☐ חבר ועד בית'}
+                        </Text>
+                      </TouchableOpacity>
 
-                    <TouchableOpacity onPress={() => setIsCommittee(!isCommittee)} style={{ marginTop: 10 }}>
-                      <Text style={{ fontSize: 16, color: '#e2e8f0', textAlign: 'right' }}>
-                        {isCommittee ? '☑ חבר ועד בית' : '☐ חבר ועד בית'}
-                      </Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={styles.photoButton} onPress={handlePickPhoto}>
-                      <Text style={styles.photoButtonText}>
-                        {photo ? 'שנה תמונת פרופיל' : 'בחר תמונת פרופיל (רשות)'}
-                      </Text>
-                    </TouchableOpacity>
+                      <TouchableOpacity
+                        style={[styles.col, styles.rowButton, { alignItems: 'center', justifyContent: 'center' }]}
+                        onPress={handlePickPhoto}
+                      >
+                        <Text style={{ color: '#f8fafc', fontSize: 14, fontWeight: '600' }} numberOfLines={1}>
+                          {photo ? 'שנה תמונה' : 'תמונת פרופיל'}
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
 
                     {photo && (
-                      <Text style={{ fontSize: 12, color: '#6b7280', marginTop: 4, textAlign: 'right' }}>
-                        נבחר: {photo.fileName || photo.uri}
+                      <Text style={{ fontSize: 12, color: '#6b7280', marginTop: 4, textAlign: 'right', width: '100%' }}>
+                        תמונה נבחרה: {photo.fileName || 'profile.jpg'}
                       </Text>
                     )}
                   </>
@@ -615,63 +645,83 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
                   textAlign="right"
                 />
 
-                <View style={styles.passwordContainer}>
-                  <TextInput
-                    placeholderTextColor="#9ca3af"
-                    placeholder="סיסמה"
-                    value={password}
-                    onChangeText={setPassword}
-                    style={[styles.input, styles.passwordInputLayout]}
-                    secureTextEntry={!showPassword}
-                    textAlign="right"
-                  />
-                  <TouchableOpacity
-                    style={styles.eyeIcon}
-                    onPress={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? <EyeOff size={20} color="#9ca3af" /> : <Eye size={20} color="#9ca3af" />}
-                  </TouchableOpacity>
-                </View>
+                {mode === 'signup' ? (
+                  <View style={styles.row}>
+                    {/* Password */}
+                    <View style={styles.col}>
+                      <TextInput
+                        placeholderTextColor="#9ca3af"
+                        placeholder="סיסמה *"
+                        value={password}
+                        onChangeText={setPassword}
+                        style={[styles.rowInput, styles.passwordInputLayout]}
+                        secureTextEntry={!showPassword}
+                        textAlign="right"
+                      />
+                      <TouchableOpacity
+                        style={styles.eyeIcon}
+                        onPress={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? <EyeOff size={20} color="#9ca3af" /> : <Eye size={20} color="#9ca3af" />}
+                      </TouchableOpacity>
+                    </View>
 
-                {mode === 'signup' && (
+                    {/* Confirm Password */}
+                    <View style={styles.col}>
+                      <TextInput
+                        placeholderTextColor="#9ca3af"
+                        placeholder="אימות סיסמה *"
+                        value={confirmPassword}
+                        onChangeText={setConfirmPassword}
+                        style={[styles.rowInput, styles.passwordInputLayout]}
+                        secureTextEntry={!showConfirmPassword}
+                        textAlign="right"
+                      />
+                      <TouchableOpacity
+                        style={styles.eyeIcon}
+                        onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                      >
+                        {showConfirmPassword ? <EyeOff size={20} color="#9ca3af" /> : <Eye size={20} color="#9ca3af" />}
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                ) : (
                   <View style={styles.passwordContainer}>
                     <TextInput
                       placeholderTextColor="#9ca3af"
-                      placeholder="אימות סיסמה"
-                      value={confirmPassword}
-                      onChangeText={setConfirmPassword}
+                      placeholder="סיסמה"
+                      value={password}
+                      onChangeText={setPassword}
                       style={[styles.input, styles.passwordInputLayout]}
-                      secureTextEntry={!showConfirmPassword}
+                      secureTextEntry={!showPassword}
                       textAlign="right"
                     />
                     <TouchableOpacity
                       style={styles.eyeIcon}
-                      onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                      onPress={() => setShowPassword(!showPassword)}
                     >
-                      {showConfirmPassword ? <EyeOff size={20} color="#9ca3af" /> : <Eye size={20} color="#9ca3af" />}
+                      {showPassword ? <EyeOff size={20} color="#9ca3af" /> : <Eye size={20} color="#9ca3af" />}
                     </TouchableOpacity>
                   </View>
                 )}
 
                 {error ? <Text style={styles.error}>{error}</Text> : null}
 
-                <TouchableOpacity style={styles.primaryButtonWrapper} onPress={handleAuth} disabled={loading} activeOpacity={0.9}>
+                <TouchableOpacity style={styles.primaryButtonWrapper} onPress={handleAuth} disabled={loading} activeOpacity={0.95}>
                   <LinearGradient
-                    colors={['#ff0080', '#00f2ff']}
+                    colors={['#f97316', '#f59e0b']}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 0 }}
-                    style={styles.gradientBorder}
+                    style={styles.primaryGradient}
                   >
-                    <View style={styles.primaryButtonInner}>
-                      {loading ? <ActivityIndicator color="#ff0080" /> : (
-                        <>
-                          {mode === 'signup' ? <UserPlus size={20} color="#ff0080" /> : <LogIn size={20} color="#ff0080" />}
-                          <Text style={styles.primaryButtonText}>
-                            {mode === 'signup' ? 'הרשמה' : 'התחברות'}
-                          </Text>
-                        </>
-                      )}
-                    </View>
+                    {loading ? <ActivityIndicator color="#ffffff" /> : (
+                      <>
+                        {mode === 'signup' ? <UserPlus size={20} color="#ffffff" /> : <LogIn size={20} color="#ffffff" />}
+                        <Text style={styles.primaryButtonText}>
+                          {mode === 'signup' ? 'הרשמה' : 'התחברות'}
+                        </Text>
+                      </>
+                    )}
                   </LinearGradient>
                 </TouchableOpacity>
 
@@ -726,7 +776,7 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
                 </TouchableOpacity>
 
                 <TouchableOpacity onPress={handleResetPassword} disabled={loading}>
-                  <Text style={[styles.toggleText, { marginTop: 8 }]}>שכחתי סיסמה?</Text>
+                  <Text style={styles.forgotText}>שכחתי סיסמה?</Text>
                 </TouchableOpacity>
 
                 {/* BACK BUTTON */}
@@ -790,14 +840,14 @@ const styles = StyleSheet.create({
     width: '90%',
     maxWidth: 420,
     padding: 26,
-    backgroundColor: 'rgba(30, 41, 59, 0.7)',
+    backgroundColor: 'rgba(10, 14, 26, 0.85)',
     borderRadius: 24,
-    shadowColor: '#000',
+    shadowColor: '#000000',
     shadowOpacity: 0.3,
     shadowRadius: 15,
     elevation: 8,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: 'rgba(255, 255, 255, 0.08)',
   },
   title: {
     fontSize: 28,
@@ -809,7 +859,7 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: 'rgba(245, 158, 11, 0.15)',
     padding: 14,
     borderRadius: 12,
     marginTop: 12,
@@ -822,66 +872,111 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   passwordInputLayout: {
-    paddingLeft: 45, // Map space for the eye icon
+    paddingLeft: 45,
   },
   eyeIcon: {
     position: 'absolute',
     left: 12,
     top: '50%',
-    transform: [{ translateY: -4 }],
+    transform: [{ translateY: -14 }],
     padding: 4,
+  },
+  row: {
+    flexDirection: 'row-reverse',
+    justifyContent: 'space-between',
+    width: '100%',
+    gap: 10,
+    marginTop: 12,
+  },
+  col: {
+    flex: 1,
+    position: 'relative',
+  },
+  rowInput: {
+    borderWidth: 1,
+    borderColor: 'rgba(245, 158, 11, 0.15)',
+    height: 50,
+    borderRadius: 12,
+    backgroundColor: 'rgba(15, 23, 42, 0.6)',
+    color: '#f8fafc',
+    fontSize: 14,
+    paddingHorizontal: 12,
+    textAlign: 'right',
+  },
+  rowButton: {
+    borderWidth: 1,
+    borderColor: 'rgba(245, 158, 11, 0.15)',
+    height: 50,
+    borderRadius: 12,
+    backgroundColor: 'rgba(15, 23, 42, 0.6)',
+    justifyContent: 'center',
+    paddingHorizontal: 12,
   },
   primaryButtonWrapper: {
     width: '100%',
     height: 56,
     borderRadius: 16,
     overflow: 'hidden',
-    shadowColor: '#ff0080',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.4,
-    shadowRadius: 10,
+    shadowColor: '#f97316',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.3,
+    shadowRadius: 16,
     elevation: 5,
     marginTop: 24,
   },
-  gradientBorder: {
+  primaryGradient: {
     flex: 1,
-    padding: 2,
-    borderRadius: 16,
-  },
-  primaryButtonInner: {
-    flex: 1,
-    backgroundColor: '#000000',
-    borderRadius: 14,
-    flexDirection: 'row',
+    flexDirection: 'row-reverse',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 12,
+    gap: 10,
   },
   primaryButtonText: {
     color: '#ffffff',
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: 16,
+    fontWeight: '700',
     letterSpacing: 0.5,
   },
-  toggleText: { color: '#9ca3af', marginTop: 16, textAlign: 'center', fontSize: 14 },
+  toggleText: {
+    color: '#fbbf24',
+    marginTop: 16,
+    textAlign: 'center',
+    fontSize: 14,
+    fontWeight: '600',
+    textDecorationLine: 'underline',
+  },
+  forgotText: {
+    color: '#cbd5e1',
+    marginTop: 12,
+    textAlign: 'center',
+    fontSize: 14,
+    fontWeight: '600',
+    textDecorationLine: 'underline',
+  },
   error: { color: '#f87171', marginTop: 12, textAlign: 'center', fontWeight: '500' },
   secondaryButton: {
-    paddingHorizontal: 24,
-    height: 48,
-    borderRadius: 14,
-    alignSelf: 'center',
-    backgroundColor: 'rgba(255,255,255,0.05)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
-    flexDirection: 'row',
+    width: '100%',
+    height: 56,
+    borderRadius: 16,
+    backgroundColor: 'rgba(10, 14, 26, 0.75)',
+    borderWidth: 2,
+    borderColor: 'rgba(245, 158, 11, 0.5)',
+    flexDirection: 'row-reverse',
     alignItems: 'center',
     justifyContent: 'center',
+    gap: 10,
+    shadowColor: 'rgba(245, 158, 11, 0.05)',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 15,
+    elevation: 2,
     marginTop: 24,
   },
   secondaryButtonText: {
-    color: '#9ca3af',
-    fontSize: 15,
-    fontWeight: '600',
+    color: '#fbbf24',
+    fontSize: 16,
+    fontWeight: '700',
+    letterSpacing: 0.5,
   },
 
   photoButton: {
