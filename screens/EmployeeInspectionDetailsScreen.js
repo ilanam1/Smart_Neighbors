@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, TextInput, Switch, Image, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, TextInput, Switch, Image, Dimensions } from 'react-native';
+import ActivityIndicator from '../components/CustomLoader';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ChevronRight, CheckCircle2, AlertTriangle } from "lucide-react-native";
 import { getInspectionById, completeInspection, skipInspection } from "../API/inspectionsApi";
@@ -82,17 +83,43 @@ export default function EmployeeInspectionDetailsScreen({ route, navigation }) {
 
   if (loading && !item) {
     return (
-      <SafeAreaView style={styles.safeArea}>
-        <ActivityIndicator size="large" color="#3b82f6" style={{ marginTop: 40 }} />
-      </SafeAreaView>
+      <View style={{ flex: 1, backgroundColor: 'transparent' }}>
+        <Image
+          source={require('../assets/app_internal_bg.png')}
+          style={{
+            position: 'absolute',
+            left: 0,
+            top: 0,
+            width: Dimensions.get('screen').width,
+            height: Dimensions.get('screen').height,
+          }}
+          resizeMode="cover"
+        />
+        <SafeAreaView style={styles.safeArea}>
+          <ActivityIndicator size="large" color="#f97316" style={{ marginTop: 40 }} />
+        </SafeAreaView>
+      </View>
     );
   }
 
   if (!item) {
     return (
-      <SafeAreaView style={styles.safeArea}>
-        <Text style={styles.errorText}>לא נמצאו פרטי ביקורת.</Text>
-      </SafeAreaView>
+      <View style={{ flex: 1, backgroundColor: 'transparent' }}>
+        <Image
+          source={require('../assets/app_internal_bg.png')}
+          style={{
+            position: 'absolute',
+            left: 0,
+            top: 0,
+            width: Dimensions.get('screen').width,
+            height: Dimensions.get('screen').height,
+          }}
+          resizeMode="cover"
+        />
+        <SafeAreaView style={styles.safeArea}>
+          <Text style={styles.errorText}>לא נמצאו פרטי ביקורת.</Text>
+        </SafeAreaView>
+      </View>
     );
   }
 
@@ -113,98 +140,103 @@ export default function EmployeeInspectionDetailsScreen({ route, navigation }) {
         resizeMode="cover"
       />
       <SafeAreaView style={styles.safeArea}>
-      <View style={styles.headerRow}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <ChevronRight size={28} color="#f8fafc" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>פרטי ביקורת</Text>
-        <View style={{ width: 28 }} />
-      </View>
-
-      <View style={styles.container}>
-        <View style={styles.card}>
-          <Text style={styles.title}>{template?.name || "ביקורת תקופתית"}</Text>
-          <Text style={styles.text}>בניין: {building?.name || "לא ידוע"}</Text>
-          <Text style={styles.text}>כתובת: {building?.address || "לא צוינה"}</Text>
-          <Text style={styles.text}>תיאור: {template?.description || "אין תיאור"}</Text>
-          <Text style={styles.text}>
-            תאריך יעד: {new Date(item.due_date).toLocaleString("he-IL")}
-          </Text>
+        <View style={styles.headerRow}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <ChevronRight size={28} color="#f8fafc" />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>פרטי ביקורת</Text>
+          <View style={{ width: 28 }} />
         </View>
 
-        <Text style={styles.label}>הערות ביצוע</Text>
-        <TextInput
-          style={styles.input}
-          value={notes}
-          onChangeText={setNotes}
-          placeholder="כתוב כאן מה נבדק, מה נמצא, או כל פרט חשוב..."
-          placeholderTextColor="#94a3b8"
-          multiline
-          textAlign="right"
-        />
+        <View style={styles.container}>
+          <View style={styles.card}>
+            <Text style={styles.title}>{template?.name || "ביקורת תקופתית"}</Text>
+            <Text style={styles.text}>בניין: {building?.name || "לא ידוע"}</Text>
+            <Text style={styles.text}>כתובת: {building?.address || "לא צוינה"}</Text>
+            <Text style={styles.text}>תיאור: {template?.description || "אין תיאור"}</Text>
+            <Text style={styles.text}>
+              תאריך יעד: {new Date(item.due_date).toLocaleString("he-IL")}
+            </Text>
+          </View>
 
-        <View style={styles.switchRow}>
-          <Switch value={createIssue} onValueChange={setCreateIssue} />
-          <Text style={styles.switchLabel}>נמצאה תקלה ויש לפתוח דיווח אוטומטי</Text>
+          <Text style={styles.label}>הערות ביצוע</Text>
+          <TextInput
+            style={styles.input}
+            value={notes}
+            onChangeText={setNotes}
+            placeholder="כתוב כאן מה נבדק, מה נמצא, או כל פרט חשוב..."
+            placeholderTextColor="#94a3b8"
+            multiline
+            textAlign="right"
+          />
+
+          <View style={styles.switchRow}>
+            <Switch
+              value={createIssue}
+              onValueChange={setCreateIssue}
+              trackColor={{ false: "rgba(255, 255, 255, 0.1)", true: "#f97316" }}
+              thumbColor={createIssue ? "#ffffff" : "#94a3b8"}
+            />
+            <Text style={styles.switchLabel}>נמצאה תקלה ויש לפתוח דיווח אוטומטי</Text>
+          </View>
+
+          {createIssue && (
+            <View style={styles.issueBox}>
+              <Text style={styles.label}>סוג התקלה</Text>
+              <View style={styles.chipsWrap}>
+                {["NOISE", "CLEANLINESS", "SAFETY", "OTHER"].map((type) => (
+                  <TouchableOpacity
+                    key={type}
+                    onPress={() => setIssueType(type)}
+                    style={[styles.chip, issueType === type && styles.chipSelected]}
+                  >
+                    <Text style={[styles.chipText, issueType === type && styles.chipTextSelected]}>
+                      {type}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              <Text style={styles.label}>חומרה</Text>
+              <View style={styles.chipsWrap}>
+                {["LOW", "MEDIUM", "HIGH"].map((severity) => (
+                  <TouchableOpacity
+                    key={severity}
+                    onPress={() => setIssueSeverity(severity)}
+                    style={[styles.chip, issueSeverity === severity && styles.chipSelected]}
+                  >
+                    <Text style={[styles.chipText, issueSeverity === severity && styles.chipTextSelected]}>
+                      {severity}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+          )}
+
+          {loading ? (
+            <ActivityIndicator size="large" color="#f97316" style={{ marginTop: 30 }} />
+          ) : (
+            <View style={styles.actions}>
+              <TouchableOpacity style={styles.completeBtn} onPress={handleComplete}>
+                <CheckCircle2 size={22} color="white" />
+                <Text style={styles.completeBtnText}>סמן כבוצע</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.skipBtn} onPress={handleSkip}>
+                <AlertTriangle size={20} color="#f97316" />
+                <Text style={styles.skipBtnText}>דלג על ביקורת</Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
-
-        {createIssue && (
-          <View style={styles.issueBox}>
-            <Text style={styles.label}>סוג התקלה</Text>
-            <View style={styles.chipsWrap}>
-              {["NOISE", "CLEANLINESS", "SAFETY", "OTHER"].map((type) => (
-                <TouchableOpacity
-                  key={type}
-                  onPress={() => setIssueType(type)}
-                  style={[styles.chip, issueType === type && styles.chipSelected]}
-                >
-                  <Text style={[styles.chipText, issueType === type && styles.chipTextSelected]}>
-                    {type}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-
-            <Text style={styles.label}>חומרה</Text>
-            <View style={styles.chipsWrap}>
-              {["LOW", "MEDIUM", "HIGH"].map((severity) => (
-                <TouchableOpacity
-                  key={severity}
-                  onPress={() => setIssueSeverity(severity)}
-                  style={[styles.chip, issueSeverity === severity && styles.chipSelected]}
-                >
-                  <Text style={[styles.chipText, issueSeverity === severity && styles.chipTextSelected]}>
-                    {severity}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </View>
-        )}
-
-        {loading ? (
-          <ActivityIndicator size="large" color="#3b82f6" style={{ marginTop: 30 }} />
-        ) : (
-          <View style={styles.actions}>
-            <TouchableOpacity style={styles.completeBtn} onPress={handleComplete}>
-              <CheckCircle2 size={22} color="white" />
-              <Text style={styles.completeBtnText}>סמן כבוצע</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.skipBtn} onPress={handleSkip}>
-              <AlertTriangle size={20} color="#f59e0b" />
-              <Text style={styles.skipBtnText}>דלג על ביקורת</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: "#0f172a" },
+  safeArea: { flex: 1, backgroundColor: "transparent" },
   headerRow: {
     flexDirection: "row-reverse",
     alignItems: "center",
@@ -222,11 +254,13 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   card: {
-    backgroundColor: "#1e293b",
-    borderRadius: 14,
+    backgroundColor: "rgba(0, 0, 0, 0.65)",
+    borderRadius: 16,
     padding: 18,
     borderWidth: 1,
-    borderColor: "#334155",
+    borderColor: "rgba(255, 255, 255, 0.1)",
+    borderRightWidth: 4,
+    borderRightColor: "#f97316",
   },
   title: {
     color: "#f8fafc",
@@ -250,9 +284,9 @@ const styles = StyleSheet.create({
   },
   input: {
     minHeight: 110,
-    backgroundColor: "#1e293b",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
     borderWidth: 1,
-    borderColor: "#334155",
+    borderColor: "rgba(255, 255, 255, 0.15)",
     borderRadius: 12,
     padding: 14,
     color: "#f8fafc",
@@ -273,9 +307,9 @@ const styles = StyleSheet.create({
   },
   issueBox: {
     marginTop: 10,
-    backgroundColor: "#1e293b",
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
     borderWidth: 1,
-    borderColor: "#334155",
+    borderColor: "rgba(255, 255, 255, 0.08)",
     borderRadius: 12,
     padding: 12,
   },
@@ -286,17 +320,18 @@ const styles = StyleSheet.create({
   },
   chip: {
     borderWidth: 1,
-    borderColor: "#475569",
+    borderColor: "rgba(255, 255, 255, 0.2)",
     borderRadius: 18,
     paddingVertical: 6,
     paddingHorizontal: 10,
+    backgroundColor: "transparent",
   },
   chipSelected: {
-    backgroundColor: "#2563eb",
-    borderColor: "#2563eb",
+    backgroundColor: "#f97316",
+    borderColor: "#f97316",
   },
   chipText: {
-    color: "#e2e8f0",
+    color: "#cbd5e1",
     fontWeight: "700",
   },
   chipTextSelected: {
@@ -307,7 +342,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   completeBtn: {
-    backgroundColor: "#10b981",
+    backgroundColor: "#f97316",
     paddingVertical: 16,
     borderRadius: 14,
     flexDirection: "row-reverse",
@@ -322,7 +357,7 @@ const styles = StyleSheet.create({
   },
   skipBtn: {
     borderWidth: 1,
-    borderColor: "#f59e0b",
+    borderColor: "#f97316",
     borderRadius: 14,
     paddingVertical: 14,
     flexDirection: "row-reverse",
@@ -331,7 +366,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   skipBtnText: {
-    color: "#f59e0b",
+    color: "#f97316",
     fontWeight: "800",
     fontSize: 16,
   },

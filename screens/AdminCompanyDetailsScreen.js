@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert, ActivityIndicator, Modal, TextInput, Image, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert, Modal, TextInput, Image, Dimensions } from 'react-native';
+import ActivityIndicator from '../components/CustomLoader';
 import { useFocusEffect } from '@react-navigation/native';
 import { 
     Briefcase, 
@@ -148,34 +149,27 @@ export default function AdminCompanyDetailsScreen({ route, navigation }) {
     };
 
     const renderItem = ({ item }) => (
-        <LinearGradient
-            colors={['#0c1f38', '#0a1b31']}
-            style={styles.cardContainer}
-            start={{ x: 1, y: 0 }}
-            end={{ x: 0, y: 0 }}
-        >
-            <View style={styles.accentLine} />
-
+        <View style={styles.cardContainer}>
             <TouchableOpacity 
                 style={styles.deleteButton} 
                 onPress={() => confirmDeleteEmployee(item)}
                 activeOpacity={0.7}
             >
-                <Trash2 size={20} color="#64748b" />
+                <Trash2 size={20} color="#ef4444" />
             </TouchableOpacity>
 
             <View style={styles.infoBlock}>
                 <View style={styles.titleRow}>
                     <Text style={styles.bName}>{item.full_name}</Text>
-                    <User size={16} color="#fbbf24" style={{ marginLeft: 8 }} />
+                    <User size={16} color="#f97316" style={{ marginLeft: 8 }} />
                 </View>
                 
                 <View style={styles.addressRow}>
                     <Text style={styles.bAddress}>{item.phone || 'ללא מספר'}</Text>
-                    <Phone size={14} color="#06b6d4" style={{ marginLeft: 6 }} />
+                    <Phone size={14} color="#f97316" style={{ marginLeft: 6 }} />
                 </View>
             </View>
-        </LinearGradient>
+        </View>
     );
 
     return (
@@ -203,7 +197,7 @@ export default function AdminCompanyDetailsScreen({ route, navigation }) {
 
             {/* List */}
             {loading ? (
-                <ActivityIndicator size="large" color="#22d3ee" style={{ marginTop: 60 }} />
+                <ActivityIndicator size="large" color="#f97316" style={{ marginTop: 60 }} />
             ) : (
                 <FlatList
                     data={employees}
@@ -213,13 +207,13 @@ export default function AdminCompanyDetailsScreen({ route, navigation }) {
                     showsVerticalScrollIndicator={false}
                     ListEmptyComponent={
                         <View style={styles.emptyContainer}>
-                            <User size={64} color="#1e293b" />
+                            <User size={64} color="rgba(249, 115, 22, 0.4)" />
                             <Text style={styles.emptyText}>לחברה זו אין עדיין עובדים רשומים</Text>
                         </View>
                     }
                     ListHeaderComponent={
                         <View style={styles.companyHeaderBox}>
-                            <Briefcase size={32} color="#06b6d4" />
+                            <Briefcase size={32} color="#f97316" />
                             <Text style={styles.companyInfoText}>ניהול עובדי {companyDetails?.name}</Text>
                             <Text style={styles.companyDetailsText}>תעריף חודשי לעובד: {Number(companyDetails?.price || 0).toLocaleString('he-IL')} ₪</Text>
                             <Text style={styles.companyDetailsText}>יתרת קופה: {Number(companyDetails?.balance || 0).toLocaleString('he-IL')} ₪</Text>
@@ -338,11 +332,11 @@ const styles = StyleSheet.create({
     companyHeaderBox: {
         alignItems: 'center',
         marginBottom: 24,
-        padding: 24,
-        backgroundColor: 'rgba(6, 182, 212, 0.05)',
-        borderRadius: 24,
+        padding: 20,
+        backgroundColor: 'rgba(249, 115, 22, 0.06)',
+        borderRadius: 16,
         borderWidth: 1,
-        borderColor: 'rgba(6, 182, 212, 0.2)'
+        borderColor: 'rgba(249, 115, 22, 0.15)'
     },
     companyInfoText: {
         marginTop: 12,
@@ -364,33 +358,19 @@ const styles = StyleSheet.create({
         flexDirection: 'row', 
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: 20,
-        borderRadius: 24,
+        padding: 16,
+        borderRadius: 16,
         marginBottom: 16,
         borderWidth: 1,
-        borderColor: 'rgba(51, 65, 85, 0.3)',
-        shadowColor: '#00f2ff',
-        shadowOpacity: 0.05,
-        shadowOffset: { width: 0, height: 4 },
-        shadowRadius: 10,
-        elevation: 4,
-        position: 'relative',
-        overflow: 'hidden'
-    },
-    accentLine: {
-        position: 'absolute',
-        left: 0,
-        top: '30%',
-        width: 4,
-        height: 48,
-        backgroundColor: '#06b6d4',
-        borderTopRightRadius: 4,
-        borderBottomRightRadius: 4,
+        borderColor: 'rgba(255, 255, 255, 0.1)',
+        borderRightWidth: 4,
+        borderRightColor: '#f97316',
+        backgroundColor: 'rgba(0, 0, 0, 0.65)'
     },
     deleteButton: {
-        backgroundColor: 'rgba(15, 23, 42, 0.5)',
+        backgroundColor: 'rgba(255, 255, 255, 0.05)',
         padding: 12,
-        borderRadius: 16,
+        borderRadius: 12,
         alignItems: 'center',
         justifyContent: 'center',
         marginLeft: 8,
@@ -421,19 +401,17 @@ const styles = StyleSheet.create({
     },
     footer: {
         padding: 24,
-        borderTopWidth: 1,
-        borderTopColor: '#1e293b',
-        backgroundColor: '#0F172A',
+        backgroundColor: 'transparent',
     },
     deleteCompanyBtn: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+        backgroundColor: 'rgba(239, 68, 68, 0.08)',
         padding: 16,
-        borderRadius: 20,
+        borderRadius: 16,
         borderWidth: 1,
-        borderColor: 'rgba(239, 68, 68, 0.3)',
+        borderColor: 'rgba(239, 68, 68, 0.25)',
     },
     deleteCompanyText: {
         color: '#ef4444',
@@ -446,7 +424,7 @@ const styles = StyleSheet.create({
         marginTop: 40,
     },
     emptyText: {
-        color: '#64748b',
+        color: '#cbd5e1',
         fontSize: 18,
         marginTop: 16,
     },
@@ -458,14 +436,14 @@ const styles = StyleSheet.create({
         padding: 20,
     },
     modalContent: {
-        backgroundColor: '#0f172a',
+        backgroundColor: 'rgba(10, 14, 26, 0.95)',
         borderRadius: 24,
         padding: 30,
         width: '100%',
         maxWidth: 380,
         alignItems: 'center',
         borderWidth: 1,
-        borderColor: '#334155',
+        borderColor: 'rgba(255, 255, 255, 0.08)',
     },
     modalIconContainer: {
         width: 64,
@@ -491,10 +469,10 @@ const styles = StyleSheet.create({
     passwordInput: {
         width: '100%',
         height: 55,
-        backgroundColor: '#051121',
+        backgroundColor: 'rgba(0, 0, 0, 0.4)',
         borderRadius: 16,
         borderWidth: 1,
-        borderColor: '#334155',
+        borderColor: 'rgba(255, 255, 255, 0.15)',
         color: '#f8fafc',
         fontSize: 16,
         paddingHorizontal: 20,
@@ -513,10 +491,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     cancelBtn: {
-        backgroundColor: '#1e293b',
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        borderWidth: 1,
+        borderColor: '#f97316',
     },
     cancelBtnText: {
-        color: '#cbd5e1',
+        color: '#f97316',
         fontWeight: 'bold',
     },
     confirmBtn: {
@@ -530,13 +510,13 @@ const styles = StyleSheet.create({
         position: 'absolute',
         bottom: 100, // Slightly above the footer
         left: 24, 
-        backgroundColor: '#06b6d4',
+        backgroundColor: '#f97316',
         width: 60,
         height: 60,
         borderRadius: 30,
         alignItems: 'center',
         justifyContent: 'center',
-        shadowColor: '#06b6d4',
+        shadowColor: '#f97316',
         shadowOpacity: 0.3,
         shadowOffset: { width: 0, height: 6 },
         shadowRadius: 12,

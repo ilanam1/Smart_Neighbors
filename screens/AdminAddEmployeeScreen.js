@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, ActivityIndicator, ScrollView, Image, Dimensions } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, ScrollView, Image, Dimensions } from 'react-native';
+import ActivityIndicator from '../components/CustomLoader';
 import { User, Phone, PlusCircle, ArrowRight, Lock } from 'lucide-react-native';
 import { getSupabase } from '../DataBase/supabase';
 
@@ -83,7 +84,7 @@ export default function AdminAddEmployeeScreen({ route, navigation }) {
 
                 <Text style={styles.label}>שם עובד מלא</Text>
                 <View style={styles.inputContainer}>
-                    <User size={20} color="#9ca3af" />
+                    <User size={20} color="#f97316" />
                     <TextInput 
                         style={styles.input}
                         placeholder="לדוגמה: משה כהן"
@@ -96,7 +97,7 @@ export default function AdminAddEmployeeScreen({ route, navigation }) {
 
                 <Text style={styles.label}>מספר טלפון (ישמש במזהה ההתחברות)</Text>
                 <View style={styles.inputContainer}>
-                    <Phone size={20} color="#9ca3af" />
+                    <Phone size={20} color="#f97316" />
                     <TextInput 
                         style={styles.input}
                         placeholder="0501234567"
@@ -110,7 +111,7 @@ export default function AdminAddEmployeeScreen({ route, navigation }) {
 
                 <Text style={styles.label}>סיסמת התחברות ראשונית</Text>
                 <View style={styles.inputContainer}>
-                    <Lock size={20} color="#9ca3af" />
+                    <Lock size={20} color="#f97316" />
                     <TextInput 
                         style={styles.input}
                         placeholder="בחר סיסמה עבור העובד..."
@@ -150,32 +151,30 @@ const styles = StyleSheet.create({
         paddingTop: 65,
         paddingBottom: 20,
         paddingHorizontal: 20,
-        backgroundColor: '#1e293b',
-        borderBottomWidth: 1,
-        borderBottomColor: '#334155'
+        backgroundColor: 'transparent',
     },
     headerTitle: { fontSize: 22, fontWeight: 'bold', color: '#f8fafc', marginRight: 15 },
     backBtn: { padding: 5 },
     content: { padding: 20, paddingBottom: 60 },
     companySubHeader: {
-        color: '#06b6d4',
+        color: '#f97316',
         fontSize: 14,
         textAlign: 'center',
         marginBottom: 20,
-        backgroundColor: 'rgba(6, 182, 212, 0.1)',
+        backgroundColor: 'rgba(249, 115, 22, 0.1)',
         padding: 12,
         borderRadius: 12,
         overflow: 'hidden',
         borderWidth: 1,
-        borderColor: 'rgba(6, 182, 212, 0.2)'
+        borderColor: 'rgba(249, 115, 22, 0.2)'
     },
     label: { color: '#f8fafc', fontSize: 16, marginBottom: 8, fontWeight: '600', textAlign: 'right', marginTop: 15 },
     inputContainer: {
         flexDirection: 'row-reverse',
         alignItems: 'center',
-        backgroundColor: '#1e293b',
+        backgroundColor: 'rgba(0, 0, 0, 0.4)',
         borderWidth: 1,
-        borderColor: '#334155',
+        borderColor: 'rgba(255, 255, 255, 0.15)',
         borderRadius: 12,
         paddingHorizontal: 15,
         marginBottom: 10,
@@ -183,7 +182,7 @@ const styles = StyleSheet.create({
     },
     input: { flex: 1, color: '#f8fafc', fontSize: 16, marginRight: 10 },
     submitButton: {
-        backgroundColor: '#00f2ff',
+        backgroundColor: '#f97316',
         flexDirection: 'row-reverse',
         alignItems: 'center',
         justifyContent: 'center',
@@ -191,7 +190,7 @@ const styles = StyleSheet.create({
         padding: 16,
         borderRadius: 12,
         marginTop: 35,
-        shadowColor: '#00f2ff',
+        shadowColor: '#f97316',
         shadowOpacity: 0.3,
         shadowRadius: 8,
         elevation: 4

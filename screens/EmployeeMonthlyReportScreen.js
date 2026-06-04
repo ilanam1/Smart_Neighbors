@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, FlatList, Alert, ScrollView, Image, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, Alert, ScrollView, Image, Dimensions } from 'react-native';
+import ActivityIndicator from '../components/CustomLoader';
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ChevronRight, CalendarDays, FileText, Building2, Wrench } from "lucide-react-native";
+import { ChevronRight, CalendarDays, FileText, Wrench } from "lucide-react-native";
 import { useNavigation } from "@react-navigation/native";
 import { getEmployeeMonthlyReport } from "../API/jobRequestsApi";
 
@@ -62,7 +63,7 @@ function getTopEntry(map) {
   return { key: entries[0][0], count: entries[0][1] };
 }
 
-function StatCard({ title, value, color = "#38bdf8" }) {
+function StatCard({ title, value, color = "#f97316" }) {
   return (
     <View style={styles.statCard}>
       <Text style={[styles.statValue, { color }]}>{value}</Text>
@@ -164,8 +165,16 @@ export default function EmployeeMonthlyReportScreen({ route }) {
     return (
       <View style={styles.jobCard}>
         <View style={styles.jobCardHeader}>
-          <View style={styles.statusBadge}>
-            <Text style={styles.statusBadgeText}>{jobStatus}</Text>
+          <View style={[
+            styles.statusBadge,
+            item.status === "DONE" && styles.statusDone,
+            item.status === "REJECTED" && styles.statusRejected,
+          ]}>
+            <Text style={[
+              styles.statusBadgeText,
+              item.status === "DONE" && { color: "#22c55e" },
+              item.status === "REJECTED" && { color: "#ef4444" },
+            ]}>{jobStatus}</Text>
           </View>
           <Text style={styles.jobBuilding}>{buildingName}</Text>
         </View>
@@ -198,128 +207,128 @@ export default function EmployeeMonthlyReportScreen({ route }) {
         resizeMode="cover"
       />
       <SafeAreaView style={styles.safeArea}>
-      <View style={styles.headerRow}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <ChevronRight size={28} color="#f8fafc" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>דו"ח חודשי</Text>
-        <View style={{ width: 28 }} />
-      </View>
-
-      <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 24 }}>
-        <View style={styles.topCard}>
-          <View style={styles.iconCircle}>
-            <FileText size={28} color="#3b82f6" />
-          </View>
-          <Text style={styles.mainTitle}>דו"ח חודשי על תקלות ועבודות</Text>
-          <Text style={styles.subTitle}>
-            {employeeName ? `עבור ${employeeName}` : "עבור נותן השירות המחובר"}
-          </Text>
-
-          <View style={styles.monthSelector}>
-            <TouchableOpacity style={styles.monthBtn} onPress={handleNextMonth}>
-              <Text style={styles.monthBtnText}>החודש הבא</Text>
-            </TouchableOpacity>
-
-            <View style={styles.monthLabelWrap}>
-              <CalendarDays size={16} color="#94a3b8" />
-              <Text style={styles.monthLabel}>{formatMonthLabel(year, month)}</Text>
-            </View>
-
-            <TouchableOpacity style={styles.monthBtn} onPress={handlePrevMonth}>
-              <Text style={styles.monthBtnText}>החודש הקודם</Text>
-            </TouchableOpacity>
-          </View>
+        <View style={styles.headerRow}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <ChevronRight size={28} color="#f8fafc" />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>דו"ח חודשי</Text>
+          <View style={{ width: 28 }} />
         </View>
 
-        {loading ? (
-          <ActivityIndicator size="large" color="#3b82f6" style={{ marginTop: 40 }} />
-        ) : (
-          <>
-            <View style={styles.statsGrid}>
-              <StatCard title="סה״כ עבודות" value={analytics.totalJobs} color="#38bdf8" />
-              <StatCard title="עבודות שבוצעו" value={analytics.doneJobs} color="#10b981" />
-              <StatCard title="עבודות שנדחו" value={analytics.rejectedJobs} color="#ef4444" />
-              <StatCard title="עדיין פתוחות" value={analytics.openJobs} color="#f59e0b" />
+        <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 24 }}>
+          <View style={styles.topCard}>
+            <View style={styles.iconCircle}>
+              <FileText size={28} color="#f97316" />
             </View>
+            <Text style={styles.mainTitle}>דו"ח חודשי על תקלות ועבודות</Text>
+            <Text style={styles.subTitle}>
+              {employeeName ? `עבור ${employeeName}` : "עבור נותן השירות המחובר"}
+            </Text>
 
-            <View style={styles.summaryCard}>
-              <Text style={styles.sectionTitle}>סיכום חודשי</Text>
+            <View style={styles.monthSelector}>
+              <TouchableOpacity style={styles.monthBtn} onPress={handleNextMonth}>
+                <Text style={styles.monthBtnText}>החודש הבא</Text>
+              </TouchableOpacity>
 
-              <SmallInsight
-                label="הבניין עם הכי הרבה עבודות"
-                value={
-                  analytics.topBuilding
-                    ? `${analytics.topBuilding.key} (${analytics.topBuilding.count})`
-                    : "אין נתונים"
-                }
-              />
-
-              <SmallInsight
-                label="סוג התקלה הנפוץ ביותר"
-                value={
-                  analytics.topType
-                    ? `${DISTURBANCE_TYPE_LABELS[analytics.topType.key] || analytics.topType.key} (${analytics.topType.count})`
-                    : "אין נתונים"
-                }
-              />
-            </View>
-
-            <View style={styles.summaryCard}>
-              <Text style={styles.sectionTitle}>פירוט לפי בניינים</Text>
-              {Object.keys(analytics.buildingCounts).length === 0 ? (
-                <Text style={styles.emptyText}>אין נתונים לחודש זה.</Text>
-              ) : (
-                Object.entries(analytics.buildingCounts)
-                  .sort((a, b) => b[1] - a[1])
-                  .map(([building, count]) => (
-                    <View key={building} style={styles.breakdownRow}>
-                      <Text style={styles.breakdownValue}>{count}</Text>
-                      <Text style={styles.breakdownLabel}>{building}</Text>
-                    </View>
-                  ))
-              )}
-            </View>
-
-            <View style={styles.summaryCard}>
-              <Text style={styles.sectionTitle}>פירוט לפי סוגי תקלות</Text>
-              {Object.keys(analytics.typeCounts).length === 0 ? (
-                <Text style={styles.emptyText}>אין נתונים לחודש זה.</Text>
-              ) : (
-                Object.entries(analytics.typeCounts)
-                  .sort((a, b) => b[1] - a[1])
-                  .map(([type, count]) => (
-                    <View key={type} style={styles.breakdownRow}>
-                      <Text style={styles.breakdownValue}>{count}</Text>
-                      <Text style={styles.breakdownLabel}>
-                        {DISTURBANCE_TYPE_LABELS[type] || type}
-                      </Text>
-                    </View>
-                  ))
-              )}
-            </View>
-
-            <View style={styles.summaryCard}>
-              <View style={styles.sectionHeader}>
-                <Wrench size={18} color="#3b82f6" />
-                <Text style={styles.sectionTitle}>רשימת עבודות בחודש זה</Text>
+              <View style={styles.monthLabelWrap}>
+                <CalendarDays size={16} color="#f97316" />
+                <Text style={styles.monthLabelText}>{formatMonthLabel(year, month)}</Text>
               </View>
 
-              {items.length === 0 ? (
-                <Text style={styles.emptyText}>לא נמצאו עבודות בחודש שנבחר.</Text>
-              ) : (
-                <FlatList
-                  data={items}
-                  keyExtractor={(item) => item.id}
-                  renderItem={renderJobCard}
-                  scrollEnabled={false}
-                />
-              )}
+              <TouchableOpacity style={styles.monthBtn} onPress={handlePrevMonth}>
+                <Text style={styles.monthBtnText}>החודש הקודם</Text>
+              </TouchableOpacity>
             </View>
-          </>
-        )}
-      </ScrollView>
-    </SafeAreaView>
+          </View>
+
+          {loading ? (
+            <ActivityIndicator size="large" color="#f97316" style={{ marginTop: 40 }} />
+          ) : (
+            <>
+              <View style={styles.statsGrid}>
+                <StatCard title="סה״כ עבודות" value={analytics.totalJobs} color="#cbd5e1" />
+                <StatCard title="עבודות שבוצעו" value={analytics.doneJobs} color="#22c55e" />
+                <StatCard title="עבודות שנדחו" value={analytics.rejectedJobs} color="#ef4444" />
+                <StatCard title="עדיין פתוחות" value={analytics.openJobs} color="#f97316" />
+              </View>
+
+              <View style={styles.summaryCard}>
+                <Text style={styles.sectionTitle}>סיכום חודשי</Text>
+
+                <SmallInsight
+                  label="הבניין עם הכי הרבה עבודות"
+                  value={
+                    analytics.topBuilding
+                      ? `${analytics.topBuilding.key} (${analytics.topBuilding.count})`
+                      : "אין נתונים"
+                  }
+                />
+
+                <SmallInsight
+                  label="סוג התקלה הנפוץ ביותר"
+                  value={
+                    analytics.topType
+                      ? `${DISTURBANCE_TYPE_LABELS[analytics.topType.key] || analytics.topType.key} (${analytics.topType.count})`
+                      : "אין נתונים"
+                  }
+                />
+              </View>
+
+              <View style={styles.summaryCard}>
+                <Text style={styles.sectionTitle}>פירוט לפי בניינים</Text>
+                {Object.keys(analytics.buildingCounts).length === 0 ? (
+                  <Text style={styles.emptyText}>אין נתונים לחודש זה.</Text>
+                ) : (
+                  Object.entries(analytics.buildingCounts)
+                    .sort((a, b) => b[1] - a[1])
+                    .map(([building, count]) => (
+                      <View key={building} style={styles.breakdownRow}>
+                        <Text style={styles.breakdownValue}>{count}</Text>
+                        <Text style={styles.breakdownLabel}>{building}</Text>
+                      </View>
+                    ))
+                )}
+              </View>
+
+              <View style={styles.summaryCard}>
+                <Text style={styles.sectionTitle}>פירוט לפי סוגי תקלות</Text>
+                {Object.keys(analytics.typeCounts).length === 0 ? (
+                  <Text style={styles.emptyText}>אין נתונים לחודש זה.</Text>
+                ) : (
+                  Object.entries(analytics.typeCounts)
+                    .sort((a, b) => b[1] - a[1])
+                    .map(([type, count]) => (
+                      <View key={type} style={styles.breakdownRow}>
+                        <Text style={styles.breakdownValue}>{count}</Text>
+                        <Text style={styles.breakdownLabel}>
+                          {DISTURBANCE_TYPE_LABELS[type] || type}
+                        </Text>
+                      </View>
+                    ))
+                )}
+              </View>
+
+              <View style={styles.summaryCard}>
+                <View style={styles.sectionHeader}>
+                  <Wrench size={18} color="#f97316" />
+                  <Text style={styles.sectionTitle}>רשימת עבודות בחודש זה</Text>
+                </View>
+
+                {items.length === 0 ? (
+                  <Text style={styles.emptyText}>לא נמצאו עבודות בחודש שנבחר.</Text>
+                ) : (
+                  <FlatList
+                    data={items}
+                    keyExtractor={(item) => item.id}
+                    renderItem={renderJobCard}
+                    scrollEnabled={false}
+                  />
+                )}
+              </View>
+            </>
+          )}
+        </ScrollView>
+      </SafeAreaView>
     </View>
   );
 }
@@ -327,7 +336,7 @@ export default function EmployeeMonthlyReportScreen({ route }) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#0f172a",
+    backgroundColor: "transparent",
   },
   headerRow: {
     flexDirection: "row-reverse",
@@ -346,18 +355,20 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   topCard: {
-    backgroundColor: "#1e293b",
+    backgroundColor: "rgba(0, 0, 0, 0.65)",
     borderRadius: 16,
     padding: 20,
     borderWidth: 1,
-    borderColor: "#334155",
+    borderColor: "rgba(255, 255, 255, 0.1)",
+    borderRightWidth: 4,
+    borderRightColor: "#f97316",
     alignItems: "center",
   },
   iconCircle: {
     width: 58,
     height: 58,
     borderRadius: 29,
-    backgroundColor: "rgba(59,130,246,0.12)",
+    backgroundColor: "rgba(249, 115, 22, 0.12)",
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 12,
@@ -383,13 +394,15 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   monthBtn: {
-    backgroundColor: "#334155",
-    paddingVertical: 10,
-    paddingHorizontal: 14,
+    borderWidth: 1,
+    borderColor: "#f97316",
+    backgroundColor: "transparent",
+    paddingVertical: 8,
+    paddingHorizontal: 12,
     borderRadius: 10,
   },
   monthBtnText: {
-    color: "#f8fafc",
+    color: "#f97316",
     fontWeight: "700",
     fontSize: 13,
   },
@@ -398,7 +411,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 6,
   },
-  monthLabel: {
+  monthLabelText: {
     color: "#e2e8f0",
     fontWeight: "800",
     fontSize: 16,
@@ -411,12 +424,12 @@ const styles = StyleSheet.create({
   },
   statCard: {
     width: "48%",
-    backgroundColor: "#1e293b",
+    backgroundColor: "rgba(0, 0, 0, 0.65)",
     borderRadius: 14,
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: "#334155",
+    borderColor: "rgba(255, 255, 255, 0.1)",
   },
   statValue: {
     fontSize: 24,
@@ -432,11 +445,11 @@ const styles = StyleSheet.create({
   },
   summaryCard: {
     marginTop: 14,
-    backgroundColor: "#1e293b",
+    backgroundColor: "rgba(0, 0, 0, 0.65)",
     borderRadius: 14,
     padding: 16,
     borderWidth: 1,
-    borderColor: "#334155",
+    borderColor: "rgba(255, 255, 255, 0.1)",
   },
   sectionHeader: {
     flexDirection: "row-reverse",
@@ -457,7 +470,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 8,
     borderBottomWidth: 1,
-    borderBottomColor: "#334155",
+    borderBottomColor: "rgba(255, 255, 255, 0.08)",
   },
   insightLabel: {
     color: "#cbd5e1",
@@ -467,7 +480,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   insightValue: {
-    color: "#38bdf8",
+    color: "#f97316",
     fontSize: 14,
     fontWeight: "800",
     marginLeft: 10,
@@ -478,7 +491,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: "#334155",
+    borderBottomColor: "rgba(255, 255, 255, 0.08)",
   },
   breakdownLabel: {
     color: "#e2e8f0",
@@ -487,7 +500,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   breakdownValue: {
-    color: "#38bdf8",
+    color: "#f97316",
     fontWeight: "900",
     fontSize: 15,
     marginLeft: 12,
@@ -498,11 +511,11 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   jobCard: {
-    backgroundColor: "#0f172a",
+    backgroundColor: "rgba(255, 255, 255, 0.05)",
     borderRadius: 12,
     padding: 14,
     borderWidth: 1,
-    borderColor: "#334155",
+    borderColor: "rgba(255, 255, 255, 0.08)",
     marginBottom: 10,
   },
   jobCardHeader: {
@@ -512,13 +525,23 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   statusBadge: {
-    backgroundColor: "#3b82f6",
+    backgroundColor: "rgba(249, 115, 22, 0.16)",
+    borderColor: "rgba(249, 115, 22, 0.3)",
+    borderWidth: 1,
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 8,
   },
+  statusDone: {
+    backgroundColor: "rgba(34, 197, 94, 0.16)",
+    borderColor: "rgba(34, 197, 94, 0.3)",
+  },
+  statusRejected: {
+    backgroundColor: "rgba(239, 68, 68, 0.16)",
+    borderColor: "rgba(239, 68, 68, 0.3)",
+  },
   statusBadgeText: {
-    color: "#fff",
+    color: "#f97316",
     fontWeight: "700",
     fontSize: 12,
   },

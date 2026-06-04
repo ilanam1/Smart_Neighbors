@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, FlatList, Alert, Image, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, Alert, Image, Dimensions } from 'react-native';
+import ActivityIndicator from '../components/CustomLoader';
 import { getSupabase } from '../DataBase/supabase';
 import { Users, XCircle, UserCheck } from 'lucide-react-native';
 

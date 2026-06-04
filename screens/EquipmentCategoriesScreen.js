@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, FlatList, Image, TextInput, ScrollView, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, Image, TextInput, ScrollView, Dimensions } from 'react-native';
+import ActivityIndicator from '../components/CustomLoader';
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
   Plus,

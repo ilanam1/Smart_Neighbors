@@ -404,7 +404,7 @@ export default function EmployeeJobRequestScreen({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: "#0f172a" },
+  safeArea: { flex: 1, backgroundColor: "transparent" },
 
   headerRow: {
     flexDirection: "row-reverse",
@@ -426,11 +426,13 @@ const styles = StyleSheet.create({
   },
 
   card: {
-    backgroundColor: "#1e293b",
+    backgroundColor: "rgba(0, 0, 0, 0.65)",
     borderRadius: 16,
     padding: 20,
     borderWidth: 1,
-    borderColor: "#334155",
+    borderColor: "rgba(255, 255, 255, 0.1)",
+    borderRightWidth: 4,
+    borderRightColor: "#f97316",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
@@ -453,13 +455,13 @@ const styles = StyleSheet.create({
 
   senderText: {
     fontSize: 13,
-    color: "#94a3b8",
+    color: "#cbd5e1",
     textAlign: "right",
   },
 
   divider: {
     height: 1,
-    backgroundColor: "#334155",
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
     marginVertical: 16,
   },
 
@@ -490,7 +492,7 @@ const styles = StyleSheet.create({
   },
 
   actionBtn: {
-    backgroundColor: "#10b981",
+    backgroundColor: "#f97316",
     paddingVertical: 16,
     borderRadius: 14,
     flexDirection: "row-reverse",
@@ -513,11 +515,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 8,
     borderWidth: 1,
-    borderColor: "#f87171",
+    borderColor: "#ef4444",
   },
 
   rejectBtnText: {
-    color: "#f87171",
+    color: "#ef4444",
     fontSize: 16,
     fontWeight: "700",
   },
@@ -525,13 +527,15 @@ const styles = StyleSheet.create({
   handledBox: {
     marginTop: 30,
     padding: 20,
-    backgroundColor: "#334155",
+    backgroundColor: "rgba(0, 0, 0, 0.65)",
     borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.1)",
   },
 
   handledText: {
     textAlign: "center",
-    color: "#f8fafc",
+    color: "#cbd5e1",
     fontSize: 16,
     fontWeight: "bold",
   },
@@ -546,11 +550,11 @@ const styles = StyleSheet.create({
 
   modalBox: {
     width: "100%",
-    backgroundColor: "#1e293b",
+    backgroundColor: "rgba(10, 14, 26, 0.95)",
     borderRadius: 16,
     padding: 18,
     borderWidth: 1,
-    borderColor: "#334155",
+    borderColor: "rgba(255, 255, 255, 0.1)",
   },
 
   modalTitle: {
@@ -577,17 +581,17 @@ const styles = StyleSheet.create({
 
   typeButton: {
     flex: 1,
-    backgroundColor: "#0f172a",
+    backgroundColor: "rgba(255, 255, 255, 0.05)",
     borderWidth: 1,
-    borderColor: "#334155",
+    borderColor: "rgba(255, 255, 255, 0.15)",
     borderRadius: 10,
     paddingVertical: 9,
     alignItems: "center",
   },
 
   typeButtonActive: {
-    backgroundColor: "#38bdf8",
-    borderColor: "#38bdf8",
+    backgroundColor: "#f97316",
+    borderColor: "#f97316",
   },
 
   typeButtonText: {
@@ -596,11 +600,13 @@ const styles = StyleSheet.create({
   },
 
   typeButtonTextActive: {
-    color: "#0f172a",
+    color: "#ffffff",
   },
 
   fileButton: {
-    backgroundColor: "#0284c7",
+    backgroundColor: "transparent",
+    borderWidth: 1,
+    borderColor: "#f97316",
     borderRadius: 12,
     paddingVertical: 12,
     alignItems: "center",
@@ -611,12 +617,12 @@ const styles = StyleSheet.create({
   },
 
   fileButtonText: {
-    color: "#f8fafc",
+    color: "#f97316",
     fontWeight: "900",
   },
 
   selectedFileText: {
-    color: "#38bdf8",
+    color: "#f97316",
     fontSize: 13,
     textAlign: "right",
     marginBottom: 10,
@@ -624,10 +630,10 @@ const styles = StyleSheet.create({
 
   noteInput: {
     minHeight: 80,
-    backgroundColor: "#0f172a",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#334155",
+    borderColor: "rgba(255, 255, 255, 0.15)",
     padding: 12,
     color: "#f8fafc",
     textAlign: "right",
@@ -645,11 +651,13 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingVertical: 12,
     alignItems: "center",
-    backgroundColor: "#334155",
+    backgroundColor: "transparent",
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.2)",
   },
 
   cancelModalText: {
-    color: "#f8fafc",
+    color: "#cbd5e1",
     fontWeight: "800",
   },
 
@@ -658,11 +666,11 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingVertical: 12,
     alignItems: "center",
-    backgroundColor: "#10b981",
+    backgroundColor: "#f97316",
   },
 
   confirmModalText: {
-    color: "#052e16",
+    color: "#ffffff",
     fontWeight: "900",
   },
 });

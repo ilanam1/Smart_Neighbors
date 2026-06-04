@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, ActivityIndicator, Alert, Image, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert, Image, Dimensions } from 'react-native';
+import ActivityIndicator from '../components/CustomLoader';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowRight, Building, User, MapPin } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';

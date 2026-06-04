@@ -1,17 +1,15 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
+import { View,
   Text,
   StyleSheet,
   FlatList,
   TouchableOpacity,
-  ActivityIndicator,
   Alert,
   Modal,
   Platform,
   Image,
-  Dimensions,
-} from "react-native";
+  Dimensions } from 'react-native';
+import ActivityIndicator from '../components/CustomLoader';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ArrowRight, CalendarDays, Clock, Shield } from "lucide-react-native";
 import { useNavigation } from "@react-navigation/native";

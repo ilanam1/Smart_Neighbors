@@ -1,10 +1,8 @@
 // screens/ProfilePageScreen.js
 import React, { useEffect, useState } from "react";
-import {
-  View,
+import { View,
   Text,
   StyleSheet,
-  ActivityIndicator,
   Image,
   ScrollView,
   SafeAreaView,
@@ -12,8 +10,8 @@ import {
   Alert,
   Modal,
   TextInput,
-  Dimensions
-} from "react-native";
+  Dimensions } from 'react-native';
+import ActivityIndicator from '../components/CustomLoader';
 import { getSupabase } from "../DataBase/supabase";
 import { useFocusEffect } from "@react-navigation/native";
 import { listMfaFactors, unenrollMfa } from "../API/mfaApi";

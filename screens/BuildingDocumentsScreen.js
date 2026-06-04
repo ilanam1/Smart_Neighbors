@@ -1,19 +1,17 @@
 // screens/BuildingDocumentsScreen.js
 import { useNavigation } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
-import {
-  View,
+import { View,
   Text,
   StyleSheet,
   TouchableOpacity,
-  ActivityIndicator,
   FlatList,
   Alert,
   Linking,
   SafeAreaView,
   Image,
-  Dimensions,
-} from "react-native";
+  Dimensions } from 'react-native';
+import ActivityIndicator from '../components/CustomLoader';
 
 import { pick, types } from "@react-native-documents/picker";
 

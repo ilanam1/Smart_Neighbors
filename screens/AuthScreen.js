@@ -1,17 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import {
-  View,
+import { View,
   Text,
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  ActivityIndicator,
   Modal,
   FlatList,
   Platform,
   ScrollView,
-  KeyboardAvoidingView,
-} from 'react-native';
+  KeyboardAvoidingView } from 'react-native';
+import ActivityIndicator from '../components/CustomLoader';
 import LinearGradient from 'react-native-linear-gradient';
 import Svg, { Defs, RadialGradient, Stop, Rect } from 'react-native-svg';
 import { LogIn, UserPlus, Eye, EyeOff } from 'lucide-react-native';

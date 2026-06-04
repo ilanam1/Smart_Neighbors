@@ -161,7 +161,7 @@ export default function CommitteeProvidersScreen() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#0F172A' }}>
+    <View style={{ flex: 1, backgroundColor: 'transparent' }}>
       <Image
         source={require('../assets/app_internal_bg.png')}
         style={{
@@ -198,7 +198,10 @@ export default function CommitteeProvidersScreen() {
         {loading && <ActivityIndicator style={{ marginTop: 12 }} />}
 
         {!loading && items.length === 0 ? (
-          <Text style={styles.empty}>אין ספקים עדיין. הוסף ספק חדש.</Text>
+          <View style={styles.emptyCard}>
+            <Wrench size={48} color="rgba(249, 115, 22, 0.4)" style={{ marginBottom: 12 }} />
+            <Text style={styles.empty}>אין ספקים עדיין. הוסף ספק חדש.</Text>
+          </View>
         ) : (
           <FlatList
             data={items}
@@ -395,7 +398,22 @@ const styles = StyleSheet.create({
   },
   header: { fontSize: 20, fontWeight: "800", color: "#f8fafc" },
 
-  empty: { marginTop: 16, textAlign: "center", color: "#94a3b8" },
+  emptyCard: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    borderRadius: 16,
+    padding: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 40,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+  },
+  empty: {
+    fontSize: 16,
+    textAlign: "center",
+    color: "#cbd5e1",
+    fontWeight: "500",
+  },
 
   card: {
     backgroundColor: "rgba(0, 0, 0, 0.65)",
@@ -449,11 +467,11 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   modalCard: {
-    backgroundColor: "rgba(15, 23, 42, 0.95)",
+    backgroundColor: "rgba(10, 14, 26, 0.95)",
     borderRadius: 16,
-    padding: 14,
+    padding: 16,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.1)",
+    borderColor: "rgba(255, 255, 255, 0.08)",
   },
   modalTitle: { fontSize: 18, fontWeight: "900", textAlign: "right", marginBottom: 10, color: "#f8fafc" },
 
@@ -470,10 +488,26 @@ const styles = StyleSheet.create({
   },
 
   rowWrap: { flexDirection: "row-reverse", flexWrap: "wrap", gap: 8 },
-  chip: { borderWidth: 1, borderColor: "rgba(255, 255, 255, 0.2)", paddingVertical: 6, paddingHorizontal: 10, borderRadius: 18 },
-  chipSelected: { backgroundColor: "#f97316", borderColor: "#f97316" },
-  chipText: { color: "#cbd5e1", fontWeight: "700" },
-  chipTextSelected: { color: "#0f172a", fontWeight: "800" },
+  chip: {
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.15)",
+    backgroundColor: "rgba(255, 255, 255, 0.03)",
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 18,
+  },
+  chipSelected: {
+    backgroundColor: "#f97316",
+    borderColor: "#f97316",
+  },
+  chipText: {
+    color: "#cbd5e1",
+    fontWeight: "700",
+  },
+  chipTextSelected: {
+    color: "#0f172a",
+    fontWeight: "800",
+  },
 
   switchRow: { flexDirection: "row-reverse", justifyContent: "space-between", alignItems: "center", marginTop: 12 },
 

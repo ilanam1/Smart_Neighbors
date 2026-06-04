@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, ActivityIndicator, Image, Dimensions } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, Image, Dimensions } from 'react-native';
+import ActivityIndicator from '../components/CustomLoader';
 import { Building, MapPin, PlusCircle, ArrowRight } from 'lucide-react-native';
 import { getSupabase } from '../DataBase/supabase';
 

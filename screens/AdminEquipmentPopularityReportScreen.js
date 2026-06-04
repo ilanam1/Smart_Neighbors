@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, ActivityIndicator, ScrollView, TouchableOpacity, Image, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Dimensions } from 'react-native';
+import ActivityIndicator from '../components/CustomLoader';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { BarChart3, TrendingUp, PackageSearch } from "lucide-react-native";
 import { getEquipmentPopularityForecast } from "../API/adminEquipmentReportsApi";

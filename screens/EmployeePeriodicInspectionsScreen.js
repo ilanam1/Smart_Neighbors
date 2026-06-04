@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, Alert, Image, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert, Image, Dimensions } from 'react-native';
+import ActivityIndicator from '../components/CustomLoader';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ChevronRight, ShieldCheck, Clock } from "lucide-react-native";
 import { useNavigation, useIsFocused } from "@react-navigation/native";
@@ -70,7 +71,11 @@ export default function EmployeePeriodicInspectionsScreen({ route }) {
               effectiveStatus === "SKIPPED" && styles.statusSkipped,
             ]}
           >
-            <Text style={styles.statusText}>
+            <Text style={[
+              styles.statusText,
+              effectiveStatus === "OVERDUE" && { color: "#ef4444" },
+              effectiveStatus === "COMPLETED" && { color: "#22c55e" },
+            ]}>
               {STATUS_LABELS[effectiveStatus] || effectiveStatus}
             </Text>
           </View>
@@ -87,7 +92,7 @@ export default function EmployeePeriodicInspectionsScreen({ route }) {
         </Text>
 
         <View style={styles.bottomRow}>
-          <Clock size={14} color="#94a3b8" />
+          <Clock size={14} color="#f97316" />
           <Text style={styles.bottomText}>לחץ לפתיחת הביקורת</Text>
         </View>
       </TouchableOpacity>
@@ -95,7 +100,7 @@ export default function EmployeePeriodicInspectionsScreen({ route }) {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#0F172A' }}>
+    <View style={{ flex: 1, backgroundColor: 'transparent' }}>
       <Image
         source={require('../assets/app_internal_bg.png')}
         style={{
@@ -108,32 +113,32 @@ export default function EmployeePeriodicInspectionsScreen({ route }) {
         resizeMode="cover"
       />
       <SafeAreaView style={styles.safeArea}>
-      <View style={styles.headerRow}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <ChevronRight size={28} color="#f8fafc" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>ביקורות תקופתיות</Text>
-        <View style={{ width: 28 }} />
-      </View>
+        <View style={styles.headerRow}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <ChevronRight size={28} color="#f8fafc" />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>ביקורות תקופתיות</Text>
+          <View style={{ width: 28 }} />
+        </View>
 
-      <View style={styles.container}>
-        {loading ? (
-          <ActivityIndicator size="large" color="#3b82f6" style={{ marginTop: 40 }} />
-        ) : items.length === 0 ? (
-          <View style={styles.emptyState}>
-            <ShieldCheck size={48} color="#475569" />
-            <Text style={styles.emptyText}>אין לך ביקורות תקופתיות כרגע.</Text>
-          </View>
-        ) : (
-          <FlatList
-            data={items}
-            keyExtractor={(item) => item.id}
-            renderItem={renderItem}
-            contentContainerStyle={{ paddingBottom: 20 }}
-          />
-        )}
-      </View>
-    </SafeAreaView>
+        <View style={styles.container}>
+          {loading ? (
+            <ActivityIndicator size="large" color="#f97316" style={{ marginTop: 40 }} />
+          ) : items.length === 0 ? (
+            <View style={styles.emptyState}>
+              <ShieldCheck size={48} color="rgba(249, 115, 22, 0.4)" />
+              <Text style={styles.emptyText}>אין לך ביקורות תקופתיות כרגע.</Text>
+            </View>
+          ) : (
+            <FlatList
+              data={items}
+              keyExtractor={(item) => item.id}
+              renderItem={renderItem}
+              contentContainerStyle={{ paddingBottom: 20 }}
+            />
+          )}
+        </View>
+      </SafeAreaView>
     </View>
   );
 }
@@ -169,12 +174,14 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   card: {
-    backgroundColor: "#1e293b",
-    borderRadius: 12,
+    backgroundColor: "rgba(0, 0, 0, 0.65)",
+    borderRadius: 16,
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: "#334155",
+    borderColor: "rgba(255, 255, 255, 0.1)",
+    borderRightWidth: 4,
+    borderRightColor: "#f97316",
   },
   cardHeader: {
     flexDirection: "row-reverse",
@@ -204,22 +211,27 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   statusBadge: {
-    backgroundColor: "#334155",
+    backgroundColor: "rgba(249, 115, 22, 0.16)",
+    borderColor: "rgba(249, 115, 22, 0.3)",
+    borderWidth: 1,
     borderRadius: 8,
     paddingHorizontal: 8,
     paddingVertical: 4,
   },
   statusOverdue: {
-    backgroundColor: "#991b1b",
+    backgroundColor: "rgba(239, 68, 68, 0.16)",
+    borderColor: "rgba(239, 68, 68, 0.3)",
   },
   statusCompleted: {
-    backgroundColor: "#166534",
+    backgroundColor: "rgba(34, 197, 94, 0.16)",
+    borderColor: "rgba(34, 197, 94, 0.3)",
   },
   statusSkipped: {
-    backgroundColor: "#92400e",
+    backgroundColor: "rgba(249, 115, 22, 0.16)",
+    borderColor: "rgba(249, 115, 22, 0.3)",
   },
   statusText: {
-    color: "#fff",
+    color: "#f97316",
     fontSize: 12,
     fontWeight: "700",
   },

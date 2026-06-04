@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, ActivityIndicator, SafeAreaView, ScrollView, KeyboardAvoidingView, Platform, Image, Dimensions } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, SafeAreaView, ScrollView, KeyboardAvoidingView, Platform, Image, Dimensions } from 'react-native';
+import ActivityIndicator from '../components/CustomLoader';
 import { ArrowRight, Megaphone, Send, CheckCircle, Bell, Sparkles } from 'lucide-react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { createGlobalNotification } from '../API/notificationsApi';

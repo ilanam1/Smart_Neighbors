@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, Alert, Image, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert, Image, Dimensions } from 'react-native';
+import ActivityIndicator from '../components/CustomLoader';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ChevronRight, CheckCircle, XCircle, Building, CalendarCheck } from 'lucide-react-native';
+import { ChevronRight, CheckCircle, Building, CalendarCheck } from 'lucide-react-native';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { getEmployeeCompletedJobs } from '../API/jobRequestsApi';
 
@@ -61,10 +62,10 @@ export default function EmployeeCompletedJobsScreen({ route }) {
 
             <View style={styles.container}>
                 {loading ? (
-                    <ActivityIndicator size="large" color="#10b981" style={{ marginTop: 40 }} />
+                    <ActivityIndicator size="large" color="#f97316" style={{ marginTop: 40 }} />
                 ) : jobs.length === 0 ? (
                     <View style={styles.emptyState}>
-                        <CheckCircle size={48} color="#475569" />
+                        <CheckCircle size={48} color="rgba(249, 115, 22, 0.4)" />
                         <Text style={styles.emptyStateText}>עדיין לא סיימת אף משימה.</Text>
                     </View>
                 ) : (
@@ -78,12 +79,12 @@ export default function EmployeeCompletedJobsScreen({ route }) {
                                 <View style={styles.card}>
                                     <View style={styles.cardHeader}>
                                         <View style={[styles.statusBadge, isDone ? styles.statusBadgeDone : styles.statusBadgeReject]}>
-                                            <Text style={styles.statusText}>
+                                            <Text style={[styles.statusText, isDone ? { color: '#22c55e' } : { color: '#ef4444' }]}>
                                                 {isDone ? 'בוצע בהצלחה' : 'נדחה'}
                                             </Text>
                                         </View>
                                         <View style={{ flexDirection: 'row-reverse', alignItems: 'center' }}>
-                                            <Building size={16} color="#94a3b8" />
+                                            <Building size={16} color="#f97316" />
                                             <Text style={styles.buildingName}>{item.buildings?.name || 'בניין לא ידוע'}</Text>
                                         </View>
                                     </View>
@@ -91,7 +92,7 @@ export default function EmployeeCompletedJobsScreen({ route }) {
                                     <Text style={styles.instructions} numberOfLines={2}>{item.instructions}</Text>
                                     
                                     <View style={styles.timeRow}>
-                                        <CalendarCheck size={14} color="#64748b" />
+                                        <CalendarCheck size={14} color="#f97316" />
                                         <Text style={styles.timeText}>עודכן לאחרונה: {renderDate(item.updated_at)}</Text>
                                     </View>
                                 </View>
@@ -106,33 +107,45 @@ export default function EmployeeCompletedJobsScreen({ route }) {
 }
 
 const styles = StyleSheet.create({
-    safeArea: { flex: 1, backgroundColor: '#0f172a' },
+    safeArea: { flex: 1, backgroundColor: 'transparent' },
     headerRow: { flexDirection: 'row-reverse', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 12 },
     headerTitle: { fontSize: 20, fontWeight: '800', color: '#f8fafc' },
     container: { flex: 1, padding: 16 },
     
     emptyState: { alignItems: 'center', justifyContent: 'center', flex: 1, paddingBottom: 100 },
-    emptyStateText: { marginTop: 16, fontSize: 16, color: '#94a3b8', fontWeight: '500' },
+    emptyStateText: { marginTop: 16, fontSize: 16, color: '#cbd5e1', fontWeight: '500' },
 
     card: {
-        backgroundColor: '#1e293b',
-        borderRadius: 12,
+        backgroundColor: 'rgba(0, 0, 0, 0.65)',
+        borderRadius: 16,
         padding: 16,
         marginBottom: 12,
         borderWidth: 1,
-        borderColor: '#334155',
-        opacity: 0.85
+        borderColor: 'rgba(255, 255, 255, 0.1)',
+        borderRightWidth: 4,
+        borderRightColor: '#f97316',
     },
     cardHeader: { flexDirection: 'row-reverse', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 },
     buildingName: { fontSize: 16, fontWeight: 'bold', color: '#f8fafc', marginRight: 6 },
     
-    statusBadge: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
-    statusBadgeDone: { backgroundColor: '#10b981' },
-    statusBadgeReject: { backgroundColor: '#ef4444' },
-    statusText: { color: 'white', fontSize: 12, fontWeight: 'bold' },
+    statusBadge: {
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        borderRadius: 8,
+        borderWidth: 1,
+    },
+    statusBadgeDone: {
+        backgroundColor: 'rgba(34, 197, 94, 0.16)',
+        borderColor: 'rgba(34, 197, 94, 0.3)',
+    },
+    statusBadgeReject: {
+        backgroundColor: 'rgba(239, 68, 68, 0.16)',
+        borderColor: 'rgba(239, 68, 68, 0.3)',
+    },
+    statusText: { fontSize: 12, fontWeight: 'bold' },
 
     instructions: { fontSize: 15, color: '#cbd5e1', textAlign: 'right', marginBottom: 12, textDecorationLine: 'line-through' },
     
     timeRow: { flexDirection: 'row-reverse', alignItems: 'center', gap: 6 },
-    timeText: { fontSize: 13, color: '#64748b' }
+    timeText: { fontSize: 13, color: '#94a3b8' }
 });

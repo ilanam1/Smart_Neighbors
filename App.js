@@ -1,7 +1,8 @@
 
 import React, { useEffect, useState } from 'react';
-import { View, ActivityIndicator } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import { View } from 'react-native';
+import ActivityIndicator from './components/CustomLoader';
+import { NavigationContainer, DarkTheme } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StripeProvider } from '@stripe/stripe-react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -74,6 +75,19 @@ import {
 } from './API/pushNotificationsApi';
 
 const Stack = createNativeStackNavigator();
+
+const MyTheme = {
+  ...DarkTheme,
+  colors: {
+    ...DarkTheme.colors,
+    primary: '#f97316',
+    background: '#0a0e1a',
+    card: '#0a0e1a',
+    text: '#ffffff',
+    border: 'rgba(255, 255, 255, 0.08)',
+    notification: '#f97316',
+  },
+};
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -199,8 +213,8 @@ useEffect(() => {
 
   if (authChecking) {
     return (
-      <View style={{ flex: 1, backgroundColor: '#0f172a', justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" color="#00f2ff" />
+      <View style={{ flex: 1, backgroundColor: '#0a0e1a', justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#f97316" />
       </View>
     );
   }
@@ -211,7 +225,7 @@ useEffect(() => {
       merchantIdentifier="com.smartneighbors"
     >
       <SafeAreaProvider>
-        <NavigationContainer ref={navigationRef}>
+        <NavigationContainer ref={navigationRef} theme={MyTheme}>
         {mfaChallengeConfig ? (
           <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name="StandaloneMfaChallenge">

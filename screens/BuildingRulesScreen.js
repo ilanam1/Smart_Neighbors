@@ -1,7 +1,8 @@
 // screens/BuildingRulesScreen.js
 
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, TextInput, ScrollView, Platform, StatusBar, Image, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView, Platform, StatusBar, Image, Dimensions } from 'react-native';
+import ActivityIndicator from '../components/CustomLoader';
 import { useNavigation } from "@react-navigation/native";
 import { ShieldCheck, Save, ArrowRight } from "lucide-react-native";
 

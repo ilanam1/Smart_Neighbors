@@ -97,14 +97,19 @@ describe('EmployeeJobRequestsListScreen', () => {
 
         expect(mockNavigate).toHaveBeenCalledWith('EmployeeJobRequest', {
             notification: {
-                id: 'job1',
+                id: 'job-job1',
                 sender_id: 'man1',
+                recipient_id: 'emp1',
                 related_data: {
                     job_id: 'job1',
                     report_id: 'rep1',
+                    employee_id: 'emp1',
                     building_id: 'b1',
                     building_name: 'Tower A',
+                    manager_uid: 'man1',
                     manager_name: 'נציג ועד',
+                    tenant_id: null,
+                    report_type: null,
                     instructions: 'Fix leak',
                     schedule_time: 'Sunday Morning',
                     is_handled: false

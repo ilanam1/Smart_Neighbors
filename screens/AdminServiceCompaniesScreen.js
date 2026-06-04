@@ -65,27 +65,19 @@ export default function AdminServiceCompaniesScreen({ route, navigation }) {
             activeOpacity={0.8}
             onPress={() => navigation.navigate('AdminCompanyDetails', { adminUser, company: item })}
         >
-            <LinearGradient
-                colors={['#0c1f38', '#0a1b31']}
-                style={styles.cardContainer}
-                start={{ x: 1, y: 0 }}
-                end={{ x: 0, y: 0 }}
-            >
-            <View style={styles.accentLine} />
-
-            <View style={styles.infoBlock}>
-                <View style={styles.titleRow}>
-                    <Text style={styles.cName}>{item.name}</Text>
-                    <Briefcase size={16} color="#fbbf24" style={{ marginLeft: 8 }} />
-                </View>
-                
-                <View style={styles.typeRow}>
-                    <Text style={styles.cType}>{getTranslatedType(item.service_type)}</Text>
-                    <Wrench size={14} color="#06b6d4" style={{ marginLeft: 6 }} />
+            <View style={styles.cardContainer}>
+                <View style={styles.infoBlock}>
+                    <View style={styles.titleRow}>
+                        <Text style={styles.cName}>{item.name}</Text>
+                        <Briefcase size={16} color="#f97316" style={{ marginLeft: 8 }} />
+                    </View>
+                    
+                    <View style={styles.typeRow}>
+                        <Text style={styles.cType}>{getTranslatedType(item.service_type)}</Text>
+                        <Wrench size={14} color="#f97316" style={{ marginLeft: 6 }} />
+                    </View>
                 </View>
             </View>
-            
-            </LinearGradient>
         </TouchableOpacity>
     );
 
@@ -122,12 +114,12 @@ export default function AdminServiceCompaniesScreen({ route, navigation }) {
                     onChangeText={setSearchQuery}
                     textAlign="right"
                 />
-                <Search size={20} color="#22d3ee" style={styles.searchIcon} />
+                <Search size={20} color="#f97316" style={styles.searchIcon} />
             </View>
 
             {/* List */}
             {loading ? (
-                <ActivityIndicator size="large" color="#22d3ee" style={{ marginTop: 60 }} />
+                <ActivityIndicator size="large" color="#f97316" style={{ marginTop: 60 }} />
             ) : (
                 <FlatList
                     data={filteredCompanies}
@@ -137,7 +129,7 @@ export default function AdminServiceCompaniesScreen({ route, navigation }) {
                     showsVerticalScrollIndicator={false}
                     ListEmptyComponent={
                         <View style={styles.emptyContainer}>
-                            <Briefcase size={64} color="#1e293b" />
+                            <Briefcase size={64} color="rgba(249, 115, 22, 0.4)" />
                             <Text style={styles.emptyText}>לא נמצאו חברות תואמות</Text>
                         </View>
                     }
@@ -184,18 +176,14 @@ const styles = StyleSheet.create({
     searchWrapper: {
         flexDirection: 'row-reverse',
         alignItems: 'center',
-        backgroundColor: '#0a1b31',
+        backgroundColor: 'rgba(0, 0, 0, 0.4)',
         marginHorizontal: 16,
         marginBottom: 24,
         paddingHorizontal: 20,
-        borderRadius: 24,
+        borderRadius: 16,
         borderWidth: 1,
-        borderColor: 'rgba(51, 65, 85, 0.5)',
-        height: 60,
-        shadowColor: '#00f2ff',
-        shadowOpacity: 0.05,
-        shadowRadius: 8,
-        elevation: 3,
+        borderColor: 'rgba(255, 255, 255, 0.15)',
+        height: 55,
     },
     searchInput: {
         flex: 1,
@@ -213,16 +201,14 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'flex-end',
-        padding: 24,
-        borderRadius: 24,
+        padding: 20,
+        borderRadius: 16,
         marginBottom: 16,
         borderWidth: 1,
-        borderColor: 'rgba(51, 65, 85, 0.3)',
-        shadowColor: '#00f2ff',
-        shadowOpacity: 0.05,
-        shadowOffset: { width: 0, height: 4 },
-        shadowRadius: 10,
-        elevation: 4,
+        borderColor: 'rgba(255, 255, 255, 0.1)',
+        borderRightWidth: 4,
+        borderRightColor: '#f97316',
+        backgroundColor: 'rgba(0, 0, 0, 0.65)',
         position: 'relative',
         overflow: 'hidden'
     },
@@ -264,7 +250,7 @@ const styles = StyleSheet.create({
         marginTop: 80,
     },
     emptyText: {
-        color: '#64748b',
+        color: '#cbd5e1',
         fontSize: 18,
         marginTop: 16,
     },
@@ -272,13 +258,13 @@ const styles = StyleSheet.create({
         position: 'absolute',
         bottom: 24,
         left: 24, 
-        backgroundColor: '#06b6d4',
+        backgroundColor: '#f97316',
         width: 60,
         height: 60,
         borderRadius: 30,
         alignItems: 'center',
         justifyContent: 'center',
-        shadowColor: '#06b6d4',
+        shadowColor: '#f97316',
         shadowOpacity: 0.3,
         shadowOffset: { width: 0, height: 6 },
         shadowRadius: 12,

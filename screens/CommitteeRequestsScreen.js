@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
+import { View,
   Text,
-  ActivityIndicator,
   FlatList,
   StyleSheet,
   TouchableOpacity,
   Alert,
   Image,
-  Dimensions
-} from "react-native";
+  Dimensions } from 'react-native';
+import ActivityIndicator from '../components/CustomLoader';
 import { ClipboardList, AlertCircle } from "lucide-react-native";
 import { getOpenRequests, completeRequest } from "../API/requestsApi";
 

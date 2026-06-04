@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, ActivityIndicator, FlatList, StyleSheet, TouchableOpacity, RefreshControl, Image, Dimensions } from 'react-native';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, RefreshControl, Image, Dimensions } from 'react-native';
+import ActivityIndicator from '../components/CustomLoader';
 import { getWeeklyDisturbancePredictions } from "../API/weeklyPredictionsApi";
 
 const TYPE_LABELS = {

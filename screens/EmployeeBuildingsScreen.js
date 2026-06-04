@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, ActivityIndicator, TouchableOpacity, Image, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, Dimensions } from 'react-native';
+import ActivityIndicator from '../components/CustomLoader';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowRight, MapPin, Building as BuildingIcon } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -33,7 +34,7 @@ export default function EmployeeBuildingsScreen({ route }) {
     const renderBuilding = ({ item }) => (
         <View style={styles.card}>
             <View style={styles.cardHeader}>
-                <BuildingIcon size={20} color="#3b82f6" />
+                <BuildingIcon size={20} color="#f97316" />
                 <Text style={styles.buildingName}>{item.name}</Text>
             </View>
             <View style={styles.cardBody}>
@@ -49,55 +50,55 @@ export default function EmployeeBuildingsScreen({ route }) {
     );
 
     return (
-    <View style={{ flex: 1, backgroundColor: 'transparent' }}>
-      <Image
-        source={require('../assets/app_internal_bg.png')}
-        style={{
-          position: 'absolute',
-          left: 0,
-          top: 0,
-          width: Dimensions.get('screen').width,
-          height: Dimensions.get('screen').height,
-        }}
-        resizeMode="cover"
-      />
-      <SafeAreaView style={styles.safe}>
-            <View style={styles.container}>
-                <View style={styles.header}>
-                    <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                        <ArrowRight size={24} color="#f8fafc" />
-                    </TouchableOpacity>
-                    <Text style={styles.headerTitle}>הבניינים שלי</Text>
-                    <View style={{ width: 24 }} />
-                </View>
-
-                {loading ? (
-                    <ActivityIndicator size="large" color="#3b82f6" style={{ marginTop: 40 }} />
-                ) : buildings.length === 0 ? (
-                    <View style={styles.emptyContainer}>
-                        <BuildingIcon size={64} color="#334155" />
-                        <Text style={styles.emptyText}>כרגע אינך משויך לאף בניין.</Text>
-                        <Text style={styles.emptySubText}>כאשר נציג ועד יוסיף אותך לבניין שלו, תראה אותו כאן.</Text>
+        <View style={{ flex: 1, backgroundColor: 'transparent' }}>
+            <Image
+                source={require('../assets/app_internal_bg.png')}
+                style={{
+                    position: 'absolute',
+                    left: 0,
+                    top: 0,
+                    width: Dimensions.get('screen').width,
+                    height: Dimensions.get('screen').height,
+                }}
+                resizeMode="cover"
+            />
+            <SafeAreaView style={styles.safe}>
+                <View style={styles.container}>
+                    <View style={styles.header}>
+                        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                            <ArrowRight size={24} color="#f8fafc" />
+                        </TouchableOpacity>
+                        <Text style={styles.headerTitle}>הבניינים שלי</Text>
+                        <View style={{ width: 24 }} />
                     </View>
-                ) : (
-                    <FlatList
-                        data={buildings}
-                        keyExtractor={(item) => item.id}
-                        renderItem={renderBuilding}
-                        contentContainerStyle={styles.listContent}
-                        showsVerticalScrollIndicator={false}
-                    />
-                )}
-            </View>
-        </SafeAreaView>
-    </View>
-  );
+
+                    {loading ? (
+                        <ActivityIndicator size="large" color="#f97316" style={{ marginTop: 40 }} />
+                    ) : buildings.length === 0 ? (
+                        <View style={styles.emptyContainer}>
+                            <BuildingIcon size={64} color="rgba(249, 115, 22, 0.4)" />
+                            <Text style={styles.emptyText}>כרגע אינך משויך לאף בניין.</Text>
+                            <Text style={styles.emptySubText}>כאשר נציג ועד יוסיף אותך לבניין שלו, תראה אותו כאן.</Text>
+                        </View>
+                    ) : (
+                        <FlatList
+                            data={buildings}
+                            keyExtractor={(item) => item.id}
+                            renderItem={renderBuilding}
+                            contentContainerStyle={styles.listContent}
+                            showsVerticalScrollIndicator={false}
+                        />
+                    )}
+                </View>
+            </SafeAreaView>
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({
     safe: {
         flex: 1,
-        backgroundColor: '#0F172A',
+        backgroundColor: 'transparent',
     },
     container: {
         flex: 1,
@@ -108,9 +109,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: 16,
-        backgroundColor: '#1e293b',
-        borderBottomWidth: 1,
-        borderBottomColor: '#334155',
+        backgroundColor: 'transparent',
     },
     backButton: {
         padding: 4,
@@ -125,12 +124,14 @@ const styles = StyleSheet.create({
         paddingBottom: 40,
     },
     card: {
-        backgroundColor: '#1e293b',
-        borderRadius: 12,
+        backgroundColor: 'rgba(0, 0, 0, 0.65)',
+        borderRadius: 16,
         padding: 16,
         marginBottom: 12,
         borderWidth: 1,
-        borderColor: '#334155',
+        borderColor: 'rgba(255, 255, 255, 0.1)',
+        borderRightWidth: 4,
+        borderRightColor: '#f97316',
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.2,
@@ -168,7 +169,7 @@ const styles = StyleSheet.create({
     },
     statText: {
         fontSize: 13,
-        color: '#94a3b8',
+        color: '#cbd5e1',
     },
     emptyContainer: {
         flex: 1,
@@ -178,7 +179,7 @@ const styles = StyleSheet.create({
     },
     emptyText: {
         fontSize: 18,
-        color: '#f8fafc',
+        color: '#cbd5e1',
         marginTop: 16,
         marginBottom: 8,
         fontWeight: 'bold',

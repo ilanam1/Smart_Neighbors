@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useFocusEffect } from '@react-navigation/native';
 import { getOpenRequests } from "../API/requestsApi";
 import { getBuildingDisturbanceReports } from "../API/disturbancesApi";
@@ -68,6 +68,7 @@ export default function HomeScreen({ navigation, user }) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const [profile, setProfile] = useState(null);
+  const profileLoadedRef = useRef(false);
   const [profileLoading, setProfileLoading] = useState(false);
   const [isCommittee, setIsCommittee] = useState(false);
 
@@ -137,7 +138,9 @@ export default function HomeScreen({ navigation, user }) {
       let mounted = true;
       async function loadProfile() {
         try {
-          setProfileLoading(true);
+          if (!profileLoadedRef.current) {
+            setProfileLoading(true);
+          }
           const { data, error } = await supabase
             .from("profiles")
             .select("first_name, last_name, email, photo_url, is_house_committee, building_id")
@@ -149,6 +152,7 @@ export default function HomeScreen({ navigation, user }) {
             setProfile(data);
             const isC = !!data?.is_house_committee;
             setIsCommittee(isC);
+            profileLoadedRef.current = true;
           }
         } catch (e) {
           console.error(e.message);

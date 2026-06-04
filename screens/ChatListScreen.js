@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, StatusBar, Image, Alert, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, StatusBar, Image, Alert, Dimensions } from 'react-native';
+import ActivityIndicator from '../components/CustomLoader';
 import Svg, { Defs, RadialGradient, Stop, Rect } from 'react-native-svg';
 import { useFocusEffect } from '@react-navigation/native';
 import { getUserConversations, getBuildingGroupChat } from '../API/chatApi';

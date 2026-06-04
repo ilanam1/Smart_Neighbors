@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { View, Text, ScrollView, ActivityIndicator, StyleSheet, RefreshControl, Image, Dimensions } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, RefreshControl, Image, Dimensions } from 'react-native';
+import ActivityIndicator from '../components/CustomLoader';
 import { getBuildingDisturbanceReports } from "../API/disturbancesApi";
 import { getAllBuildingRequests } from "../API/requestsApi";
 

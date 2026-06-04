@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import {
-  View,
+import { View,
   Text,
   StyleSheet,
   TouchableOpacity,
@@ -8,11 +7,10 @@ import {
   Modal,
   TextInput,
   Alert,
-  ActivityIndicator,
   Platform,
   Image,
-  Dimensions,
-} from "react-native";
+  Dimensions } from 'react-native';
+import ActivityIndicator from '../components/CustomLoader';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Calendar } from "react-native-calendars";
 import { ArrowRight, CalendarPlus, CalendarDays, Clock } from "lucide-react-native";

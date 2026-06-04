@@ -1,6 +1,7 @@
 // screens/PayFeesScreen.js
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, ScrollView, Image, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, ScrollView, Image, Dimensions } from 'react-native';
+import ActivityIndicator from '../components/CustomLoader';
 import { useStripe } from '@stripe/stripe-react-native';
 import { createPaymentIntent } from '../API/stripeApi';
 import {

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, Alert, Clipboard, ScrollView, Image, Dimensions } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Clipboard, ScrollView, Image, Dimensions } from 'react-native';
+import ActivityIndicator from '../components/CustomLoader';
 import QRCode from 'react-native-qrcode-svg';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ShieldCheck, Copy, ArrowRight } from 'lucide-react-native';

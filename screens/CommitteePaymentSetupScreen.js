@@ -1,6 +1,7 @@
 // screens/CommitteePaymentSetupScreen.js
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, Image, Dimensions } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Dimensions } from 'react-native';
+import ActivityIndicator from '../components/CustomLoader';
 import { getSupabase } from '../DataBase/supabase';
 
 export default function CommitteePaymentSetupScreen({ navigation }) {

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, Alert, ScrollView, Image, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, ScrollView, Image, Dimensions } from 'react-native';
+import ActivityIndicator from '../components/CustomLoader';
 import {
   getCurrentUserProfile,
   getCurrentBuildingCharge,

@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, ScrollView, TouchableOpacity, Alert, ActivityIndicator, TextInput, Image, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, FlatList, ScrollView, TouchableOpacity, Alert, TextInput, Image, Dimensions } from 'react-native';
+import ActivityIndicator from '../components/CustomLoader';
 import { Trash2, Search, ArrowRight, User, Mail, SearchX, MapPin, Building2, ShieldCheck } from 'lucide-react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { getSupabase } from '../DataBase/supabase';

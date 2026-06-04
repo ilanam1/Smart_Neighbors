@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, ActivityIndicator, ScrollView, Image, Dimensions } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, ScrollView, Image, Dimensions } from 'react-native';
+import ActivityIndicator from '../components/CustomLoader';
 import { Briefcase, PlusCircle, ArrowRight, CheckCircle2 } from 'lucide-react-native';
 import { getSupabase } from '../DataBase/supabase';
 
@@ -82,7 +83,7 @@ export default function AdminAddCompanyScreen({ route, navigation }) {
             <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
                 <Text style={styles.label}>שם החברה</Text>
                 <View style={styles.inputContainer}>
-                    <Briefcase size={20} color="#9ca3af" />
+                    <Briefcase size={20} color="#f97316" />
                     <TextInput 
                         style={styles.input}
                         placeholder="לדוגמה: א.ד ניקיונות"
@@ -95,7 +96,7 @@ export default function AdminAddCompanyScreen({ route, navigation }) {
 
                 <Text style={styles.label}>מחיר חודשי לעובד (₪)</Text>
                 <View style={styles.inputContainer}>
-                    <Briefcase size={20} color="#9ca3af" />
+                    <Briefcase size={20} color="#f97316" />
                     <TextInput 
                         style={styles.input}
                         placeholder="לדוגמה: 500"
@@ -163,9 +164,7 @@ const styles = StyleSheet.create({
         paddingTop: 65,
         paddingBottom: 20,
         paddingHorizontal: 20,
-        backgroundColor: '#1e293b',
-        borderBottomWidth: 1,
-        borderBottomColor: '#334155'
+        backgroundColor: 'transparent',
     },
     headerTitle: { fontSize: 22, fontWeight: 'bold', color: '#f8fafc', marginRight: 15 },
     backBtn: { padding: 5 },
@@ -174,9 +173,9 @@ const styles = StyleSheet.create({
     inputContainer: {
         flexDirection: 'row-reverse',
         alignItems: 'center',
-        backgroundColor: '#1e293b',
+        backgroundColor: 'rgba(0, 0, 0, 0.4)',
         borderWidth: 1,
-        borderColor: '#334155',
+        borderColor: 'rgba(255, 255, 255, 0.15)',
         borderRadius: 12,
         paddingHorizontal: 15,
         marginBottom: 10,
@@ -193,19 +192,19 @@ const styles = StyleSheet.create({
     chip: {
         flexDirection: 'row-reverse',
         alignItems: 'center',
-        backgroundColor: '#1e293b',
+        backgroundColor: 'rgba(255, 255, 255, 0.03)',
         borderWidth: 1,
-        borderColor: '#334155',
+        borderColor: 'rgba(255, 255, 255, 0.15)',
         paddingVertical: 12,
         paddingHorizontal: 16,
         borderRadius: 20,
     },
     chipSelected: {
-        backgroundColor: '#06b6d4',
-        borderColor: '#22d3ee',
+        backgroundColor: '#f97316',
+        borderColor: '#f97316',
     },
     chipText: {
-        color: '#94a3b8',
+        color: '#cbd5e1',
         fontSize: 14,
         fontWeight: '600'
     },
@@ -214,7 +213,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold'
     },
     submitButton: {
-        backgroundColor: '#00f2ff',
+        backgroundColor: '#f97316',
         flexDirection: 'row-reverse',
         alignItems: 'center',
         justifyContent: 'center',
@@ -222,7 +221,7 @@ const styles = StyleSheet.create({
         padding: 16,
         borderRadius: 12,
         marginTop: 30,
-        shadowColor: '#00f2ff',
+        shadowColor: '#f97316',
         shadowOpacity: 0.3,
         shadowRadius: 8,
         elevation: 4

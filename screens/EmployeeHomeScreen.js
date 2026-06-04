@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, FlatList, ActivityIndicator, ScrollView, Image, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, FlatList, ScrollView, Image, Dimensions } from 'react-native';
+import ActivityIndicator from '../components/CustomLoader';
 import { useNavigation } from '@react-navigation/native';
 import {
     LogOut,
@@ -125,18 +126,18 @@ export default function EmployeeHomeScreen({ user, onSignOut }) {
       <View style={styles.container}>
             <View style={styles.header}>
                 <View style={{ flexDirection: 'row', gap: 16 }}>
+                    <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
+                        <LogOut size={24} color="#f97316" />
+                    </TouchableOpacity>
                     <TouchableOpacity onPress={() => setShowNotifications(true)} style={styles.logoutButton}>
                         <View>
-                            <Bell size={24} color="#94a3b8" />
+                            <Bell size={24} color="#f97316" />
                             {unreadCount > 0 && (
                                 <View style={styles.badge}>
                                     <Text style={styles.badgeText}>{unreadCount}</Text>
                                 </View>
                             )}
                         </View>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
-                        <LogOut size={24} color="#ef4444" />
                     </TouchableOpacity>
                 </View>
                 <Text style={styles.headerTitle}>אזור נותני השירות</Text>
@@ -155,8 +156,8 @@ export default function EmployeeHomeScreen({ user, onSignOut }) {
                         style={styles.actionCard}
                         onPress={() => navigation.navigate('EmployeeBuildings', { user })}
                     >
-                        <View style={[styles.iconCircle, { backgroundColor: '#dbeafe' }]}>
-                            <Building size={24} color="#3b82f6" />
+                        <View style={styles.iconCircle}>
+                            <Building size={24} color="#f97316" />
                         </View>
                         <Text style={styles.actionTitle}>הבניינים שלי</Text>
                         <Text style={styles.actionDesc}>({buildingsCount} מבנים)</Text>
@@ -166,8 +167,8 @@ export default function EmployeeHomeScreen({ user, onSignOut }) {
                         style={styles.actionCard}
                         onPress={() => navigation.navigate('EmployeeJobRequestsList', { employeeId: user.id })}
                     >
-                        <View style={[styles.iconCircle, { backgroundColor: '#fef08a' }]}>
-                            <ClipboardList size={24} color="#ca8a04" />
+                        <View style={styles.iconCircle}>
+                            <ClipboardList size={24} color="#f97316" />
                         </View>
                         <Text style={styles.actionTitle}>בקשות פתוחות</Text>
                         <Text style={styles.actionDesc}>לטיפול</Text>
@@ -179,8 +180,8 @@ export default function EmployeeHomeScreen({ user, onSignOut }) {
                         style={[styles.actionCard, { marginTop: 16, width: '100%' }]}
                         onPress={() => navigation.navigate('EmployeePeriodicInspections', { employeeId: user.id })}
                     >
-                        <View style={[styles.iconCircle, { backgroundColor: '#dbeafe' }]}>
-                            <ShieldCheck size={24} color="#2563eb" />
+                        <View style={styles.iconCircle}>
+                            <ShieldCheck size={24} color="#f97316" />
                         </View>
                         <Text style={styles.actionTitle}>ביקורות תקופתיות</Text>
                         <Text style={styles.actionDesc}>משימות בטיחות ותחזוקה חוזרות</Text>
@@ -197,8 +198,8 @@ export default function EmployeeHomeScreen({ user, onSignOut }) {
                             })
                         }
                     >
-                        <View style={[styles.iconCircle, { backgroundColor: '#dbeafe' }]}>
-                            <FileText size={24} color="#2563eb" />
+                        <View style={styles.iconCircle}>
+                            <FileText size={24} color="#f97316" />
                         </View>
                         <Text style={styles.actionTitle}>דו"ח חודשי</Text>
                         <Text style={styles.actionDesc}>תקלות ועבודות שבוצעו החודש</Text>
@@ -214,8 +215,8 @@ export default function EmployeeHomeScreen({ user, onSignOut }) {
                             })
                         }
                     >
-                        <View style={[styles.iconCircle, { backgroundColor: '#e0f2fe' }]}>
-                            <BarChart3 size={24} color="#0284c7" />
+                        <View style={styles.iconCircle}>
+                            <BarChart3 size={24} color="#f97316" />
                         </View>
                         <Text style={styles.actionTitle}>עומס תחזוקתי צפוי</Text>
                         <Text style={styles.actionDesc}>תחזית עומסים ותכנון משמרות</Text>
@@ -226,8 +227,8 @@ export default function EmployeeHomeScreen({ user, onSignOut }) {
                         style={[styles.actionCard, { marginTop: 16, width: '100%' }]}
                         onPress={() => navigation.navigate('EmployeeCompletedJobs', { employeeId: user.id })}
                     >
-                        <View style={[styles.iconCircle, { backgroundColor: '#dcfce7' }]}>
-                            <CheckCircle size={24} color="#16a34a" />
+                        <View style={styles.iconCircle}>
+                            <CheckCircle size={24} color="#f97316" />
                         </View>
                         <Text style={styles.actionTitle}>היסטוריית משימות</Text>
                         <Text style={styles.actionDesc}>קריאות שטופלו והסתיימו</Text>
@@ -257,15 +258,13 @@ const styles = StyleSheet.create({
         backgroundColor: 'transparent',
     },
     header: {
-        backgroundColor: '#1e293b',
+        backgroundColor: 'transparent',
         paddingTop: 60,
         paddingBottom: 20,
         paddingHorizontal: 20,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        borderBottomWidth: 1,
-        borderBottomColor: '#334155',
     },
     headerTitle: {
         fontSize: 22,
@@ -279,17 +278,14 @@ const styles = StyleSheet.create({
         padding: 20,
     },
     card: {
-        backgroundColor: '#1e293b',
-        borderRadius: 12,
+        backgroundColor: 'rgba(0, 0, 0, 0.65)',
+        borderRadius: 16,
         padding: 20,
         marginBottom: 20,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-        elevation: 2,
         borderWidth: 1,
-        borderColor: '#334155',
+        borderColor: 'rgba(255, 255, 255, 0.1)',
+        borderRightWidth: 4,
+        borderRightColor: '#f97316',
         alignItems: 'flex-end',
     },
     welcomeText: {
@@ -301,13 +297,13 @@ const styles = StyleSheet.create({
     },
     subText: {
         fontSize: 16,
-        color: '#94a3b8',
+        color: '#cbd5e1',
         marginBottom: 4,
         textAlign: 'right'
     },
     infoText: {
         fontSize: 14,
-        color: '#64748b',
+        color: '#94a3b8',
         textAlign: 'right',
         marginTop: 5
     },
@@ -317,22 +313,19 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between'
     },
     actionCard: {
-        backgroundColor: '#1e293b',
+        backgroundColor: 'rgba(0, 0, 0, 0.65)',
         width: '48%',
         padding: 16,
-        borderRadius: 12,
+        borderRadius: 16,
         alignItems: 'center',
-        shadowColor: '#000',
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-        elevation: 2,
         borderWidth: 1,
-        borderColor: '#334155',
+        borderColor: 'rgba(255, 255, 255, 0.1)',
     },
     iconCircle: {
         width: 48,
         height: 48,
         borderRadius: 24,
+        backgroundColor: 'rgba(255, 255, 255, 0.05)',
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: 12
@@ -346,7 +339,7 @@ const styles = StyleSheet.create({
     },
     actionDesc: {
         fontSize: 12,
-        color: '#94a3b8',
+        color: '#cbd5e1',
         textAlign: 'center'
     },
     badge: {

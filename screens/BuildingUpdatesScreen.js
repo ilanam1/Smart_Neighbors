@@ -1,6 +1,7 @@
 // screens/BuildingUpdatesScreen.js
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TextInput, TouchableOpacity, Alert, Switch, Image, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, Alert, Switch, Image, Dimensions } from 'react-native';
+import ActivityIndicator from '../components/CustomLoader';
 import {
   getWeeklyBuildingUpdates,
   createBuildingUpdate,
