@@ -71,6 +71,7 @@ export default function BuildingDocumentsScreen({ route }) {
       Alert.alert("שגיאה", "לא ניתן לפתוח את המסמך");
     }
   }
+
   async function handleUpload() {
     try {
       const [res] = await pick({
@@ -134,7 +135,7 @@ export default function BuildingDocumentsScreen({ route }) {
       >
         <View style={styles.docLeft}>
           <View style={styles.docIcon}>
-            <FileText size={20} color="#38bdf8" />
+            <FileText size={20} color="#f97316" />
           </View>
           <View style={styles.docText}>
             <Text style={styles.docTitle}>{item.title}</Text>
@@ -150,7 +151,7 @@ export default function BuildingDocumentsScreen({ route }) {
             style={styles.deleteBtn}
             onPress={() => handleDelete(item.id)}
           >
-            <Trash2 size={18} color="#f87171" />
+            <Trash2 size={18} color="#ef4444" />
           </TouchableOpacity>
         )}
       </TouchableOpacity>
@@ -158,33 +159,21 @@ export default function BuildingDocumentsScreen({ route }) {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#0F172A' }}>
+    <View style={{ flex: 1, backgroundColor: 'transparent' }}>
       <Image
         source={require('../assets/app_internal_bg.png')}
-        style={{
-          position: 'absolute',
-          left: 0,
-          top: 0,
-          width: Dimensions.get('screen').width,
-          height: Dimensions.get('screen').height,
-        }}
+        style={styles.bgImage}
         resizeMode="cover"
       />
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.container}>
-          {/* כותרת מסך + כפתור חזרה במרכז */}
+          {/* כותרת עמוד אלגנטית */}
           <View style={styles.header}>
-            <Text style={styles.title}>מסמכי בניין</Text>
-
-            <TouchableOpacity
-              onPress={() => navigation.goBack()}
-              style={styles.backBtn}
-            >
-              <Text style={styles.backText}>חזרה למסך הקודם</Text>
-            </TouchableOpacity>
+            <Text style={styles.headerTitle}>מסמכי הבניין</Text>
+            <Text style={styles.headerSubTitle}>מסמכים משותפים, חוזים וקבצי ועד הבית</Text>
           </View>
 
-          {/* כפתור העלאה באמצע למעלה */}
+          {/* כפתור העלאה */}
           {isCommittee && (
             <View style={styles.uploadWrapper}>
               <TouchableOpacity
@@ -208,8 +197,8 @@ export default function BuildingDocumentsScreen({ route }) {
           {loading ? (
             <ActivityIndicator
               size="large"
-              color="#38bdf8"
-              style={{ marginTop: 20 }}
+              color="#f97316"
+              style={{ marginTop: 30 }}
             />
           ) : error ? (
             <Text style={styles.errorText}>שגיאה: {error}</Text>
@@ -221,6 +210,7 @@ export default function BuildingDocumentsScreen({ route }) {
               keyExtractor={(item) => item.id.toString()}
               renderItem={renderItem}
               contentContainerStyle={{ paddingVertical: 10 }}
+              showsVerticalScrollIndicator={false}
             />
           )}
         </View>
@@ -234,6 +224,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "transparent",
   },
+  bgImage: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    width: Dimensions.get('screen').width,
+    height: Dimensions.get('screen').height,
+  },
   container: {
     flex: 1,
     backgroundColor: "transparent",
@@ -241,65 +238,62 @@ const styles = StyleSheet.create({
     paddingTop: 8,
   },
   header: {
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 12,
+    marginTop: 8,
+    marginBottom: 20,
+    alignItems: "flex-end",
   },
-  title: {
+  headerTitle: {
     color: "#f8fafc",
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 8,
+    fontSize: 26,
+    fontWeight: "800",
   },
-  backBtn: {
-    paddingHorizontal: 20,
-    paddingVertical: 8,
-    borderRadius: 999,
-    backgroundColor: "rgba(56,189,248,0.15)",
-  },
-  backText: {
-    color: "#38bdf8",
-    fontSize: 14,
-    fontWeight: "600",
+  headerSubTitle: {
+    color: "#94a3b8",
+    fontSize: 13,
+    marginTop: 4,
+    textAlign: "right",
   },
   uploadWrapper: {
     alignItems: "center",
-    marginVertical: 12,
+    marginBottom: 16,
   },
   uploadBtn: {
     flexDirection: "row-reverse",
     alignItems: "center",
-    paddingHorizontal: 18,
-    paddingVertical: 10,
-    backgroundColor: "#22c55e",
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    backgroundColor: "#f97316",
     borderRadius: 24,
+    gap: 8,
   },
   uploadText: {
-    marginHorizontal: 6,
     color: "#0f172a",
-    fontWeight: "600",
+    fontWeight: "800",
     fontSize: 14,
   },
   errorText: {
-    color: "#f87171",
-    marginTop: 20,
+    color: "#ef4444",
+    marginTop: 30,
     textAlign: "center",
+    fontSize: 15,
   },
   emptyText: {
-    color: "#94a3b8",
-    marginTop: 20,
+    color: "#cbd5e1",
+    marginTop: 40,
     textAlign: "center",
+    fontSize: 15,
+    fontWeight: "600",
   },
   docItem: {
     flexDirection: "row-reverse",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "#1e293b",
-    borderRadius: 16,
-    padding: 14,
-    marginBottom: 10,
+    backgroundColor: "rgba(0, 0, 0, 0.65)",
+    borderRadius: 20,
+    padding: 16,
+    marginBottom: 12,
     borderWidth: 1,
-    borderColor: "#334155",
+    borderColor: "rgba(255, 255, 255, 0.1)",
   },
   docLeft: {
     flexDirection: "row-reverse",
@@ -307,28 +301,30 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   docIcon: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
-    backgroundColor: "rgba(56, 189, 248, 0.12)",
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: "rgba(249, 115, 22, 0.15)",
     justifyContent: "center",
     alignItems: "center",
-    marginLeft: 10,
+    marginLeft: 12,
   },
   docText: {
     flex: 1,
     alignItems: "flex-end",
   },
   docTitle: {
-    color: "#e5e7eb",
-    fontWeight: "600",
+    color: "#f8fafc",
+    fontSize: 15,
+    fontWeight: "700",
+    textAlign: "right",
   },
   docSub: {
     color: "#94a3b8",
-    fontSize: 10,
-    marginTop: 2,
+    fontSize: 11,
+    marginTop: 4,
   },
   deleteBtn: {
-    padding: 6,
+    padding: 8,
   },
 });

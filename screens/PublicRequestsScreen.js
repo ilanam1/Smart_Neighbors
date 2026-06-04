@@ -77,7 +77,13 @@ export default function PublicRequestsScreen() {
 
   function formatDate(date) {
     try {
-      return new Date(date).toLocaleString('he-IL');
+      return new Date(date).toLocaleDateString('he-IL', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
     } catch {
       return date;
     }
@@ -116,23 +122,46 @@ export default function PublicRequestsScreen() {
 
   if (loading) {
     return (
-      <ActivityIndicator
-        style={{ marginTop: 20 }}
-        size="large"
-        color="#38bdf8"
-      />
+      <View style={{ flex: 1, backgroundColor: 'transparent' }}>
+        <Image
+          source={require('../assets/app_internal_bg.png')}
+          style={styles.bgImage}
+          resizeMode="cover"
+        />
+        <View style={styles.centered}>
+          <ActivityIndicator size="large" color="#f97316" />
+        </View>
+      </View>
     );
   }
 
   if (error) {
-    return <Text style={styles.error}>שגיאה: {error}</Text>;
+    return (
+      <View style={{ flex: 1, backgroundColor: 'transparent' }}>
+        <Image
+          source={require('../assets/app_internal_bg.png')}
+          style={styles.bgImage}
+          resizeMode="cover"
+        />
+        <View style={styles.centered}>
+          <Text style={styles.error}>שגיאה: {error}</Text>
+        </View>
+      </View>
+    );
   }
 
   if (!requests.length) {
     return (
-      <Text style={styles.empty}>
-        אין כרגע בקשות פתוחות מהשכנים.
-      </Text>
+      <View style={{ flex: 1, backgroundColor: 'transparent' }}>
+        <Image
+          source={require('../assets/app_internal_bg.png')}
+          style={styles.bgImage}
+          resizeMode="cover"
+        />
+        <View style={styles.centered}>
+          <Text style={styles.empty}>אין כרגע בקשות פתוחות מהשכנים.</Text>
+        </View>
+      </View>
     );
   }
 
@@ -140,60 +169,59 @@ export default function PublicRequestsScreen() {
     <View style={{ flex: 1, backgroundColor: 'transparent' }}>
       <Image
         source={require('../assets/app_internal_bg.png')}
-        style={{
-          position: 'absolute',
-          left: 0,
-          top: 0,
-          width: Dimensions.get('screen').width,
-          height: Dimensions.get('screen').height,
-        }}
+        style={styles.bgImage}
         resizeMode="cover"
       />
       <View style={styles.container}>
-      <FlatList
-        contentContainerStyle={styles.list}
-        data={requests}
-        keyExtractor={(item) => String(item.id)}
-        renderItem={({ item }) => (
-          <View style={styles.card}>
-            <Text style={styles.title}>{item.title}</Text>
+        <FlatList
+          contentContainerStyle={styles.list}
+          data={requests}
+          keyExtractor={(item) => String(item.id)}
+          renderItem={({ item }) => (
+            <View style={styles.card}>
+              <View style={styles.cardHeader}>
+                <View style={styles.badgeRow}>
+                  <View style={[styles.badge, styles.categoryBadge]}>
+                    <Text style={styles.badgeText}>{formatCategory(item.category)}</Text>
+                  </View>
+                  <View style={[styles.badge, item.urgency === 'HIGH' ? styles.urgencyHighBadge : styles.urgencyNormalBadge]}>
+                    <Text style={styles.badgeText}>{`דחיפות: ${formatUrgency(item.urgency)}`}</Text>
+                  </View>
+                </View>
+                <Text style={styles.title}>{item.title}</Text>
+              </View>
 
-            <Text style={styles.body}>{item.description}</Text>
+              <Text style={styles.body}>{item.description}</Text>
 
-            <Text style={styles.meta}>
-              מבקש: {item.requester_name || 'דייר לא ידוע'}
-            </Text>
+              <View style={styles.divider} />
 
-            <Text style={styles.meta}>
-              קטגוריה: {formatCategory(item.category)}
-            </Text>
+              <View style={styles.metaRow}>
+                <Text style={styles.metaText}>
+                  מבקש: {item.requester_name || 'דייר לא ידוע'}
+                </Text>
+                <Text style={styles.metaText}>
+                  {formatDate(item.created_at)}
+                </Text>
+              </View>
 
-            <Text style={styles.meta}>
-              דחיפות: {formatUrgency(item.urgency)}
-            </Text>
-
-            <Text style={styles.meta}>
-              נוצר בתאריך: {formatDate(item.created_at)}
-            </Text>
-
-            <TouchableOpacity
-              style={[
-                styles.completeButton,
-                completingId === item.id && styles.completeButtonDisabled,
-              ]}
-              onPress={() => confirmCompleteRequest(item.id)}
-              disabled={completingId === item.id}
-            >
-              {completingId === item.id ? (
-                <ActivityIndicator size="small" color="#fff" />
-              ) : (
-                <Text style={styles.completeButtonText}>סמן כטופלה</Text>
-              )}
-            </TouchableOpacity>
-          </View>
-        )}
-      />
-    </View>
+              <TouchableOpacity
+                style={[
+                  styles.completeButton,
+                  completingId === item.id && styles.completeButtonDisabled,
+                ]}
+                onPress={() => confirmCompleteRequest(item.id)}
+                disabled={completingId === item.id}
+              >
+                {completingId === item.id ? (
+                  <ActivityIndicator size="small" color="#fff" />
+                ) : (
+                  <Text style={styles.completeButtonText}>סמן כטופלה</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          )}
+        />
+      </View>
     </View>
   );
 }
@@ -203,57 +231,114 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'transparent',
   },
+  bgImage: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    width: Dimensions.get('screen').width,
+    height: Dimensions.get('screen').height,
+  },
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+  },
   list: {
     padding: 16,
+    paddingBottom: 32,
   },
   card: {
-    backgroundColor: '#1e293b',
-    padding: 12,
-    borderRadius: 10,
-    marginBottom: 10,
+    backgroundColor: 'rgba(0, 0, 0, 0.65)',
+    borderRadius: 24,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    padding: 20,
+    marginBottom: 16,
+  },
+  cardHeader: {
+    alignItems: 'flex-end',
+    marginBottom: 12,
+  },
+  badgeRow: {
+    flexDirection: 'row-reverse',
+    gap: 8,
+    marginBottom: 10,
+  },
+  badge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+    borderWidth: 1,
+  },
+  categoryBadge: {
+    backgroundColor: 'rgba(249, 115, 22, 0.15)',
+    borderColor: '#f97316',
+  },
+  urgencyHighBadge: {
+    backgroundColor: 'rgba(239, 68, 68, 0.15)',
+    borderColor: '#ef4444',
+  },
+  urgencyNormalBadge: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  badgeText: {
+    color: '#ffffff',
+    fontSize: 11,
+    fontWeight: 'bold',
   },
   title: {
-    fontWeight: '700',
-    fontSize: 16,
+    fontSize: 18,
+    fontWeight: '800',
     color: '#f8fafc',
     textAlign: 'right',
   },
   body: {
-    marginTop: 4,
-    color: '#e2e8f0',
+    fontSize: 14,
+    color: '#cbd5e1',
+    lineHeight: 22,
     textAlign: 'right',
+    marginBottom: 16,
   },
-  meta: {
-    marginTop: 6,
+  divider: {
+    height: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    marginBottom: 12,
+  },
+  metaRow: {
+    flexDirection: 'row-reverse',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  metaText: {
     fontSize: 12,
     color: '#94a3b8',
-    textAlign: 'right',
   },
   completeButton: {
-    marginTop: 12,
-    backgroundColor: '#16a34a',
-    borderRadius: 8,
-    paddingVertical: 10,
+    backgroundColor: '#f97316',
+    borderRadius: 16,
+    paddingVertical: 14,
     alignItems: 'center',
   },
   completeButtonDisabled: {
     opacity: 0.7,
   },
   completeButtonText: {
-    color: '#fff',
+    color: '#ffffff',
     fontSize: 14,
-    fontWeight: '700',
+    fontWeight: '800',
   },
   error: {
-    marginTop: 20,
     textAlign: 'center',
-    color: '#f87171',
+    color: '#fb7185',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   empty: {
-    marginTop: 20,
     textAlign: 'center',
-    color: '#94a3b8',
+    color: '#cbd5e1',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });

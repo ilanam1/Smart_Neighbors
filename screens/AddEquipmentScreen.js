@@ -228,7 +228,7 @@ export default function AddEquipmentScreen({ navigation, route }) {
             </View>
           ) : (
             <TouchableOpacity style={styles.imagePickerButton} onPress={handlePickImage}>
-              <ImagePlus size={22} color="#10b981" />
+              <ImagePlus size={22} color="#f97316" />
               <Text style={styles.imagePickerText}>בחר תמונה מהגלריה</Text>
             </TouchableOpacity>
           )}
@@ -310,14 +310,14 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     borderWidth: 1,
     borderStyle: "dashed",
-    borderColor: "rgba(16, 185, 129, 0.65)",
-    backgroundColor: "rgba(16, 185, 129, 0.08)",
+    borderColor: "rgba(249, 115, 22, 0.65)",
+    backgroundColor: "rgba(249, 115, 22, 0.08)",
     alignItems: "center",
     justifyContent: "center",
     gap: 8,
   },
   imagePickerText: {
-    color: "#10b981",
+    color: "#f97316",
     fontWeight: "800",
     fontSize: 14,
   },
@@ -355,8 +355,8 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(30, 41, 59, 0.55)",
   },
   categoryChipSelected: {
-    backgroundColor: "#10b981",
-    borderColor: "#10b981",
+    backgroundColor: "#f97316",
+    borderColor: "#f97316",
   },
   categoryChipText: {
     color: "#cbd5e1",
@@ -366,7 +366,7 @@ const styles = StyleSheet.create({
     color: "#0f172a",
   },
   submitButton: {
-    backgroundColor: "#10b981",
+    backgroundColor: "#f97316",
     borderRadius: 18,
     paddingVertical: 16,
     alignItems: "center",

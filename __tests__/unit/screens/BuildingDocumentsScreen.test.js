@@ -148,26 +148,4 @@ describe("BuildingDocumentsScreen", () => {
     });
   });
 
-  // 🔹 בדיקה 4: כפתור "חזרה למסך הקודם" קורא ל-navigation.goBack
-  test("back button calls navigation.goBack", async () => {
-    mockGetBuildingDocuments.mockResolvedValueOnce([]);
-
-    const route = {
-      params: {
-        user: { id: "user-1" },
-        isCommittee: false,
-        buildingId: 1,
-      },
-    };
-
-    const { getByText } = render(
-      <BuildingDocumentsScreen route={route} />
-    );
-
-    const backButton = getByText("חזרה למסך הקודם");
-
-    fireEvent.press(backButton);
-
-    expect(mockGoBack).toHaveBeenCalledTimes(1);
-  });
 });

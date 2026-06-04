@@ -55,16 +55,27 @@ export default function CommitteeWeeklyForecastScreen() {
   const riskCardStyle = (riskLevel) => {
     switch (riskLevel) {
       case "HIGH":
-        return styles.highRisk;
+        return { borderRightColor: "#f97316" };
       case "MEDIUM":
-        return styles.mediumRisk;
+        return { borderRightColor: "rgba(249, 115, 22, 0.6)" };
       default:
-        return styles.lowRisk;
+        return { borderRightColor: "rgba(255, 255, 255, 0.3)" };
+    }
+  };
+
+  const riskTextStyle = (riskLevel) => {
+    switch (riskLevel) {
+      case "HIGH":
+        return { color: "#f97316" };
+      case "MEDIUM":
+        return { color: "rgba(249, 115, 22, 0.8)" };
+      default:
+        return { color: "#ffffff" };
     }
   };
 
   if (loading) {
-    return <ActivityIndicator style={{ marginTop: 30 }} color="#38bdf8" />;
+    return <ActivityIndicator style={{ marginTop: 30 }} color="#f97316" />;
   }
 
   if (error) {
@@ -74,6 +85,17 @@ export default function CommitteeWeeklyForecastScreen() {
   if (!items.length) {
     return (
       <View style={styles.container}>
+        <Image
+          source={require('../assets/app_internal_bg.png')}
+          style={{
+            position: 'absolute',
+            left: 0,
+            top: 0,
+            width: Dimensions.get('screen').width,
+            height: Dimensions.get('screen').height,
+          }}
+          resizeMode="cover"
+        />
         <Text style={styles.empty}>
           עדיין אין תחזיות זמינות. יש להריץ תחילה את מנגנון האימון והחיזוי.
         </Text>
@@ -98,44 +120,44 @@ export default function CommitteeWeeklyForecastScreen() {
         resizeMode="cover"
       />
       <View style={styles.container}>
-      <View style={styles.headerBox}>
-        <Text style={styles.header}>תחזית שבועית למטרדים</Text>
-        <Text style={styles.subHeader}>
-          שבוע חזוי: {weekStart} עד {weekEnd}
-        </Text>
-      </View>
+        <View style={styles.headerBox}>
+          <Text style={styles.header}>תחזית שבועית למטרדים</Text>
+          <Text style={styles.subHeader}>
+            שבוע חזוי: {weekStart} עד {weekEnd}
+          </Text>
+        </View>
 
-      <FlatList
-        data={items}
-        keyExtractor={(item) => String(item.id)}
-        contentContainerStyle={styles.list}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-        renderItem={({ item }) => (
-          <View style={[styles.card, riskCardStyle(item.risk_level)]}>
-            <View style={styles.rowBetween}>
-              <Text style={styles.typeText}>
-                {TYPE_LABELS[item.disturbance_type] || item.disturbance_type}
+        <FlatList
+          data={items}
+          keyExtractor={(item) => String(item.id)}
+          contentContainerStyle={styles.list}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+          renderItem={({ item }) => (
+            <View style={[styles.card, riskCardStyle(item.risk_level)]}>
+              <View style={styles.rowBetween}>
+                <Text style={styles.typeText}>
+                  {TYPE_LABELS[item.disturbance_type] || item.disturbance_type}
+                </Text>
+                <Text style={[styles.riskText, riskTextStyle(item.risk_level)]}>
+                  רמת סיכון: {RISK_LABELS[item.risk_level] || item.risk_level}
+                </Text>
+              </View>
+
+              <Text style={styles.probability}>
+                הסתברות חזויה: {Math.round(Number(item.probability) * 100)}%
               </Text>
-              <Text style={styles.riskText}>
-                רמת סיכון: {RISK_LABELS[item.risk_level] || item.risk_level}
-              </Text>
+
+              <Text style={styles.sectionTitle}>הסבר</Text>
+              <Text style={styles.body}>{item.explanation}</Text>
+
+              <Text style={styles.sectionTitle}>המלצה</Text>
+              <Text style={styles.body}>{item.recommended_action}</Text>
             </View>
-
-            <Text style={styles.probability}>
-              הסתברות חזויה: {Math.round(Number(item.probability) * 100)}%
-            </Text>
-
-            <Text style={styles.sectionTitle}>הסבר</Text>
-            <Text style={styles.body}>{item.explanation}</Text>
-
-            <Text style={styles.sectionTitle}>המלצה</Text>
-            <Text style={styles.body}>{item.recommended_action}</Text>
-          </View>
-        )}
-      />
-    </View>
+          )}
+        />
+      </View>
     </View>
   );
 }
@@ -166,22 +188,13 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   card: {
+    backgroundColor: "rgba(0, 0, 0, 0.65)",
+    borderColor: "rgba(255, 255, 255, 0.1)",
     borderRadius: 14,
     padding: 14,
     marginBottom: 12,
     borderWidth: 1,
-  },
-  lowRisk: {
-    backgroundColor: "#132a13",
-    borderColor: "#2d6a4f",
-  },
-  mediumRisk: {
-    backgroundColor: "#3b2f0b",
-    borderColor: "#f59e0b",
-  },
-  highRisk: {
-    backgroundColor: "#3f1518",
-    borderColor: "#ef4444",
+    borderRightWidth: 4,
   },
   rowBetween: {
     flexDirection: "row-reverse",
@@ -195,7 +208,7 @@ const styles = StyleSheet.create({
     fontWeight: "900",
   },
   riskText: {
-    color: "#f8fafc",
+    fontSize: 14,
     fontWeight: "800",
   },
   probability: {
@@ -205,7 +218,7 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   sectionTitle: {
-    color: "#cbd5e1",
+    color: "#f97316",
     marginTop: 10,
     marginBottom: 4,
     textAlign: "right",

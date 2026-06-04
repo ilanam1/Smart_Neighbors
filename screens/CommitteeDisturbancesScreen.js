@@ -39,9 +39,9 @@ const SEVERITY_LABEL = {
 };
 
 const SEVERITY_COLOR = {
-  LOW: "#22c55e",
-  MEDIUM: "#f59e0b",
-  HIGH: "#ef4444",
+  LOW: "#ffffff",
+  MEDIUM: "#f97316",
+  HIGH: "#f97316",
 };
 
 const getCurrentAuthUser = async () => {
@@ -257,7 +257,7 @@ export default function CommitteeDisturbancesScreen() {
       <Text
         style={[
           styles.smartPrediction,
-          { color: SEVERITY_COLOR[predicted] || "#38bdf8" },
+          { color: SEVERITY_COLOR[predicted] || "#f97316" },
         ]}
       >
         המלצת המערכת: {SEVERITY_LABEL[predicted] || predicted}
@@ -306,7 +306,7 @@ export default function CommitteeDisturbancesScreen() {
             style={styles.documentButton}
             onPress={() => openCompletionDocument(doc)}
           >
-            <FileText size={18} color="#38bdf8" />
+            <FileText size={18} color="#f97316" />
 
             <View style={{ flex: 1 }}>
               <Text style={styles.documentButtonText}>
@@ -332,7 +332,7 @@ export default function CommitteeDisturbancesScreen() {
 
   if (loading && items.length === 0) {
     return (
-      <ActivityIndicator style={{ marginTop: 20 }} color="#38bdf8" />
+      <ActivityIndicator style={{ marginTop: 20 }} color="#f97316" />
     );
   }
 
@@ -381,9 +381,11 @@ export default function CommitteeDisturbancesScreen() {
         keyExtractor={(item) => String(item.id)}
         renderItem={({ item }) => {
           const lastJob = lastJobs[item.id] || null;
+          const isResolved = item.status === "RESOLVED" || item.status === "REJECTED";
+          const borderRightColor = isResolved ? "rgba(255, 255, 255, 0.3)" : "#f97316";
 
           return (
-            <View style={styles.card}>
+            <View style={[styles.card, { borderRightColor }]}>
               <View style={styles.cardTop}>
                 <Text style={styles.title}>{renderReportTitle(item)}</Text>
 
@@ -434,7 +436,7 @@ export default function CommitteeDisturbancesScreen() {
                   <Text
                     style={[
                       styles.assignmentText,
-                      { color: "#38bdf8", marginTop: 4 },
+                      { color: "#f97316", marginTop: 4 },
                     ]}
                   >
                     סטטוס הקריאה: {JOB_STATUS_LABEL[lastJob.status] || lastJob.status}
@@ -546,7 +548,7 @@ export default function CommitteeDisturbancesScreen() {
                 disabled={employees.length === 0 || loading}
               >
                 {loading ? (
-                  <ActivityIndicator color="white" />
+                  <ActivityIndicator color="#0f172a" />
                 ) : (
                   <Text style={styles.primaryBtnText}>שלח קריאה לעובד הייעודי</Text>
                 )}
@@ -580,14 +582,14 @@ const styles = StyleSheet.create({
   },
 
   historyToggle: {
-    backgroundColor: "rgba(56, 189, 248, 0.1)",
+    backgroundColor: "rgba(249, 115, 22, 0.1)",
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 8,
   },
 
   historyToggleText: {
-    color: "#38bdf8",
+    color: "#f97316",
     fontWeight: "bold",
     fontSize: 13,
   },
@@ -598,12 +600,13 @@ const styles = StyleSheet.create({
   },
 
   card: {
-    backgroundColor: "#1e293b",
+    backgroundColor: "rgba(0, 0, 0, 0.65)",
     padding: 16,
-    borderRadius: 12,
+    borderRadius: 16,
     marginBottom: 14,
     borderWidth: 1,
-    borderColor: "#334155",
+    borderColor: "rgba(255, 255, 255, 0.1)",
+    borderRightWidth: 4,
   },
 
   cardTop: {
@@ -635,46 +638,49 @@ const styles = StyleSheet.create({
   },
 
   statusBadge: {
-    backgroundColor: "#334155",
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
     borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#f97316",
+    backgroundColor: "rgba(249, 115, 22, 0.15)",
   },
 
   statusBadgeResolved: {
-    backgroundColor: "#166534",
+    borderColor: "rgba(255, 255, 255, 0.4)",
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
   },
 
   statusBadgeText: {
-    color: "white",
+    color: "#f8fafc",
     fontSize: 12,
     fontWeight: "bold",
   },
 
   divider: {
     height: 1,
-    backgroundColor: "#334155",
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
     marginVertical: 12,
   },
 
   primaryBtn: {
-    backgroundColor: "#2563eb",
+    backgroundColor: "#f97316",
     paddingVertical: 12,
     borderRadius: 12,
     alignItems: "center",
   },
 
   primaryBtnText: {
-    color: "white",
+    color: "#0f172a",
     fontWeight: "800",
   },
 
   assignmentBox: {
-    backgroundColor: "#0f172a",
+    backgroundColor: "rgba(255, 255, 255, 0.05)",
     padding: 12,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: "#1e293b",
+    borderColor: "rgba(255, 255, 255, 0.1)",
   },
 
   assignmentTitle: {
@@ -695,17 +701,17 @@ const styles = StyleSheet.create({
 
   doneText: {
     textAlign: "right",
-    color: "#10b981",
+    color: "#ffffff",
     fontWeight: "800",
     marginTop: 8,
   },
 
   documentBox: {
     marginTop: 12,
-    backgroundColor: "#111827",
+    backgroundColor: "rgba(255, 255, 255, 0.03)",
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#334155",
+    borderColor: "rgba(255, 255, 255, 0.1)",
     padding: 12,
   },
 
@@ -720,7 +726,7 @@ const styles = StyleSheet.create({
     flexDirection: "row-reverse",
     alignItems: "center",
     gap: 8,
-    backgroundColor: "#1e293b",
+    backgroundColor: "rgba(255, 255, 255, 0.08)",
     borderRadius: 10,
     paddingVertical: 10,
     paddingHorizontal: 12,
@@ -728,7 +734,7 @@ const styles = StyleSheet.create({
   },
 
   documentButtonText: {
-    color: "#38bdf8",
+    color: "#f97316",
     fontWeight: "800",
     textAlign: "right",
   },
@@ -749,15 +755,15 @@ const styles = StyleSheet.create({
 
   noDocumentBox: {
     marginTop: 12,
-    backgroundColor: "rgba(245, 158, 11, 0.1)",
+    backgroundColor: "rgba(255, 255, 255, 0.05)",
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: "#92400e",
+    borderColor: "rgba(255, 255, 255, 0.1)",
     padding: 10,
   },
 
   noDocumentText: {
-    color: "#fbbf24",
+    color: "#ffffff",
     textAlign: "right",
     fontSize: 13,
     fontWeight: "700",
@@ -783,11 +789,11 @@ const styles = StyleSheet.create({
   },
 
   modalCard: {
-    backgroundColor: "#1e293b",
+    backgroundColor: "#111827",
     borderRadius: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: "#334155",
+    borderColor: "rgba(255, 255, 255, 0.1)",
   },
 
   modalTitle: {
@@ -844,8 +850,8 @@ const styles = StyleSheet.create({
   },
 
   providerChipSelected: {
-    backgroundColor: "#2563eb",
-    borderColor: "#2563eb",
+    backgroundColor: "#f97316",
+    borderColor: "#f97316",
   },
 
   providerChipText: {
@@ -854,7 +860,7 @@ const styles = StyleSheet.create({
   },
 
   providerChipTextSelected: {
-    color: "white",
+    color: "#0f172a",
   },
 
   modalBtnsRow: {
@@ -875,58 +881,57 @@ const styles = StyleSheet.create({
     color: "#f8fafc",
   },
 
-
   smartBox: {
-  marginTop: 12,
-  borderRadius: 12,
-  padding: 12,
-  borderWidth: 1,
-},
+    marginTop: 12,
+    borderRadius: 12,
+    padding: 12,
+    borderWidth: 1,
+  },
 
-smartBoxOk: {
-  backgroundColor: "rgba(34, 197, 94, 0.08)",
-  borderColor: "#166534",
-},
+  smartBoxOk: {
+    backgroundColor: "rgba(255, 255, 255, 0.05)",
+    borderColor: "rgba(255, 255, 255, 0.1)",
+  },
 
-smartBoxWarning: {
-  backgroundColor: "rgba(245, 158, 11, 0.1)",
-  borderColor: "#92400e",
-},
+  smartBoxWarning: {
+    backgroundColor: "rgba(249, 115, 22, 0.05)",
+    borderColor: "rgba(249, 115, 22, 0.2)",
+  },
 
-smartTitle: {
-  color: "#f8fafc",
-  fontWeight: "900",
-  textAlign: "right",
-  marginBottom: 6,
-},
+  smartTitle: {
+    color: "#f8fafc",
+    fontWeight: "900",
+    textAlign: "right",
+    marginBottom: 6,
+  },
 
-smartText: {
-  color: "#cbd5e1",
-  textAlign: "right",
-  fontSize: 13,
-  marginTop: 2,
-},
+  smartText: {
+    color: "#cbd5e1",
+    textAlign: "right",
+    fontSize: 13,
+    marginTop: 2,
+  },
 
-smartPrediction: {
-  textAlign: "right",
-  fontWeight: "900",
-  fontSize: 14,
-  marginTop: 4,
-},
+  smartPrediction: {
+    textAlign: "right",
+    fontWeight: "900",
+    fontSize: 14,
+    marginTop: 4,
+  },
 
-smartWarningText: {
-  color: "#fbbf24",
-  textAlign: "right",
-  fontWeight: "800",
-  fontSize: 13,
-  marginTop: 6,
-},
+  smartWarningText: {
+    color: "#f97316",
+    textAlign: "right",
+    fontWeight: "800",
+    fontSize: 13,
+    marginTop: 6,
+  },
 
-smartReason: {
-  color: "#94a3b8",
-  textAlign: "right",
-  fontSize: 12,
-  marginTop: 6,
-  lineHeight: 18,
-},
+  smartReason: {
+    color: "#94a3b8",
+    textAlign: "right",
+    fontSize: 12,
+    marginTop: 6,
+    lineHeight: 18,
+  },
 });

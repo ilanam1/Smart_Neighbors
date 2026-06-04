@@ -16,7 +16,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
-import { ArrowRight } from "lucide-react-native";
+import { ArrowRight, Wrench } from "lucide-react-native";
 import {
   listProviders,
   createProvider,
@@ -178,10 +178,11 @@ export default function CommitteeProvidersScreen() {
       <View style={styles.container}>
         <View style={styles.headerRow}>
           <View style={{ flexDirection: "row-reverse", alignItems: "center", gap: 8 }}>
-            <TouchableOpacity onPress={() => navigation.goBack()}>
+            <TouchableOpacity onPress={() => navigation.goBack()} style={{ padding: 4 }}>
               <ArrowRight size={24} color="#f8fafc" />
             </TouchableOpacity>
-            <Text style={styles.header}>ניהול ספקים</Text>
+            <Wrench size={24} color="#f97316" style={{ marginRight: 4 }} />
+            <Text style={styles.header}>ספקי שירות</Text>
           </View>
 
           <TouchableOpacity
@@ -397,60 +398,70 @@ const styles = StyleSheet.create({
   empty: { marginTop: 16, textAlign: "center", color: "#94a3b8" },
 
   card: {
-    backgroundColor: "#1e293b",
-    borderRadius: 12,
+    backgroundColor: "rgba(0, 0, 0, 0.65)",
+    borderRadius: 16,
     padding: 12,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: "#334155",
+    borderColor: "rgba(255, 255, 255, 0.1)",
+    borderRightWidth: 4,
+    borderRightColor: "#f97316",
     flexDirection: "row-reverse",
     gap: 10,
   },
   title: { fontSize: 16, fontWeight: "800", textAlign: "right", color: "#f8fafc" },
-  meta: { fontSize: 13, color: "#e2e8f0", textAlign: "right", marginTop: 3 },
+  meta: { fontSize: 13, color: "#cbd5e1", textAlign: "right", marginTop: 3 },
 
   actionsCol: { justifyContent: "center", gap: 8 },
   smallBtn: {
     paddingVertical: 8,
     paddingHorizontal: 12,
-    backgroundColor: "#0f172a",
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: "#334155",
+    borderColor: "#f97316",
   },
-  dangerBtn: { backgroundColor: "#b91c1c", borderColor: "#b91c1c" },
-  smallBtnText: { color: "white", fontWeight: "700" },
+  dangerBtn: { backgroundColor: "rgba(0, 0, 0, 0.6)", borderColor: "#f97316", borderWidth: 1 },
+  smallBtnText: { color: "#f97316", fontWeight: "700" },
 
   primaryBtn: {
     paddingVertical: 10,
     paddingHorizontal: 14,
-    backgroundColor: "#2563eb",
+    backgroundColor: "#f97316",
     borderRadius: 12,
   },
-  primaryBtnText: { color: "white", fontWeight: "800" },
+  primaryBtnText: { color: "#0f172a", fontWeight: "800" },
 
   secondaryBtn: {
     paddingVertical: 10,
     paddingHorizontal: 14,
-    backgroundColor: "#334155",
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
     borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#f97316",
   },
-  secondaryBtnText: { color: "#f8fafc", fontWeight: "800" },
+  secondaryBtnText: { color: "#f97316", fontWeight: "800" },
 
   modalBackdrop: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.7)",
+    backgroundColor: "rgba(0, 0, 0, 0.75)",
     justifyContent: "center",
     padding: 16,
   },
-  modalCard: { backgroundColor: "#1e293b", borderRadius: 16, padding: 14, borderWidth: 1, borderColor: "#334155" },
+  modalCard: {
+    backgroundColor: "rgba(15, 23, 42, 0.95)",
+    borderRadius: 16,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.1)",
+  },
   modalTitle: { fontSize: 18, fontWeight: "900", textAlign: "right", marginBottom: 10, color: "#f8fafc" },
 
   label: { fontSize: 13, fontWeight: "700", textAlign: "right", marginTop: 10, marginBottom: 6, color: "#e2e8f0" },
   input: {
-    backgroundColor: "#0f172a",
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
     borderWidth: 1,
-    borderColor: "#334155",
+    borderColor: "rgba(255, 255, 255, 0.15)",
     borderRadius: 10,
     paddingHorizontal: 10,
     paddingVertical: 8,
@@ -459,10 +470,10 @@ const styles = StyleSheet.create({
   },
 
   rowWrap: { flexDirection: "row-reverse", flexWrap: "wrap", gap: 8 },
-  chip: { borderWidth: 1, borderColor: "#475569", paddingVertical: 6, paddingHorizontal: 10, borderRadius: 18 },
-  chipSelected: { backgroundColor: "#2563eb", borderColor: "#2563eb" },
-  chipText: { color: "#e2e8f0", fontWeight: "700" },
-  chipTextSelected: { color: "white" },
+  chip: { borderWidth: 1, borderColor: "rgba(255, 255, 255, 0.2)", paddingVertical: 6, paddingHorizontal: 10, borderRadius: 18 },
+  chipSelected: { backgroundColor: "#f97316", borderColor: "#f97316" },
+  chipText: { color: "#cbd5e1", fontWeight: "700" },
+  chipTextSelected: { color: "#0f172a", fontWeight: "800" },
 
   switchRow: { flexDirection: "row-reverse", justifyContent: "space-between", alignItems: "center", marginTop: 12 },
 

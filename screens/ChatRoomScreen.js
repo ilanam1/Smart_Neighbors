@@ -21,6 +21,12 @@ export default function ChatRoomScreen({ navigation, route }) {
     useEffect(() => {
         navigation.setOptions({
             headerTitle: '',
+            headerStyle: {
+                backgroundColor: '#f97316',
+                borderBottomWidth: 1,
+                borderBottomColor: 'rgba(255, 255, 255, 0.08)',
+            },
+            headerTintColor: '#ffffff',
             headerRight: () => {
                 const content = (
                     <View style={{ flexDirection: 'row-reverse', alignItems: 'center', paddingRight: 15 }}>
@@ -31,7 +37,7 @@ export default function ChatRoomScreen({ navigation, route }) {
                                 <Text style={{ fontSize: 14 }}>{isGroup ? '🏢' : (chatName ? chatName.charAt(0) : '👤')}</Text>
                             </View>
                         )}
-                        <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#0F172A' }} numberOfLines={1}>
+                        <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#ffffff' }} numberOfLines={1}>
                             {chatName}
                         </Text>
                     </View>
@@ -277,10 +283,10 @@ export default function ChatRoomScreen({ navigation, route }) {
             behavior={Platform.OS === 'ios' ? 'padding' : undefined}
             keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
         >
-            <StatusBar barStyle="light-content" backgroundColor="#000000" />
+            <StatusBar barStyle="light-content" backgroundColor="#f97316" />
             
             {loading ? (
-                <ActivityIndicator size="large" color="#007BFF" style={{ flex: 1 }}/>
+                <ActivityIndicator size="large" color="#f97316" style={{ flex: 1 }}/>
             ) : (
                 <FlatList
                     ref={flatListRef}
@@ -451,7 +457,7 @@ const styles = StyleSheet.create({
     senderNameInsideBubble: {
         fontSize: 15,
         fontWeight: 'bold',
-        color: '#0ea5e9', // Sky blue for names to stand out
+        color: '#f97316', // Orange for names to stand out
         marginBottom: 6,
         textAlign: 'right', // RTL
     },
@@ -460,7 +466,7 @@ const styles = StyleSheet.create({
         borderRadius: 16,
     },
     myBubble: {
-        backgroundColor: '#10b981', // Emerald 500
+        backgroundColor: '#f97316', // Orange 500
         borderTopRightRadius: 4,
     },
     otherBubble: {
@@ -507,7 +513,7 @@ const styles = StyleSheet.create({
         textAlign: 'right', // RTL
     },
     sendButton: {
-        backgroundColor: '#ff0080',
+        backgroundColor: '#f97316',
         borderRadius: 20,
         paddingHorizontal: 20,
         paddingVertical: 12,
@@ -604,7 +610,7 @@ const styles = StyleSheet.create({
     },
     chatRoomAvatarText: {
         fontSize: 14,
-        color: '#10b981',
+        color: '#f97316',
         fontWeight: 'bold',
     },
     replyPreviewContainer: {
@@ -621,7 +627,7 @@ const styles = StyleSheet.create({
     },
     replyPreviewBorder: {
         width: 4,
-        backgroundColor: '#10b981',
+        backgroundColor: '#f97316',
         borderRadius: 2,
         marginLeft: 10
     },
@@ -631,7 +637,7 @@ const styles = StyleSheet.create({
         alignItems: 'flex-end',
     },
     replyPreviewSender: {
-        color: '#10b981',
+        color: '#f97316',
         fontWeight: 'bold',
         fontSize: 13,
         marginBottom: 2
@@ -659,7 +665,7 @@ const styles = StyleSheet.create({
     },
     bubbleReplyBorder: {
         width: 3,
-        backgroundColor: '#10b981',
+        backgroundColor: '#f97316',
         borderRadius: 2,
         marginLeft: 8
     },
@@ -668,7 +674,7 @@ const styles = StyleSheet.create({
         flexShrink: 1,
     },
     bubbleReplySender: {
-        color: '#10b981',
+        color: '#f97316',
         fontWeight: 'bold',
         fontSize: 12,
         marginBottom: 2,

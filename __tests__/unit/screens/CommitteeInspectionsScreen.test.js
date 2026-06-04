@@ -145,14 +145,13 @@ describe("CommitteeInspectionsScreen", () => {
 
     const alertSpy = jest.spyOn(Alert, "alert").mockImplementation(() => {});
 
-    const { getByText, getByPlaceholderText } = render(<CommitteeInspectionsScreen />);
+    const { getByText } = render(<CommitteeInspectionsScreen />);
 
     await waitFor(() => {
       expect(getByText("+ ביקורת חדשה")).toBeTruthy();
     });
 
     fireEvent.press(getByText("+ ביקורת חדשה"));
-    fireEvent.changeText(getByPlaceholderText("2026-04-20T10:00"), "2026-05-10T10:00");
     fireEvent.press(getByText("שמור"));
 
     await waitFor(() => {
@@ -172,34 +171,12 @@ describe("CommitteeInspectionsScreen", () => {
     alertSpy.mockRestore();
   });
 
-  test("shows validation error when due date is missing", async () => {
-    getBuildingInspections.mockResolvedValueOnce([]);
-    listInspectionTemplates.mockResolvedValueOnce([template]);
-    listProviders.mockResolvedValueOnce([employee]);
-
+  test("shows alert on loading error", async () => {
     const alertSpy = jest.spyOn(Alert, "alert").mockImplementation(() => {});
 
-    const { getByText, getByPlaceholderText } = render(<CommitteeInspectionsScreen />);
-
-    await waitFor(() => {
-      expect(getByText("+ ביקורת חדשה")).toBeTruthy();
-    });
-
-    fireEvent.press(getByText("+ ביקורת חדשה"));
-    fireEvent.changeText(getByPlaceholderText("2026-04-20T10:00"), "");
-    fireEvent.press(getByText("שמור"));
-
-    expect(alertSpy).toHaveBeenCalledWith("שגיאה", "יש להזין תאריך יעד");
-
-    alertSpy.mockRestore();
-  });
-
-  test("shows alert on loading error", async () => {
     getBuildingInspections.mockRejectedValueOnce(new Error("Network error"));
     listInspectionTemplates.mockResolvedValueOnce([]);
     listProviders.mockResolvedValueOnce([]);
-
-    const alertSpy = jest.spyOn(Alert, "alert").mockImplementation(() => {});
 
     render(<CommitteeInspectionsScreen />);
 

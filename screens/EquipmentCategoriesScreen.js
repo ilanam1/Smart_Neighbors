@@ -455,7 +455,7 @@ const styles = StyleSheet.create({
     textAlign: "right",
   },
   addButton: {
-    backgroundColor: "#10b981",
+    backgroundColor: "#f97316",
     borderRadius: 18,
     paddingVertical: 14,
     paddingHorizontal: 16,

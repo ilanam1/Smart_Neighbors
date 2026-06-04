@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
   headerSubTitle: { color: "#94a3b8", fontSize: 13, marginTop: 4, textAlign: "right" },
 
   addButton: {
-    backgroundColor: "#10b981",
+    backgroundColor: "#f97316",
     borderRadius: 18,
     paddingVertical: 14,
     alignItems: "center",

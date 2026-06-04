@@ -67,7 +67,7 @@ export default function CommitteeMonthlyFeeScreen() {
   if (loadingPage) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#4f46e5" />
+        <ActivityIndicator size="large" color="#f97316" />
       </View>
     );
   }
@@ -122,7 +122,7 @@ export default function CommitteeMonthlyFeeScreen() {
         disabled={saving}
       >
         {saving ? (
-          <ActivityIndicator color="#fff" />
+          <ActivityIndicator color="#0f172a" />
         ) : (
           <Text style={styles.saveButtonText}>שמור סכום חודשי</Text>
         )}
@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
   },
   centered: {
     flex: 1,
-    backgroundColor: '#0F172A',
+    backgroundColor: '#0A0E1A',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -152,15 +152,17 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   card: {
-    backgroundColor: '#1E293B',
-    borderRadius: 14,
+    backgroundColor: 'rgba(0, 0, 0, 0.65)',
+    borderRadius: 16,
     padding: 14,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderRightWidth: 4,
+    borderRightColor: '#f97316',
   },
   infoText: {
-    color: '#94A3B8',
+    color: '#cbd5e1',
     fontSize: 15,
     textAlign: 'right',
     lineHeight: 22,
@@ -174,9 +176,9 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   input: {
-    backgroundColor: '#1E293B',
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: 'rgba(255, 255, 255, 0.15)',
     borderRadius: 12,
     color: '#F8FAFC',
     paddingHorizontal: 12,
@@ -189,14 +191,14 @@ const styles = StyleSheet.create({
   },
   saveButton: {
     marginTop: 30,
-    backgroundColor: '#16a34a',
+    backgroundColor: '#f97316',
     paddingVertical: 14,
     borderRadius: 12,
     alignItems: 'center',
   },
   saveButtonText: {
-    color: '#fff',
-    fontWeight: '700',
+    color: '#0f172a',
+    fontWeight: '800',
     fontSize: 16,
   },
   buttonDisabled: {

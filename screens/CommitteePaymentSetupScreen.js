@@ -86,7 +86,7 @@ export default function CommitteePaymentSetupScreen({ navigation }) {
   if (initialLoading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator />
+        <ActivityIndicator color="#f97316" />
       </View>
     );
   }
@@ -128,7 +128,7 @@ export default function CommitteePaymentSetupScreen({ navigation }) {
         disabled={loading}
       >
         {loading ? (
-          <ActivityIndicator color="#fff" />
+          <ActivityIndicator color="#0f172a" />
         ) : (
           <Text style={styles.buttonText}>שמירת קישור</Text>
         )}
@@ -139,7 +139,7 @@ export default function CommitteePaymentSetupScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  center: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'transparent' },
+  center: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#0A0E1A' },
   container: {
     flex: 1,
     padding: 16,
@@ -148,38 +148,42 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 22,
-    fontWeight: '700',
+    fontWeight: '800',
     marginBottom: 12,
     color: '#f8fafc',
+    textAlign: 'right',
   },
   helper: {
     fontSize: 14,
-    color: '#94a3b8',
+    color: '#cbd5e1',
     marginBottom: 16,
+    textAlign: 'right',
   },
   input: {
     borderWidth: 1,
-    borderColor: '#334155',
-    borderRadius: 8,
+    borderColor: 'rgba(255, 255, 255, 0.15)',
+    borderRadius: 12,
     padding: 12,
     marginBottom: 10,
-    backgroundColor: '#1e293b',
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
     color: '#FFFFFF',
+    textAlign: 'right',
   },
   error: {
     color: '#f87171',
     marginBottom: 10,
+    textAlign: 'right',
   },
   button: {
-    backgroundColor: '#4f46e5',
+    backgroundColor: '#f97316',
     paddingVertical: 12,
-    borderRadius: 8,
+    borderRadius: 12,
     alignItems: 'center',
-    marginTop: 4,
+    marginTop: 12,
   },
   buttonText: {
-    color: '#fff',
-    fontWeight: '600',
+    color: '#0f172a',
+    fontWeight: '800',
     fontSize: 16,
   },
 });

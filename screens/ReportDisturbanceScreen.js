@@ -224,8 +224,8 @@ const styles = StyleSheet.create({
     marginVertical: 4,
   },
   chipSelected: {
-    backgroundColor: '#007AFF',
-    borderColor: '#007AFF',
+    backgroundColor: '#f97316',
+    borderColor: '#f97316',
   },
   chipText: {
     fontSize: 13,
@@ -236,7 +236,7 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 24,
-    backgroundColor: '#007AFF',
+    backgroundColor: '#f97316',
     borderRadius: 10,
     paddingVertical: 12,
     alignItems: 'center',

@@ -73,7 +73,7 @@ export default function PublicProfileScreen({ navigation, route }) {
         resizeMode="cover"
       />
       <SafeAreaView style={styles.container}>
-            <StatusBar barStyle="light-content" backgroundColor="#0f172a" />
+            <StatusBar barStyle="light-content" backgroundColor="#f97316" />
             {/* Background */}
             
 

@@ -347,14 +347,22 @@ export default function ProfilePageScreen({ navigation }) {
 
           {/* ROLE & BUILDING */}
           <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 10, marginTop: 12 }}>
-            <View style={[styles.badge, { marginTop: 0 }]}>
-              <Text style={styles.badgeText}>
-                {profile?.is_house_committee ? "חבר ועד בית" : "דייר"}
+            <View style={[styles.badge, { backgroundColor: '#f97316', marginTop: 0 }]}>
+              <Text style={[styles.badgeText, { color: '#000000' }]}>
+                {profile?.is_house_committee ? "חבר ועד הבית" : "דייר"}
               </Text>
             </View>
             {profile?.buildings?.name && (
-              <View style={[styles.badge, { backgroundColor: '#059669', marginTop: 0 }]}>
-                <Text style={styles.badgeText}>
+              <View style={[
+                styles.badge, 
+                { 
+                  backgroundColor: 'rgba(10, 14, 26, 0.75)', 
+                  borderWidth: 1, 
+                  borderColor: '#f97316', 
+                  marginTop: 0 
+                }
+              ]}>
+                <Text style={[styles.badgeText, { color: '#ffffff' }]}>
                   {profile.buildings.name}
                 </Text>
               </View>
@@ -366,7 +374,7 @@ export default function ProfilePageScreen({ navigation }) {
             <View style={styles.sectionHeaderRow}>
               <Text style={styles.sectionTitle}>פרטים אישיים</Text>
               <TouchableOpacity onPress={() => isUnlocked ? setIsUnlocked(false) : setUnlockModalVisible(true)} style={styles.unlockToggle}>
-                {isUnlocked ? <EyeOff size={20} color="#64748b" /> : <Eye size={20} color="#3b82f6" />}
+                {isUnlocked ? <EyeOff size={20} color="#64748b" /> : <Eye size={20} color="#f97316" />}
               </TouchableOpacity>
             </View>
 
@@ -418,7 +426,7 @@ export default function ProfilePageScreen({ navigation }) {
                 style={styles.securityRow}
                 onPress={() => navigation.navigate("MfaSetupScreen")}
               >
-                <Text style={[styles.securityRowText, { color: '#10b981' }]}>הגדר אימות דו-שלבי (2FA)</Text>
+                <Text style={[styles.securityRowText, { color: '#f97316' }]}>הגדר אימות דו-שלבי (2FA)</Text>
                 <Text style={styles.securityRowArrow}>{"<"}</Text>
               </TouchableOpacity>
             )}
@@ -454,7 +462,7 @@ export default function ProfilePageScreen({ navigation }) {
               />
 
               {unlockLoading ? (
-                <ActivityIndicator size="large" color="#3b82f6" style={{ marginVertical: 10 }} />
+                <ActivityIndicator size="large" color="#f97316" style={{ marginVertical: 10 }} />
               ) : (
                 <View style={styles.modalActions}>
                   <TouchableOpacity style={[styles.modalBtn, styles.modalBtnCancel]} onPress={() => { setUnlockModalVisible(false); setUnlockPassword(''); }}>
@@ -509,6 +517,8 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 60,
+    borderWidth: 3,
+    borderColor: '#f97316',
   },
   avatarPlaceholder: {
     width: 120,
@@ -517,6 +527,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#1f2937",
     alignItems: "center",
     justifyContent: "center",
+    borderWidth: 3,
+    borderColor: '#f97316',
   },
   avatarInitials: {
     fontSize: 36,
@@ -534,7 +546,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     right: 0,
-    backgroundColor: '#3b82f6',
+    backgroundColor: '#f97316',
     width: 36,
     height: 36,
     borderRadius: 18,
@@ -566,10 +578,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 6,
     borderRadius: 20,
-    backgroundColor: "#1e40af",
+    backgroundColor: "#f97316",
   },
   badgeText: {
-    color: "#bfdbfe",
+    color: "#ffffff",
     fontWeight: "600",
   },
 
@@ -594,7 +606,7 @@ const styles = StyleSheet.create({
     borderBottomColor: "#1f2937",
   },
   rowLabel: {
-    color: "#9ca3af",
+    color: "#ffffff",
     fontWeight: "500",
     textAlign: "right",
   },
@@ -615,7 +627,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   securityRowText: {
-    color: "#9ca3af",
+    color: "#ffffff",
     fontWeight: "500",
   },
   securityRowArrow: {
@@ -662,7 +674,7 @@ const styles = StyleSheet.create({
   },
   unlockToggle: {
     padding: 6,
-    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+    backgroundColor: 'rgba(249, 115, 22, 0.1)',
     borderRadius: 8,
   },
   modalBg: {
@@ -716,19 +728,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalBtnSubmit: {
-    backgroundColor: '#3b82f6',
+    backgroundColor: '#f97316',
   },
   modalBtnCancel: {
     backgroundColor: 'transparent',
     borderWidth: 1,
-    borderColor: '#ef4444',
+    borderColor: '#64748b',
   },
   modalBtnSubmitText: {
     color: '#fff',
     fontWeight: 'bold',
   },
   modalBtnCancelText: {
-    color: '#ef4444',
+    color: '#64748b',
     fontWeight: 'bold',
   }
 });

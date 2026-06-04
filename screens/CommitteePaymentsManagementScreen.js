@@ -37,11 +37,11 @@ function getMethodLabel(method) {
 
 function getStatusLabel(status) {
   switch (status) {
-    case 'PAID':           return { label: 'שולם ✓',              color: '#34d399' };
-    case 'CASH_REQUESTED': return { label: 'ממתין לאישור מזומן', color: '#fcd34d' };
-    case 'INITIATED':      return { label: 'בתהליך',              color: '#93c5fd' };
-    case 'FAILED':         return { label: 'נכשל ✗',              color: '#f87171' };
-    default:               return { label: status || '-',          color: '#94a3b8' };
+    case 'PAID':           return { label: 'שולם ✓',              color: '#f97316' };
+    case 'CASH_REQUESTED': return { label: 'ממתין לאישור מזומן', color: '#fbbf24' };
+    case 'INITIATED':      return { label: 'בתהליך',              color: '#ffffff' };
+    case 'FAILED':         return { label: 'נכשל ✗',              color: '#ef4444' };
+    default:               return { label: status || '-',          color: '#cbd5e1' };
   }
 }
 
@@ -150,7 +150,7 @@ export default function CommitteePaymentsManagementScreen() {
   if (loading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#6366f1" />
+        <ActivityIndicator size="large" color="#f97316" />
       </View>
     );
   }
@@ -189,7 +189,7 @@ export default function CommitteePaymentsManagementScreen() {
             <Text style={styles.statLabel}>שילמו</Text>
           </View>
           <View style={styles.statBox}>
-            <Text style={[styles.statValue, { color: '#34d399' }]}>
+            <Text style={[styles.statValue, { color: '#f97316' }]}>
               {monthlySummary?.paid_total ?? 0} ₪
             </Text>
             <Text style={styles.statLabel}>נגבה</Text>
@@ -269,9 +269,11 @@ export default function CommitteePaymentsManagementScreen() {
         payments.map(item => {
           const { label: statusLabel, color: statusColor } = getStatusLabel(item.status);
           const isLoading = actionLoadingId === item.id;
+          const isPaid = item.status === 'PAID';
+          const borderRightColor = isPaid ? 'rgba(255, 255, 255, 0.3)' : '#f97316';
 
           return (
-            <View key={item.id} style={styles.card}>
+            <View key={item.id} style={[styles.card, { borderRightColor }]}>
               <View style={styles.cardHeader}>
                 <Text style={styles.cardTitle}>{getTenantName(item)}</Text>
                 <Text style={[styles.statusBadge, { color: statusColor }]}>{statusLabel}</Text>
@@ -294,9 +296,9 @@ export default function CommitteePaymentsManagementScreen() {
                   disabled={isLoading}
                 >
                   {isLoading ? (
-                    <ActivityIndicator color="#fff" size="small" />
+                    <ActivityIndicator color="#0f172a" size="small" />
                   ) : (
-                    <Text style={styles.buttonText}>✓ אשר תשלום מזומן</Text>
+                    <Text style={styles.approveButtonText}>✓ אשר תשלום מזומן</Text>
                   )}
                 </TouchableOpacity>
               )}
@@ -309,9 +311,9 @@ export default function CommitteePaymentsManagementScreen() {
                   disabled={isLoading}
                 >
                   {isLoading ? (
-                    <ActivityIndicator color="#fff" size="small" />
+                    <ActivityIndicator color="#f97316" size="small" />
                   ) : (
-                    <Text style={styles.buttonText}>✗ סמן כנכשל</Text>
+                    <Text style={styles.failButtonText}>✗ סמן כנכשל</Text>
                   )}
                 </TouchableOpacity>
               )}
@@ -332,7 +334,7 @@ const styles = StyleSheet.create({
   },
   centered: {
     flex: 1,
-    backgroundColor: '#0F172A',
+    backgroundColor: '#0A0E1A',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -344,40 +346,40 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     marginTop: 8,
   },
-
-  // ── קופה כוללת ──────────────────────────────────────────────
   walletCard: {
-    backgroundColor: '#0f2a1e',
+    backgroundColor: 'rgba(0, 0, 0, 0.65)',
     borderRadius: 18,
     padding: 20,
     alignItems: 'center',
     marginBottom: 14,
     borderWidth: 1,
-    borderColor: '#10b981',
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderRightWidth: 4,
+    borderRightColor: '#f97316',
   },
   walletLabel: {
-    color: '#6ee7b7',
+    color: '#cbd5e1',
     fontSize: 13,
     fontWeight: '600',
     marginBottom: 6,
   },
   walletAmount: {
-    color: '#34d399',
+    color: '#f97316',
     fontSize: 36,
     fontWeight: '800',
   },
   walletNote: {
-    color: '#4b5563',
+    color: '#94a3b8',
     fontSize: 11,
     marginTop: 6,
   },
-
-  // ── סיכום חודשי ─────────────────────────────────────────────
   monthlyCard: {
-    backgroundColor: '#1E293B',
+    backgroundColor: 'rgba(0, 0, 0, 0.65)',
     borderRadius: 16,
     padding: 16,
     marginBottom: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   monthlyTitle: {
     color: '#e2e8f0',
@@ -399,12 +401,10 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
   statLabel: {
-    color: '#64748b',
+    color: '#94a3b8',
     fontSize: 12,
     marginTop: 2,
   },
-
-  // ── קלט + כפתור ─────────────────────────────────────────────
   label: {
     color: '#E2E8F0',
     fontSize: 13,
@@ -413,9 +413,9 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   input: {
-    backgroundColor: '#1E293B',
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: 'rgba(255, 255, 255, 0.15)',
     borderRadius: 12,
     color: '#F8FAFC',
     paddingHorizontal: 12,
@@ -425,27 +425,28 @@ const styles = StyleSheet.create({
   reloadButton: {
     marginTop: 10,
     marginBottom: 16,
-    backgroundColor: '#334155',
+    backgroundColor: '#f97316',
     paddingVertical: 12,
-    borderRadius: 10,
+    borderRadius: 12,
     alignItems: 'center',
   },
   reloadText: {
-    color: '#fff',
-    fontWeight: '600',
+    color: '#0f172a',
+    fontWeight: '800',
   },
   emptyText: {
     color: '#94A3B8',
     marginTop: 20,
     textAlign: 'right',
   },
-
-  // ── כרטיס תשלום ─────────────────────────────────────────────
   card: {
     marginTop: 12,
-    backgroundColor: '#1E293B',
-    borderRadius: 14,
+    backgroundColor: 'rgba(0, 0, 0, 0.65)',
+    borderRadius: 16,
     padding: 14,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderRightWidth: 4,
   },
   cardHeader: {
     flexDirection: 'row-reverse',
@@ -476,7 +477,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   receipt: {
-    color: '#475569',
+    color: '#64748b',
     fontSize: 11,
     marginTop: 4,
     textAlign: 'right',
@@ -484,37 +485,44 @@ const styles = StyleSheet.create({
   },
   approveButton: {
     marginTop: 12,
-    backgroundColor: '#15803d',
+    backgroundColor: '#f97316',
     paddingVertical: 12,
-    borderRadius: 10,
+    borderRadius: 12,
     alignItems: 'center',
+  },
+  approveButtonText: {
+    color: '#0f172a',
+    fontWeight: '800',
+    fontSize: 14,
   },
   failButton: {
     marginTop: 8,
-    backgroundColor: '#991b1b',
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    borderWidth: 1,
+    borderColor: '#f97316',
     paddingVertical: 10,
-    borderRadius: 10,
+    borderRadius: 12,
     alignItems: 'center',
   },
-  buttonText: {
-    color: '#fff',
-    fontWeight: '700',
+  failButtonText: {
+    color: '#f97316',
+    fontWeight: '800',
     fontSize: 14,
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.6)',
+    backgroundColor: 'rgba(0, 0, 0, 0.75)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   modalContent: {
-    backgroundColor: '#1E293B',
+    backgroundColor: 'rgba(15, 23, 42, 0.95)',
     borderRadius: 16,
     width: '85%',
     maxHeight: '70%',
     padding: 20,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   modalTitle: {
     color: '#F8FAFC',
@@ -529,10 +537,10 @@ const styles = StyleSheet.create({
   monthOption: {
     paddingVertical: 14,
     borderBottomWidth: 1,
-    borderBottomColor: '#334155',
+    borderBottomColor: 'rgba(255, 255, 255, 0.08)',
   },
   monthOptionSelected: {
-    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+    backgroundColor: 'rgba(249, 115, 22, 0.1)',
   },
   monthOptionText: {
     color: '#CBD5E1',
@@ -540,18 +548,20 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   monthOptionTextSelected: {
-    color: '#10b981',
+    color: '#f97316',
     fontWeight: '800',
   },
   modalCancelButton: {
     marginTop: 10,
     paddingVertical: 14,
-    backgroundColor: '#334155',
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
     borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#f97316',
     alignItems: 'center',
   },
   modalCancelText: {
-    color: '#F8FAFC',
+    color: '#f97316',
     fontSize: 16,
     fontWeight: '700',
   },

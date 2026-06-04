@@ -82,100 +82,100 @@ export default function BuildingRulesScreen({ route }) {
         resizeMode="cover"
       />
       <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={styles.backBtn}
-        >
-          <ArrowRight size={18} color="#38bdf8" />
-          <Text style={styles.backText}>חזרה</Text>
-        </TouchableOpacity>
+        <View style={styles.header}>
+          <View style={styles.titleWrapper}>
+            <ShieldCheck size={22} color="#f97316" />
+            <Text style={styles.title}>חוקי הבניין</Text>
+          </View>
 
-        <View style={styles.titleWrapper}>
-          <ShieldCheck size={22} color="#22c55e" />
-          <Text style={styles.title}>חוקי הבניין</Text>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={styles.backBtn}
+          >
+            <ArrowRight size={18} color="#f97316" />
+            <Text style={styles.backText}>חזרה</Text>
+          </TouchableOpacity>
         </View>
+
+        {lastUpdated && (
+          <Text style={styles.updatedText}>
+            עודכן לאחרונה:{" "}
+            {lastUpdated.toLocaleDateString("he-IL")}{" "}
+            {lastUpdated.toLocaleTimeString("he-IL", {
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
+          </Text>
+        )}
+
+        {error && <Text style={styles.errorText}>{error}</Text>}
+
+        {loading ? (
+          <ActivityIndicator
+            size="large"
+            color="#f97316"
+            style={{ marginTop: 24 }}
+          />
+        ) : (
+          <>
+            <View style={styles.infoBox}>
+              <Text style={styles.infoText}>
+                כאן ועד הבית יכול לרכז את כל חוקי הבניין והנהלים עבור הדיירים:
+                {"\n"}
+                שימוש בשטחים משותפים, שעות שקט, שימוש במערכת, דיווחי מטרדים ועוד.
+              </Text>
+            </View>
+
+            <View style={styles.editorWrapper}>
+              <Text style={styles.label}>
+                {isCommittee
+                  ? "עריכת חוקי הבניין:"
+                  : "חוקי הבניין שהוגדרו על ידי ועד הבית:"}
+              </Text>
+
+              <ScrollView
+                style={styles.editorScroll}
+                contentContainerStyle={{ paddingBottom: 40 }}
+              >
+                <TextInput
+                  style={[
+                    styles.textArea,
+                    !isCommittee && styles.textAreaReadOnly,
+                  ]}
+                  value={content}
+                  onChangeText={setContent}
+                  editable={!!isCommittee}
+                  multiline
+                  textAlignVertical="top"
+                  placeholder={
+                    isCommittee
+                      ? "לדוגמה:\n1. אין להרעיש אחרי 23:00.\n2. אין להשאיר אשפה בשטחים המשותפים.\n3. דיווחים במערכת מיועדים לצרכי הבניין בלבד."
+                      : "טרם הוגדרו חוקי בניין."
+                  }
+                  placeholderTextColor="#64748b"
+                />
+              </ScrollView>
+            </View>
+
+            {isCommittee && (
+              <TouchableOpacity
+                style={styles.saveBtn}
+                onPress={handleSave}
+                disabled={saving}
+              >
+                {saving ? (
+                  <ActivityIndicator size="small" color="#0f172a" />
+                ) : (
+                  <>
+                    <Save size={18} color="#0f172a" />
+                    <Text style={styles.saveText}>שמירת חוקים</Text>
+                  </>
+                )}
+              </TouchableOpacity>
+            )}
+          </>
+        )}
       </View>
-
-      {lastUpdated && (
-        <Text style={styles.updatedText}>
-          עודכן לאחרונה:{" "}
-          {lastUpdated.toLocaleDateString("he-IL")}{" "}
-          {lastUpdated.toLocaleTimeString("he-IL", {
-            hour: "2-digit",
-            minute: "2-digit",
-          })}
-        </Text>
-      )}
-
-      {error && <Text style={styles.errorText}>{error}</Text>}
-
-      {loading ? (
-        <ActivityIndicator
-          size="large"
-          color="#38bdf8"
-          style={{ marginTop: 24 }}
-        />
-      ) : (
-        <>
-          <View style={styles.infoBox}>
-            <Text style={styles.infoText}>
-              כאן ועד הבית יכול לרכז את כל חוקי הבניין והנהלים עבור הדיירים:
-              {"\n"}
-              שימוש בשטחים משותפים, שעות שקט, שימוש במערכת, דיווחי מטרדים ועוד.
-            </Text>
-          </View>
-
-          <View style={styles.editorWrapper}>
-            <Text style={styles.label}>
-              {isCommittee
-                ? "עריכת חוקי הבניין:"
-                : "חוקי הבניין שהוגדרו על ידי ועד הבית:"}
-            </Text>
-
-            <ScrollView
-              style={styles.editorScroll}
-              contentContainerStyle={{ paddingBottom: 40 }}
-            >
-              <TextInput
-                style={[
-                  styles.textArea,
-                  !isCommittee && styles.textAreaReadOnly,
-                ]}
-                value={content}
-                onChangeText={setContent}
-                editable={!!isCommittee}
-                multiline
-                textAlignVertical="top"
-                placeholder={
-                  isCommittee
-                    ? "לדוגמה:\n1. אין להרעיש אחרי 23:00.\n2. אין להשאיר אשפה בשטחים המשותפים.\n3. דיווחים במערכת מיועדים לצרכי הבניין בלבד."
-                    : "טרם הוגדרו חוקי בניין."
-                }
-                placeholderTextColor="#64748b"
-              />
-            </ScrollView>
-          </View>
-
-          {isCommittee && (
-            <TouchableOpacity
-              style={styles.saveBtn}
-              onPress={handleSave}
-              disabled={saving}
-            >
-              {saving ? (
-                <ActivityIndicator size="small" color="#0f172a" />
-              ) : (
-                <>
-                  <Save size={18} color="#0f172a" />
-                  <Text style={styles.saveText}>שמירת חוקים</Text>
-                </>
-              )}
-            </TouchableOpacity>
-          )}
-        </>
-      )}
-    </View>
     </View>
   );
 }
@@ -202,10 +202,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 999,
-    backgroundColor: "rgba(56,189,248,0.12)",
+    backgroundColor: "rgba(249, 115, 22, 0.12)",
   },
   backText: {
-    color: "#38bdf8",
+    color: "#f97316",
     fontSize: 13,
     fontWeight: "600",
     marginRight: 4,
@@ -234,13 +234,15 @@ const styles = StyleSheet.create({
   infoBox: {
     padding: 12,
     borderRadius: 12,
-    backgroundColor: "#1e293b",
+    backgroundColor: "rgba(0, 0, 0, 0.65)",
     borderWidth: 1,
-    borderColor: "#334155",
+    borderColor: "rgba(255, 255, 255, 0.1)",
     marginBottom: 10,
+    borderRightWidth: 4,
+    borderRightColor: "#f97316",
   },
   infoText: {
-    color: "#e2e8f0",
+    color: "#cbd5e1",
     fontSize: 12,
     textAlign: "right",
     lineHeight: 18,
@@ -260,8 +262,8 @@ const styles = StyleSheet.create({
     flex: 1,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: "#334155",
-    backgroundColor: "#0f172a",
+    borderColor: "rgba(255, 255, 255, 0.15)",
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
   },
   textArea: {
     minHeight: 180,
@@ -282,7 +284,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     paddingVertical: 10,
     borderRadius: 999,
-    backgroundColor: "#22c55e",
+    backgroundColor: "#f97316",
   },
   saveText: {
     marginHorizontal: 6,

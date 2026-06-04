@@ -89,7 +89,7 @@ export default function SelectUserForChatScreen({ navigation, route }) {
         resizeMode="cover"
       />
       <View style={styles.container}>
-            <StatusBar barStyle="light-content" backgroundColor="#000000" />
+            <StatusBar barStyle="light-content" backgroundColor="#f97316" />
             
             <Text style={styles.title}>בחר שכן לשיחה</Text>
             

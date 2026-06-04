@@ -296,7 +296,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#0F172A',
+    backgroundColor: '#000000',
     gap: 12,
   },
   loadingText: {
@@ -315,7 +315,7 @@ const styles = StyleSheet.create({
   },
   subHeader: {
     fontSize: 14,
-    color: '#6366f1',
+    color: '#f97316',
     textAlign: 'right',
     fontWeight: '600',
     marginBottom: 20,
@@ -323,46 +323,46 @@ const styles = StyleSheet.create({
 
   // ─── PAID Banner ───────────────────────────────────────
   paidBanner: {
-    backgroundColor: '#064e3b',
+    backgroundColor: 'rgba(249, 115, 22, 0.08)',
     borderRadius: 18,
     padding: 20,
     alignItems: 'center',
     marginBottom: 20,
     borderWidth: 1,
-    borderColor: '#10b981',
+    borderColor: '#f97316',
   },
   paidIcon: {
     fontSize: 40,
-    color: '#34d399',
+    color: '#f97316',
     marginBottom: 6,
   },
   paidTitle: {
     fontSize: 20,
     fontWeight: '800',
-    color: '#34d399',
+    color: '#f97316',
     marginBottom: 4,
   },
   paidSub: {
     fontSize: 14,
-    color: '#a7f3d0',
+    color: '#f8fafc',
     marginBottom: 4,
   },
   paidReceipt: {
     fontSize: 12,
-    color: '#6ee7b7',
+    color: '#cbd5e1',
     marginTop: 6,
     fontFamily: 'monospace',
   },
 
   // ─── PENDING Banner ────────────────────────────────────
   pendingBanner: {
-    backgroundColor: '#1c1917',
+    backgroundColor: 'rgba(249, 115, 22, 0.08)',
     borderRadius: 18,
     padding: 20,
     alignItems: 'center',
     marginBottom: 20,
     borderWidth: 1,
-    borderColor: '#f59e0b',
+    borderColor: '#f97316',
   },
   pendingIcon: {
     fontSize: 36,
@@ -371,50 +371,52 @@ const styles = StyleSheet.create({
   pendingTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#fcd34d',
+    color: '#f97316',
     marginBottom: 4,
   },
   pendingSub: {
     fontSize: 13,
-    color: '#fde68a',
+    color: '#f8fafc',
   },
 
   // ─── UNPAID Banner ─────────────────────────────────────
   unpaidBanner: {
-    backgroundColor: '#1e1b4b',
+    backgroundColor: 'rgba(249, 115, 22, 0.08)',
     borderRadius: 18,
     padding: 20,
     alignItems: 'center',
     marginBottom: 20,
     borderWidth: 1,
-    borderColor: '#6366f1',
+    borderColor: '#f97316',
   },
   unpaidIcon: {
     fontSize: 36,
-    color: '#a5b4fc',
+    color: '#f97316',
     marginBottom: 6,
   },
   unpaidTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#c7d2fe',
+    color: '#f8fafc',
     marginBottom: 4,
   },
   unpaidSub: {
     fontSize: 13,
-    color: '#a5b4fc',
+    color: '#cbd5e1',
   },
 
   // ─── כרטיס חיוב ───────────────────────────────────────
   chargeCard: {
-    backgroundColor: '#1E293B',
+    backgroundColor: 'rgba(0, 0, 0, 0.65)',
     borderRadius: 14,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
     padding: 16,
     marginBottom: 20,
     alignItems: 'flex-end',
   },
   chargeLabel: {
-    color: '#94a3b8',
+    color: '#f97316',
     fontSize: 12,
     fontWeight: '600',
     marginBottom: 4,
@@ -425,14 +427,14 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
   chargeNotes: {
-    color: '#64748b',
+    color: '#94a3b8',
     fontSize: 12,
     marginTop: 6,
   },
 
   // ─── כפתורים ───────────────────────────────────────────
   stripeButton: {
-    backgroundColor: '#4f46e5',
+    backgroundColor: '#f97316',
     paddingVertical: 16,
     borderRadius: 14,
     alignItems: 'center',
@@ -442,7 +444,9 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   cashButton: {
-    backgroundColor: '#0f766e',
+    backgroundColor: '#000000',
+    borderWidth: 2,
+    borderColor: '#f97316',
     paddingVertical: 16,
     borderRadius: 14,
     alignItems: 'center',
@@ -465,7 +469,7 @@ const styles = StyleSheet.create({
 
   // ─── הערה ─────────────────────────────────────────────
   noChargeNote: {
-    color: '#475569',
+    color: '#cbd5e1',
     fontSize: 13,
     textAlign: 'right',
     lineHeight: 20,

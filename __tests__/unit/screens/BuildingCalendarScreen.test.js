@@ -1,6 +1,6 @@
 import React from "react";
 import { render, waitFor, fireEvent } from "@testing-library/react-native";
-import { Alert } from "react-native";
+import { Alert, Platform } from "react-native";
 
 import BuildingCalendarScreen from "../../../screens/BuildingCalendarScreen";
 
@@ -38,9 +38,41 @@ jest.mock("../../../API/buildingEventsApi", () => ({
   getCurrentUserCommitteeStatus: jest.fn(),
 }));
 
+let mockTimeCalls = 0;
+
+jest.mock("@react-native-community/datetimepicker", () => {
+  const React = require("react");
+  const { TouchableOpacity, Text } = require("react-native");
+  return function MockDateTimePicker({ value, mode, onChange }) {
+    return (
+      <TouchableOpacity
+        testID={`datetimepicker-${mode}`}
+        onPress={() => {
+          const dummyDate = new Date(value);
+          if (mode === "date") {
+            dummyDate.setFullYear(2026, 4, 10); // 2026-05-10
+          } else if (mode === "time") {
+            mockTimeCalls++;
+            if (mockTimeCalls === 1) {
+              dummyDate.setHours(18, 0, 0, 0); // 18:00
+            } else {
+              dummyDate.setHours(20, 0, 0, 0); // 20:00
+            }
+          }
+          onChange({ type: "set" }, dummyDate);
+        }}
+      >
+        <Text>MockDateTimePicker-{mode}</Text>
+      </TouchableOpacity>
+    );
+  };
+});
+
 describe("BuildingCalendarScreen", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    jest.resetAllMocks();
+    mockTimeCalls = 0;
+    Platform.OS = "android";
   });
 
   const event = {
@@ -119,7 +151,7 @@ describe("BuildingCalendarScreen", () => {
     await waitFor(() => {
       expect(getByText("הוספת אירוע חדש")).toBeTruthy();
       expect(getByText("כותרת")).toBeTruthy();
-      expect(getByText("תחילת אירוע (YYYY-MM-DDTHH:MM)")).toBeTruthy();
+      expect(getByText("תחילת אירוע")).toBeTruthy();
     });
   });
 
@@ -161,7 +193,7 @@ describe("BuildingCalendarScreen", () => {
 
     const alertSpy = jest.spyOn(Alert, "alert").mockImplementation(() => {});
 
-    const { getByText, getByPlaceholderText } = render(<BuildingCalendarScreen />);
+    const { getByText, getByPlaceholderText, getByTestId } = render(<BuildingCalendarScreen />);
 
     await waitFor(() => {
       expect(getByText("אירוע חדש")).toBeTruthy();
@@ -172,8 +204,22 @@ describe("BuildingCalendarScreen", () => {
     fireEvent.changeText(getByPlaceholderText("למשל: ישיבת דיירים"), "ישיבת דיירים");
     fireEvent.changeText(getByPlaceholderText("פרטים על האירוע..."), "דיון על תחזוקה");
     fireEvent.changeText(getByPlaceholderText("לובי / חדר אשפה / גג / חניה"), "לובי");
-    fireEvent.changeText(getByPlaceholderText("2026-05-10T18:00"), "2026-05-10T18:00");
-    fireEvent.changeText(getByPlaceholderText("2026-05-10T20:00"), "2026-05-10T20:00");
+
+    // Click start date, trigger mock picker
+    fireEvent.press(getByTestId("btn-start-date"));
+    fireEvent.press(getByTestId("datetimepicker-date"));
+
+    // Click start time, trigger mock picker
+    fireEvent.press(getByTestId("btn-start-time"));
+    fireEvent.press(getByTestId("datetimepicker-time"));
+
+    // Click end date, trigger mock picker
+    fireEvent.press(getByTestId("btn-end-date"));
+    fireEvent.press(getByTestId("datetimepicker-date"));
+
+    // Click end time, trigger mock picker
+    fireEvent.press(getByTestId("btn-end-time"));
+    fireEvent.press(getByTestId("datetimepicker-time"));
 
     fireEvent.press(getByText("שמור"));
 

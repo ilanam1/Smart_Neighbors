@@ -71,11 +71,11 @@ export default function CommitteePendingUsersScreen({ route, navigation }) {
             
             <View style={styles.actionsRow}>
                 <TouchableOpacity style={[styles.actionBtn, styles.approveBtn]} onPress={() => handleApprove(item.auth_uid)}>
-                    <UserCheck size={20} color="#10b981" />
+                    <UserCheck size={20} color="#0f172a" />
                     <Text style={styles.approveTxt}>אשר דייר</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={[styles.actionBtn, styles.rejectBtn]} onPress={() => handleReject(item.auth_uid)}>
-                    <XCircle size={20} color="#ef4444" />
+                    <XCircle size={20} color="#f97316" />
                     <Text style={styles.rejectTxt}>סרב</Text>
                 </TouchableOpacity>
             </View>
@@ -97,13 +97,16 @@ export default function CommitteePendingUsersScreen({ route, navigation }) {
       />
       <View style={styles.container}>
             <View style={styles.header}>
-                <Users size={32} color="#f59e0b" />
+                <Users size={32} color="#f97316" />
                 <Text style={styles.headerTitle}>אישור דיירים חדשים</Text>
             </View>
             {loading ? (
-                <ActivityIndicator size="large" color="#f59e0b" style={{marginTop: 50}} />
+                <ActivityIndicator size="large" color="#f97316" style={{marginTop: 50}} />
             ) : pendingUsers.length === 0 ? (
-                <Text style={styles.emptyText}>אין דיירים חדשים הממתינים לאישור ועד הבית כעת.</Text>
+                <View style={styles.emptyCard}>
+                    <Users size={48} color="rgba(249, 115, 22, 0.4)" style={{ marginBottom: 12 }} />
+                    <Text style={styles.emptyText}>אין דיירים חדשים הממתינים לאישור ועד הבית כעת.</Text>
+                </View>
             ) : (
                 <FlatList 
                     data={pendingUsers}
@@ -121,15 +124,39 @@ const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: 'transparent', padding: 16 },
     header: { flexDirection: 'row-reverse', alignItems: 'center', marginBottom: 20, paddingTop: 40 },
     headerTitle: { fontSize: 24, fontWeight: 'bold', color: '#f8fafc', marginRight: 10 },
-    emptyText: { color: '#94a3b8', textAlign: 'center', marginTop: 40, fontSize: 16 },
-    card: { backgroundColor: '#1e293b', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#334155' },
+    emptyCard: {
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        borderRadius: 16,
+        padding: 32,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 40,
+        borderWidth: 1,
+        borderColor: 'rgba(255, 255, 255, 0.08)',
+    },
+    emptyText: {
+        color: '#cbd5e1',
+        fontSize: 16,
+        textAlign: 'center',
+        fontWeight: '500',
+    },
+    card: {
+        backgroundColor: 'rgba(0, 0, 0, 0.65)',
+        borderRadius: 16,
+        padding: 16,
+        marginBottom: 16,
+        borderWidth: 1,
+        borderColor: 'rgba(255, 255, 255, 0.1)',
+        borderRightWidth: 4,
+        borderRightColor: '#f97316',
+    },
     cardHeader: { flexDirection: 'row-reverse', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
     name: { fontSize: 18, fontWeight: 'bold', color: '#f8fafc' },
     detailText: { color: '#cbd5e1', fontSize: 14, marginBottom: 4, textAlign: 'right' },
     actionsRow: { flexDirection: 'row-reverse', justifyContent: 'flex-start', marginTop: 16, gap: 12 },
-    actionBtn: { flexDirection: 'row-reverse', alignItems: 'center', paddingVertical: 8, paddingHorizontal: 16, borderRadius: 8, borderWidth: 1 },
-    approveBtn: { borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.1)' },
-    approveTxt: { color: '#10b981', fontWeight: 'bold', marginRight: 8 },
-    rejectBtn: { borderColor: '#ef4444', backgroundColor: 'rgba(239, 68, 68, 0.1)' },
-    rejectTxt: { color: '#ef4444', fontWeight: 'bold', marginRight: 8 },
+    actionBtn: { flexDirection: 'row-reverse', alignItems: 'center', paddingVertical: 8, paddingHorizontal: 16, borderRadius: 12, borderWidth: 1 },
+    approveBtn: { borderColor: '#f97316', backgroundColor: '#f97316' },
+    approveTxt: { color: '#0f172a', fontWeight: 'bold', marginRight: 8 },
+    rejectBtn: { borderColor: '#f97316', backgroundColor: 'rgba(0, 0, 0, 0.6)' },
+    rejectTxt: { color: '#f97316', fontWeight: 'bold', marginRight: 8 },
 });

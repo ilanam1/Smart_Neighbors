@@ -65,7 +65,13 @@ describe('ChatRoomScreen', () => {
         <ChatRoomScreen route={routeProps} navigation={navigationProps} />
     );
 
-    expect(navigationProps.setOptions).toHaveBeenCalledWith({ title: 'Test Chat' });
+    expect(navigationProps.setOptions).toHaveBeenCalledWith(expect.objectContaining({
+        headerTitle: '',
+        headerStyle: expect.objectContaining({
+            backgroundColor: '#f97316'
+        }),
+        headerTintColor: '#ffffff'
+    }));
     expect(mockSupabase.channel).toHaveBeenCalledWith('messages:conversation_id=eq.c1');
 
     await waitFor(() => {
@@ -120,6 +126,12 @@ describe('ChatRoomScreen', () => {
     fireEvent(getByText('My typo message'), 'longPress');
 
     await waitFor(() => {
+        expect(getByText('אפשרויות הודעה')).toBeTruthy();
+    });
+
+    fireEvent.press(getByText('עריכה'));
+
+    await waitFor(() => {
         expect(getByText('עורך הודעה...')).toBeTruthy();
     });
 
@@ -144,6 +156,12 @@ describe('ChatRoomScreen', () => {
     });
 
     fireEvent(getByText('Other message'), 'longPress');
+
+    await waitFor(() => {
+        expect(getByText('אפשרויות הודעה')).toBeTruthy();
+    });
+
+    fireEvent.press(getByText('הוסף אימוג\'י'));
 
     await waitFor(() => {
         expect(getByText('👍')).toBeTruthy();

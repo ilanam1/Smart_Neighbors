@@ -244,7 +244,22 @@ useEffect(() => {
         ) : user && user.role !== 'admin' && user.role !== 'employee' ? (
           // --------- המשתמש מחובר ---------
           <>
-            <Stack.Navigator initialRouteName={isRecovering ? "ChangePassword" : "Home"}>
+            <Stack.Navigator 
+              initialRouteName={isRecovering ? "ChangePassword" : "Home"}
+              screenOptions={{
+                headerStyle: {
+                  backgroundColor: '#f97316',
+                  borderBottomWidth: 1,
+                  borderBottomColor: 'rgba(255, 255, 255, 0.08)',
+                },
+                headerTintColor: '#ffffff',
+                headerTitleAlign: 'center',
+                headerTitleStyle: {
+                  fontWeight: 'bold',
+                  fontSize: 18,
+                },
+              }}
+            >
             <Stack.Screen
               name="Home"
               options={{ title: 'Smart Neighbors', headerShown: false }}
@@ -305,6 +320,7 @@ useEffect(() => {
             <Stack.Screen
               name="CommitteeRequests"
               component={CommitteeRequestsScreen}
+              options={{ title: 'בקשות דיירים' }}
             />
 
             <Stack.Screen
@@ -316,6 +332,7 @@ useEffect(() => {
             <Stack.Screen
               name="CommitteeDisturbances"
               component={CommitteeDisturbancesScreen}
+              options={{ title: 'ניהול מטרדים ומפגעים' }}
             />
 
             <Stack.Screen
@@ -334,14 +351,14 @@ useEffect(() => {
             <Stack.Screen
               name="BuildingDocuments"
               component={BuildingDocumentsScreen}
-              options={{ headerShown: false }} // אם אתה מעצב את ה-header לבד
+              options={{ title: 'מסמכי בניין' }}
             />
 
 
             <Stack.Screen
               name="BuildingRules"
               component={BuildingRulesScreen}
-              options={{ headerShown: false }}
+              options={{ title: 'תקנון הבניין' }}
             />
 
 
@@ -356,12 +373,14 @@ useEffect(() => {
             <Stack.Screen 
               name="EquipmentCategories" 
               component={EquipmentCategoriesScreen} 
+              options={{ title: 'השאלת ציוד' }}
             />
 
 
             <Stack.Screen 
             name="EquipmentList" 
             component={EquipmentListScreen} 
+            options={{ title: 'רשימת ציוד' }}
             />
 
 
@@ -369,18 +388,21 @@ useEffect(() => {
             <Stack.Screen 
             name="AddEquipment" 
             component={AddEquipmentScreen} 
+            options={{ title: 'הצעת ציוד חדש' }}
             />
 
 
             <Stack.Screen 
             name="EquipmentDetails" 
             component={EquipmentDetailsScreen} 
+            options={{ title: 'פרטי ציוד' }}
             />
 
 
             <Stack.Screen 
             name="RequestLoan" 
             component={RequestLoanScreen} 
+            options={{ title: 'בקשת השאלה' }}
             />
 
 

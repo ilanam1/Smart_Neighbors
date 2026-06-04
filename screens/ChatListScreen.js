@@ -197,12 +197,12 @@ export default function ChatListScreen({ navigation, route }) {
         resizeMode="cover"
       />
       <View style={styles.container}>
-            <StatusBar barStyle="light-content" backgroundColor="#000000" />
+            <StatusBar barStyle="light-content" backgroundColor="#f97316" />
             
             <Text style={styles.headerTitle}>הודעות וצ'אטים</Text>
             
             {loading ? (
-                 <ActivityIndicator size="large" color="#007BFF" style={{ marginTop: 20 }}/>
+                 <ActivityIndicator size="large" color="#f97316" style={{ marginTop: 20 }}/>
             ) : (
                 <FlatList
                     data={conversations}
@@ -291,10 +291,10 @@ const styles = StyleSheet.create({
         width: 60,
         height: 60,
         borderRadius: 30,
-        backgroundColor: '#ff0080',
+        backgroundColor: '#f97316',
         alignItems: 'center',
         justifyContent: 'center',
-        shadowColor: '#ff0080',
+        shadowColor: '#f97316',
         shadowOffset: { width: 0, height: 0 },
         shadowOpacity: 0.4,
         shadowRadius: 10,

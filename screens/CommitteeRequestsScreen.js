@@ -10,6 +10,7 @@ import {
   Image,
   Dimensions
 } from "react-native";
+import { ClipboardList, AlertCircle } from "lucide-react-native";
 import { getOpenRequests, completeRequest } from "../API/requestsApi";
 
 export default function CommitteeRequestsScreen() {
@@ -125,7 +126,7 @@ export default function CommitteeRequestsScreen() {
 
   if (loading) {
     return (
-      <View style={{ flex: 1, backgroundColor: '#0F172A' }}>
+      <View style={{ flex: 1, backgroundColor: 'transparent' }}>
         <Image
           source={require('../assets/app_internal_bg.png')}
           style={{
@@ -138,7 +139,7 @@ export default function CommitteeRequestsScreen() {
           resizeMode="cover"
         />
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <ActivityIndicator size="large" color="#38bdf8" />
+          <ActivityIndicator size="large" color="#f97316" />
         </View>
       </View>
     );
@@ -146,7 +147,7 @@ export default function CommitteeRequestsScreen() {
 
   if (error) {
     return (
-      <View style={{ flex: 1, backgroundColor: '#0F172A' }}>
+      <View style={{ flex: 1, backgroundColor: 'transparent' }}>
         <Image
           source={require('../assets/app_internal_bg.png')}
           style={{
@@ -159,7 +160,10 @@ export default function CommitteeRequestsScreen() {
           resizeMode="cover"
         />
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 }}>
-          <Text style={styles.error}>שגיאה: {error}</Text>
+          <View style={styles.errorCard}>
+            <AlertCircle size={48} color="#ef4444" style={{ marginBottom: 12 }} />
+            <Text style={styles.error}>שגיאה: {error}</Text>
+          </View>
         </View>
       </View>
     );
@@ -167,7 +171,7 @@ export default function CommitteeRequestsScreen() {
 
   if (!requests.length) {
     return (
-      <View style={{ flex: 1, backgroundColor: '#0F172A' }}>
+      <View style={{ flex: 1, backgroundColor: 'transparent' }}>
         <Image
           source={require('../assets/app_internal_bg.png')}
           style={{
@@ -180,16 +184,19 @@ export default function CommitteeRequestsScreen() {
           resizeMode="cover"
         />
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 }}>
-          <Text style={styles.empty}>
-            אין כרגע בקשות פתוחות שמיועדות לוועד הבית.
-          </Text>
+          <View style={styles.emptyCard}>
+            <ClipboardList size={48} color="rgba(249, 115, 22, 0.4)" style={{ marginBottom: 12 }} />
+            <Text style={styles.empty}>
+              אין כרגע בקשות פתוחות שמיועדות לוועד הבית.
+            </Text>
+          </View>
         </View>
       </View>
     );
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#0F172A' }}>
+    <View style={{ flex: 1, backgroundColor: 'transparent' }}>
       <Image
         source={require('../assets/app_internal_bg.png')}
         style={{
@@ -241,7 +248,7 @@ export default function CommitteeRequestsScreen() {
                 disabled={completingId === item.id}
               >
                 {completingId === item.id ? (
-                  <ActivityIndicator size="small" color="#fff" />
+                  <ActivityIndicator size="small" color="#0f172a" />
                 ) : (
                   <Text style={styles.completeButtonText}>סמן כטופלה</Text>
                 )}
@@ -263,12 +270,14 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   card: {
-    backgroundColor: "#1e293b",
-    padding: 12,
-    borderRadius: 10,
+    backgroundColor: "rgba(0,0,0,0.65)",
+    padding: 16,
+    borderRadius: 16,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: "#334155",
+    borderColor: "rgba(255, 255, 255, 0.1)",
+    borderRightWidth: 4,
+    borderRightColor: "#f97316",
   },
   title: {
     fontWeight: "700",
@@ -289,8 +298,8 @@ const styles = StyleSheet.create({
   },
   completeButton: {
     marginTop: 12,
-    backgroundColor: "#16a34a",
-    borderRadius: 8,
+    backgroundColor: "#f97316",
+    borderRadius: 12,
     paddingVertical: 10,
     alignItems: "center",
   },
@@ -298,18 +307,40 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   completeButtonText: {
-    color: "#fff",
+    color: "#0f172a",
     fontSize: 14,
     fontWeight: "700",
   },
+  emptyCard: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    borderRadius: 16,
+    padding: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '90%',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+  },
+  errorCard: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    borderRadius: 16,
+    padding: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '90%',
+    borderWidth: 1,
+    borderColor: 'rgba(239, 68, 68, 0.2)',
+  },
   error: {
-    marginTop: 20,
+    fontSize: 16,
     textAlign: "center",
-    color: "#f87171",
+    color: "#ef4444",
+    fontWeight: "500",
   },
   empty: {
-    marginTop: 20,
+    fontSize: 16,
     textAlign: "center",
-    color: "#94a3b8",
+    color: "#cbd5e1",
+    fontWeight: "500",
   },
 });

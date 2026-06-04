@@ -9,7 +9,7 @@ import { getBuildingDisturbanceReports } from "../../../API/disturbancesApi";
 import { createJobRequest, getJobsForReport } from "../../../API/jobRequestsApi";
 import { createBuildingMaintenanceNotification } from "../../../API/notificationsApi";
 
-import { mockSupabase } from "../../__mocks__/@supabase/supabase-js";
+import { mockSupabase, createClient } from "../../__mocks__/@supabase/supabase-js";
 
 jest.mock("../../../API/serviceProvidersApi", () => ({
   listProviders: jest.fn(),
@@ -30,7 +30,8 @@ jest.mock("../../../API/notificationsApi", () => ({
 
 describe("CommitteeDisturbancesScreen", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    jest.resetAllMocks();
+    createClient.mockReturnValue(mockSupabase);
 
     mockSupabase.auth.getUser.mockResolvedValue({
       data: { user: { id: "committee-user-1" } },
@@ -120,7 +121,7 @@ describe("CommitteeDisturbancesScreen", () => {
       expect(getByText("Moshe Worker (ניקיון)")).toBeTruthy();
     });
 
-    fireEvent.press(getByText("שלח קריאה לעובד היעודי"));
+    fireEvent.press(getByText("שלח קריאה לעובד הייעודי"));
 
     expect(alertSpy).toHaveBeenCalledWith("שגיאה", "בחר עובד לביצוע המשימה");
 
@@ -169,7 +170,7 @@ describe("CommitteeDisturbancesScreen", () => {
       "היום בערב"
     );
 
-    fireEvent.press(getByText("שלח קריאה לעובד היעודי"));
+    fireEvent.press(getByText("שלח קריאה לעובד הייעודי"));
 
     await waitFor(() => {
       expect(createJobRequest).toHaveBeenCalledWith({

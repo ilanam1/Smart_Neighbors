@@ -67,8 +67,6 @@ export default function BuildingUpdatesScreen({ route }) {
         title: title.trim(),
         body: body.trim(),
         isImportant,
-        // אפשר גם להעביר category אם תרצה UI בחירה:
-        // category: 'MAINTENANCE' / 'ALERT' / 'GENERAL'
       });
 
       // להוסיף לראש הרשימה
@@ -101,94 +99,103 @@ export default function BuildingUpdatesScreen({ route }) {
         resizeMode="cover"
       />
       <View style={styles.container}>
-      <Text style={styles.title}>סיכום שבועי – עדכוני הבניין</Text>
+        <Text style={styles.title}>סיכום שבועי – עדכוני הבניין</Text>
 
-      {/* אזור ניהול לוועד הבית בלבד */}
-      {isCommittee && (
-        <View style={styles.adminBox}>
-          <Text style={styles.adminTitle}>ניהול ויצירת עדכוני בניין (ועד הבית)</Text>
+        {/* אזור ניהול לוועד הבית בלבד */}
+        {isCommittee && (
+          <View style={styles.adminBox}>
+            <Text style={styles.adminTitle}>ניהול ויצירת עדכוני בניין (ועד הבית)</Text>
 
-          <Text style={styles.label}>כותרת העדכון *</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="לדוגמה: עבודות במעלית ביום ראשון"
-            placeholderTextColor="#94a3b8"
-            value={title}
-            onChangeText={setTitle}
-            writingDirection="rtl"
-            textAlign="right"
-          />
+            <Text style={styles.label}>כותרת העדכון *</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="לדוגמה: עבודות במעלית ביום ראשון"
+              placeholderTextColor="#94a3b8"
+              value={title}
+              onChangeText={setTitle}
+              writingDirection="rtl"
+              textAlign="right"
+            />
 
-          <Text style={styles.label}>תוכן העדכון *</Text>
-          <TextInput
-            style={[styles.input, styles.textArea]}
-            placeholder="תאר בקצרה את העדכון, זמנים, השפעות על הדיירים וכו'..."
-            placeholderTextColor="#94a3b8"
-            value={body}
-            onChangeText={setBody}
-            multiline
-            writingDirection="rtl"
-            textAlign="right"
-          />
+            <Text style={styles.label}>תוכן העדכון *</Text>
+            <TextInput
+              style={[styles.input, styles.textArea]}
+              placeholder="תאר בקצרה את העדכון, זמנים, השפעות על הדיירים וכו'..."
+              placeholderTextColor="#94a3b8"
+              value={body}
+              onChangeText={setBody}
+              multiline
+              writingDirection="rtl"
+              textAlign="right"
+            />
 
-          <View style={styles.switchRow}>
-            <Text style={styles.switchLabel}>סמן כעדכון חשוב (⚠️)</Text>
-            <Switch value={isImportant} onValueChange={setIsImportant} />
-          </View>
-
-          <TouchableOpacity
-            style={[styles.button, saving && styles.buttonDisabled]}
-            onPress={handleCreateUpdate}
-            disabled={saving}
-          >
-            {saving ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <Text style={styles.buttonText}>פרסם עדכון</Text>
-            )}
-          </TouchableOpacity>
-        </View>
-      )}
-
-      {loading && updates.length === 0 && (
-        <ActivityIndicator size="large" color="#4f46e5" />
-      )}
-
-      {err && <Text style={styles.error}>{err}</Text>}
-
-      {!loading && !err && updates.length === 0 && (
-        <Text style={styles.empty}>אין עדכונים משבעת הימים האחרונים.</Text>
-      )}
-
-      <ScrollView style={styles.list}>
-        {updates.map((u) => (
-          <View key={u.id} style={styles.card}>
-            <View style={styles.cardHeader}>
-              <Text style={styles.cardTitle}>{u.title}</Text>
-              <Text style={styles.cardCategory}>
-                {u.category === 'MAINTENANCE'
-                  ? 'תחזוקה'
-                  : u.category === 'ALERT'
-                    ? 'התראה'
-                    : 'כללי'}
-                {u.is_important ? '  •  חשוב' : ''}
-              </Text>
+            <View style={styles.switchRow}>
+              <Text style={styles.switchLabel}>סמן כעדכון חשוב (⚠️)</Text>
+              <Switch
+                value={isImportant}
+                onValueChange={setIsImportant}
+                trackColor={{ false: '#334155', true: 'rgba(249, 115, 22, 0.4)' }}
+                thumbColor={isImportant ? '#f97316' : '#cbd5e1'}
+                ios_backgroundColor="#334155"
+              />
             </View>
 
-            <Text style={styles.cardBody}>{u.body}</Text>
-
-            {/* שורה של מידע: תאריך + מי פרסם */}
-            <View style={styles.footerRow}>
-              <Text style={styles.cardDate}>{formatDate(u.created_at)}</Text>
-              <Text style={styles.cardAuthor}>
-                פורסם ע״י{' '}
-                {u.creator_name || u.creator_email || 'ועד הבית'}
-              </Text>
-            </View>
+            <TouchableOpacity
+              style={[styles.button, saving && styles.buttonDisabled]}
+              onPress={handleCreateUpdate}
+              disabled={saving}
+            >
+              {saving ? (
+                <ActivityIndicator color="#0f172a" />
+              ) : (
+                <Text style={styles.buttonText}>פרסם עדכון</Text>
+              )}
+            </TouchableOpacity>
           </View>
-        ))}
-      </ScrollView>
-    </View>
+        )}
+
+        {loading && updates.length === 0 && (
+          <ActivityIndicator size="large" color="#f97316" />
+        )}
+
+        {err && <Text style={styles.error}>{err}</Text>}
+
+        {!loading && !err && updates.length === 0 && (
+          <Text style={styles.empty}>אין עדכונים משבעת הימים האחרונים.</Text>
+        )}
+
+        <ScrollView style={styles.list}>
+          {updates.map((u) => {
+            const borderRightColor = u.is_important ? '#f97316' : 'rgba(255, 255, 255, 0.3)';
+            return (
+              <View key={u.id} style={[styles.card, { borderRightColor }]}>
+                <View style={styles.cardHeader}>
+                  <Text style={styles.cardTitle}>{u.title}</Text>
+                  <Text style={styles.cardCategory}>
+                    {u.category === 'MAINTENANCE'
+                      ? 'תחזוקה'
+                      : u.category === 'ALERT'
+                        ? 'התראה'
+                        : 'כללי'}
+                    {u.is_important ? '  •  חשוב' : ''}
+                  </Text>
+                </View>
+
+                <Text style={styles.cardBody}>{u.body}</Text>
+
+                {/* שורה של מידע: תאריך + מי פרסם */}
+                <View style={styles.footerRow}>
+                  <Text style={styles.cardDate}>{formatDate(u.created_at)}</Text>
+                  <Text style={styles.cardAuthor}>
+                    פורסם ע״י{' '}
+                    {u.creator_name || u.creator_email || 'ועד הבית'}
+                  </Text>
+                </View>
+              </View>
+            );
+          })}
+        </ScrollView>
+      </View>
     </View>
   );
 }
@@ -208,19 +215,21 @@ const styles = StyleSheet.create({
   },
 
   adminBox: {
-    backgroundColor: '#1e293b',
+    backgroundColor: 'rgba(0, 0, 0, 0.65)',
     padding: 12,
     borderRadius: 12,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderRightWidth: 4,
+    borderRightColor: '#f97316',
   },
   adminTitle: {
     fontSize: 16,
     fontWeight: '700',
     marginBottom: 8,
     textAlign: 'right',
-    color: '#38bdf8',
+    color: '#f97316',
   },
   label: {
     fontSize: 13,
@@ -228,15 +237,15 @@ const styles = StyleSheet.create({
     marginTop: 8,
     marginBottom: 4,
     textAlign: 'right',
-    color: '#e2e8f0',
+    color: '#cbd5e1',
   },
   input: {
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: 'rgba(255, 255, 255, 0.15)',
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 8,
-    backgroundColor: '#0f172a',
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
     textAlign: 'right',
     color: '#FFFFFF',
   },
@@ -252,11 +261,11 @@ const styles = StyleSheet.create({
   },
   switchLabel: {
     fontSize: 13,
-    color: '#e2e8f0',
+    color: '#cbd5e1',
   },
   button: {
     marginTop: 12,
-    backgroundColor: '#4f46e5',
+    backgroundColor: '#f97316',
     borderRadius: 10,
     paddingVertical: 10,
     alignItems: 'center',
@@ -265,7 +274,7 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   buttonText: {
-    color: '#fff',
+    color: '#0f172a',
     fontWeight: '700',
   },
 
@@ -273,16 +282,13 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   card: {
-    backgroundColor: '#1e293b',
+    backgroundColor: 'rgba(0, 0, 0, 0.65)',
     borderRadius: 10,
     padding: 12,
     marginBottom: 10,
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
-    elevation: 2,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderRightWidth: 4,
   },
   cardHeader: {
     flexDirection: 'row-reverse',
@@ -308,7 +314,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
     marginBottom: 8,
     textAlign: 'right',
-    color: '#e2e8f0',
+    color: '#cbd5e1',
   },
   footerRow: {
     flexDirection: 'row-reverse',

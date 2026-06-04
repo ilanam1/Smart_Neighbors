@@ -403,7 +403,7 @@ const styles = StyleSheet.create({
   },
   approveButton: {
     flex: 1,
-    backgroundColor: "#10b981",
+    backgroundColor: "#f97316",
     borderRadius: 16,
     paddingVertical: 14,
     justifyContent: "center",

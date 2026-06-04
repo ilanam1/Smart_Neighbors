@@ -45,7 +45,7 @@ describe('PayFeesScreen (Stripe Integration)', () => {
     await waitFor(() => {
       // Screen fetches charge of 50
       expect(getByText('50 ₪')).toBeTruthy();
-      expect(getByText('תשלום מאובטח באשראי (Stripe)')).toBeTruthy();
+      expect(getByText('תשלום מאובטח באשראי')).toBeTruthy();
     });
   });
 
@@ -62,11 +62,11 @@ describe('PayFeesScreen (Stripe Integration)', () => {
     await waitFor(() => expect(getByText('300 ₪')).toBeTruthy());
 
     // Press the Stripe button
-    fireEvent.press(getByText('תשלום מאובטח באשראי (Stripe)'));
+    fireEvent.press(getByText('תשלום מאובטח באשראי'));
 
     await waitFor(() => {
       // First, it creates an intent in the backend
-      expect(createPaymentIntent).toHaveBeenCalledWith(300);
+      expect(createPaymentIntent).toHaveBeenCalledWith(300, 'ils', expect.any(Object));
       
       // Then it initializes payment sheet locally
       expect(mockInitPaymentSheet).toHaveBeenCalledWith(expect.objectContaining({

@@ -6,17 +6,55 @@ import {
   getBuildingPaymentsForMonth,
   confirmCashPaymentByCommittee,
   markPaymentAsFailed,
+  getBuildingWallet,
+  getBuildingMonthlySummary,
 } from '../../../API/paymentsApi';
 
 jest.mock('../../../API/paymentsApi', () => ({
   getBuildingPaymentsForMonth: jest.fn(),
   confirmCashPaymentByCommittee: jest.fn(),
   markPaymentAsFailed: jest.fn(),
+  getBuildingWallet: jest.fn(),
+  getBuildingMonthlySummary: jest.fn(),
 }));
+
+// Setup helper for month formatting in tests
+function getCurrentMonthYear() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  return `${year}-${month}`;
+}
+
+function formatMonthHebrew(monthYear) {
+  if (!monthYear) return '';
+  const [year, month] = monthYear.split('-');
+  const months = [
+    'ינואר', 'פברואר', 'מרץ', 'אפריל', 'מאי', 'יוני',
+    'יולי', 'אוגוסט', 'ספטמבר', 'אוקטובר', 'נובמבר', 'דצמבר',
+  ];
+  return `${months[parseInt(month, 10) - 1]} ${year}`;
+}
+
+const generateRecentMonths = () => {
+  const months = [];
+  const now = new Date();
+  for (let i = 0; i < 24; i++) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    months.push(`${year}-${month}`);
+  }
+  return months;
+};
+
+const RECENT_MONTHS = generateRecentMonths();
 
 describe('CommitteePaymentsManagementScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    getBuildingWallet.mockResolvedValue({ total_collected: 5000 });
+    getBuildingMonthlySummary.mockResolvedValue({ paid_count: 5, paid_total: 1000, pending_count: 3 });
   });
 
   test('loads and renders payments on mount', async () => {
@@ -33,14 +71,13 @@ describe('CommitteePaymentsManagementScreen', () => {
 
     const { getByText } = render(<CommitteePaymentsManagementScreen />);
 
-    // Wait for loading to finish and data to appear
     await waitFor(() => {
       expect(getByText('ניהול תשלומי ועד הבית')).toBeTruthy();
       expect(getByText('Jane Shepard')).toBeTruthy();
     });
 
-    expect(getByText('סכום: 200 ₪')).toBeTruthy();
-    expect(getByText('סטטוס: CASH_REQUESTED')).toBeTruthy();
+    expect(getByText('200 ₪')).toBeTruthy();
+    expect(getByText('ממתין לאישור מזומן')).toBeTruthy();
     expect(getBuildingPaymentsForMonth).toHaveBeenCalled();
   });
 
@@ -67,21 +104,21 @@ describe('CommitteePaymentsManagementScreen', () => {
     ]);
 
     confirmCashPaymentByCommittee.mockResolvedValueOnce({ success: true });
-    getBuildingPaymentsForMonth.mockResolvedValueOnce([]); // reload after confirm
+    getBuildingPaymentsForMonth.mockResolvedValueOnce([]);
 
     const alertSpy = jest.spyOn(Alert, 'alert').mockImplementation(() => {});
 
     const { getByText } = render(<CommitteePaymentsManagementScreen />);
 
     await waitFor(() => {
-      expect(getByText('אשר תשלום מזומן')).toBeTruthy();
+      expect(getByText('✓ אשר תשלום מזומן')).toBeTruthy();
     });
 
-    fireEvent.press(getByText('אשר תשלום מזומן'));
+    fireEvent.press(getByText('✓ אשר תשלום מזומן'));
 
     await waitFor(() => {
       expect(confirmCashPaymentByCommittee).toHaveBeenCalledWith('123');
-      expect(alertSpy).toHaveBeenCalledWith('הצלחה', 'תשלום המזומן אושר בהצלחה');
+      expect(alertSpy).toHaveBeenCalledWith('✓ אושר', 'תשלום המזומן אושר בהצלחה והתווסף לקופת הבניין');
     });
 
     expect(getBuildingPaymentsForMonth).toHaveBeenCalledTimes(2);
@@ -101,16 +138,16 @@ describe('CommitteePaymentsManagementScreen', () => {
     ]);
 
     markPaymentAsFailed.mockResolvedValueOnce({ success: true });
-    getBuildingPaymentsForMonth.mockResolvedValueOnce([]); // reload after mark failed
+    getBuildingPaymentsForMonth.mockResolvedValueOnce([]);
     const alertSpy = jest.spyOn(Alert, 'alert').mockImplementation(() => {});
 
     const { getByText } = render(<CommitteePaymentsManagementScreen />);
 
     await waitFor(() => {
-      expect(getByText('סמן כנכשל')).toBeTruthy();
+      expect(getByText('✗ סמן כנכשל')).toBeTruthy();
     });
 
-    fireEvent.press(getByText('סמן כנכשל'));
+    fireEvent.press(getByText('✗ סמן כנכשל'));
 
     await waitFor(() => {
       expect(markPaymentAsFailed).toHaveBeenCalledWith('456');
@@ -139,17 +176,23 @@ describe('CommitteePaymentsManagementScreen', () => {
   test('allows changing monthYear input and reloading', async () => {
     getBuildingPaymentsForMonth.mockResolvedValue([]);
     
-    const { getByPlaceholderText, getByText } = render(<CommitteePaymentsManagementScreen />);
+    const { getByText } = render(<CommitteePaymentsManagementScreen />);
     
     await waitFor(() => {
-      expect(getByText('טען תשלומים')).toBeTruthy();
+      expect(getByText('טען תשלומים לחודש זה')).toBeTruthy();
     });
 
-    fireEvent.changeText(getByPlaceholderText('2026-04'), '2025-10');
-    fireEvent.press(getByText('טען תשלומים'));
+    const currentLabel = formatMonthHebrew(getCurrentMonthYear());
+    fireEvent.press(getByText(currentLabel));
+
+    const targetMonth = RECENT_MONTHS[1];
+    const targetLabel = formatMonthHebrew(targetMonth);
+    fireEvent.press(getByText(targetLabel));
+
+    fireEvent.press(getByText('טען תשלומים לחודש זה'));
 
     await waitFor(() => {
-      expect(getBuildingPaymentsForMonth).toHaveBeenCalledWith('2025-10');
+      expect(getBuildingPaymentsForMonth).toHaveBeenCalledWith(targetMonth);
     });
   });
 });

@@ -269,7 +269,7 @@ export default function HomeScreen({ navigation, user }) {
 
       {/* Background Image */}
       <Image
-        source={require('../assets/home_bg_circles_new.png')}
+        source={require('../assets/app_internal_bg.png')}
         style={styles.backgroundImage}
         resizeMode="cover"
       />
@@ -1149,6 +1149,5 @@ const styles = StyleSheet.create({
     top: 0,
     width: width,
     height: height,
-    opacity: 0.4,
   },
 });

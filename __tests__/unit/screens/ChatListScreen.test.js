@@ -38,8 +38,8 @@ describe('ChatListScreen', () => {
             is_group: false,
             updated_at: '2026-04-21T10:00:00Z',
             conversation_participants: [
-                { profile_id: 'user1' },
-                { profile_id: 'user2', profiles: { first_name: 'John', last_name: 'Doe' } }
+                { profile_id: 'user1', profiles: { auth_uid: 'user1' } },
+                { profile_id: 'user2', profiles: { auth_uid: 'user2', first_name: 'John', last_name: 'Doe' } }
             ]
         }
     ]);
@@ -89,6 +89,8 @@ describe('ChatListScreen', () => {
     expect(mockNavigate).toHaveBeenCalledWith('ChatRoom', {
         conversationId: 'chat-group-id',
         chatName: 'קבוצת הבניין',
+        chatPhotoUrl: null,
+        chatUserId: null,
         isGroup: true,
         user: mockUser
     });

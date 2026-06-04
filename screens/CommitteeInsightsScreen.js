@@ -301,7 +301,7 @@ export default function CommitteeInsightsScreen() {
   if (loading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" color="#38bdf8" />
+        <ActivityIndicator size="large" color="#f97316" />
         <Text style={styles.loadingText}>טוען נתוני סטטיסטיקה...</Text>
       </View>
     );
@@ -329,125 +329,125 @@ export default function CommitteeInsightsScreen() {
         resizeMode="cover"
       />
       <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.content}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
-      }
-    >
-      <Text style={styles.header}>דשבורד סטטיסטיקות ועד הבית</Text>
-      <Text style={styles.subHeader}>
-        מבט חכם על מטרדים ובקשות לצורך זיהוי דפוסים ושיפור ניהול הבניין
-      </Text>
+        style={styles.container}
+        contentContainerStyle={styles.content}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+        }
+      >
+        <Text style={styles.header}>דשבורד סטטיסטיקות ועד הבית</Text>
+        <Text style={styles.subHeader}>
+          מבט חכם על מטרדים ובקשות לצורך זיהוי דפוסים ושיפור ניהול הבניין
+        </Text>
 
-      <View style={styles.statsGrid}>
-        <StatCard label="סה״כ מטרדים" value={analytics.totalDisturbances} />
-        <StatCard label="סה״כ בקשות" value={analytics.totalRequests} />
-        <StatCard label="מטרדים פתוחים" value={analytics.openDisturbances} />
-        <StatCard label="בקשות פתוחות" value={analytics.openRequests} />
-        <StatCard label="מטרדים שנפתרו" value={analytics.resolvedDisturbances} />
-        <StatCard label="בקשות שטופלו" value={analytics.completedRequests} />
-        <StatCard label="אחוז מטרדים חמורים" value={`${analytics.highSeverityRate}%`} />
-        <StatCard
-          label="שעת עומס נפוצה"
-          value={analytics.busiestHour ? analytics.busiestHour.key : "אין"}
+        <View style={styles.statsGrid}>
+          <StatCard label="סה״כ מטרדים" value={analytics.totalDisturbances} />
+          <StatCard label="סה״כ בקשות" value={analytics.totalRequests} />
+          <StatCard label="מטרדים פתוחים" value={analytics.openDisturbances} />
+          <StatCard label="בקשות פתוחות" value={analytics.openRequests} />
+          <StatCard label="מטרדים שנפתרו" value={analytics.resolvedDisturbances} />
+          <StatCard label="בקשות שטופלו" value={analytics.completedRequests} />
+          <StatCard label="אחוז מטרדים חמורים" value={`${analytics.highSeverityRate}%`} />
+          <StatCard
+            label="שעת עומס נפוצה"
+            value={analytics.busiestHour ? analytics.busiestHour.key : "אין"}
+          />
+        </View>
+
+        <View style={styles.insightBox}>
+          <Text style={styles.insightTitle}>תובנות מרכזיות</Text>
+
+          <Text style={styles.insightText}>
+            סוג המטרד הנפוץ ביותר:{" "}
+            {analytics.topDisturbanceType
+              ? `${DISTURBANCE_TYPE_LABELS[analytics.topDisturbanceType.key] || analytics.topDisturbanceType.key} (${analytics.topDisturbanceType.count})`
+              : "אין מספיק נתונים"}
+          </Text>
+
+          <Text style={styles.insightText}>
+            סוג הבקשה הנפוץ ביותר:{" "}
+            {analytics.topRequestCategory
+              ? `${REQUEST_CATEGORY_LABELS[analytics.topRequestCategory.key] || analytics.topRequestCategory.key} (${analytics.topRequestCategory.count})`
+              : "אין מספיק נתונים"}
+          </Text>
+
+          <Text style={styles.insightText}>
+            היום העמוס ביותר בדיווחי מטרד:{" "}
+            {analytics.busiestDay
+              ? `${WEEKDAY_LABELS[Number(analytics.busiestDay.key)]} (${analytics.busiestDay.count})`
+              : "אין מספיק נתונים"}
+          </Text>
+
+          <Text style={styles.insightText}>
+            זמן טיפול ממוצע בבקשות שהושלמו:{" "}
+            {formatHours(analytics.avgRequestResolutionHours)}
+          </Text>
+
+          <Text style={styles.insightText}>
+            זמן פתרון ממוצע למטרדים שנפתרו:{" "}
+            {formatHours(analytics.avgDisturbanceResolutionHours)}
+          </Text>
+        </View>
+
+        <SimpleBarChart
+          title="התפלגות מטרדים לפי סוג"
+          dataMap={analytics.disturbanceTypeCounts}
+          labelsMap={DISTURBANCE_TYPE_LABELS}
         />
-      </View>
 
-      <View style={styles.insightBox}>
-        <Text style={styles.insightTitle}>תובנות מרכזיות</Text>
+        <SimpleBarChart
+          title="התפלגות מטרדים לפי חומרה"
+          dataMap={analytics.disturbanceSeverityCounts}
+          labelsMap={DISTURBANCE_SEVERITY_LABELS}
+        />
 
-        <Text style={styles.insightText}>
-          סוג המטרד הנפוץ ביותר:{" "}
-          {analytics.topDisturbanceType
-            ? `${DISTURBANCE_TYPE_LABELS[analytics.topDisturbanceType.key] || analytics.topDisturbanceType.key} (${analytics.topDisturbanceType.count})`
-            : "אין מספיק נתונים"}
-        </Text>
+        <SimpleBarChart
+          title="התפלגות מטרדים לפי סטטוס"
+          dataMap={analytics.disturbanceStatusCounts}
+          labelsMap={DISTURBANCE_STATUS_LABELS}
+        />
 
-        <Text style={styles.insightText}>
-          סוג הבקשה הנפוץ ביותר:{" "}
-          {analytics.topRequestCategory
-            ? `${REQUEST_CATEGORY_LABELS[analytics.topRequestCategory.key] || analytics.topRequestCategory.key} (${analytics.topRequestCategory.count})`
-            : "אין מספיק נתונים"}
-        </Text>
+        <SimpleBarChart
+          title="התפלגות בקשות לפי קטגוריה"
+          dataMap={analytics.requestCategoryCounts}
+          labelsMap={REQUEST_CATEGORY_LABELS}
+        />
 
-        <Text style={styles.insightText}>
-          היום העמוס ביותר בדיווחי מטרד:{" "}
-          {analytics.busiestDay
-            ? `${WEEKDAY_LABELS[Number(analytics.busiestDay.key)]} (${analytics.busiestDay.count})`
-            : "אין מספיק נתונים"}
-        </Text>
+        <SimpleBarChart
+          title="התפלגות בקשות לפי סטטוס"
+          dataMap={analytics.requestStatusCounts}
+          labelsMap={REQUEST_STATUS_LABELS}
+        />
 
-        <Text style={styles.insightText}>
-          זמן טיפול ממוצע בבקשות שהושלמו:{" "}
-          {formatHours(analytics.avgRequestResolutionHours)}
-        </Text>
+        <SimpleBarChart
+          title="עומס דיווחי מטרד לפי יום בשבוע"
+          dataMap={analytics.disturbanceTypeCounts && Object.fromEntries(
+            Object.entries(countBy(disturbances, (item) => {
+              const d = safeDate(item.created_at || item.occurred_at);
+              if (!d) return null;
+              return String(d.getDay());
+            })).sort((a, b) => Number(a[0]) - Number(b[0]))
+          )}
+          labelsMap={{
+            0: "יום א'",
+            1: "יום ב'",
+            2: "יום ג'",
+            3: "יום ד'",
+            4: "יום ה'",
+            5: "יום ו'",
+            6: "שבת",
+          }}
+        />
 
-        <Text style={styles.insightText}>
-          זמן פתרון ממוצע למטרדים שנפתרו:{" "}
-          {formatHours(analytics.avgDisturbanceResolutionHours)}
-        </Text>
-      </View>
-
-      <SimpleBarChart
-        title="התפלגות מטרדים לפי סוג"
-        dataMap={analytics.disturbanceTypeCounts}
-        labelsMap={DISTURBANCE_TYPE_LABELS}
-      />
-
-      <SimpleBarChart
-        title="התפלגות מטרדים לפי חומרה"
-        dataMap={analytics.disturbanceSeverityCounts}
-        labelsMap={DISTURBANCE_SEVERITY_LABELS}
-      />
-
-      <SimpleBarChart
-        title="התפלגות מטרדים לפי סטטוס"
-        dataMap={analytics.disturbanceStatusCounts}
-        labelsMap={DISTURBANCE_STATUS_LABELS}
-      />
-
-      <SimpleBarChart
-        title="התפלגות בקשות לפי קטגוריה"
-        dataMap={analytics.requestCategoryCounts}
-        labelsMap={REQUEST_CATEGORY_LABELS}
-      />
-
-      <SimpleBarChart
-        title="התפלגות בקשות לפי סטטוס"
-        dataMap={analytics.requestStatusCounts}
-        labelsMap={REQUEST_STATUS_LABELS}
-      />
-
-      <SimpleBarChart
-        title="עומס דיווחי מטרד לפי יום בשבוע"
-        dataMap={analytics.disturbanceTypeCounts && Object.fromEntries(
-          Object.entries(countBy(disturbances, (item) => {
+        <SimpleBarChart
+          title="עומס דיווחי מטרד לפי שעה"
+          dataMap={countBy(disturbances, (item) => {
             const d = safeDate(item.created_at || item.occurred_at);
             if (!d) return null;
-            return String(d.getDay());
-          })).sort((a, b) => Number(a[0]) - Number(b[0]))
-        )}
-        labelsMap={{
-          0: "יום א'",
-          1: "יום ב'",
-          2: "יום ג'",
-          3: "יום ד'",
-          4: "יום ה'",
-          5: "יום ו'",
-          6: "שבת",
-        }}
-      />
-
-      <SimpleBarChart
-        title="עומס דיווחי מטרד לפי שעה"
-        dataMap={countBy(disturbances, (item) => {
-          const d = safeDate(item.created_at || item.occurred_at);
-          if (!d) return null;
-          return `${String(d.getHours()).padStart(2, "0")}:00`;
-        })}
-      />
-    </ScrollView>
+            return `${String(d.getHours()).padStart(2, "0")}:00`;
+          })}
+        />
+      </ScrollView>
     </View>
   );
 }
@@ -494,9 +494,9 @@ const styles = StyleSheet.create({
   },
   statCard: {
     width: "48%",
-    backgroundColor: "#1e293b",
+    backgroundColor: "rgba(0, 0, 0, 0.65)",
     borderWidth: 1,
-    borderColor: "#334155",
+    borderColor: "rgba(255, 255, 255, 0.1)",
     borderRadius: 14,
     padding: 14,
     marginBottom: 12,
@@ -504,7 +504,7 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: 24,
     fontWeight: "900",
-    color: "#38bdf8",
+    color: "#f97316",
     textAlign: "right",
   },
   statLabel: {
@@ -522,10 +522,12 @@ const styles = StyleSheet.create({
   },
   insightBox: {
     marginTop: 8,
-    backgroundColor: "#1e293b",
+    backgroundColor: "rgba(0, 0, 0, 0.65)",
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: "#334155",
+    borderColor: "rgba(255, 255, 255, 0.1)",
+    borderRightWidth: 4,
+    borderRightColor: "#f97316",
     padding: 16,
   },
   insightTitle: {
@@ -544,10 +546,10 @@ const styles = StyleSheet.create({
   },
   chartCard: {
     marginTop: 14,
-    backgroundColor: "#1e293b",
+    backgroundColor: "rgba(0, 0, 0, 0.65)",
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: "#334155",
+    borderColor: "rgba(255, 255, 255, 0.1)",
     padding: 16,
   },
   chartTitle: {
@@ -572,13 +574,13 @@ const styles = StyleSheet.create({
   },
   barTrack: {
     height: 10,
-    backgroundColor: "#0f172a",
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
     borderRadius: 999,
     overflow: "hidden",
   },
   barFill: {
     height: "100%",
-    backgroundColor: "#38bdf8",
+    backgroundColor: "#f97316",
     borderRadius: 999,
   },
   barValue: {

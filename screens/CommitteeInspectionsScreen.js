@@ -13,7 +13,7 @@ import {
   Dimensions,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ArrowRight, CalendarDays, Clock } from "lucide-react-native";
+import { ArrowRight, CalendarDays, Clock, Shield } from "lucide-react-native";
 import { useNavigation } from "@react-navigation/native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
@@ -184,9 +184,11 @@ export default function CommitteeInspectionsScreen() {
     const template = item.inspection_templates;
     const employee = item.service_employees;
     const effectiveStatus = item.effective_status || item.status;
+    const isCompleted = effectiveStatus === "COMPLETED";
+    const borderRightColor = isCompleted ? "rgba(255, 255, 255, 0.3)" : "#f97316";
 
     return (
-      <View style={styles.card}>
+      <View style={[styles.card, { borderRightColor }]}>
         <View style={styles.rowBetween}>
           <View
             style={[
@@ -255,27 +257,29 @@ export default function CommitteeInspectionsScreen() {
               gap: 8,
             }}
           >
-            <TouchableOpacity onPress={() => navigation.goBack()}>
+            <TouchableOpacity onPress={() => navigation.goBack()} style={{ padding: 4 }}>
               <ArrowRight size={24} color="#f8fafc" />
             </TouchableOpacity>
-
+            <Shield size={24} color="#f97316" style={{ marginRight: 4 }} />
             <Text style={styles.header}>ביקורות תקופתיות</Text>
           </View>
+        </View>
 
+        <View style={styles.actionsRow}>
           <TouchableOpacity style={styles.primaryBtn} onPress={openCreate}>
             <Text style={styles.primaryBtnText}>+ ביקורת חדשה</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[styles.primaryBtn, { backgroundColor: "#0ea5e9" }]}
+            style={styles.secondaryHeaderBtn}
             onPress={() => navigation.navigate("BuildingCalendar")}
           >
-            <Text style={styles.primaryBtnText}>לוח אירועים</Text>
+            <Text style={styles.secondaryHeaderBtnText}>לוח אירועים</Text>
           </TouchableOpacity>
         </View>
 
         {loading ? (
-          <ActivityIndicator style={{ marginTop: 20 }} color="#38bdf8" />
+          <ActivityIndicator style={{ marginTop: 20 }} color="#f97316" />
         ) : items.length === 0 ? (
           <Text style={styles.empty}>אין ביקורות תקופתיות עדיין.</Text>
         ) : (
@@ -347,7 +351,7 @@ export default function CommitteeInspectionsScreen() {
                   style={styles.datePickerButton}
                   onPress={() => setShowDatePicker(true)}
                 >
-                  <CalendarDays size={18} color="#38bdf8" />
+                  <CalendarDays size={18} color="#f97316" />
 
                   <Text style={styles.datePickerButtonText}>
                     {dueDate.toLocaleDateString("he-IL")}
@@ -358,7 +362,7 @@ export default function CommitteeInspectionsScreen() {
                   style={styles.datePickerButton}
                   onPress={() => setShowTimePicker(true)}
                 >
-                  <Clock size={18} color="#38bdf8" />
+                  <Clock size={18} color="#f97316" />
 
                   <Text style={styles.datePickerButtonText}>
                     {dueDate.toLocaleTimeString("he-IL", {
@@ -424,6 +428,14 @@ const styles = StyleSheet.create({
     flexDirection: "row-reverse",
     justifyContent: "space-between",
     alignItems: "center",
+  },
+
+  actionsRow: {
+    flexDirection: "row-reverse",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 12,
+    marginBottom: 8,
     gap: 8,
   },
 
@@ -434,14 +446,30 @@ const styles = StyleSheet.create({
   },
 
   primaryBtn: {
-    backgroundColor: "#2563eb",
+    flex: 1,
+    backgroundColor: "#f97316",
     paddingVertical: 10,
-    paddingHorizontal: 14,
     borderRadius: 12,
+    alignItems: "center",
   },
 
   primaryBtnText: {
-    color: "#fff",
+    color: "#0f172a",
+    fontWeight: "800",
+  },
+
+  secondaryHeaderBtn: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
+    borderWidth: 1,
+    borderColor: "#f97316",
+    paddingVertical: 10,
+    borderRadius: 12,
+    alignItems: "center",
+  },
+
+  secondaryHeaderBtnText: {
+    color: "#f97316",
     fontWeight: "800",
   },
 
@@ -452,12 +480,13 @@ const styles = StyleSheet.create({
   },
 
   card: {
-    backgroundColor: "#1e293b",
+    backgroundColor: "rgba(0, 0, 0, 0.65)",
     borderWidth: 1,
-    borderColor: "#334155",
-    borderRadius: 12,
+    borderColor: "rgba(255, 255, 255, 0.1)",
+    borderRadius: 16,
     padding: 14,
     marginBottom: 12,
+    borderRightWidth: 4,
   },
 
   rowBetween: {
@@ -481,43 +510,48 @@ const styles = StyleSheet.create({
   },
 
   statusBadge: {
-    backgroundColor: "#334155",
+    backgroundColor: "rgba(255, 255, 255, 0.05)",
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.15)",
     borderRadius: 8,
     paddingHorizontal: 8,
     paddingVertical: 4,
   },
 
   statusCompleted: {
-    backgroundColor: "#166534",
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
+    borderColor: "#ffffff",
   },
 
   statusOverdue: {
-    backgroundColor: "#991b1b",
+    backgroundColor: "rgba(249, 115, 22, 0.1)",
+    borderColor: "#f97316",
   },
 
   statusSkipped: {
-    backgroundColor: "#92400e",
+    backgroundColor: "rgba(255, 255, 255, 0.03)",
+    borderColor: "rgba(255, 255, 255, 0.2)",
   },
 
   statusText: {
-    color: "#fff",
+    color: "#f8fafc",
     fontSize: 12,
     fontWeight: "700",
   },
 
   modalBackdrop: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.7)",
+    backgroundColor: "rgba(0, 0, 0, 0.75)",
     justifyContent: "center",
     padding: 16,
   },
 
   modalCard: {
-    backgroundColor: "#1e293b",
+    backgroundColor: "rgba(15, 23, 42, 0.95)",
     borderRadius: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: "#334155",
+    borderColor: "rgba(255, 255, 255, 0.1)",
   },
 
   modalTitle: {
@@ -544,24 +578,25 @@ const styles = StyleSheet.create({
 
   chip: {
     borderWidth: 1,
-    borderColor: "#475569",
+    borderColor: "rgba(255, 255, 255, 0.2)",
     borderRadius: 18,
     paddingVertical: 6,
     paddingHorizontal: 10,
   },
 
   chipSelected: {
-    backgroundColor: "#2563eb",
-    borderColor: "#2563eb",
+    backgroundColor: "#f97316",
+    borderColor: "#f97316",
   },
 
   chipText: {
-    color: "#e2e8f0",
+    color: "#cbd5e1",
     fontWeight: "700",
   },
 
   chipTextSelected: {
-    color: "#fff",
+    color: "#0f172a",
+    fontWeight: "800",
   },
 
   dateActionsRow: {
@@ -572,9 +607,9 @@ const styles = StyleSheet.create({
 
   datePickerButton: {
     flex: 1,
-    backgroundColor: "#0f172a",
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
     borderWidth: 1,
-    borderColor: "#334155",
+    borderColor: "rgba(255, 255, 255, 0.15)",
     borderRadius: 10,
     paddingVertical: 12,
     paddingHorizontal: 12,
@@ -597,14 +632,16 @@ const styles = StyleSheet.create({
   },
 
   secondaryBtn: {
-    backgroundColor: "#334155",
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
     paddingVertical: 10,
     paddingHorizontal: 14,
     borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#f97316",
   },
 
   secondaryBtnText: {
-    color: "#f8fafc",
+    color: "#f97316",
     fontWeight: "800",
   },
 });

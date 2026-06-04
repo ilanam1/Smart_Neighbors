@@ -131,12 +131,12 @@ export default function BuildingCalendarScreen() {
       if (item.type === "inspection") {
         marks[key].dots.push({
           key: `${item.id}-inspection`,
-          color: "#f59e0b",
+          color: "#ffffff",
         });
       } else {
         marks[key].dots.push({
           key: `${item.id}-event`,
-          color: "#3b82f6",
+          color: "#f97316",
         });
       }
     });
@@ -144,7 +144,7 @@ export default function BuildingCalendarScreen() {
     marks[selectedDate] = {
       ...(marks[selectedDate] || { dots: [] }),
       selected: true,
-      selectedColor: "#2563eb",
+      selectedColor: "#f97316",
     };
 
     return marks;
@@ -346,7 +346,7 @@ export default function BuildingCalendarScreen() {
               isInspection ? styles.inspectionBadge : styles.eventBadge,
             ]}
           >
-            <Text style={styles.badgeText}>
+            <Text style={[styles.badgeText, { color: isInspection ? "#ffffff" : "#f97316" }]}>
               {isInspection ? "ביקורת" : "אירוע"}
             </Text>
           </View>
@@ -403,14 +403,14 @@ export default function BuildingCalendarScreen() {
 
           {isCommittee && (
             <TouchableOpacity style={styles.primaryBtn} onPress={openCreateModal}>
-              <CalendarPlus size={18} color="#fff" />
+              <CalendarPlus size={18} color="#0f172a" />
               <Text style={styles.primaryBtnText}>אירוע חדש</Text>
             </TouchableOpacity>
           )}
         </View>
 
         {loading ? (
-          <ActivityIndicator style={{ marginTop: 30 }} color="#38bdf8" />
+          <ActivityIndicator style={{ marginTop: 30 }} color="#f97316" />
         ) : (
           <>
             <Calendar
@@ -423,20 +423,20 @@ export default function BuildingCalendarScreen() {
                 </Text>
               )}
               theme={{
-                calendarBackground: "#1e293b",
+                calendarBackground: "rgba(0, 0, 0, 0.65)",
                 dayTextColor: "#f8fafc",
                 monthTextColor: "#f8fafc",
                 textSectionTitleColor: "#cbd5e1",
-                selectedDayTextColor: "#ffffff",
-                todayTextColor: "#38bdf8",
+                selectedDayTextColor: "#0f172a",
+                todayTextColor: "#f97316",
 
                 // תיקון צבעי החצים כדי שלא ייעלמו ברקע
-                arrowColor: "#ffffff",
+                arrowColor: "#f97316",
                 arrowStyle: {
                   padding: 8,
                 },
 
-                textDisabledColor: "#64748b",
+                textDisabledColor: "#4b5563",
                 textDayFontWeight: "600",
                 textMonthFontWeight: "900",
                 textDayHeaderFontWeight: "800",
@@ -503,8 +503,9 @@ export default function BuildingCalendarScreen() {
                 <TouchableOpacity
                   style={styles.datePickerButton}
                   onPress={() => setShowStartDatePicker(true)}
+                  testID="btn-start-date"
                 >
-                  <CalendarDays size={18} color="#38bdf8" />
+                  <CalendarDays size={18} color="#f97316" />
                   <Text style={styles.datePickerButtonText}>
                     {startAt.toLocaleDateString("he-IL")}
                   </Text>
@@ -513,8 +514,9 @@ export default function BuildingCalendarScreen() {
                 <TouchableOpacity
                   style={styles.datePickerButton}
                   onPress={() => setShowStartTimePicker(true)}
+                  testID="btn-start-time"
                 >
-                  <Clock size={18} color="#38bdf8" />
+                  <Clock size={18} color="#f97316" />
                   <Text style={styles.datePickerButtonText}>
                     {startAt.toLocaleTimeString("he-IL", {
                       hour: "2-digit",
@@ -554,8 +556,9 @@ export default function BuildingCalendarScreen() {
                 <TouchableOpacity
                   style={styles.datePickerButton}
                   onPress={() => setShowEndDatePicker(true)}
+                  testID="btn-end-date"
                 >
-                  <CalendarDays size={18} color="#38bdf8" />
+                  <CalendarDays size={18} color="#f97316" />
                   <Text style={styles.datePickerButtonText}>
                     {endAt
                       ? endAt.toLocaleDateString("he-IL")
@@ -566,8 +569,9 @@ export default function BuildingCalendarScreen() {
                 <TouchableOpacity
                   style={styles.datePickerButton}
                   onPress={() => setShowEndTimePicker(true)}
+                  testID="btn-end-time"
                 >
-                  <Clock size={18} color="#38bdf8" />
+                  <Clock size={18} color="#f97316" />
                   <Text style={styles.datePickerButtonText}>
                     {endAt
                       ? endAt.toLocaleTimeString("he-IL", {
@@ -655,7 +659,7 @@ const styles = StyleSheet.create({
   },
 
   primaryBtn: {
-    backgroundColor: "#2563eb",
+    backgroundColor: "#f97316",
     paddingVertical: 10,
     paddingHorizontal: 14,
     borderRadius: 12,
@@ -665,7 +669,7 @@ const styles = StyleSheet.create({
   },
 
   primaryBtnText: {
-    color: "#fff",
+    color: "#0f172a",
     fontWeight: "800",
   },
 
@@ -674,7 +678,8 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: "#334155",
+    borderColor: "rgba(255, 255, 255, 0.1)",
+    backgroundColor: "rgba(0, 0, 0, 0.65)",
   },
 
   calendarArrow: {
@@ -702,19 +707,20 @@ const styles = StyleSheet.create({
 
   card: {
     borderWidth: 1,
-    borderRadius: 12,
-    padding: 14,
+    borderRadius: 16,
+    padding: 16,
     marginBottom: 12,
+    backgroundColor: "rgba(0, 0, 0, 0.65)",
+    borderColor: "rgba(255, 255, 255, 0.1)",
+    borderRightWidth: 4,
   },
 
   inspectionCard: {
-    backgroundColor: "#3b2f12",
-    borderColor: "#f59e0b",
+    borderRightColor: "#ffffff",
   },
 
   eventCard: {
-    backgroundColor: "#172554",
-    borderColor: "#3b82f6",
+    borderRightColor: "#f97316",
   },
 
   badgeRow: {
@@ -731,15 +737,14 @@ const styles = StyleSheet.create({
   },
 
   inspectionBadge: {
-    backgroundColor: "#f59e0b",
+    backgroundColor: "rgba(255, 255, 255, 0.15)",
   },
 
   eventBadge: {
-    backgroundColor: "#2563eb",
+    backgroundColor: "rgba(249, 115, 22, 0.15)",
   },
 
   badgeText: {
-    color: "#fff",
     fontSize: 12,
     fontWeight: "800",
   },
@@ -835,7 +840,7 @@ const styles = StyleSheet.create({
   },
 
   clearEndText: {
-    color: "#38bdf8",
+    color: "#f97316",
     fontWeight: "800",
     marginTop: 10,
     marginBottom: 6,
