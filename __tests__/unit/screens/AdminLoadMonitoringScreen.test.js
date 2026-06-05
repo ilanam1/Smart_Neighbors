@@ -83,9 +83,9 @@ describe("AdminLoadMonitoringScreen", () => {
     );
 
     await waitFor(() => {
-      expect(getByText("ניטור עומסים והתנהגות חריגה")).toBeTruthy();
-      expect(getByText("בקשות פתוחות")).toBeTruthy();
-      expect(getByText("מטרדים פתוחים")).toBeTruthy();
+      expect(getByText("דוחות שימוש ותנועה")).toBeTruthy();
+      expect(getByText("סה״כ פעולות")).toBeTruthy();
+      expect(getByText("פעולות ב-24 שעות")).toBeTruthy();
       expect(getByText("בניינים בעומס")).toBeTruthy();
       expect(getAllByText("משתמשים חריגים").length).toBeGreaterThan(0);
       expect(getByText("Building A")).toBeTruthy();

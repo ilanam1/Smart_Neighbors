@@ -198,15 +198,15 @@ export default function AdminGlobalNotificationScreen({ route, navigation }) {
             disabled={loading}
           >
             {loading ? (
-              <ActivityIndicator color="#051121" size="small" />
+              <ActivityIndicator color="#ffffff" size="small" />
             ) : (
               <LinearGradient
-                colors={['#00f2ff', '#0077ff']}
+                colors={['#f97316', '#ea580c']}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
                 style={styles.gradientButton}
               >
-                <Send size={20} color="#051121" style={styles.sendIcon} />
+                <Send size={20} color="#ffffff" style={styles.sendIcon} />
                 <Text style={styles.sendButtonText}>שלח התראה לכלל המשתמשים</Text>
               </LinearGradient>
             )}
@@ -266,9 +266,9 @@ const styles = StyleSheet.create({
   },
   templateCard: {
     flex: 1,
-    backgroundColor: '#0c1f38',
+    backgroundColor: 'rgba(0, 0, 0, 0.65)',
     borderWidth: 1,
-    borderColor: 'rgba(51, 65, 85, 0.4)',
+    borderColor: 'rgba(249, 115, 22, 0.15)',
     borderRadius: 18,
     paddingVertical: 15,
     alignItems: 'center',
@@ -309,9 +309,9 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   inputWrapper: {
-    backgroundColor: '#0c1f38',
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
     borderWidth: 1,
-    borderColor: 'rgba(51, 65, 85, 0.4)',
+    borderColor: 'rgba(249, 115, 22, 0.2)',
     borderRadius: 16,
     paddingHorizontal: 16,
     marginBottom: 20,
@@ -334,7 +334,7 @@ const styles = StyleSheet.create({
   sendButton: {
     borderRadius: 16,
     overflow: 'hidden',
-    shadowColor: '#00f2ff',
+    shadowColor: '#f97316',
     shadowOpacity: 0.25,
     shadowRadius: 10,
     elevation: 6,
@@ -351,7 +351,7 @@ const styles = StyleSheet.create({
     marginLeft: 6,
   },
   sendButtonText: {
-    color: '#051121',
+    color: '#ffffff',
     fontSize: 16,
     fontWeight: 'bold',
   },
@@ -379,9 +379,9 @@ const styles = StyleSheet.create({
     marginBottom: 35,
   },
   backToDashboardButton: {
-    backgroundColor: '#1a2b41',
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
     borderWidth: 1,
-    borderColor: 'rgba(51, 65, 85, 0.5)',
+    borderColor: '#f97316',
     borderRadius: 16,
     paddingVertical: 16,
     paddingHorizontal: 40,
@@ -389,7 +389,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   backToDashboardText: {
-    color: '#ffffff',
+    color: '#f97316',
     fontSize: 16,
     fontWeight: 'bold',
   },

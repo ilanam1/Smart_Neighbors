@@ -243,7 +243,7 @@ export default function AdminCompanyDetailsScreen({ route, navigation }) {
                 onPress={() => navigation.navigate('AdminAddEmployee', { adminUser, company })}
                 activeOpacity={0.8}
             >
-                <Plus size={28} color="#0f172a" strokeWidth={3} />
+                <Plus size={28} color="#ffffff" strokeWidth={3} />
             </TouchableOpacity>
 
             {/* Password Confirmation Modal */}
@@ -362,7 +362,7 @@ const styles = StyleSheet.create({
         borderRadius: 16,
         marginBottom: 16,
         borderWidth: 1,
-        borderColor: 'rgba(255, 255, 255, 0.1)',
+        borderColor: 'rgba(249, 115, 22, 0.15)',
         borderRightWidth: 4,
         borderRightColor: '#f97316',
         backgroundColor: 'rgba(0, 0, 0, 0.65)'
@@ -472,7 +472,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0, 0, 0, 0.4)',
         borderRadius: 16,
         borderWidth: 1,
-        borderColor: 'rgba(255, 255, 255, 0.15)',
+        borderColor: 'rgba(249, 115, 22, 0.2)',
         color: '#f8fafc',
         fontSize: 16,
         paddingHorizontal: 20,

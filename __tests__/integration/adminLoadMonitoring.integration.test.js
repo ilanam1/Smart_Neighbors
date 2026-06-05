@@ -75,11 +75,12 @@ describe("admin load monitoring integration", () => {
     mockSupabase.from.mockImplementation((table) => {
       if (table === "requests") return makeDateQuery(requests);
       if (table === "disturbance_reports") return makeDateQuery(disturbances);
+      if (table === "equipment_loans") return makeDateQuery([]);
       if (table === "profiles") return makeSelectOnlyQuery(profiles);
       if (table === "buildings") return makeSelectOnlyQuery(buildings);
     });
 
-    const { getByText } = render(
+    const { getByText, getAllByText } = render(
       <AdminLoadMonitoringScreen
         navigation={navigationMock}
         route={{ params: { adminUser } }}
@@ -87,11 +88,11 @@ describe("admin load monitoring integration", () => {
     );
 
     await waitFor(() => {
-      expect(getByText("ניטור עומסים והתנהגות חריגה")).toBeTruthy();
-      expect(getByText("Building A")).toBeTruthy();
+      expect(getByText("דוחות שימוש ותנועה")).toBeTruthy();
+      expect(getAllByText("Building A").length).toBeGreaterThan(0);
       expect(getByText("עומס חריג")).toBeTruthy();
       expect(getByText("Test User")).toBeTruthy();
-      expect(getByText("סה״כ פעולות: 11")).toBeTruthy();
+      expect(getAllByText("סה״כ פעולות: 11").length).toBeGreaterThan(0);
       expect(getByText("עומס בקשות בבניין Building A")).toBeTruthy();
     });
 
@@ -105,6 +106,7 @@ describe("admin load monitoring integration", () => {
     mockSupabase.from.mockImplementation((table) => {
       if (table === "requests") return makeDateQuery([]);
       if (table === "disturbance_reports") return makeDateQuery([]);
+      if (table === "equipment_loans") return makeDateQuery([]);
       if (table === "profiles") return makeSelectOnlyQuery([]);
       if (table === "buildings") {
         return makeSelectOnlyQuery([

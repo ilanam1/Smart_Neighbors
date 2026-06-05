@@ -129,10 +129,10 @@ export default function AdminAddEmployeeScreen({ route, navigation }) {
                     disabled={loading}
                 >
                     {loading ? (
-                        <ActivityIndicator color="#0F172A" />
+                        <ActivityIndicator color="#ffffff" />
                     ) : (
                         <>
-                            <PlusCircle size={24} color="#0F172A" />
+                            <PlusCircle size={24} color="#ffffff" />
                             <Text style={styles.submitButtonText}>צור עובד ושמור למאגר</Text>
                         </>
                     )}
@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: 'rgba(0, 0, 0, 0.4)',
         borderWidth: 1,
-        borderColor: 'rgba(255, 255, 255, 0.15)',
+        borderColor: 'rgba(249, 115, 22, 0.2)',
         borderRadius: 12,
         paddingHorizontal: 15,
         marginBottom: 10,
@@ -195,5 +195,5 @@ const styles = StyleSheet.create({
         shadowRadius: 8,
         elevation: 4
     },
-    submitButtonText: { color: '#0F172A', fontSize: 18, fontWeight: 'bold' }
+    submitButtonText: { color: '#ffffff', fontSize: 18, fontWeight: 'bold' }
 });

@@ -129,7 +129,7 @@ export default function AdminAddCompanyScreen({ route, navigation }) {
                                     {type.label}
                                 </Text>
                                 {isSelected && (
-                                    <CheckCircle2 size={16} color="#0F172A" style={{ marginLeft: 6 }} />
+                                    <CheckCircle2 size={16} color="#ffffff" style={{ marginLeft: 6 }} />
                                 )}
                             </TouchableOpacity>
                         );
@@ -142,10 +142,10 @@ export default function AdminAddCompanyScreen({ route, navigation }) {
                     disabled={loading}
                 >
                     {loading ? (
-                        <ActivityIndicator color="#0F172A" />
+                        <ActivityIndicator color="#ffffff" />
                     ) : (
                         <>
-                            <PlusCircle size={24} color="#0F172A" />
+                            <PlusCircle size={24} color="#ffffff" />
                             <Text style={styles.submitButtonText}>הוסף למאגר בחברות</Text>
                         </>
                     )}
@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: 'rgba(0, 0, 0, 0.4)',
         borderWidth: 1,
-        borderColor: 'rgba(255, 255, 255, 0.15)',
+        borderColor: 'rgba(249, 115, 22, 0.2)',
         borderRadius: 12,
         paddingHorizontal: 15,
         marginBottom: 10,
@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: 'rgba(255, 255, 255, 0.03)',
         borderWidth: 1,
-        borderColor: 'rgba(255, 255, 255, 0.15)',
+        borderColor: 'rgba(249, 115, 22, 0.2)',
         paddingVertical: 12,
         paddingHorizontal: 16,
         borderRadius: 20,
@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
         fontWeight: '600'
     },
     chipTextSelected: {
-        color: '#0F172A',
+        color: '#ffffff',
         fontWeight: 'bold'
     },
     submitButton: {
@@ -226,5 +226,5 @@ const styles = StyleSheet.create({
         shadowRadius: 8,
         elevation: 4
     },
-    submitButtonText: { color: '#0F172A', fontSize: 18, fontWeight: 'bold' }
+    submitButtonText: { color: '#ffffff', fontSize: 18, fontWeight: 'bold' }
 });

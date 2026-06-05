@@ -37,18 +37,18 @@ export default function AdminScreen({ user, onSignOut, navigation }) {
                 {/* Header */}
                 <View style={styles.header}>
                     <TouchableOpacity onPress={handleLogout} style={styles.logoutButton} activeOpacity={0.8}>
-                        <LogOut size={20} color="#fb7185" />
+                        <LogOut size={20} color="#f97316" />
                     </TouchableOpacity>
                     <View style={styles.headerTitleRow}>
                         <Text style={styles.headerTitle}>לוח בקרת מנהל</Text>
-                        <LayoutDashboard size={20} color="#22d3ee" style={{marginLeft: 8}} />
+                        <LayoutDashboard size={20} color="#f97316" style={{marginLeft: 8}} />
                     </View>
                 </View>
 
                 {/* Welcome Card */}
                 <View style={styles.cardWrapper}>
                     <LinearGradient
-                        colors={['#0c1f38', '#0a1b31']}
+                        colors={['#18181b', '#09090b']}
                         start={{ x: 1, y: 0 }}
                         end={{ x: 0, y: 1 }}
                         style={styles.profileCard}
@@ -83,8 +83,8 @@ export default function AdminScreen({ user, onSignOut, navigation }) {
                         activeOpacity={0.8}
                         onPress={() => navigation.navigate('AdminBuildings', { adminUser: user })}
                     >
-                        <View style={[styles.iconCircle, { backgroundColor: 'rgba(245, 158, 11, 0.1)' }]}>
-                            <Building2 size={28} color="#f59e0b" />
+                        <View style={[styles.iconCircle, { backgroundColor: 'rgba(249, 115, 22, 0.1)' }]}>
+                            <Building2 size={28} color="#f97316" />
                         </View>
                         <Text style={styles.actionTitle}>הבניינים שלנו</Text>
                         <Text style={styles.actionDesc}>צפייה ומחיקת בניינים</Text>
@@ -96,8 +96,8 @@ export default function AdminScreen({ user, onSignOut, navigation }) {
                         activeOpacity={0.8}
                         onPress={() => navigation.navigate('AdminPendingCommittees', { adminUser: user })}
                     >
-                        <View style={[styles.iconCircle, { backgroundColor: 'rgba(6, 182, 212, 0.1)' }]}>
-                            <ShieldCheck size={28} color="#06b6d4" />
+                        <View style={[styles.iconCircle, { backgroundColor: 'rgba(249, 115, 22, 0.1)' }]}>
+                            <ShieldCheck size={28} color="#f97316" />
                         </View>
                         <Text style={styles.actionTitle}>אישור ועדי בית</Text>
                         <Text style={styles.actionDesc}>אשר נציגי בניין חדשים</Text>
@@ -109,8 +109,8 @@ export default function AdminScreen({ user, onSignOut, navigation }) {
                         activeOpacity={0.8}
                         onPress={() => navigation.navigate('DeleteUsers', { adminUser: user })}
                     >
-                        <View style={[styles.iconCircle, { backgroundColor: 'rgba(244, 63, 94, 0.1)' }]}>
-                            <Users size={28} color="#f43f5e" />
+                        <View style={[styles.iconCircle, { backgroundColor: 'rgba(249, 115, 22, 0.1)' }]}>
+                            <Users size={28} color="#f97316" />
                         </View>
                         <Text style={styles.actionTitle}>ניהול משתמשים</Text>
                         <Text style={styles.actionDesc}>צפייה ומחיקת משתמשים</Text>
@@ -122,8 +122,8 @@ export default function AdminScreen({ user, onSignOut, navigation }) {
                         activeOpacity={0.8}
                         onPress={() => navigation.navigate('AdminServiceCompanies', { adminUser: user })}
                     >
-                        <View style={[styles.iconCircle, { backgroundColor: 'rgba(6, 182, 212, 0.1)' }]}>
-                            <Briefcase size={28} color="#06b6d4" />
+                        <View style={[styles.iconCircle, { backgroundColor: 'rgba(249, 115, 22, 0.1)' }]}>
+                            <Briefcase size={28} color="#f97316" />
                         </View>
                         <Text style={styles.actionTitle}>חברות שירות</Text>
                         <Text style={styles.actionDesc}>מאגר ספקי שירות</Text>
@@ -142,7 +142,7 @@ export default function AdminScreen({ user, onSignOut, navigation }) {
                             <Text style={styles.addBuildingSubtitle}>הקמת בניין חדש במאגר המערכת</Text>
                         </View>
                         <View style={styles.addBuildingIconWrapper}>
-                            <PlusCircle size={28} color="#34d399" />
+                            <PlusCircle size={28} color="#f97316" />
                         </View>
                     </View>
                 </TouchableOpacity>
@@ -159,7 +159,7 @@ export default function AdminScreen({ user, onSignOut, navigation }) {
                             <Text style={styles.globalNotificationSubtitle}>פרסום הודעת תחזוקה, עדכון או התראה כללית</Text>
                         </View>
                         <View style={styles.globalNotificationIconWrapper}>
-                            <Megaphone size={28} color="#22d3ee" />
+                            <Megaphone size={28} color="#f97316" />
                         </View>
                     </View>
                 </TouchableOpacity>
@@ -171,8 +171,8 @@ export default function AdminScreen({ user, onSignOut, navigation }) {
                         activeOpacity={0.8}
                         onPress={() => navigation.navigate('AdminLoadMonitoring', { adminUser: user })}
                     >
-                        <View style={[styles.iconCircle, { backgroundColor: 'rgba(251, 191, 36, 0.1)' }]}>
-                            <TriangleAlert size={28} color="#f59e0b" />
+                        <View style={[styles.iconCircle, { backgroundColor: 'rgba(249, 115, 22, 0.1)' }]}>
+                            <TriangleAlert size={28} color="#f97316" />
                         </View>
                         <Text style={styles.actionTitle}>ניטור עומסים</Text>
                         <Text style={styles.actionDesc}>בקשות, מטרדים ומשתמשים חריגים</Text>
@@ -187,8 +187,8 @@ export default function AdminScreen({ user, onSignOut, navigation }) {
                             })
                         }
                     >
-                        <View style={[styles.iconCircle, { backgroundColor: "rgba(34, 211, 238, 0.1)" }]}>
-                            <BarChart3 size={28} color="#22d3ee" />
+                        <View style={[styles.iconCircle, { backgroundColor: 'rgba(249, 115, 22, 0.1)' }]}>
+                            <BarChart3 size={28} color="#f97316" />
                         </View>
                         <Text style={styles.actionTitle}>דוח ציוד פופולרי</Text>
                         <Text style={styles.actionDesc}>חיזוי ביקוש לפי השאלות</Text>
@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
     },
     logoutButton: {
         padding: 10,
-        backgroundColor: '#1a2b41',
+        backgroundColor: '#18181b',
         borderRadius: 14,
     },
     headerTitleRow: {
@@ -244,7 +244,7 @@ const styles = StyleSheet.create({
         borderRadius: 32,
         padding: 24,
         borderWidth: 1,
-        borderColor: 'rgba(51, 65, 85, 0.4)',
+        borderColor: 'rgba(249, 115, 22, 0.25)',
         position: 'relative',
         overflow: 'hidden',
     },
@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
         width: 128,
         height: 128,
         borderRadius: 64,
-        backgroundColor: 'rgba(6, 182, 212, 0.1)',
+        backgroundColor: 'rgba(249, 115, 22, 0.08)',
         // Note: Real blur is hard without @react-native-community/blur so we use a translucent circle
     },
     profileInfo: {
@@ -271,11 +271,11 @@ const styles = StyleSheet.create({
         letterSpacing: -0.5,
     },
     welcomeName: {
-        color: '#22d3ee',
+        color: '#f97316',
     },
     subText: {
         fontSize: 14,
-        color: '#94a3b8',
+        color: '#a1a1aa',
         marginBottom: 16,
         textAlign: 'center',
     },
@@ -283,21 +283,21 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'rgba(15, 23, 42, 0.6)',
+        backgroundColor: 'rgba(9, 9, 11, 0.7)',
         paddingHorizontal: 20,
         paddingVertical: 6,
         borderRadius: 999,
         borderWidth: 1,
-        borderColor: 'rgba(51, 65, 85, 0.5)',
+        borderColor: 'rgba(249, 115, 22, 0.2)',
         gap: 6,
     },
     badgeLabel: {
         fontSize: 13,
-        color: '#64748b',
+        color: '#71717a',
     },
     badgeId: {
         fontSize: 14,
-        color: '#67e8f9',
+        color: '#f97316',
         fontWeight: 'bold',
         fontFamily: 'monospace',
         letterSpacing: 1,
@@ -310,7 +310,7 @@ const styles = StyleSheet.create({
     sectionTitle: {
         fontSize: 16,
         fontWeight: 'bold',
-        color: '#e2e8f0',
+        color: '#f4f4f5',
         paddingRight: 8,
     },
     grid: {
@@ -321,28 +321,28 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
     actionCardHalf: {
-        backgroundColor: '#0c1f38',
+        backgroundColor: '#18181b',
         width: '48%',
         paddingVertical: 26,
         paddingHorizontal: 12,
         borderRadius: 24,
         alignItems: 'center',
         borderWidth: 1,
-        borderColor: 'rgba(51, 65, 85, 0.3)',
+        borderColor: 'rgba(249, 115, 22, 0.15)',
         shadowColor: '#000',
         shadowOpacity: 0.2,
         shadowRadius: 10,
         elevation: 4,
     },
     actionCardFullSpan: {
-        backgroundColor: '#0c1f38',
+        backgroundColor: '#18181b',
         width: '100%',
         paddingVertical: 26,
         paddingHorizontal: 12,
         borderRadius: 24,
         alignItems: 'center',
         borderWidth: 1,
-        borderColor: 'rgba(51, 65, 85, 0.3)',
+        borderColor: 'rgba(249, 115, 22, 0.15)',
         shadowColor: '#000',
         shadowOpacity: 0.2,
         shadowRadius: 8,
@@ -365,16 +365,16 @@ const styles = StyleSheet.create({
     },
     actionDesc: {
         fontSize: 13,
-        color: '#64748b',
+        color: '#a1a1aa',
         textAlign: 'center',
     },
     addBuildingBtn: {
-        backgroundColor: '#0c1f38',
+        backgroundColor: '#18181b',
         borderRadius: 24,
         borderWidth: 2,
-        borderColor: 'rgba(16, 185, 129, 0.3)',
+        borderColor: 'rgba(249, 115, 22, 0.25)',
         padding: 20,
-        shadowColor: '#10b981',
+        shadowColor: '#f97316',
         shadowOpacity: 0.1,
         shadowRadius: 10,
         elevation: 4,
@@ -392,26 +392,26 @@ const styles = StyleSheet.create({
     addBuildingTitle: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: '#34d399',
+        color: '#f97316',
         marginBottom: 2,
     },
     addBuildingSubtitle: {
         fontSize: 13,
-        color: '#94a3b8',
+        color: '#a1a1aa',
     },
     addBuildingIconWrapper: {
         padding: 14,
-        backgroundColor: 'rgba(16, 185, 129, 0.2)',
+        backgroundColor: 'rgba(249, 115, 22, 0.15)',
         borderRadius: 20,
     },
     globalNotificationBtn: {
-        backgroundColor: '#0c1f38',
+        backgroundColor: '#18181b',
         borderRadius: 24,
         borderWidth: 2,
-        borderColor: 'rgba(34, 211, 238, 0.3)',
+        borderColor: 'rgba(249, 115, 22, 0.25)',
         padding: 20,
         marginTop: 16,
-        shadowColor: '#22d3ee',
+        shadowColor: '#f97316',
         shadowOpacity: 0.1,
         shadowRadius: 10,
         elevation: 4,
@@ -424,16 +424,16 @@ const styles = StyleSheet.create({
     globalNotificationTitle: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: '#22d3ee',
+        color: '#f97316',
         marginBottom: 2,
     },
     globalNotificationSubtitle: {
         fontSize: 13,
-        color: '#94a3b8',
+        color: '#a1a1aa',
     },
     globalNotificationIconWrapper: {
         padding: 14,
-        backgroundColor: 'rgba(34, 211, 238, 0.2)',
+        backgroundColor: 'rgba(249, 115, 22, 0.15)',
         borderRadius: 20,
     }
 });

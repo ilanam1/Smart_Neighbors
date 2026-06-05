@@ -133,7 +133,7 @@ export default function DeleteUserScreen({ navigation, route }) {
 
     const renderItem = ({ item }) => (
         <LinearGradient
-            colors={['#0c1f38', '#0a1b31']}
+            colors={['rgba(0, 0, 0, 0.65)', 'rgba(0, 0, 0, 0.75)']}
             style={styles.cardContainer}
             start={{ x: 1, y: 0 }}
             end={{ x: 0, y: 0 }}
@@ -145,7 +145,7 @@ export default function DeleteUserScreen({ navigation, route }) {
                 onPress={() => handleDeleteUser(item)}
                 activeOpacity={0.7}
             >
-                <Trash2 size={20} color="#64748b" />
+                <Trash2 size={20} color="#ef4444" />
             </TouchableOpacity>
 
             <View style={styles.infoBlock}>
@@ -154,12 +154,12 @@ export default function DeleteUserScreen({ navigation, route }) {
                         {item.first_name} {item.last_name}
                         {item.is_house_committee ? ' (ועד בית)' : ''}
                     </Text>
-                    <User size={16} color="#fbbf24" style={{ marginLeft: 8 }} />
+                    <User size={16} color="#f97316" style={{ marginLeft: 8 }} />
                 </View>
                 
                 <View style={styles.addressRow}>
                     <Text style={styles.bAddress} numberOfLines={1}>{item.email}</Text>
-                    <Mail size={14} color="#06b6d4" style={{ marginLeft: 6 }} />
+                    <Mail size={14} color="#f97316" style={{ marginLeft: 6 }} />
                 </View>
 
                 {item.address && (
@@ -167,7 +167,7 @@ export default function DeleteUserScreen({ navigation, route }) {
                         <Text style={[styles.bAddress, { fontSize: 12 }]} numberOfLines={1}>
                             כתובת: {item.address}
                         </Text>
-                        <MapPin size={12} color="#06b6d4" style={{ marginLeft: 6 }} />
+                        <MapPin size={12} color="#f97316" style={{ marginLeft: 6 }} />
                     </View>
                 )}
             </View>
@@ -205,7 +205,7 @@ export default function DeleteUserScreen({ navigation, route }) {
                     onChangeText={setSearchQuery}
                     textAlign="right"
                 />
-                <Search size={20} color="#22d3ee" style={styles.searchIcon} />
+                <Search size={20} color="#f97316" style={styles.searchIcon} />
             </View>
 
             {/* Admin Filter Chips */}
@@ -221,14 +221,14 @@ export default function DeleteUserScreen({ navigation, route }) {
                         style={[styles.filterChip, adminFilter === 'ADMIN' && styles.filterChipActive]}
                         onPress={() => setAdminFilter('ADMIN')}
                     >
-                        <ShieldCheck size={14} color={adminFilter === 'ADMIN' ? '#0F172A' : '#94a3b8'} style={{marginRight: 4}} />
+                        <ShieldCheck size={14} color={adminFilter === 'ADMIN' ? '#ffffff' : '#94a3b8'} style={{marginRight: 4}} />
                         <Text style={[styles.filterChipText, adminFilter === 'ADMIN' && styles.filterChipTextActive]}>רק מנהלי ועד</Text>
                     </TouchableOpacity>
                     <TouchableOpacity 
                         style={[styles.filterChip, adminFilter === 'RESIDENT' && styles.filterChipActive]}
                         onPress={() => setAdminFilter('RESIDENT')}
                     >
-                        <User size={14} color={adminFilter === 'RESIDENT' ? '#0F172A' : '#94a3b8'} style={{marginRight: 4}} />
+                        <User size={14} color={adminFilter === 'RESIDENT' ? '#ffffff' : '#94a3b8'} style={{marginRight: 4}} />
                         <Text style={[styles.filterChipText, adminFilter === 'RESIDENT' && styles.filterChipTextActive]}>רק דיירים</Text>
                     </TouchableOpacity>
                 </ScrollView>
@@ -250,7 +250,7 @@ export default function DeleteUserScreen({ navigation, route }) {
                             style={[styles.filterChip, selectedBuildingId === b.id && styles.filterChipActive]}
                             onPress={() => setSelectedBuildingId(b.id)}
                         >
-                            <Building2 size={14} color={selectedBuildingId === b.id ? '#0F172A' : '#94a3b8'} style={{marginRight: 4}} />
+                            <Building2 size={14} color={selectedBuildingId === b.id ? '#ffffff' : '#94a3b8'} style={{marginRight: 4}} />
                             <Text style={[styles.filterChipText, selectedBuildingId === b.id && styles.filterChipTextActive]}>{b.name}</Text>
                         </TouchableOpacity>
                     ))}
@@ -258,7 +258,7 @@ export default function DeleteUserScreen({ navigation, route }) {
             </View>
 
             {loading ? (
-                <ActivityIndicator size="large" color="#22d3ee" style={{ marginTop: 60 }} />
+                <ActivityIndicator size="large" color="#f97316" style={{ marginTop: 60 }} />
             ) : (
                 <FlatList
                     data={filteredUsers}
@@ -268,7 +268,7 @@ export default function DeleteUserScreen({ navigation, route }) {
                     showsVerticalScrollIndicator={false}
                     ListEmptyComponent={
                         <View style={styles.emptyContainer}>
-                            <User size={64} color="#1e293b" />
+                            <User size={64} color="rgba(249, 115, 22, 0.4)" />
                             <Text style={styles.emptyText}>לא נמצאו משתמשים תואמים לחיפוש.</Text>
                         </View>
                     }
@@ -306,15 +306,15 @@ const styles = StyleSheet.create({
     searchWrapper: {
         flexDirection: 'row-reverse',
         alignItems: 'center',
-        backgroundColor: '#0a1b31',
+        backgroundColor: 'rgba(0, 0, 0, 0.4)',
         marginHorizontal: 16,
         marginBottom: 12,
         paddingHorizontal: 20,
         borderRadius: 24,
         borderWidth: 1,
-        borderColor: 'rgba(51, 65, 85, 0.5)',
+        borderColor: 'rgba(249, 115, 22, 0.2)',
         height: 60,
-        shadowColor: '#00f2ff',
+        shadowColor: '#f97316',
         shadowOpacity: 0.05,
         shadowRadius: 8,
         elevation: 3,
@@ -339,8 +339,8 @@ const styles = StyleSheet.create({
         borderColor: '#334155',
     },
     filterChipActive: {
-        backgroundColor: '#06b6d4',
-        borderColor: '#22d3ee',
+        backgroundColor: '#f97316',
+        borderColor: '#f97316',
     },
     filterChipText: {
         color: '#94a3b8',
@@ -348,7 +348,7 @@ const styles = StyleSheet.create({
         fontWeight: '500',
     },
     filterChipTextActive: {
-        color: '#0F172A',
+        color: '#ffffff',
         fontWeight: 'bold',
     },
     searchInput: {
@@ -371,8 +371,8 @@ const styles = StyleSheet.create({
         borderRadius: 24,
         marginBottom: 16,
         borderWidth: 1,
-        borderColor: 'rgba(51, 65, 85, 0.3)',
-        shadowColor: '#00f2ff',
+        borderColor: 'rgba(249, 115, 22, 0.15)',
+        shadowColor: '#f97316',
         shadowOpacity: 0.05,
         shadowOffset: { width: 0, height: 4 },
         shadowRadius: 10,
@@ -386,7 +386,7 @@ const styles = StyleSheet.create({
         top: '30%',
         width: 4,
         height: 60,
-        backgroundColor: '#06b6d4',
+        backgroundColor: '#f97316',
         borderTopRightRadius: 4,
         borderBottomRightRadius: 4,
     },
@@ -428,7 +428,7 @@ const styles = StyleSheet.create({
         marginTop: 80,
     },
     emptyText: {
-        color: '#64748b',
+        color: '#cbd5e1',
         fontSize: 18,
         marginTop: 16,
     }

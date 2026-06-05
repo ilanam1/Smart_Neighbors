@@ -74,7 +74,7 @@ export default function AdminEquipmentBuildingsSelectorScreen({ navigation, rout
         </View>
 
         <View style={styles.iconCircle}>
-          <Building2 size={24} color="#22d3ee" />
+          <Building2 size={24} color="#f97316" />
         </View>
       </TouchableOpacity>
     );
@@ -102,7 +102,7 @@ export default function AdminEquipmentBuildingsSelectorScreen({ navigation, rout
       </View>
 
       {loading ? (
-        <ActivityIndicator size="large" color="#22d3ee" style={{ marginTop: 40 }} />
+        <ActivityIndicator size="large" color="#f97316" style={{ marginTop: 40 }} />
       ) : error ? (
         <Text style={styles.errorText}>{error}</Text>
       ) : buildings.length === 0 ? (
@@ -148,12 +148,12 @@ const styles = StyleSheet.create({
     paddingBottom: 30,
   },
   card: {
-    backgroundColor: "#0c1f38",
+    backgroundColor: "rgba(0, 0, 0, 0.65)",
     borderRadius: 22,
     padding: 16,
     marginBottom: 14,
     borderWidth: 1,
-    borderColor: "rgba(51, 65, 85, 0.5)",
+    borderColor: "rgba(249, 115, 22, 0.15)",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
     textAlign: "right",
   },
   iconCircle: {
-    backgroundColor: "rgba(34, 211, 238, 0.1)",
+    backgroundColor: "rgba(249, 115, 22, 0.1)",
     padding: 12,
     borderRadius: 18,
   },

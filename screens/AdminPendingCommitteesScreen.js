@@ -117,11 +117,11 @@ export default function AdminPendingCommitteesScreen({ route, navigation }) {
                 <TouchableOpacity onPress={() => navigation.goBack()} style={{ padding: 5, marginLeft: 10 }}>
                     <ArrowRight size={28} color="#f8fafc" />
                 </TouchableOpacity>
-                <ShieldCheck size={32} color="#00f2ff" />
+                <ShieldCheck size={32} color="#f97316" />
                 <Text style={styles.headerTitle}>ניהול ועדי בית ממתינים</Text>
             </View>
             {loading ? (
-                <ActivityIndicator size="large" color="#00f2ff" style={{marginTop: 50}} />
+                <ActivityIndicator size="large" color="#f97316" style={{marginTop: 50}} />
             ) : pendingUsers.length === 0 ? (
                 <Text style={styles.emptyText}>אין ועדי בית הממתינים לאישור מנהל כעת.</Text>
             ) : (
@@ -142,10 +142,10 @@ const styles = StyleSheet.create({
     header: { flexDirection: 'row-reverse', alignItems: 'center', marginBottom: 20, paddingTop: 40 },
     headerTitle: { fontSize: 24, fontWeight: 'bold', color: '#f8fafc', marginRight: 10 },
     emptyText: { color: '#94a3b8', textAlign: 'center', marginTop: 40, fontSize: 16 },
-    card: { backgroundColor: '#1e293b', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#334155' },
+    card: { backgroundColor: '#18181b', borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: 'rgba(249, 115, 22, 0.15)' },
     cardHeader: { flexDirection: 'row-reverse', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
     name: { fontSize: 18, fontWeight: 'bold', color: '#f8fafc' },
-    buildingTag: { backgroundColor: '#3b82f6', color: '#fff', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 12, fontSize: 12, overflow: 'hidden' },
+    buildingTag: { backgroundColor: '#f97316', color: '#fff', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 12, fontSize: 12, overflow: 'hidden' },
     detailText: { color: '#cbd5e1', fontSize: 14, marginBottom: 4, textAlign: 'right' },
     actionsRow: { flexDirection: 'row-reverse', justifyContent: 'flex-start', marginTop: 16, gap: 12 },
     actionBtn: { flexDirection: 'row-reverse', alignItems: 'center', paddingVertical: 8, paddingHorizontal: 16, borderRadius: 8, borderWidth: 1 },

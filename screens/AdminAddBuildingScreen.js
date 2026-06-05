@@ -112,10 +112,10 @@ export default function AdminAddBuildingScreen({ route, navigation }) {
                     disabled={loading}
                 >
                     {loading ? (
-                        <ActivityIndicator color="#0F172A" />
+                        <ActivityIndicator color="#ffffff" />
                     ) : (
                         <>
-                            <PlusCircle size={24} color="#0F172A" />
+                            <PlusCircle size={24} color="#ffffff" />
                             <Text style={styles.submitButtonText}>הוסף בניין למערכת</Text>
                         </>
                     )}
@@ -134,9 +134,9 @@ const styles = StyleSheet.create({
         paddingTop: 60,
         paddingBottom: 20,
         paddingHorizontal: 20,
-        backgroundColor: '#1e293b',
+        backgroundColor: '#18181b',
         borderBottomWidth: 1,
-        borderBottomColor: '#334155'
+        borderBottomColor: 'rgba(249, 115, 22, 0.15)'
     },
     headerTitle: { fontSize: 22, fontWeight: 'bold', color: '#f8fafc', marginRight: 15 },
     backBtn: { padding: 5 },
@@ -145,9 +145,9 @@ const styles = StyleSheet.create({
     inputContainer: {
         flexDirection: 'row-reverse',
         alignItems: 'center',
-        backgroundColor: '#1e293b',
+        backgroundColor: 'rgba(0, 0, 0, 0.4)',
         borderWidth: 1,
-        borderColor: '#334155',
+        borderColor: 'rgba(249, 115, 22, 0.15)',
         borderRadius: 12,
         paddingHorizontal: 15,
         marginBottom: 10,
@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
     },
     input: { flex: 1, color: '#f8fafc', fontSize: 16, marginRight: 10 },
     submitButton: {
-        backgroundColor: '#00f2ff',
+        backgroundColor: '#f97316',
         flexDirection: 'row-reverse',
         alignItems: 'center',
         justifyContent: 'center',
@@ -163,10 +163,10 @@ const styles = StyleSheet.create({
         padding: 16,
         borderRadius: 12,
         marginTop: 30,
-        shadowColor: '#00f2ff',
+        shadowColor: '#f97316',
         shadowOpacity: 0.3,
         shadowRadius: 8,
         elevation: 4
     },
-    submitButtonText: { color: '#0F172A', fontSize: 18, fontWeight: 'bold' }
+    submitButtonText: { color: '#ffffff', fontSize: 18, fontWeight: 'bold' }
 });

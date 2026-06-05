@@ -88,6 +88,7 @@ describe("adminLoadMonitoringApi", () => {
     mockSupabase.from.mockImplementation((table) => {
       if (table === "requests") return makeDateQuery(requests);
       if (table === "disturbance_reports") return makeDateQuery(disturbances);
+      if (table === "equipment_loans") return makeDateQuery([]);
       if (table === "profiles") return makeSelectOnlyQuery(profiles);
       if (table === "buildings") return makeSelectOnlyQuery(buildings);
     });
@@ -119,6 +120,7 @@ describe("adminLoadMonitoringApi", () => {
     mockSupabase.from.mockImplementation((table) => {
       if (table === "requests") return makeDateQuery([]);
       if (table === "disturbance_reports") return makeDateQuery([]);
+      if (table === "equipment_loans") return makeDateQuery([]);
       if (table === "profiles") return makeSelectOnlyQuery([]);
       if (table === "buildings") {
         return makeSelectOnlyQuery([
@@ -139,10 +141,11 @@ describe("adminLoadMonitoringApi", () => {
 
   test("throws readable error when requests query fails", async () => {
     mockSupabase.from.mockImplementation((table) => {
-      if (table === "requests") return makeDateQuery(null, new Error("DB error"));
-      if (table === "disturbance_reports") return makeDateQuery([]);
-      if (table === "profiles") return makeSelectOnlyQuery([]);
-      if (table === "buildings") return makeSelectOnlyQuery([]);
+       if (table === "requests") return makeDateQuery(null, new Error("DB error"));
+       if (table === "disturbance_reports") return makeDateQuery([]);
+       if (table === "equipment_loans") return makeDateQuery([]);
+       if (table === "profiles") return makeSelectOnlyQuery([]);
+       if (table === "buildings") return makeSelectOnlyQuery([]);
     });
 
     await expect(getAdminLoadMonitoringData(adminUser, 7)).rejects.toThrow(

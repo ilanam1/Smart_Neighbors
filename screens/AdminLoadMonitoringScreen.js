@@ -116,7 +116,7 @@ export default function AdminLoadMonitoringScreen({ navigation, route }) {
     return styles.insightInfo;
   }
 
-  function renderProgressBar(value, maxValue, color = "#22d3ee") {
+  function renderProgressBar(value, maxValue, color = "#f97316") {
     const width = `${Math.min((value / Math.max(maxValue, 1)) * 100, 100)}%`;
 
     return (
@@ -129,7 +129,7 @@ export default function AdminLoadMonitoringScreen({ navigation, route }) {
   if (loading && !data) {
     return (
       <SafeAreaView style={styles.safe}>
-        <ActivityIndicator size="large" color="#38bdf8" style={{ marginTop: 40 }} />
+        <ActivityIndicator size="large" color="#f97316" style={{ marginTop: 40 }} />
       </SafeAreaView>
     );
   }
@@ -189,7 +189,7 @@ export default function AdminLoadMonitoringScreen({ navigation, route }) {
 
         <View style={styles.kpiGrid}>
           <View style={styles.kpiCard}>
-            <Activity size={20} color="#22d3ee" />
+            <Activity size={20} color="#f97316" />
             <Text style={styles.kpiValue}>{data?.kpis?.totalActions || 0}</Text>
             <Text style={styles.kpiLabel}>סה״כ פעולות</Text>
           </View>
@@ -215,7 +215,7 @@ export default function AdminLoadMonitoringScreen({ navigation, route }) {
 
         <View style={styles.scoreCard}>
           <View style={styles.scoreHeader}>
-            <BarChart3 size={22} color="#22d3ee" />
+            <BarChart3 size={22} color="#f97316" />
             <Text style={styles.scoreTitle}>ציון עומס מערכת</Text>
           </View>
 
@@ -450,7 +450,7 @@ export default function AdminLoadMonitoringScreen({ navigation, route }) {
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: "#051121",
+    backgroundColor: "transparent",
   },
   container: {
     padding: 16,
@@ -487,16 +487,16 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   filterBtn: {
-    backgroundColor: "#0c1f38",
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
     borderWidth: 1,
-    borderColor: "#1e3a5f",
+    borderColor: "rgba(249, 115, 22, 0.2)",
     borderRadius: 14,
     paddingHorizontal: 14,
     paddingVertical: 9,
   },
   filterBtnActive: {
-    backgroundColor: "#22d3ee",
-    borderColor: "#22d3ee",
+    backgroundColor: "#f97316",
+    borderColor: "#f97316",
   },
   filterText: {
     color: "#cbd5e1",
@@ -504,7 +504,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   filterTextActive: {
-    color: "#051121",
+    color: "#ffffff",
   },
 
   kpiGrid: {
@@ -516,15 +516,15 @@ const styles = StyleSheet.create({
   },
   kpiCard: {
     width: "48%",
-    backgroundColor: "#0c1f38",
+    backgroundColor: "rgba(0, 0, 0, 0.65)",
     borderRadius: 20,
     padding: 16,
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "#1e3a5f",
+    borderColor: "rgba(249, 115, 22, 0.15)",
   },
   kpiValue: {
-    color: "#22d3ee",
+    color: "#f97316",
     fontSize: 26,
     fontWeight: "900",
     marginTop: 8,
@@ -537,8 +537,8 @@ const styles = StyleSheet.create({
   },
 
   scoreCard: {
-    backgroundColor: "rgba(34, 211, 238, 0.1)",
-    borderColor: "rgba(34, 211, 238, 0.35)",
+    backgroundColor: "rgba(249, 115, 22, 0.06)",
+    borderColor: "rgba(249, 115, 22, 0.15)",
     borderWidth: 1,
     borderRadius: 22,
     padding: 16,
@@ -556,7 +556,7 @@ const styles = StyleSheet.create({
     fontWeight: "900",
   },
   scoreValue: {
-    color: "#67e8f9",
+    color: "#f97316",
     fontSize: 34,
     fontWeight: "900",
     marginTop: 8,
@@ -578,11 +578,11 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   sectionCard: {
-    backgroundColor: "#0c1f38",
+    backgroundColor: "rgba(0, 0, 0, 0.65)",
     borderRadius: 18,
     padding: 14,
     borderWidth: 1,
-    borderColor: "#1e3a5f",
+    borderColor: "rgba(249, 115, 22, 0.15)",
     marginBottom: 8,
   },
 
@@ -689,19 +689,19 @@ const styles = StyleSheet.create({
   },
 
   buildingCard: {
-    backgroundColor: "#0c1f38",
+    backgroundColor: "rgba(0, 0, 0, 0.65)",
     borderRadius: 16,
     padding: 14,
     borderWidth: 1,
-    borderColor: "#1e3a5f",
+    borderColor: "rgba(249, 115, 22, 0.15)",
     marginBottom: 10,
   },
   userCard: {
-    backgroundColor: "#0c1f38",
+    backgroundColor: "rgba(0, 0, 0, 0.65)",
     borderRadius: 16,
     padding: 14,
     borderWidth: 1,
-    borderColor: "#1e3a5f",
+    borderColor: "rgba(249, 115, 22, 0.15)",
     marginBottom: 12,
   },
   rowBetween: {
@@ -781,16 +781,16 @@ const styles = StyleSheet.create({
 
   modalBackdrop: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.7)",
+    backgroundColor: "rgba(0,0,0,0.8)",
     justifyContent: "center",
     padding: 16,
   },
   modalCard: {
-    backgroundColor: "#1e293b",
+    backgroundColor: "rgba(10, 14, 26, 0.95)",
     borderRadius: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: "#334155",
+    borderColor: "rgba(249, 115, 22, 0.2)",
   },
   modalTitle: {
     color: "#fff",
@@ -800,8 +800,8 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   input: {
-    backgroundColor: "#0f172a",
-    borderColor: "#334155",
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
+    borderColor: "rgba(249, 115, 22, 0.2)",
     borderWidth: 1,
     borderRadius: 10,
     color: "#fff",
@@ -816,7 +816,9 @@ const styles = StyleSheet.create({
   },
   cancelBtn: {
     flex: 1,
-    backgroundColor: "#475569",
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
+    borderWidth: 1,
+    borderColor: "#f97316",
     borderRadius: 12,
     paddingVertical: 12,
     alignItems: "center",

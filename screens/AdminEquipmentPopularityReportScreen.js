@@ -55,7 +55,7 @@ export default function AdminEquipmentPopularityReportScreen({ route }) {
       <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
-          <BarChart3 size={28} color="#22d3ee" />
+          <BarChart3 size={28} color="#f97316" />
           <Text style={styles.title}>דוח פופולריות ציוד</Text>
           <Text style={styles.subtitle}>
             חיזוי קטגוריות מבוקשות לפי היסטוריית השאלות בבניין
@@ -82,7 +82,7 @@ export default function AdminEquipmentPopularityReportScreen({ route }) {
         </View>
 
         {loading ? (
-          <ActivityIndicator size="large" color="#22d3ee" style={{ marginTop: 40 }} />
+          <ActivityIndicator size="large" color="#f97316" style={{ marginTop: 40 }} />
         ) : error ? (
           <Text style={styles.errorText}>{error}</Text>
         ) : rows.length === 0 ? (
@@ -186,19 +186,19 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 16,
     borderRadius: 16,
-    backgroundColor: "#0c1f38",
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
     borderWidth: 1,
-    borderColor: "rgba(51,65,85,0.7)",
+    borderColor: "rgba(249, 115, 22, 0.2)",
   },
   filterButtonActive: {
-    backgroundColor: "#22d3ee",
+    backgroundColor: "#f97316",
   },
   filterButtonText: {
     color: "#cbd5e1",
     fontWeight: "800",
   },
   filterButtonTextActive: {
-    color: "#051121",
+    color: "#ffffff",
   },
 
   highlightCard: {
@@ -229,12 +229,12 @@ const styles = StyleSheet.create({
   },
 
   card: {
-    backgroundColor: "#0c1f38",
+    backgroundColor: "rgba(0, 0, 0, 0.65)",
     borderRadius: 24,
     padding: 16,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: "rgba(51,65,85,0.55)",
+    borderColor: "rgba(249, 115, 22, 0.15)",
   },
   cardHeader: {
     flexDirection: "row-reverse",
@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
     marginBottom: 14,
   },
   rank: {
-    color: "#22d3ee",
+    color: "#f97316",
     fontSize: 18,
     fontWeight: "900",
   },
@@ -293,13 +293,13 @@ const styles = StyleSheet.create({
     marginTop: 14,
     padding: 12,
     borderRadius: 16,
-    backgroundColor: "rgba(34,211,238,0.1)",
+    backgroundColor: "rgba(249, 115, 22, 0.06)",
     borderWidth: 1,
-    borderColor: "rgba(34,211,238,0.25)",
+    borderColor: "rgba(249, 115, 22, 0.15)",
     alignItems: "flex-end",
   },
   scoreText: {
-    color: "#67e8f9",
+    color: "#f97316",
     fontWeight: "900",
     textAlign: "right",
   },

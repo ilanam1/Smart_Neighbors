@@ -107,7 +107,7 @@ export default function AdminBuildingsScreen({ route, navigation }) {
 
     const renderItem = ({ item }) => (
         <LinearGradient
-            colors={['#0c1f38', '#0a1b31']}
+            colors={['#18181b', '#09090b']}
             style={styles.cardContainer}
             start={{ x: 1, y: 0 }}
             end={{ x: 0, y: 0 }}
@@ -129,13 +129,13 @@ export default function AdminBuildingsScreen({ route, navigation }) {
                 {/* Title Row */}
                 <View style={styles.titleRow}>
                     <Text style={styles.bName}>{item.name}</Text>
-                    <Building2 size={16} color="#fbbf24" style={{ marginLeft: 8 }} />
+                    <Building2 size={16} color="#f97316" style={{ marginLeft: 8 }} />
                 </View>
                 
                 {/* Address Row */}
                 <View style={styles.addressRow}>
                     <Text style={styles.bAddress} numberOfLines={1}>{item.address}, {item.city || 'ללא עיר'}</Text>
-                    <MapPin size={14} color="#06b6d4" style={{ marginLeft: 6 }} />
+                    <MapPin size={14} color="#f59e0b" style={{ marginLeft: 6 }} />
                 </View>
             </View>
             
@@ -175,12 +175,12 @@ export default function AdminBuildingsScreen({ route, navigation }) {
                     onChangeText={setSearchQuery}
                     textAlign="right"
                 />
-                <Search size={20} color="#22d3ee" style={styles.searchIcon} />
+                <Search size={20} color="#f97316" style={styles.searchIcon} />
             </View>
 
             {/* List */}
             {loading ? (
-                <ActivityIndicator size="large" color="#22d3ee" style={{ marginTop: 60 }} />
+                <ActivityIndicator size="large" color="#f97316" style={{ marginTop: 60 }} />
             ) : (
                 <FlatList
                     data={filteredBuildings}
@@ -203,7 +203,7 @@ export default function AdminBuildingsScreen({ route, navigation }) {
                 onPress={() => navigation.navigate('AdminAddBuilding')}
                 activeOpacity={0.8}
             >
-                <Plus size={28} color="#0f172a" strokeWidth={3} />
+                <Plus size={28} color="#ffffff" strokeWidth={3} />
             </TouchableOpacity>
 
             {/* Password Confirmation Modal */}
@@ -265,7 +265,7 @@ export default function AdminBuildingsScreen({ route, navigation }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: 'transparent', // Dark blue background
+        backgroundColor: 'transparent',
     },
     header: {
         flexDirection: 'row-reverse',
@@ -289,15 +289,15 @@ const styles = StyleSheet.create({
     searchWrapper: {
         flexDirection: 'row-reverse',
         alignItems: 'center',
-        backgroundColor: '#0a1b31',
+        backgroundColor: '#18181b',
         marginHorizontal: 16,
         marginBottom: 24,
         paddingHorizontal: 20,
         borderRadius: 24,
         borderWidth: 1,
-        borderColor: 'rgba(51, 65, 85, 0.5)',
+        borderColor: 'rgba(249, 115, 22, 0.2)',
         height: 60,
-        shadowColor: '#00f2ff',
+        shadowColor: '#f97316',
         shadowOpacity: 0.05,
         shadowRadius: 8,
         elevation: 3,
@@ -315,15 +315,15 @@ const styles = StyleSheet.create({
         paddingBottom: 100, // Space for FAB
     },
     cardContainer: {
-        flexDirection: 'row', // We place button on left, info on right manually
+        flexDirection: 'row', 
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: 20,
         borderRadius: 24,
         marginBottom: 16,
         borderWidth: 1,
-        borderColor: 'rgba(51, 65, 85, 0.3)',
-        shadowColor: '#00f2ff',
+        borderColor: 'rgba(249, 115, 22, 0.15)',
+        shadowColor: '#f97316',
         shadowOpacity: 0.05,
         shadowOffset: { width: 0, height: 4 },
         shadowRadius: 10,
@@ -337,7 +337,7 @@ const styles = StyleSheet.create({
         top: '30%',
         width: 4,
         height: 48,
-        backgroundColor: '#06b6d4',
+        backgroundColor: '#f97316',
         borderTopRightRadius: 4,
         borderBottomRightRadius: 4,
     },
@@ -347,11 +347,11 @@ const styles = StyleSheet.create({
         borderRadius: 16,
         alignItems: 'center',
         justifyContent: 'center',
-        marginLeft: 8, // Little space from left border
+        marginLeft: 8,
     },
     infoBlock: {
         flex: 1,
-        alignItems: 'flex-end', // Aligns children to the right
+        alignItems: 'flex-end',
         paddingHorizontal: 16,
     },
     titleRow: {
@@ -386,14 +386,14 @@ const styles = StyleSheet.create({
     fab: {
         position: 'absolute',
         bottom: 24,
-        left: 24, // Per web layout matching or right (RTL). Adjust if you want it on right. 
-        backgroundColor: '#06b6d4',
+        left: 24,
+        backgroundColor: '#f97316',
         width: 60,
         height: 60,
         borderRadius: 30,
         alignItems: 'center',
         justifyContent: 'center',
-        shadowColor: '#06b6d4',
+        shadowColor: '#f97316',
         shadowOpacity: 0.3,
         shadowOffset: { width: 0, height: 6 },
         shadowRadius: 12,
@@ -407,14 +407,14 @@ const styles = StyleSheet.create({
         padding: 20,
     },
     modalContent: {
-        backgroundColor: '#0f172a',
+        backgroundColor: '#18181b',
         borderRadius: 24,
         padding: 30,
         width: '100%',
         maxWidth: 380,
         alignItems: 'center',
         borderWidth: 1,
-        borderColor: '#334155',
+        borderColor: 'rgba(249, 115, 22, 0.25)',
     },
     modalIconContainer: {
         width: 64,
@@ -440,10 +440,10 @@ const styles = StyleSheet.create({
     passwordInput: {
         width: '100%',
         height: 55,
-        backgroundColor: '#051121',
+        backgroundColor: '#09090b',
         borderRadius: 16,
         borderWidth: 1,
-        borderColor: '#334155',
+        borderColor: 'rgba(249, 115, 22, 0.2)',
         color: '#f8fafc',
         fontSize: 16,
         paddingHorizontal: 20,
@@ -462,7 +462,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     cancelBtn: {
-        backgroundColor: '#1e293b',
+        backgroundColor: '#27272a',
     },
     cancelBtnText: {
         color: '#cbd5e1',
