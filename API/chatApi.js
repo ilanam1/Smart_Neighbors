@@ -15,18 +15,18 @@ export const getUserConversations = async (userId) => {
     try {
         const supabase = getSupabase();
         const profileId = await resolveProfileId(userId);
-        
+
         // Find all conversation IDs the user is a part of
         const { data: participants, error: pError } = await supabase
             .from('conversation_participants')
             .select('conversation_id')
             .eq('profile_id', profileId);
-            
+
         if (pError) throw pError;
         if (!participants || participants.length === 0) return [];
-        
+
         const conversationIds = participants.map(p => p.conversation_id);
-        
+
         // Fetch those conversations, optionally joining with profiles if it's a private chat
         // We'll fetch the conversations and the *other* participants to display names
         const { data: conversations, error: cError } = await supabase
@@ -51,9 +51,9 @@ export const getUserConversations = async (userId) => {
             `)
             .in('id', conversationIds)
             .order('updated_at', { ascending: false });
-            
+
         if (cError) throw cError;
-        
+
         return conversations;
     } catch (error) {
         console.error('Error fetching conversations:', error);
@@ -68,7 +68,7 @@ export const getBuildingGroupChat = async (buildingId, userId) => {
     try {
         const supabase = getSupabase();
         const profileId = await resolveProfileId(userId);
-        
+
         // Find existing group chat for this building
         const { data: existingGroups, error: fetchError } = await supabase
             .from('conversations')
@@ -76,28 +76,28 @@ export const getBuildingGroupChat = async (buildingId, userId) => {
             .eq('building_id', buildingId)
             .eq('is_group', true)
             .limit(1);
-            
+
         if (fetchError) throw fetchError;
-        
+
         if (existingGroups && existingGroups.length > 0) {
             const conversation = existingGroups[0];
             // Ensure current user is a participant
             await addParticipant(conversation.id, profileId);
             return conversation;
         }
-        
+
         // If no group chat exists, create one
         const { data: newGroup, error: insertError } = await supabase
             .from('conversations')
             .insert([{ building_id: buildingId, is_group: true }])
             .select()
             .single();
-            
+
         if (insertError) throw insertError;
-        
+
         await addParticipant(newGroup.id, profileId);
         return newGroup;
-        
+
     } catch (error) {
         console.error('Error in getBuildingGroupChat:', error);
         throw error;
@@ -109,89 +109,89 @@ export const getBuildingGroupChat = async (buildingId, userId) => {
 // =====================
 export const getOrCreatePrivateChat = async (userId, otherUserId, buildingId) => {
     try {
-         const supabase = getSupabase();
-         const profileA = await resolveProfileId(userId);
-         const profileB = await resolveProfileId(otherUserId);
-         
-         // In a robust implementation, you might want to find an existing conversation
-         // where BOTH users are participants and is_group = false.
-         
-         // 1. Get conversations user A is in
-         const { data: userAConvos } = await supabase
+        const supabase = getSupabase();
+        const profileA = await resolveProfileId(userId);
+        const profileB = await resolveProfileId(otherUserId);
+
+        // In a robust implementation, you might want to find an existing conversation
+        // where BOTH users are participants and is_group = false.
+
+        // 1. Get conversations user A is in
+        const { data: userAConvos } = await supabase
             .from('conversation_participants')
             .select('conversation_id')
             .eq('profile_id', profileA);
-            
-         // 2. Get conversations user B is in
-         const { data: userBConvos } = await supabase
+
+        // 2. Get conversations user B is in
+        const { data: userBConvos } = await supabase
             .from('conversation_participants')
             .select('conversation_id')
             .eq('profile_id', profileB);
-         
-         let existingConvoId = null;
-         
-         if (userAConvos && userBConvos) {
-             const aIds = userAConvos.map(c => c.conversation_id);
-             const bIds = userBConvos.map(c => c.conversation_id);
-             
-             // Find intersection
-             const sharedIds = aIds.filter(id => bIds.includes(id));
-             
-             if (sharedIds.length > 0) {
-                 // Check if it's a private chat
-                  const { data: convos } = await supabase
+
+        let existingConvoId = null;
+
+        if (userAConvos && userBConvos) {
+            const aIds = userAConvos.map(c => c.conversation_id);
+            const bIds = userBConvos.map(c => c.conversation_id);
+
+            // Find intersection
+            const sharedIds = aIds.filter(id => bIds.includes(id));
+
+            if (sharedIds.length > 0) {
+                // Check if it's a private chat
+                const { data: convos } = await supabase
                     .from('conversations')
                     .select('*')
                     .in('id', sharedIds)
                     .eq('is_group', false);
-                    
-                  if (convos && convos.length > 0) {
-                      existingConvoId = convos[0].id;
-                      return convos[0]; 
-                  }
-             }
-         }
-         
-         // 3. Create new if doesn't exist
-         const { data: newConvo, error: insertError } = await supabase
+
+                if (convos && convos.length > 0) {
+                    existingConvoId = convos[0].id;
+                    return convos[0];
+                }
+            }
+        }
+
+        // 3. Create new if doesn't exist
+        const { data: newConvo, error: insertError } = await supabase
             .from('conversations')
             .insert([{ building_id: buildingId, is_group: false }])
             .select()
             .single();
-            
-         if (insertError) throw insertError;
-         
-         // 4. Add both participants
-         await addParticipant(newConvo.id, profileA);
-         await addParticipant(newConvo.id, profileB);
-         
-         return newConvo;
+
+        if (insertError) throw insertError;
+
+        // 4. Add both participants
+        await addParticipant(newConvo.id, profileA);
+        await addParticipant(newConvo.id, profileB);
+
+        return newConvo;
 
     } catch (error) {
         console.error('Error in getOrCreatePrivateChat:', error);
         throw error;
     }
-}
-
+};
 
 // =====================
 // Add Participant to Chat
 // =====================
 export const addParticipant = async (conversationId, userId) => {
-     try {
-         const supabase = getSupabase();
-         const { error } = await supabase
+    try {
+        const supabase = getSupabase();
+        const { error } = await supabase
             .from('conversation_participants')
-            .insert([{ conversation_id: conversationId, profile_id: userId }])
-            // If already exists, ignore constraint error (UNIQUE conversation_id, profile_id)
-            
-     } catch (error) {
-         // Quietly ignore unique constraint errors
-         if (error.code !== '23505') {
+            .insert([{ conversation_id: conversationId, profile_id: userId }]);
+
+        if (error) throw error;
+
+    } catch (error) {
+        // Quietly ignore unique constraint errors
+        if (error.code !== '23505') {
             console.error('Error adding participant:', error);
-         }
-     }
-}
+        }
+    }
+};
 
 // =====================
 // Fetch Messages
@@ -207,6 +207,9 @@ export const getMessages = async (conversationId) => {
                 created_at,
                 sender_id,
                 reactions,
+                moderation_score,
+                moderation_label,
+                is_toxic,
                 profiles (
                    first_name,
                    last_name,
@@ -216,15 +219,15 @@ export const getMessages = async (conversationId) => {
             `)
             .eq('conversation_id', conversationId)
             .order('created_at', { ascending: true });
-            
+
         if (error) throw error;
-        
+
         // Decrypt the contents locally
         const decryptedData = data.map(msg => ({
             ...msg,
             content: decryptMessage(msg.content)
         }));
-            
+
         return decryptedData;
     } catch (error) {
         console.error('Error fetching messages:', error);
@@ -235,7 +238,12 @@ export const getMessages = async (conversationId) => {
 // =====================
 // Send Message
 // =====================
-export const sendMessage = async (conversationId, senderId, content) => {
+export const sendMessage = async (
+    conversationId,
+    senderId,
+    content,
+    moderationData = null
+) => {
     try {
         const supabase = getSupabase();
         const senderProfileId = await resolveProfileId(senderId);
@@ -247,16 +255,25 @@ export const sendMessage = async (conversationId, senderId, content) => {
             .insert([{
                 conversation_id: conversationId,
                 sender_id: senderProfileId,
-                content: encryptedContent
+                content: encryptedContent,
+
+                // Moderation fields
+                // Make sure these columns exist in Supabase:
+                // moderation_score numeric null
+                // moderation_label text null
+                // is_toxic boolean not null default false
+                moderation_score: moderationData?.moderationScore ?? null,
+                moderation_label: moderationData?.moderationLabel ?? null,
+                is_toxic: moderationData?.isToxic ?? false
             }])
             .select()
             .single();
-            
+
         if (error) throw error;
-        
+
         // update last_read_at for sender
         await markConversationAsRead(conversationId, senderProfileId);
-        
+
         return data;
     } catch (error) {
         console.error('Error sending message:', error);
@@ -311,16 +328,16 @@ export const toggleMessageReaction = async (messageId, emoji, userId) => {
 export const editMessage = async (messageId, newContent) => {
     try {
         const supabase = getSupabase();
-        
+
         const encryptedContent = encryptMessage(newContent);
-        
+
         const { data, error } = await supabase
             .from('messages')
             .update({ content: encryptedContent })
             .eq('id', messageId)
             .select()
             .single();
-            
+
         if (error) throw error;
         return data;
     } catch (error) {
@@ -350,21 +367,21 @@ export const markConversationAsRead = async (conversationId, userId) => {
 // =====================
 export const getBuildingResidents = async (buildingId, excludeUserId) => {
     try {
-         const supabase = getSupabase();
-         const { data, error } = await supabase
+        const supabase = getSupabase();
+        const { data, error } = await supabase
             .from('profiles')
             .select('id, auth_uid, first_name, last_name, email, photo_url')
             .eq('building_id', buildingId)
             .neq('auth_uid', excludeUserId);
-            
-         if (error) {
-             console.log('--- SUPABASE ERROR FETCHING RESIDENTS ---');
-             console.log(JSON.stringify(error, null, 2));
-             throw error;
-         }
-         return data;
+
+        if (error) {
+            console.log('--- SUPABASE ERROR FETCHING RESIDENTS ---');
+            console.log(JSON.stringify(error, null, 2));
+            throw error;
+        }
+        return data;
     } catch (error) {
         console.error('Error fetching residents catch block:', error);
         throw error;
     }
-}
+};

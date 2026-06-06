@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, FlatList, TextInput, TouchableOpacity, Keyboard
 import ActivityIndicator from '../components/CustomLoader';
 import Svg, { Defs, RadialGradient, Stop, Rect } from 'react-native-svg';
 import { getMessages, sendMessage, editMessage, toggleMessageReaction } from '../API/chatApi';
+import { moderateMessage } from '../API/moderationApi';
 import { getSupabase } from '../DataBase/supabase';
 import { markChatNotificationsAsRead } from '../API/notificationsApi';
 
@@ -17,6 +18,7 @@ export default function ChatRoomScreen({ navigation, route }) {
     const [reactionMessageId, setReactionMessageId] = useState(null);
     const [replyingToMessage, setReplyingToMessage] = useState(null);
     const [activeMessage, setActiveMessage] = useState(null);
+    const [checkingModeration, setCheckingModeration] = useState(false);
     const flatListRef = useRef();
 
     useEffect(() => {
@@ -54,24 +56,22 @@ export default function ChatRoomScreen({ navigation, route }) {
                 return content;
             },
         });
+
         fetchMessages();
-        
+
         if (user) {
             markChatNotificationsAsRead(conversationId, user.id || user.auth_uid);
         }
-        
-        // Subscribe to real-time changes
+
         const supabase = getSupabase();
         const subscription = supabase
             .channel(`messages:conversation_id=eq.${conversationId}`)
-            .on('postgres_changes', { 
-                event: 'INSERT', 
-                schema: 'public', 
+            .on('postgres_changes', {
+                event: 'INSERT',
+                schema: 'public',
                 table: 'messages',
-                filter: `conversation_id=eq.${conversationId}` 
+                filter: `conversation_id=eq.${conversationId}`
             }, (payload) => {
-                // When a new message arrives, add it to the state (if we didn't send it, although if we sent it we might add it twice if not careful, handled below via fetch)
-                // For simplicity, re-fetch to get profile joins, or ideally join locally. Let's re-fetch for safety.
                 fetchMessages();
                 if (user) {
                     markChatNotificationsAsRead(conversationId, user.id || user.auth_uid);
@@ -95,48 +95,133 @@ export default function ChatRoomScreen({ navigation, route }) {
         }
     };
 
+    const sendMessageAfterModeration = async (textToSend, moderationData = null) => {
+        try {
+            await sendMessage(conversationId, user.id, textToSend, moderationData);
+            await fetchMessages();
+            flatListRef.current?.scrollToEnd({ animated: true });
+        } catch (error) {
+            console.error('Error sending message:', error);
+            alert('שגיאה בשליחת ההודעה. נסה שוב.');
+            setInputText(textToSend);
+        }
+    };
+
+    const checkMessageModeration = async (textToSend) => {
+        try {
+            setCheckingModeration(true);
+
+            const moderation = await moderateMessage({
+                text: textToSend,
+                conversationId,
+                senderProfileId: user.id,
+                saveEvent: true,
+            });
+
+            return moderation;
+        } catch (error) {
+            console.error('Error checking message moderation:', error);
+
+            return {
+                allowed: true,
+                shouldWarn: false,
+                shouldBlock: false,
+                toxicityScore: 0,
+                label: 'moderation_failed',
+                action: 'allow',
+                reason: 'בדיקת התוכן נכשלה, ההודעה נשלחת ללא סינון',
+            };
+        } finally {
+            setCheckingModeration(false);
+        }
+    };
+
     const handleSend = async () => {
         if (!inputText.trim()) return;
-        
+        if (checkingModeration) return;
+
         let textToSend = inputText.trim();
-        setInputText(''); // Clear input optimistically
-        
+        setInputText('');
+
         if (replyingToMessage) {
             const fName = replyingToMessage.profiles?.first_name || '';
             const lName = replyingToMessage.profiles?.last_name || '';
             const senderName = `${fName} ${lName}`.trim() || 'שכן';
-            
+
             let pureText = replyingToMessage.content;
             const replyMatch = pureText.match(/^\[REPLY::(.*?)::(.*?)\] (.*)$/s);
             if (replyMatch) {
                 pureText = replyMatch[3];
             }
-            
+
             const snippet = pureText.length > 50 ? pureText.substring(0, 50) + '...' : pureText;
             textToSend = `[REPLY::${senderName}::${snippet}] ${textToSend}`;
             setReplyingToMessage(null);
         }
-        
+
         if (editingMessageId) {
             try {
                 await editMessage(editingMessageId, textToSend);
                 setEditingMessageId(null);
-                await fetchMessages(); // Re-fetch to show edited message
+                await fetchMessages();
             } catch (error) {
                 console.error('Error editing message:', error);
                 alert('שגיאה בעריכת ההודעה. נסה שוב.');
-                setInputText(textToSend); // Restore text on failure
+                setInputText(textToSend);
             }
         } else {
-            try {
-                await sendMessage(conversationId, user.id, textToSend);
-                await fetchMessages(); // Re-fetch to show new message
-                flatListRef.current?.scrollToEnd({ animated: true });
-            } catch (error) {
-                console.error('Error sending message:', error);
-                alert('שגיאה בשליחת ההודעה. נסה שוב.');
-                setInputText(textToSend); // Restore text on failure
+            const moderation = await checkMessageModeration(textToSend);
+
+            if (moderation?.shouldBlock) {
+                Alert.alert(
+                    'הודעה לא נשלחה',
+                    'המערכת זיהתה שההודעה עלולה להיות פוגענית ולכן היא לא נשלחה. נסה לנסח את ההודעה בצורה מכבדת יותר.',
+                    [
+                        {
+                            text: 'ערוך הודעה',
+                            onPress: () => setInputText(textToSend),
+                        },
+                        {
+                            text: 'אישור',
+                            style: 'cancel',
+                        },
+                    ]
+                );
+                return;
             }
+
+            if (moderation?.shouldWarn) {
+                Alert.alert(
+                    'שים לב',
+                    'המערכת זיהתה שההודעה עשויה להיות פוגענית. מומלץ לנסח אותה בצורה מכבדת יותר.',
+                    [
+                        {
+                            text: 'ערוך הודעה',
+                            style: 'cancel',
+                            onPress: () => {
+                                setInputText(textToSend);
+                            },
+                        },
+                        {
+                            text: 'שלח בכל זאת',
+                            onPress: async () => {
+                                await sendMessageAfterModeration(textToSend, {
+                                    moderationScore: moderation.toxicityScore ?? 0,
+                                    moderationLabel: moderation.label ?? 'toxic',
+                                    isToxic: true,
+                                });
+                            },
+                        },
+                    ]
+                );
+                return;
+            }
+
+            await sendMessageAfterModeration(textToSend, {
+                moderationScore: moderation?.toxicityScore ?? 0,
+                moderationLabel: moderation?.label ?? 'safe',
+                isToxic: false,
+            });
         }
     };
 
@@ -172,7 +257,7 @@ export default function ChatRoomScreen({ navigation, route }) {
         setReactionMessageId(null);
         try {
             await toggleMessageReaction(msgId, emoji, user.id);
-            await fetchMessages(); // Re-fetch to show new reaction
+            await fetchMessages();
         } catch (error) {
             console.error('Error toggling reaction:', error);
             alert('שגיאה בהוספת תגובה.');
@@ -180,28 +265,25 @@ export default function ChatRoomScreen({ navigation, route }) {
     };
 
     const renderMessage = ({ item }) => {
-        // Compare the profile's auth_uid to the session's auth UUID
         const isMyMessage = item.profiles?.auth_uid === (user.auth_uid || user.id);
         const fName = item.profiles?.first_name || '';
         const lName = item.profiles?.last_name || '';
         const senderName = `${fName} ${lName}`.trim() || 'שכן ללא שם';
-        
+
         const BubbleComponent = TouchableOpacity;
-        
-        // Count string representation of reactions
+
         let reactionsDisplay = null;
         if (item.reactions && Object.keys(item.reactions).length > 0) {
-            // Group by emoji
             const counts = {};
             Object.values(item.reactions).forEach(e => counts[e] = (counts[e] || 0) + 1);
-            
+
             reactionsDisplay = (
                 <View style={[styles.reactionsRow, isMyMessage ? styles.myReactionsRow : styles.otherReactionsRow]}>
-                   {Object.keys(counts).map(emoji => (
-                       <View key={emoji} style={styles.reactionBadge}>
-                           <Text style={styles.reactionBadgeText}>{emoji} {counts[emoji] > 1 ? counts[emoji] : ''}</Text>
-                       </View>
-                   ))}
+                    {Object.keys(counts).map(emoji => (
+                        <View key={emoji} style={styles.reactionBadge}>
+                            <Text style={styles.reactionBadgeText}>{emoji} {counts[emoji] > 1 ? counts[emoji] : ''}</Text>
+                        </View>
+                    ))}
                 </View>
             );
         }
@@ -225,7 +307,7 @@ export default function ChatRoomScreen({ navigation, route }) {
             <View style={[styles.messageBubbleContainer, isMyMessage ? styles.myMessageContainer : styles.otherMessageContainer]}>
                 <View style={{ flexDirection: 'row-reverse', alignItems: 'flex-end' }}>
                     <View style={{ flexShrink: 1 }}>
-                        <BubbleComponent 
+                        <BubbleComponent
                             style={[styles.messageBubble, isMyMessage ? styles.myBubble : styles.otherBubble]}
                             onLongPress={isMyMessage ? () => handleLongPressMessage(item) : () => handleLongPressOtherMessage(item)}
                             delayLongPress={300}
@@ -234,7 +316,7 @@ export default function ChatRoomScreen({ navigation, route }) {
                             {isGroup && !isMyMessage && (
                                 <Text style={styles.senderNameInsideBubble}>{senderName}</Text>
                             )}
-                            
+
                             {isReply && (
                                 <View style={styles.bubbleReplyContainer}>
                                     <View style={styles.bubbleReplyBorder} />
@@ -244,10 +326,10 @@ export default function ChatRoomScreen({ navigation, route }) {
                                     </View>
                                 </View>
                             )}
-                            
+
                             <Text style={[styles.messageText, isMyMessage ? styles.myMessageText : styles.otherMessageText]}>{actualContent}</Text>
                             <Text style={styles.timeText}>
-                                {new Date(item.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                                {new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                             </Text>
                         </BubbleComponent>
                         {reactionsDisplay}
@@ -267,166 +349,179 @@ export default function ChatRoomScreen({ navigation, route }) {
     };
 
     return (
-    <View style={{ flex: 1, backgroundColor: 'transparent' }}>
-      <Image
-        source={require('../assets/app_internal_bg.png')}
-        style={{
-          position: 'absolute',
-          left: 0,
-          top: 0,
-          width: Dimensions.get('screen').width,
-          height: Dimensions.get('screen').height,
-        }}
-        resizeMode="cover"
-      />
-      <KeyboardAvoidingView 
-            style={styles.container} 
-            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-            keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
-        >
-            <StatusBar barStyle="light-content" backgroundColor="#f97316" />
-            
-            {loading ? (
-                <ActivityIndicator size="large" color="#f97316" style={{ flex: 1 }}/>
-            ) : (
-                <FlatList
-                    ref={flatListRef}
-                    data={messages}
-                    keyExtractor={(item) => item.id}
-                    renderItem={renderMessage}
-                    contentContainerStyle={styles.messagesList}
-                    onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
-                    onLayout={() => flatListRef.current?.scrollToEnd({ animated: true })}
-                />
-            )}
-
-            {reactionMessageId && (
-                <TouchableOpacity style={styles.reactionsOverlay} onPress={() => setReactionMessageId(null)} activeOpacity={1}>
-                    <View style={styles.reactionPickerContainer}>
-                        {EMOJIS.map(emoji => (
-                            <TouchableOpacity key={emoji} onPress={() => handleSelectReaction(emoji)} style={styles.reactionOption}>
-                                <Text style={styles.reactionOptionText}>{emoji}</Text>
-                            </TouchableOpacity>
-                        ))}
-                    </View>
-                </TouchableOpacity>
-            )}
-
-            {replyingToMessage && (
-                <View style={styles.replyPreviewContainer}>
-                    <View style={styles.replyPreviewBorder} />
-                    <View style={styles.replyPreviewContent}>
-                        <Text style={styles.replyPreviewSender}>
-                            {`${replyingToMessage.profiles?.first_name || ''} ${replyingToMessage.profiles?.last_name || ''}`.trim() || 'שכן'}
-                        </Text>
-                        <Text style={styles.replyPreviewText} numberOfLines={1}>
-                            {replyingToMessage.content.replace(/^\[REPLY::(.*?)::(.*?)\] /s, '')}
-                        </Text>
-                    </View>
-                    <TouchableOpacity onPress={() => setReplyingToMessage(null)} style={styles.replyPreviewClose}>
-                        <Text style={styles.replyPreviewCloseText}>✕</Text>
-                    </TouchableOpacity>
-                </View>
-            )}
-
-            {editingMessageId && (
-                <View style={styles.editBanner}>
-                    <Text style={styles.editBannerText}>עורך הודעה...</Text>
-                    <TouchableOpacity onPress={cancelEdit}>
-                        <Text style={styles.cancelEditText}>בטל</Text>
-                    </TouchableOpacity>
-                </View>
-            )}
-
-            <View style={styles.inputContainer}>
-                <TextInput
-                    style={styles.input}
-                    placeholder="הקלד הודעה..."
-                    placeholderTextColor="#94a3b8"
-                    value={inputText}
-                    onChangeText={setInputText}
-                    multiline
-                />
-                <TouchableOpacity style={styles.sendButton} onPress={handleSend}>
-                    <Text style={styles.sendButtonText}>שלח</Text>
-                </TouchableOpacity>
-            </View>
-
-            <Modal
-                visible={!!activeMessage}
-                transparent={true}
-                animationType="slide"
-                onRequestClose={() => setActiveMessage(null)}
+        <View style={{ flex: 1, backgroundColor: 'transparent' }}>
+            <Image
+                source={require('../assets/app_internal_bg.png')}
+                style={{
+                    position: 'absolute',
+                    left: 0,
+                    top: 0,
+                    width: Dimensions.get('screen').width,
+                    height: Dimensions.get('screen').height,
+                }}
+                resizeMode="cover"
+            />
+            <KeyboardAvoidingView
+                style={styles.container}
+                behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+                keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
             >
-                <TouchableWithoutFeedback onPress={() => setActiveMessage(null)}>
-                    <View style={styles.modalOverlay}>
-                        <TouchableWithoutFeedback>
-                            <View style={styles.modalContent}>
-                                <Text style={styles.modalTitle}>אפשרויות הודעה</Text>
-                                
-                                <TouchableOpacity 
-                                    style={styles.modalOption} 
-                                    onPress={() => {
-                                        setReplyingToMessage(activeMessage);
-                                        setActiveMessage(null);
-                                    }}
-                                >
-                                    <Text style={styles.modalOptionText}>הגב</Text>
-                                </TouchableOpacity>
+                <StatusBar barStyle="light-content" backgroundColor="#f97316" />
 
-                                {activeMessage?.profiles?.auth_uid !== (user.auth_uid || user.id) && (
-                                    <TouchableOpacity 
-                                        style={styles.modalOption} 
+                {loading ? (
+                    <ActivityIndicator size="large" color="#f97316" style={{ flex: 1 }} />
+                ) : (
+                    <FlatList
+                        ref={flatListRef}
+                        data={messages}
+                        keyExtractor={(item) => item.id}
+                        renderItem={renderMessage}
+                        contentContainerStyle={styles.messagesList}
+                        onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
+                        onLayout={() => flatListRef.current?.scrollToEnd({ animated: true })}
+                    />
+                )}
+
+                {reactionMessageId && (
+                    <TouchableOpacity style={styles.reactionsOverlay} onPress={() => setReactionMessageId(null)} activeOpacity={1}>
+                        <View style={styles.reactionPickerContainer}>
+                            {EMOJIS.map(emoji => (
+                                <TouchableOpacity key={emoji} onPress={() => handleSelectReaction(emoji)} style={styles.reactionOption}>
+                                    <Text style={styles.reactionOptionText}>{emoji}</Text>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+                    </TouchableOpacity>
+                )}
+
+                {replyingToMessage && (
+                    <View style={styles.replyPreviewContainer}>
+                        <View style={styles.replyPreviewBorder} />
+                        <View style={styles.replyPreviewContent}>
+                            <Text style={styles.replyPreviewSender}>
+                                {`${replyingToMessage.profiles?.first_name || ''} ${replyingToMessage.profiles?.last_name || ''}`.trim() || 'שכן'}
+                            </Text>
+                            <Text style={styles.replyPreviewText} numberOfLines={1}>
+                                {replyingToMessage.content.replace(/^\[REPLY::(.*?)::(.*?)\] /s, '')}
+                            </Text>
+                        </View>
+                        <TouchableOpacity onPress={() => setReplyingToMessage(null)} style={styles.replyPreviewClose}>
+                            <Text style={styles.replyPreviewCloseText}>✕</Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
+
+                {editingMessageId && (
+                    <View style={styles.editBanner}>
+                        <Text style={styles.editBannerText}>עורך הודעה...</Text>
+                        <TouchableOpacity onPress={cancelEdit}>
+                            <Text style={styles.cancelEditText}>בטל</Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
+
+                {checkingModeration && (
+                    <View style={styles.moderationBanner}>
+                        <Text style={styles.moderationBannerText}>בודק את תוכן ההודעה...</Text>
+                    </View>
+                )}
+
+                <View style={styles.inputContainer}>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="הקלד הודעה..."
+                        placeholderTextColor="#94a3b8"
+                        value={inputText}
+                        onChangeText={setInputText}
+                        multiline
+                        editable={!checkingModeration}
+                    />
+                    <TouchableOpacity
+                        style={[styles.sendButton, checkingModeration && styles.sendButtonDisabled]}
+                        onPress={handleSend}
+                        disabled={checkingModeration}
+                    >
+                        <Text style={styles.sendButtonText}>
+                            {checkingModeration ? 'בודק...' : 'שלח'}
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+
+                <Modal
+                    visible={!!activeMessage}
+                    transparent={true}
+                    animationType="slide"
+                    onRequestClose={() => setActiveMessage(null)}
+                >
+                    <TouchableWithoutFeedback onPress={() => setActiveMessage(null)}>
+                        <View style={styles.modalOverlay}>
+                            <TouchableWithoutFeedback>
+                                <View style={styles.modalContent}>
+                                    <Text style={styles.modalTitle}>אפשרויות הודעה</Text>
+
+                                    <TouchableOpacity
+                                        style={styles.modalOption}
                                         onPress={() => {
-                                            setReactionMessageId(activeMessage.id);
+                                            setReplyingToMessage(activeMessage);
                                             setActiveMessage(null);
                                         }}
                                     >
-                                        <Text style={styles.modalOptionText}>הוסף אימוג'י</Text>
+                                        <Text style={styles.modalOptionText}>הגב</Text>
                                     </TouchableOpacity>
-                                )}
 
-                                {activeMessage?.profiles?.auth_uid === (user.auth_uid || user.id) && (
-                                    <>
-                                        <TouchableOpacity 
-                                            style={styles.modalOption} 
+                                    {activeMessage?.profiles?.auth_uid !== (user.auth_uid || user.id) && (
+                                        <TouchableOpacity
+                                            style={styles.modalOption}
                                             onPress={() => {
-                                                setEditingMessageId(activeMessage.id);
-                                                const cleanText = activeMessage.content.replace(/^\[REPLY::(.*?)::(.*?)\] /s, '');
-                                                setInputText(cleanText);
+                                                setReactionMessageId(activeMessage.id);
                                                 setActiveMessage(null);
                                             }}
                                         >
-                                            <Text style={styles.modalOptionText}>עריכה</Text>
+                                            <Text style={styles.modalOptionText}>הוסף אימוג'י</Text>
                                         </TouchableOpacity>
+                                    )}
 
-                                        <TouchableOpacity 
-                                            style={[styles.modalOption, styles.modalOptionDestructive]} 
-                                            onPress={() => {
-                                                deleteMessage(activeMessage);
-                                                setActiveMessage(null);
-                                            }}
-                                        >
-                                            <Text style={styles.modalOptionTextDestructive}>מחק</Text>
-                                        </TouchableOpacity>
-                                    </>
-                                )}
+                                    {activeMessage?.profiles?.auth_uid === (user.auth_uid || user.id) && (
+                                        <>
+                                            <TouchableOpacity
+                                                style={styles.modalOption}
+                                                onPress={() => {
+                                                    setEditingMessageId(activeMessage.id);
+                                                    const cleanText = activeMessage.content.replace(/^\[REPLY::(.*?)::(.*?)\] /s, '');
+                                                    setInputText(cleanText);
+                                                    setActiveMessage(null);
+                                                }}
+                                            >
+                                                <Text style={styles.modalOptionText}>עריכה</Text>
+                                            </TouchableOpacity>
 
-                                <TouchableOpacity 
-                                    style={[styles.modalOption, styles.modalOptionCancel]} 
-                                    onPress={() => setActiveMessage(null)}
-                                >
-                                    <Text style={styles.modalOptionTextCancel}>ביטול</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </TouchableWithoutFeedback>
-                    </View>
-                </TouchableWithoutFeedback>
-            </Modal>
+                                            <TouchableOpacity
+                                                style={[styles.modalOption, styles.modalOptionDestructive]}
+                                                onPress={() => {
+                                                    deleteMessage(activeMessage);
+                                                    setActiveMessage(null);
+                                                }}
+                                            >
+                                                <Text style={styles.modalOptionTextDestructive}>מחק</Text>
+                                            </TouchableOpacity>
+                                        </>
+                                    )}
 
-        </KeyboardAvoidingView>
-    </View>
-  );
+                                    <TouchableOpacity
+                                        style={[styles.modalOption, styles.modalOptionCancel]}
+                                        onPress={() => setActiveMessage(null)}
+                                    >
+                                        <Text style={styles.modalOptionTextCancel}>ביטול</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </TouchableWithoutFeedback>
+                        </View>
+                    </TouchableWithoutFeedback>
+                </Modal>
+
+            </KeyboardAvoidingView>
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({
@@ -443,35 +538,35 @@ const styles = StyleSheet.create({
         maxWidth: '80%',
     },
     myMessageContainer: {
-        alignSelf: 'flex-end', // Push to right
+        alignSelf: 'flex-end',
     },
     otherMessageContainer: {
-        alignSelf: 'flex-start', // Push to left
+        alignSelf: 'flex-start',
     },
     senderName: {
         fontSize: 12,
         color: '#94a3b8',
         marginBottom: 4,
         marginRight: 4,
-        textAlign: 'right', // RTL
+        textAlign: 'right',
     },
     senderNameInsideBubble: {
         fontSize: 15,
         fontWeight: 'bold',
-        color: '#f97316', // Orange for names to stand out
+        color: '#f97316',
         marginBottom: 6,
-        textAlign: 'right', // RTL
+        textAlign: 'right',
     },
     messageBubble: {
         padding: 12,
         borderRadius: 16,
     },
     myBubble: {
-        backgroundColor: '#f97316', // Orange 500
+        backgroundColor: '#f97316',
         borderTopRightRadius: 4,
     },
     otherBubble: {
-        backgroundColor: 'rgba(30, 41, 59, 0.9)', // Slate 800
+        backgroundColor: 'rgba(30, 41, 59, 0.9)',
         borderWidth: 1,
         borderColor: 'rgba(51, 65, 85, 0.5)',
         borderTopLeftRadius: 4,
@@ -479,7 +574,7 @@ const styles = StyleSheet.create({
     messageText: {
         fontSize: 16,
         lineHeight: 22,
-        textAlign: 'right', // RTL
+        textAlign: 'right',
     },
     myMessageText: {
         color: '#f8fafc',
@@ -490,11 +585,11 @@ const styles = StyleSheet.create({
     timeText: {
         fontSize: 10,
         color: '#cbd5e1',
-        alignSelf: 'flex-start', // Align left for time
+        alignSelf: 'flex-start',
         marginTop: 5,
     },
     inputContainer: {
-        flexDirection: 'row-reverse', // RTL
+        flexDirection: 'row-reverse',
         padding: 10,
         backgroundColor: 'rgba(30, 41, 59, 0.8)',
         borderTopWidth: 1,
@@ -511,7 +606,7 @@ const styles = StyleSheet.create({
         maxHeight: 100,
         fontSize: 16,
         marginLeft: 10,
-        textAlign: 'right', // RTL
+        textAlign: 'right',
     },
     sendButton: {
         backgroundColor: '#f97316',
@@ -520,17 +615,33 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         justifyContent: 'center',
     },
+    sendButtonDisabled: {
+        opacity: 0.6,
+    },
     sendButtonText: {
         color: '#f8fafc',
         fontWeight: 'bold',
         fontSize: 16,
+    },
+    moderationBanner: {
+        backgroundColor: '#1e293b',
+        borderTopWidth: 1,
+        borderColor: 'rgba(51, 65, 85, 0.5)',
+        paddingVertical: 8,
+        paddingHorizontal: 15,
+        alignItems: 'center',
+    },
+    moderationBannerText: {
+        color: '#f97316',
+        fontSize: 13,
+        fontWeight: 'bold',
     },
     editBanner: {
         flexDirection: 'row-reverse',
         justifyContent: 'space-between',
         paddingHorizontal: 15,
         paddingVertical: 8,
-        backgroundColor: '#1e293b', // slate 800
+        backgroundColor: '#1e293b',
         borderTopWidth: 1,
         borderColor: 'rgba(51, 65, 85, 0.5)',
     },
@@ -539,17 +650,17 @@ const styles = StyleSheet.create({
         fontSize: 12,
     },
     cancelEditText: {
-        color: '#ef4444', // red 500
+        color: '#ef4444',
         fontSize: 12,
         fontWeight: 'bold',
     },
     reactionsRow: {
         flexDirection: 'row-reverse',
         flexWrap: 'wrap',
-        marginTop: -10, // Pull it up slightly to overlap the bubble border
+        marginTop: -10,
         paddingHorizontal: 15,
         gap: 4,
-        zIndex: 5, // Render above the bubble's shadow
+        zIndex: 5,
     },
     myReactionsRow: {
         justifyContent: 'flex-start',
@@ -558,7 +669,7 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start',
     },
     reactionBadge: {
-        backgroundColor: '#1e293b', // Match the background
+        backgroundColor: '#1e293b',
         borderRadius: 12,
         paddingHorizontal: 6,
         paddingVertical: 2,
@@ -621,7 +732,7 @@ const styles = StyleSheet.create({
         borderTopRightRadius: 15,
         padding: 10,
         marginHorizontal: 15,
-        marginBottom: -10, // overlap slightly with input container
+        marginBottom: -10,
         borderBottomWidth: 1,
         borderBottomColor: '#334155',
         zIndex: 1
