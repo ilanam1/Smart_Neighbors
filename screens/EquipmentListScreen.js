@@ -1,7 +1,17 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, Image, RefreshControl, Dimensions } from 'react-native';
-import ActivityIndicator from '../components/CustomLoader';
+import React, { useCallback, useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  FlatList,
+  Image,
+  RefreshControl,
+  Dimensions,
+} from "react-native";
+import ActivityIndicator from "../components/CustomLoader";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useFocusEffect } from "@react-navigation/native";
 import { Package, ChevronLeft, Zap } from "lucide-react-native";
 import { getRecommendedBuildingEquipmentByCategory } from "../API/buildingEquipmentApi";
 
@@ -13,33 +23,40 @@ export default function EquipmentListScreen({ navigation, route }) {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState("");
 
-  const loadItems = useCallback(async (isRefresh = false) => {
-    try {
-      if (isRefresh) {
-        setRefreshing(true);
-      } else {
-        setLoading(true);
+  const loadItems = useCallback(
+    async (isRefresh = false) => {
+      try {
+        if (isRefresh) {
+          setRefreshing(true);
+        } else {
+          setLoading(true);
+        }
+
+        setError("");
+
+        const data = await getRecommendedBuildingEquipmentByCategory(
+          buildingId,
+          categoryId,
+          user?.id
+        );
+
+        setItems(data || []);
+      } catch (err) {
+        console.error("Equipment list load error:", err);
+        setError("אירעה שגיאה בטעינת פריטי הציוד.");
+      } finally {
+        setLoading(false);
+        setRefreshing(false);
       }
+    },
+    [buildingId, categoryId, user?.id]
+  );
 
-      setError("");
-      const data = await getRecommendedBuildingEquipmentByCategory(
-  buildingId,
-  categoryId,
-  user?.id
-);
-      setItems(data || []);
-    } catch (err) {
-      console.error("Equipment list load error:", err);
-      setError("אירעה שגיאה בטעינת פריטי הציוד.");
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  }, [buildingId, categoryId]);
-
-  useEffect(() => {
-    loadItems();
-  }, [loadItems]);
+  useFocusEffect(
+    useCallback(() => {
+      loadItems();
+    }, [loadItems])
+  );
 
   function renderRecommendationBadge(item) {
     if (!item.isFastBorrowRecommended) {
@@ -131,70 +148,100 @@ export default function EquipmentListScreen({ navigation, route }) {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: 'transparent' }}>
+    <View style={{ flex: 1, backgroundColor: "transparent" }}>
       <Image
-        source={require('../assets/app_internal_bg.png')}
+        source={require("../assets/app_internal_bg.png")}
         style={{
-          position: 'absolute',
+          position: "absolute",
           left: 0,
           top: 0,
-          width: Dimensions.get('screen').width,
-          height: Dimensions.get('screen').height,
+          width: Dimensions.get("screen").width,
+          height: Dimensions.get("screen").height,
         }}
         resizeMode="cover"
       />
+
       <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>{categoryName || "רשימת ציוד"}</Text>
-        <Text style={styles.headerSubTitle}>
-          פריטים ממוינים לפי זמינות והתאמה להשאלה מהירה
-        </Text>
-      </View>
-
-      <TouchableOpacity
-        style={styles.addButton}
-        onPress={() =>
-          navigation.navigate("AddEquipment", {
-            buildingId,
-            user,
-            preselectedCategoryId: categoryId,
-          })
-        }
-      >
-        <Text style={styles.addButtonText}>הוסף פריט חדש בקטגוריה זו</Text>
-      </TouchableOpacity>
-
-      {loading ? (
-        <ActivityIndicator size="large" color="#10b981" style={{ marginTop: 40 }} />
-      ) : error ? (
-        <Text style={styles.errorText}>{error}</Text>
-      ) : items.length === 0 ? (
-        <View style={styles.emptyBox}>
-          <Text style={styles.emptyTitle}>אין כרגע ציוד בקטגוריה זו</Text>
-          <Text style={styles.emptySub}>אפשר להיות הראשונ/ה ולהוסיף פריט להשאלה</Text>
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>{categoryName || "רשימת ציוד"}</Text>
+          <Text style={styles.headerSubTitle}>
+            פריטים ממוינים לפי זמינות והתאמה להשאלה מהירה
+          </Text>
         </View>
-      ) : (
-        <FlatList
-          data={items}
-          keyExtractor={(item) => item.id}
-          renderItem={renderItem}
-          contentContainerStyle={styles.listContent}
-          showsVerticalScrollIndicator={false}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={() => loadItems(true)} />
+
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={() =>
+            navigation.navigate("AddEquipment", {
+              buildingId,
+              user,
+              preselectedCategoryId: categoryId,
+            })
           }
-        />
-      )}
-    </SafeAreaView>
+        >
+          <Text style={styles.addButtonText}>הוסף פריט חדש בקטגוריה זו</Text>
+        </TouchableOpacity>
+
+        {loading ? (
+          <ActivityIndicator
+            size="large"
+            color="#10b981"
+            style={{ marginTop: 40 }}
+          />
+        ) : error ? (
+          <Text style={styles.errorText}>{error}</Text>
+        ) : items.length === 0 ? (
+          <View style={styles.emptyBox}>
+            <Text style={styles.emptyTitle}>אין כרגע ציוד בקטגוריה זו</Text>
+            <Text style={styles.emptySub}>
+              אפשר להיות הראשונ/ה ולהוסיף פריט להשאלה
+            </Text>
+          </View>
+        ) : (
+          <FlatList
+            data={items}
+            keyExtractor={(item) => item.id}
+            renderItem={renderItem}
+            contentContainerStyle={styles.listContent}
+            showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={() => loadItems(true)}
+              />
+            }
+          />
+        )}
+      </SafeAreaView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: 'transparent', paddingHorizontal: 16 },
-  header: { marginTop: 8, marginBottom: 18, alignItems: "flex-end" },
-  headerTitle: { color: "#f8fafc", fontSize: 26, fontWeight: "800" },
-  headerSubTitle: { color: "#94a3b8", fontSize: 13, marginTop: 4, textAlign: "right" },
+  container: {
+    flex: 1,
+    backgroundColor: "transparent",
+    paddingHorizontal: 16,
+  },
+
+  header: {
+    marginTop: 8,
+    marginBottom: 18,
+    alignItems: "flex-end",
+  },
+
+  headerTitle: {
+    color: "#f8fafc",
+    fontSize: 26,
+    fontWeight: "800",
+  },
+
+  headerSubTitle: {
+    color: "#94a3b8",
+    fontSize: 13,
+    marginTop: 4,
+    textAlign: "right",
+  },
 
   addButton: {
     backgroundColor: "#f97316",
@@ -203,9 +250,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 16,
   },
-  addButtonText: { color: "#0f172a", fontWeight: "800", fontSize: 15 },
 
-  listContent: { paddingBottom: 24 },
+  addButtonText: {
+    color: "#0f172a",
+    fontWeight: "800",
+    fontSize: 15,
+  },
+
+  listContent: {
+    paddingBottom: 24,
+  },
 
   card: {
     backgroundColor: "rgba(30, 41, 59, 0.55)",
@@ -215,12 +269,17 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     marginBottom: 16,
   },
+
   recommendedCard: {
     borderColor: "rgba(16, 185, 129, 0.55)",
     backgroundColor: "rgba(16, 185, 129, 0.08)",
   },
 
-  cardImage: { width: "100%", height: 160, resizeMode: "cover" },
+  cardImage: {
+    width: "100%",
+    height: 160,
+    resizeMode: "cover",
+  },
 
   placeholderImage: {
     width: "100%",
@@ -230,7 +289,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 
-  cardContent: { padding: 16, alignItems: "flex-end" },
+  cardContent: {
+    padding: 16,
+    alignItems: "flex-end",
+  },
 
   titleRow: {
     width: "100%",
@@ -257,6 +319,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: 10,
   },
+
   recommendBadgeText: {
     color: "#0f172a",
     fontSize: 12,
@@ -278,16 +341,31 @@ const styles = StyleSheet.create({
     width: "100%",
   },
 
-  metaRow: { marginTop: 12, width: "100%", alignItems: "flex-end" },
-  statusText: { fontSize: 12, fontWeight: "700" },
-  available: { color: "#10b981" },
-  unavailable: { color: "#fb7185" },
+  metaRow: {
+    marginTop: 12,
+    width: "100%",
+    alignItems: "flex-end",
+  },
+
+  statusText: {
+    fontSize: 12,
+    fontWeight: "700",
+  },
+
+  available: {
+    color: "#10b981",
+  },
+
+  unavailable: {
+    color: "#fb7185",
+  },
 
   scoreRow: {
     marginTop: 8,
     width: "100%",
     alignItems: "flex-end",
   },
+
   scoreText: {
     color: "#93c5fd",
     fontSize: 12,
@@ -303,17 +381,20 @@ const styles = StyleSheet.create({
     borderColor: "rgba(51, 65, 85, 0.6)",
     alignItems: "center",
   },
+
   emptyTitle: {
     color: "#f8fafc",
     fontSize: 18,
     fontWeight: "800",
     marginBottom: 8,
   },
+
   emptySub: {
     color: "#94a3b8",
     fontSize: 13,
     textAlign: "center",
   },
+
   errorText: {
     color: "#fb7185",
     textAlign: "center",

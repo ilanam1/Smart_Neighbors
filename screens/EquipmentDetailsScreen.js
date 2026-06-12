@@ -1,15 +1,28 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Alert, Dimensions } from 'react-native';
-import ActivityIndicator from '../components/CustomLoader';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  ScrollView,
+  Alert,
+  Dimensions,
+} from "react-native";
+import ActivityIndicator from "../components/CustomLoader";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Package } from "lucide-react-native";
-import { getEquipmentItemById } from "../API/buildingEquipmentApi";
+import { Package, Trash2 } from "lucide-react-native";
+import {
+  getEquipmentItemById,
+  deleteEquipmentItem,
+} from "../API/buildingEquipmentApi";
 
 export default function EquipmentDetailsScreen({ navigation, route }) {
   const { equipmentId, buildingId, user } = route.params || {};
 
   const [item, setItem] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -17,13 +30,19 @@ export default function EquipmentDetailsScreen({ navigation, route }) {
     async function loadItem() {
       try {
         setLoading(true);
+
         const data = await getEquipmentItemById(equipmentId);
-        if (mounted) setItem(data);
+
+        if (mounted) {
+          setItem(data);
+        }
       } catch (err) {
         console.error("Equipment details load error:", err);
         Alert.alert("שגיאה", "לא ניתן היה לטעון את פרטי הציוד.");
       } finally {
-        if (mounted) setLoading(false);
+        if (mounted) {
+          setLoading(false);
+        }
       }
     }
 
@@ -34,10 +53,59 @@ export default function EquipmentDetailsScreen({ navigation, route }) {
     };
   }, [equipmentId]);
 
+  async function handleDeleteEquipment() {
+    if (!item?.id) {
+      Alert.alert("שגיאה", "לא ניתן למחוק את הפריט כרגע.");
+      return;
+    }
+
+    Alert.alert(
+      "מחיקת פריט",
+      "האם אתה בטוח שברצונך למחוק את הפריט? פעולה זו אינה ניתנת לביטול.",
+      [
+        {
+          text: "ביטול",
+          style: "cancel",
+        },
+        {
+          text: "מחק",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              setDeleting(true);
+
+              await deleteEquipmentItem(item.id);
+
+              Alert.alert("הצלחה", "הפריט נמחק בהצלחה.", [
+                {
+                  text: "אישור",
+                  onPress: () => navigation.goBack(),
+                },
+              ]);
+            } catch (err) {
+              console.error("Delete equipment error:", err);
+
+              Alert.alert(
+                "שגיאה",
+                err?.message || "אירעה שגיאה במחיקת הפריט."
+              );
+            } finally {
+              setDeleting(false);
+            }
+          },
+        },
+      ]
+    );
+  }
+
   if (loading) {
     return (
       <SafeAreaView style={styles.container}>
-        <ActivityIndicator size="large" color="#10b981" style={{ marginTop: 50 }} />
+        <ActivityIndicator
+          size="large"
+          color="#10b981"
+          style={{ marginTop: 50 }}
+        />
       </SafeAreaView>
     );
   }
@@ -53,83 +121,122 @@ export default function EquipmentDetailsScreen({ navigation, route }) {
   const isOwner = item.owner_id === user?.id;
 
   return (
-    <View style={{ flex: 1, backgroundColor: 'transparent' }}>
+    <View style={{ flex: 1, backgroundColor: "transparent" }}>
       <Image
-        source={require('../assets/app_internal_bg.png')}
+        source={require("../assets/app_internal_bg.png")}
         style={{
-          position: 'absolute',
+          position: "absolute",
           left: 0,
           top: 0,
-          width: Dimensions.get('screen').width,
-          height: Dimensions.get('screen').height,
+          width: Dimensions.get("screen").width,
+          height: Dimensions.get("screen").height,
         }}
         resizeMode="cover"
       />
+
       <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        {item.item_image_url ? (
-          <Image source={{ uri: item.item_image_url }} style={styles.image} />
-        ) : item.equipment_categories?.image_url ? (
-          <Image source={{ uri: item.equipment_categories.image_url }} style={styles.image} />
-        ) : (
-          <View style={styles.placeholderImage}>
-            <Package size={40} color="#f59e0b" />
+        <ScrollView
+          contentContainerStyle={styles.content}
+          showsVerticalScrollIndicator={false}
+        >
+          {item.item_image_url ? (
+            <Image source={{ uri: item.item_image_url }} style={styles.image} />
+          ) : item.equipment_categories?.image_url ? (
+            <Image
+              source={{ uri: item.equipment_categories.image_url }}
+              style={styles.image}
+            />
+          ) : (
+            <View style={styles.placeholderImage}>
+              <Package size={40} color="#f59e0b" />
+            </View>
+          )}
+
+          <View style={styles.card}>
+            <Text style={styles.title}>{item.title}</Text>
+
+            <Text style={styles.category}>
+              קטגוריה: {item.equipment_categories?.name || "ללא קטגוריה"}
+            </Text>
+
+            <Text style={styles.ownerText}>
+              משאיל:{" "}
+              {`${item.owner_profile?.first_name || ""} ${
+                item.owner_profile?.last_name || ""
+              }`.trim() ||
+                item.owner_profile?.email ||
+                "דייר מהבניין"}
+            </Text>
+
+            <Text style={styles.status}>
+              סטטוס: {item.is_available ? "זמין להשאלה" : "לא זמין כרגע"}
+            </Text>
+
+            <Text style={styles.sectionTitle}>תיאור</Text>
+
+            <Text style={styles.description}>
+              {item.description || "לא נוסף תיאור לפריט זה."}
+            </Text>
           </View>
-        )}
 
-        <View style={styles.card}>
-          <Text style={styles.title}>{item.title}</Text>
-          <Text style={styles.category}>
-            קטגוריה: {item.equipment_categories?.name || "ללא קטגוריה"}
-          </Text>
+          {!isOwner && item.is_available && (
+            <TouchableOpacity
+              style={styles.primaryButton}
+              onPress={() =>
+                navigation.navigate("RequestLoan", {
+                  equipmentId: item.id,
+                  equipmentTitle: item.title,
+                  buildingId,
+                  ownerId: item.owner_id,
+                  user,
+                })
+              }
+            >
+              <Text style={styles.primaryButtonText}>בקשת השאלה</Text>
+            </TouchableOpacity>
+          )}
 
-          <Text style={styles.ownerText}>
-            משאיל:{" "}
-            {`${item.owner_profile?.first_name || ""} ${item.owner_profile?.last_name || ""}`.trim() ||
-              item.owner_profile?.email ||
-              "דייר מהבניין"}
-          </Text>
-          <Text style={styles.status}>
-            סטטוס: {item.is_available ? "זמין להשאלה" : "לא זמין כרגע"}
-          </Text>
+          {isOwner && (
+            <View>
+              <View style={styles.ownerNotice}>
+                <Text style={styles.ownerNoticeText}>
+                  זהו פריט שהועלה על ידך.
+                </Text>
+              </View>
 
-          <Text style={styles.sectionTitle}>תיאור</Text>
-          <Text style={styles.description}>
-            {item.description || "לא נוסף תיאור לפריט זה."}
-          </Text>
-        </View>
-
-        {!isOwner && item.is_available && (
-          <TouchableOpacity
-            style={styles.primaryButton}
-            onPress={() =>
-              navigation.navigate("RequestLoan", {
-                equipmentId: item.id,
-                equipmentTitle: item.title,
-                buildingId,
-                ownerId: item.owner_id,
-                user,
-              })
-            }
-          >
-            <Text style={styles.primaryButtonText}>בקשת השאלה</Text>
-          </TouchableOpacity>
-        )}
-
-        {isOwner && (
-          <View style={styles.ownerNotice}>
-            <Text style={styles.ownerNoticeText}>זהו פריט שהועלה על ידך.</Text>
-          </View>
-        )}
-      </ScrollView>
-    </SafeAreaView>
+              <TouchableOpacity
+                style={[styles.deleteButton, deleting && { opacity: 0.7 }]}
+                onPress={handleDeleteEquipment}
+                disabled={deleting}
+              >
+                {deleting ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <>
+                    <Trash2 size={18} color="#fff" />
+                    <Text style={styles.deleteButtonText}>מחק פריט</Text>
+                  </>
+                )}
+              </TouchableOpacity>
+            </View>
+          )}
+        </ScrollView>
+      </SafeAreaView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: 'transparent' },
-  content: { padding: 16, paddingBottom: 40 },
+  container: {
+    flex: 1,
+    backgroundColor: "transparent",
+  },
+
+  content: {
+    padding: 16,
+    paddingBottom: 40,
+  },
+
   image: {
     width: "100%",
     height: 230,
@@ -137,6 +244,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     resizeMode: "cover",
   },
+
   placeholderImage: {
     width: "100%",
     height: 230,
@@ -146,6 +254,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+
   card: {
     backgroundColor: "rgba(30, 41, 59, 0.6)",
     borderRadius: 24,
@@ -154,6 +263,7 @@ const styles = StyleSheet.create({
     padding: 18,
     alignItems: "flex-end",
   },
+
   title: {
     color: "#f8fafc",
     fontSize: 24,
@@ -161,12 +271,21 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     textAlign: "right",
   },
+
   category: {
     color: "#cbd5e1",
     fontSize: 14,
     marginBottom: 6,
     textAlign: "right",
   },
+
+  ownerText: {
+    color: "#cbd5e1",
+    fontSize: 14,
+    marginBottom: 6,
+    textAlign: "right",
+  },
+
   status: {
     color: "#10b981",
     fontSize: 14,
@@ -174,6 +293,7 @@ const styles = StyleSheet.create({
     marginBottom: 18,
     textAlign: "right",
   },
+
   sectionTitle: {
     color: "#f8fafc",
     fontSize: 16,
@@ -182,12 +302,14 @@ const styles = StyleSheet.create({
     textAlign: "right",
     alignSelf: "flex-end",
   },
+
   description: {
     color: "#94a3b8",
     fontSize: 14,
     lineHeight: 22,
     textAlign: "right",
   },
+
   primaryButton: {
     marginTop: 18,
     backgroundColor: "#f97316",
@@ -195,11 +317,13 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     alignItems: "center",
   },
+
   primaryButtonText: {
     color: "#0f172a",
     fontWeight: "900",
     fontSize: 15,
   },
+
   ownerNotice: {
     marginTop: 18,
     padding: 16,
@@ -208,21 +332,34 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "rgba(59, 130, 246, 0.25)",
   },
+
   ownerNoticeText: {
     color: "#93c5fd",
     fontWeight: "700",
     textAlign: "center",
   },
+
+  deleteButton: {
+    marginTop: 12,
+    backgroundColor: "#ef4444",
+    borderRadius: 18,
+    paddingVertical: 15,
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row-reverse",
+    gap: 8,
+  },
+
+  deleteButtonText: {
+    color: "#fff",
+    fontWeight: "900",
+    fontSize: 15,
+  },
+
   errorText: {
     color: "#fb7185",
     fontSize: 16,
     textAlign: "center",
     marginTop: 40,
-  },
-  ownerText: {
-  color: "#cbd5e1",
-  fontSize: 14,
-  marginBottom: 6,
-  textAlign: "right",
   },
 });
