@@ -14,7 +14,7 @@ async function testQuery() {
         const url = urlMatch[1];
         const key = keyMatch[1];
 
-        const tables = ['profiles', 'users', 'Users', 'admins', 'service_employees'];
+        const tables = ['buildings', 'profiles', 'admins'];
         
         for (const table of tables) {
             const response = await fetch(`${url}/rest/v1/${table}?select=*`, {

@@ -5,12 +5,12 @@ import { View,
   StyleSheet,
   Image,
   ScrollView,
-  SafeAreaView,
   TouchableOpacity,
   Alert,
   Modal,
   TextInput,
   Dimensions } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import ActivityIndicator from '../components/CustomLoader';
 import { getSupabase } from "../DataBase/supabase";
 import { useFocusEffect } from "@react-navigation/native";

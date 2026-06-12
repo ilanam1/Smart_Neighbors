@@ -19,8 +19,8 @@ import {
   Alert,
 } from "react-native";
 
-// Enable LayoutAnimation on Android
-if (Platform.OS === 'android') {
+// Enable LayoutAnimation on Android (only for Old Architecture, since it's enabled by default on Fabric/New Architecture)
+if (Platform.OS === 'android' && !global.RN$Bridgeless && !global.nativeFabricUIManager) {
   UIManager.setLayoutAnimationEnabledExperimental?.(true);
 }
 import { SafeAreaView } from "react-native-safe-area-context";

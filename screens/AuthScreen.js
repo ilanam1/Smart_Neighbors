@@ -334,7 +334,7 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
           photo_url: uploadedPhotoUrl,
         });
         // Build payload
-        const isEmailVerified = !!user.email_confirmed_at;
+        const isEmailVerified = true; // Email verification is disabled
         const profilePayload = {
           auth_uid: user.id,
           email: sanitized,
@@ -355,20 +355,15 @@ export default function AuthScreen({ navigation, onSignIn, initialMode = 'signin
           profilePayload.photo_url = uploadedPhotoUrl;
         }
 
-        // INSERT OR UPDATE PROFILE
+        // INSERT PROFILE
         const { error: profileError } = await supabase
           .from('profiles')
-          .upsert(profilePayload, { onConflict: "auth_uid" });
+          .insert(profilePayload);
 
         if (profileError) {
           console.log("FULL PROFILE ERROR:", profileError);
           alert(JSON.stringify(profileError, null, 2));
           setError("Profile could not be saved.");
-          return;
-        }
-
-        if (!isEmailVerified) {
-          setEmailVerificationRequired(true);
           return;
         }
 

@@ -8,7 +8,7 @@ try {
   const fbMessaging = require('@react-native-firebase/messaging');
   messaging = fbMessaging.default || fbMessaging;
 } catch (error) {
-  console.warn('Firebase Messaging module is not available in JS environment:', error);
+  console.log('Firebase Messaging module is not available in JS environment:', error);
 }
 
 // Safely require Notifee to avoid crashes on environments
@@ -22,7 +22,7 @@ try {
     AndroidImportance = fbNotifee.AndroidImportance;
   }
 } catch (error) {
-  console.warn('Notifee module is not available in JS environment:', error);
+  console.log('Notifee module is not available in JS environment:', error);
 }
 
 /**
@@ -36,7 +36,7 @@ function isMessagingAvailable() {
     messaging();
     return true;
   } catch (error) {
-    console.warn('Firebase Messaging is imported but native module is not functional:', error);
+    console.log('Firebase Messaging is imported but native module is not functional:', error);
     return false;
   }
 }
@@ -62,7 +62,7 @@ export async function requestPushNotificationPermission() {
     }
 
     if (!isMessagingAvailable()) {
-      console.warn('Push notification permission request bypassed: Firebase Messaging not available');
+      console.log('Push notification permission request bypassed: Firebase Messaging not available');
       return false;
     }
 
@@ -91,7 +91,7 @@ export async function getFcmToken() {
     }
 
     if (!isMessagingAvailable()) {
-      console.warn('Cannot retrieve FCM Token: Firebase Messaging not available');
+      console.log('Cannot retrieve FCM Token: Firebase Messaging not available');
       return null;
     }
 
@@ -156,7 +156,7 @@ export async function saveFcmTokenToSupabase(userId, role = 'user') {
 export async function createAndroidNotificationChannel() {
   try {
     if (!isNotifeeAvailable()) {
-      console.warn('Notifee is not available, skipping createAndroidNotificationChannel');
+      console.log('Notifee is not available, skipping createAndroidNotificationChannel');
       return;
     }
     await notifee.createChannel({
@@ -178,7 +178,7 @@ export async function createAndroidNotificationChannel() {
 export async function displayForegroundNotification(remoteMessage) {
   try {
     if (!isNotifeeAvailable()) {
-      console.warn('Notifee is not available, skipping displayForegroundNotification');
+      console.log('Notifee is not available, skipping displayForegroundNotification');
       return;
     }
     await createAndroidNotificationChannel();
@@ -218,7 +218,7 @@ export async function displayForegroundNotification(remoteMessage) {
  */
 export function listenToForegroundFirebaseMessages() {
   if (!isMessagingAvailable()) {
-    console.warn('Not listening to foreground firebase messages: Firebase Messaging not available');
+    console.log('Not listening to foreground firebase messages: Firebase Messaging not available');
     return () => {}; // return a no-op unsubscribe function
   }
   try {

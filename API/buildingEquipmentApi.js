@@ -2,6 +2,8 @@
 // API לניהול ציוד להשאלה לפי בניין
 
 import { getSupabase } from "../DataBase/supabase";
+import RNFS from "react-native-fs";
+import { decode as atob } from "base-64";
 
 const EQUIPMENT_IMAGES_BUCKET = "equipment-images";
 
@@ -85,6 +87,14 @@ async function attachOwnerProfiles(items = []) {
  * צריך Bucket בשם equipment-images.
  * מומלץ שהוא יהיה Public כדי שהתמונה תוצג ישירות באפליקציה.
  */
+async function getRealPath(uri) {
+  if (uri.startsWith("content://")) {
+    const stat = await RNFS.stat(uri);
+    return stat.path;
+  }
+  return uri;
+}
+
 export async function uploadEquipmentImageFromUri({
   imageUri,
   fileName,
@@ -108,26 +118,37 @@ export async function uploadEquipmentImageFromUri({
     fileName,
   });
 
-  const response = await fetch(imageUri);
-  const blob = await response.blob();
+  try {
+    let uploadUri = imageUri;
+    if (uploadUri.startsWith("file://")) {
+      uploadUri = uploadUri.replace("file://", "");
+    }
 
-  const { error: uploadError } = await supabase.storage
-    .from(EQUIPMENT_IMAGES_BUCKET)
-    .upload(filePath, blob, {
-      contentType: mimeType || "image/jpeg",
-      upsert: false,
-    });
+    const realPath = await getRealPath(uploadUri);
+    const base64File = await RNFS.readFile(realPath, "base64");
+    const binary = Uint8Array.from(atob(base64File), c => c.charCodeAt(0));
 
-  if (uploadError) {
-    console.error("Error uploading equipment image:", uploadError);
-    throw uploadError;
+    const { error: uploadError } = await supabase.storage
+      .from(EQUIPMENT_IMAGES_BUCKET)
+      .upload(filePath, binary, {
+        contentType: mimeType || "image/jpeg",
+        upsert: false,
+      });
+
+    if (uploadError) {
+      console.error("Error uploading equipment image:", uploadError);
+      throw uploadError;
+    }
+
+    const { data } = supabase.storage
+      .from(EQUIPMENT_IMAGES_BUCKET)
+      .getPublicUrl(filePath);
+
+    return data?.publicUrl || null;
+  } catch (err) {
+    console.error("uploadEquipmentImageFromUri exception:", err);
+    throw err;
   }
-
-  const { data } = supabase.storage
-    .from(EQUIPMENT_IMAGES_BUCKET)
-    .getPublicUrl(filePath);
-
-  return data?.publicUrl || null;
 }
 
 /* =========================================================

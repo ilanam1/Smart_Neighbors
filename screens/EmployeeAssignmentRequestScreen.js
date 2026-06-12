@@ -67,7 +67,7 @@ export default function EmployeeAssignmentRequestScreen({ route }) {
                 <View style={styles.content}>
                     <View style={styles.card}>
                         <View style={styles.iconCircle}>
-                            <Building size={32} color="#3b82f6" />
+                            <Building size={32} color="#f97316" />
                         </View>
                         <Text style={styles.title}>נציג בניין שלח לך בקשה!</Text>
                         <Text style={styles.subtitle}>
@@ -96,7 +96,7 @@ export default function EmployeeAssignmentRequestScreen({ route }) {
 
                     <View style={styles.actionsBox}>
                         {loading ? (
-                            <ActivityIndicator size="large" color="#3b82f6" />
+                            <ActivityIndicator size="large" color="#f97316" />
                         ) : (
                             <View style={styles.row}>
                                 <TouchableOpacity 
@@ -131,7 +131,7 @@ const InfoIcon = ({ size, color }) => (
 const styles = StyleSheet.create({
     safe: {
         flex: 1,
-        backgroundColor: '#0F172A',
+        backgroundColor: 'transparent',
     },
     container: {
         flex: 1,
@@ -141,9 +141,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: 16,
-        backgroundColor: '#1e293b',
+        backgroundColor: 'rgba(15, 23, 42, 0.6)',
         borderBottomWidth: 1,
-        borderBottomColor: '#334155',
+        borderBottomColor: 'rgba(255, 255, 255, 0.08)',
     },
     backButton: {
         padding: 4,
@@ -163,22 +163,24 @@ const styles = StyleSheet.create({
         padding: 20,
     },
     card: {
-        backgroundColor: '#1e293b',
-        borderRadius: 16,
+        backgroundColor: 'rgba(30, 41, 59, 0.65)',
+        borderRadius: 24,
         padding: 24,
         alignItems: 'center',
         borderWidth: 1,
-        borderColor: '#334155',
+        borderColor: 'rgba(255, 255, 255, 0.1)',
         marginBottom: 24,
     },
     iconCircle: {
         width: 64,
         height: 64,
         borderRadius: 32,
-        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+        backgroundColor: 'rgba(249, 115, 22, 0.15)',
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: 16,
+        borderWidth: 1,
+        borderColor: 'rgba(249, 115, 22, 0.25)',
     },
     title: {
         fontSize: 20,
@@ -204,7 +206,7 @@ const styles = StyleSheet.create({
     },
     detailText: {
         fontSize: 14,
-        color: '#94a3b8',
+        color: '#cbd5e1',
     },
     label: {
         fontSize: 14,
@@ -214,10 +216,10 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     input: {
-        backgroundColor: '#1e293b',
+        backgroundColor: 'rgba(30, 41, 59, 0.65)',
         borderWidth: 1,
-        borderColor: '#334155',
-        borderRadius: 12,
+        borderColor: 'rgba(255, 255, 255, 0.1)',
+        borderRadius: 18,
         padding: 16,
         color: '#f8fafc',
         minHeight: 100,
@@ -241,7 +243,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
     },
     declineBtn: {
-        backgroundColor: 'transparent',
+        backgroundColor: 'rgba(239, 68, 68, 0.1)',
         borderColor: '#ef4444',
     },
     declineBtnText: {
@@ -250,8 +252,8 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     acceptBtn: {
-        backgroundColor: '#10b981',
-        borderColor: '#10b981',
+        backgroundColor: '#f97316',
+        borderColor: '#f97316',
     },
     acceptBtnText: {
         color: '#0f172a',

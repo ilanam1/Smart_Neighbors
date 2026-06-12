@@ -22,8 +22,7 @@ export default function CommitteePendingUsersScreen({ route, navigation }) {
             .select('*')
             .eq('building_id', buildingId)
             .eq('is_house_committee', false)
-            .eq('is_approved', false)
-            .eq('is_email_verified', true);
+            .eq('is_approved', false);
             
         if (!error && data) {
             setPendingUsers(data);

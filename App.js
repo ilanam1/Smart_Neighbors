@@ -105,7 +105,22 @@ export default function App() {
     }
 
     try {
-      const { data: profile } = await supabase.from('profiles').select('is_approved, is_house_committee').eq('auth_uid', session.user.id).single();
+      let profile = null;
+      const { data, error } = await supabase.from('profiles').select('is_approved, is_house_committee').eq('auth_uid', session.user.id).maybeSingle();
+      profile = data;
+
+      if (!profile && !error) {
+        // Retry up to 3 times with 1 second delay to handle signup profile insertion delay (race condition)
+        for (let i = 0; i < 3; i++) {
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          const { data: retryData } = await supabase.from('profiles').select('is_approved, is_house_committee').eq('auth_uid', session.user.id).maybeSingle();
+          if (retryData) {
+            profile = retryData;
+            break;
+          }
+        }
+      }
+
       if (profile && profile.is_approved === false) {
         session.user.needs_approval = true;
       }
