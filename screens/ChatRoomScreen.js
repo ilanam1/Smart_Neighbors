@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, StyleSheet, FlatList, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, StatusBar, Image, Alert, Modal, TouchableWithoutFeedback, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, StatusBar, Image, Alert, Modal, TouchableWithoutFeedback, Dimensions, Keyboard } from 'react-native';
 import ActivityIndicator from '../components/CustomLoader';
 import Svg, { Defs, RadialGradient, Stop, Rect } from 'react-native-svg';
 import { getMessages, sendMessage, editMessage, toggleMessageReaction } from '../API/chatApi';
@@ -20,6 +20,22 @@ export default function ChatRoomScreen({ navigation, route }) {
     const [activeMessage, setActiveMessage] = useState(null);
     const [checkingModeration, setCheckingModeration] = useState(false);
     const flatListRef = useRef();
+    const [keyboardOpen, setKeyboardOpen] = useState(false);
+
+    useEffect(() => {
+        const showSubscription = Keyboard.addListener(
+            Platform.OS === 'android' ? 'keyboardDidShow' : 'keyboardWillShow',
+            () => setKeyboardOpen(true)
+        );
+        const hideSubscription = Keyboard.addListener(
+            Platform.OS === 'android' ? 'keyboardDidHide' : 'keyboardWillHide',
+            () => setKeyboardOpen(false)
+        );
+        return () => {
+            showSubscription.remove();
+            hideSubscription.remove();
+        };
+    }, []);
 
     useEffect(() => {
         navigation.setOptions({
@@ -363,8 +379,8 @@ export default function ChatRoomScreen({ navigation, route }) {
             />
             <KeyboardAvoidingView
                 style={styles.container}
-                behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-                keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : (keyboardOpen ? 80 : 0)}
             >
                 <StatusBar barStyle="light-content" backgroundColor="#f97316" />
 

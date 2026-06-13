@@ -100,7 +100,7 @@ describe('ChatRoomScreen', () => {
     fireEvent.press(getByText('שלח'));
 
     await waitFor(() => {
-        expect(sendMessage).toHaveBeenCalledWith('c1', 'u1', 'This is a new message');
+        expect(sendMessage).toHaveBeenCalledWith('c1', 'u1', 'This is a new message', expect.objectContaining({ isToxic: false }));
     });
 
     expect(getMessages).toHaveBeenCalledTimes(2);
