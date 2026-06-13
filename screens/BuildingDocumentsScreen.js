@@ -8,9 +8,9 @@ import { View,
   FlatList,
   Alert,
   Linking,
-  SafeAreaView,
   Image,
   Dimensions } from 'react-native';
+import { SafeAreaView } from "react-native-safe-area-context";
 import ActivityIndicator from '../components/CustomLoader';
 
 import { pick, types } from "@react-native-documents/picker";

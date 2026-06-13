@@ -1,6 +1,7 @@
 // screens/PublicProfileScreen.js
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Image, ScrollView, SafeAreaView, TouchableOpacity, Linking, StatusBar, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, Linking, StatusBar, Dimensions } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import ActivityIndicator from '../components/CustomLoader';
 import { getSupabase } from "../DataBase/supabase";
 import Svg, { Defs, RadialGradient, Stop, Rect } from 'react-native-svg';

@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, SafeAreaView, ScrollView, Image, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, ScrollView, Image, Dimensions } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { LogOut, ShieldCheck, PlusCircle, Building2, LayoutDashboard, Users, Briefcase, Megaphone } from 'lucide-react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { TriangleAlert } from 'lucide-react-native';

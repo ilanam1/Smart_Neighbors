@@ -200,7 +200,7 @@ export default function AdminBuildingsScreen({ route, navigation }) {
             {/* Floating Action Button (New Building) */}
             <TouchableOpacity 
                 style={styles.fab} 
-                onPress={() => navigation.navigate('AdminAddBuilding')}
+                onPress={() => navigation.navigate('AdminAddBuilding', { adminUser })}
                 activeOpacity={0.8}
             >
                 <Plus size={28} color="#ffffff" strokeWidth={3} />
